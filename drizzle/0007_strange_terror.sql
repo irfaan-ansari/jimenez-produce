@@ -1,0 +1,1 @@
+ALTER TABLE "job_applications" RENAME COLUMN "employments" TO "experience";

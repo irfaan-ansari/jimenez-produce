@@ -1,0 +1,365 @@
+{
+  "en": {
+    "dir": "ltr",
+    "values": {
+      "title1": "Company Information",
+      "title2": "Contact Information",
+      "title3": "Additional Contacts",
+      "title4": "Delivery Information",
+      "title5": "Required Documents & Agreement",
+      "desc1": "Provide legal company details as it appears on tax and banking records.",
+      "desc2": "Provide the business contact details and the primary officer responsible for this account.",
+      "desc3": "Let us know who to contact for payments and ordering.",
+      "desc4": "Help us understand the best way to safely deliver to your business.",
+      "desc5": "Please upload the documents and sign the agreement",
+
+      "companyName": "Company Name",
+      "companyNamePlaceholder": "e.g. Fresh Valley Produce LLC",
+      "companyNameError": "Please enter your legal business name.",
+
+      "companyType": "Company Type",
+      "companyTypePlaceholder": "Select",
+      "companyTypeError": "Please select a business type.",
+
+      "companyDBA": "Company DBA",
+      "companyDBAPlaceholder": "e.g. Fresh Valley Market",
+      "companyDBAError": "Please enter a valid DBA name.",
+
+      "companyEin": "Employer Identification Number (EIN)",
+      "companyEinPlaceholder": "12-3456789",
+      "companyEinError": "Please enter a valid EIN.",
+
+      "companyStreet": "Street Address",
+      "companyStreetPlaceholder": "123 Main Street",
+      "companyStreetError": "Please enter a valid street address.",
+
+      "companyCity": "City",
+      "companyCityPlaceholder": "Los Angeles",
+      "companyCityError": "Please enter a city.",
+
+      "companyState": "State",
+      "companyStatePlaceholder": "CA",
+      "companyStateError": "Please enter a state.",
+
+      "companyZip": "ZIP Code",
+      "companyZipPlaceholder": "90001",
+      "companyZipError": "Please enter a valid ZIP Code.",
+
+      "companyPhone": "Phone",
+      "companyPhonePlaceholder": "(555) 123-4567",
+      "companyPhoneError": "Please enter a valid phone number.",
+
+      "companyEmail": "Email",
+      "companyEmailPlaceholder": "(555) 123-4567",
+      "companyEmailError": "Please enter a valid phone number.",
+
+      "officerFirst": "First Name",
+      "officerFirstPlaceholder": "John",
+      "officerFirstError": "First name is required.",
+
+      "officerLast": "Last Name",
+      "officerLastPlaceholder": "Smith",
+      "officerLastError": "Last name is required.",
+
+      "officerRole": "Title",
+      "officerRolePlaceholder": "Select",
+      "officerRoleError": "Please enter a title.",
+
+      "officerMobile": "Phone",
+      "officerMobilePlaceholder": "(555) 987-6543",
+      "officerMobileError": "Please enter a valid mobile number.",
+
+      "officerEmail": "Email",
+      "officerEmailPlaceholder": "name@business.com",
+      "officerEmailError": "Please enter a valid email address.",
+
+      "officerStreet": "Street Address",
+      "officerStreetPlaceholder": "456 Oak Avenue",
+      "officerStreetError": "Please enter a valid address.",
+
+      "officerCity": "City",
+      "officerCityPlaceholder": "San Diego",
+      "officerCityError": "Please enter a city.",
+
+      "officerState": "State",
+      "officerStatePlaceholder": "CA",
+      "officerStateError": "Please enter a state.",
+
+      "officerZip": "ZIP Code",
+      "officerZipPlaceholder": "92101",
+      "officerZipError": "Please enter a valid ZIP Code.",
+
+      "orderingName": "Ordering Contact Name",
+      "orderingNamePlaceholder": "Jane Doe",
+      "orderingNameError": "Please enter a contact name.",
+
+      "orderingPhone": "Ordering Phone",
+      "orderingPhonePlaceholder": "(555) 222-3344",
+      "orderingPhoneError": "Please enter a valid phone number.",
+
+      "accountPayableEmail": "Accounts Payable Email",
+      "accountPayablePlaceholder": "ap@business.com",
+      "accountPayableError": "Please enter a valid email address.",
+
+      "guarantorName": "Guarantor Full Name",
+      "guarantorNamePlaceholder": "John A. Smith",
+      "guarantorNameError": "Please enter the guarantor’s full name.",
+
+      "guarantorRole": "Guarantor Title",
+      "guarantorRolePlaceholder": "Select",
+      "guarantorRoleError": "Please select a title.",
+
+      "salesRepresentative": "Sales Representative",
+      "salesRepresentativePlaceholder": "Select",
+      "salesRepresentativeDesc": " Select the sales representative you currently work with, if applicable.",
+      "salesRepresentativeError": "Please select sales representative",
+
+      "lockboxPermission": "Can we install a lockbox?",
+      "lockboxPermissionError": "Please select an option.",
+
+      "deliveryDay": "Delivery Day",
+      "deliveryDayPlaceholder": "Select",
+      "deliveryDayError": "Please select a primary delivery day.",
+
+      "deliveryWindow": "Delivery Time",
+      "deliveryWindowPlaceholder": "Select",
+      "deliveryWindowError": "Please select a delivery time window.",
+
+      "receivingName": "Receiving Contact Name",
+      "receivingNamePlaceholder": "Kitchen Manager",
+      "receivingNameError": "Please enter a receiving contact name.",
+
+      "receivingPhone": "Receiving Phone",
+      "receivingPhonePlaceholder": "(555) 444-5566",
+      "receivingPhoneError": "Please enter a valid phone number.",
+
+      "deliveryInstructions": "Delivery Instructions / Alarm Code",
+      "deliveryInstructionsPlaceholder": "Gate code, alarm instructions, or special notes",
+      "deliveryInstructionsError": "Please enter valid delivery instructions.",
+
+      "certificate": "Sales Tax Resale Certificate",
+      "certificateDesc": "Upload a valid resale certificate to qualify for tax exemption.",
+      "certificateError": "Please upload a resale certificate.",
+
+      "dlFront": "Driver’s License (Front)",
+      "dlFrontDesc": "Upload a clear image of the front of the driver’s license.",
+      "dlFrontError": "Front of the driver’s license is required.",
+
+      "dlBack": "Driver’s License (Back)",
+      "dlBackDesc": "Upload a clear image of the back of the driver’s license.",
+      "dlBackError": "Back of the driver’s license is required.",
+
+      "signature": "Signature",
+      "signatureDesc": "Use your mouse or finger to sign. Click “Clear” to redo.",
+      "signatureError": "Signature is required to continue.",
+
+      "signatureName": "Guarantor Electronic Signature",
+      "signatureNamePlaceholder": "Type your full legal name",
+      "signatureNameDesc": "Typing your full name serves as your electronic signature.",
+      "signatureNameError": "Guarantor signature is required.",
+
+      "acknowledge": "Personal Guarantee Agreement",
+      "acknowledgeDesc": "I acknowledge that I have read, understand, and agree to the Personal Guarantee Agreement above. I agree that this electronic submission serves as my legally binding signature.",
+      "acknowledgeError": "You must accept the personal guarantee agreement."
+    }
+  },
+
+  "es": {
+    "dir": "ltr",
+    "values": {
+      "title1": "Información de la Empresa",
+      "title2": "Información de Contacto",
+      "title3": "Contactos Adicionales",
+      "title4": "Información de Entrega",
+      "title5": "Documentos Requeridos y Acuerdo",
+      "desc1": "Proporcione los datos legales de la empresa y la información del responsable principal, tal como aparecen en los registros fiscales y bancarios.",
+      "desc2": "Indique los datos de contacto del negocio y de la persona responsable de esta cuenta.",
+      "desc3": "Indíquenos a quién debemos contactar para pagos y pedidos.",
+      "desc4": "Ayúdenos a entender la mejor manera de realizar entregas seguras en su negocio.",
+      "desc5": "Por favor cargue los documentos requeridos y firme el acuerdo.",
+      "companyLegalName": "Nombre legal del negocio",
+      "companyLegalNamePlaceholder": "Ej. Fresh Valley Produce LLC",
+      "companyLegalNameDesc": "Ingrese el nombre registrado del negocio tal como aparece en documentos fiscales y bancarios.",
+      "companyLegalNameError": "Ingrese el nombre legal del negocio.",
+
+      "companyType": "Tipo de negocio",
+      "companyTypePlaceholder": "Seleccione el tipo de negocio",
+      "companyTypeDesc": "Seleccione el tipo de negocio que opera.",
+      "companyTypeError": "Seleccione un tipo de negocio.",
+
+      "companyDBA": "Nombre comercial (DBA)",
+      "companyDBAPlaceholder": "Ej. Fresh Valley Market",
+      "companyDBADesc": "Solo requerido si su negocio opera bajo un nombre diferente.",
+      "companyDBAError": "Ingrese un nombre comercial válido.",
+
+      "ein": "Número de Identificación del Empleador (EIN)",
+      "einPlaceholder": "12-3456789",
+      "einDesc": "Número fiscal federal utilizado para facturación y configuración de la cuenta.",
+      "einError": "Ingrese un EIN válido.",
+
+      "companyStreet": "Dirección del negocio",
+      "companyStreetPlaceholder": "123 Main Street",
+      "companyStreetDesc": "Dirección donde se realizarán las entregas.",
+      "companyStreetError": "Ingrese una dirección válida.",
+
+      "companyCity": "Ciudad",
+      "companyCityPlaceholder": "Los Ángeles",
+      "companyCityDesc": "Ciudad donde se encuentra el negocio.",
+      "companyCityError": "Ingrese la ciudad.",
+
+      "companyState": "Estado",
+      "companyStatePlaceholder": "CA",
+      "companyStateDesc": "Estado donde opera el negocio.",
+      "companyStateError": "Ingrese el estado.",
+
+      "companyZip": "Código postal",
+      "companyZipPlaceholder": "90001",
+      "companyZipDesc": "Código postal de 5 dígitos para la ruta de entrega.",
+      "companyZipError": "Ingrese un código postal válido.",
+
+      "companyPhone": "Teléfono del negocio",
+      "companyPhonePlaceholder": "(555) 123-4567",
+      "companyPhoneDesc": "Utilizado para contacto sobre pedidos o entregas.",
+      "companyPhoneError": "Ingrese un número de teléfono válido.",
+
+      "officerFirst": "Nombre",
+      "officerFirstPlaceholder": "Juan",
+      "officerFirstDesc": "Nombre del propietario u oficial principal.",
+      "officerFirstError": "El nombre es obligatorio.",
+
+      "officerLast": "Apellido",
+      "officerLastPlaceholder": "Pérez",
+      "officerLastDesc": "Apellido del propietario u oficial principal.",
+      "officerLastError": "El apellido es obligatorio.",
+
+      "officerTitle": "Cargo",
+      "officerTitlePlaceholder": "Propietario / Gerente",
+      "officerTitleDesc": "Cargo o función dentro del negocio.",
+      "officerTitleError": "Ingrese el cargo.",
+
+      "officerMobile": "Teléfono móvil",
+      "officerMobilePlaceholder": "(555) 987-6543",
+      "officerMobileDesc": "Número directo para asuntos urgentes de la cuenta o entregas.",
+      "officerMobileError": "Ingrese un número de teléfono válido.",
+
+      "officerEmail": "Correo electrónico",
+      "officerEmailPlaceholder": "nombre@negocio.com",
+      "officerEmailDesc": "Correo principal para facturas y comunicaciones.",
+      "officerEmailError": "Ingrese un correo electrónico válido.",
+
+      "officerStreet": "Dirección residencial",
+      "officerStreetPlaceholder": "456 Oak Avenue",
+      "officerStreetDesc": "Dirección residencial del oficial principal.",
+      "officerStreetError": "Ingrese una dirección válida.",
+
+      "officerCity": "Ciudad",
+      "officerCityPlaceholder": "San Diego",
+      "officerCityDesc": "Ciudad de residencia.",
+      "officerCityError": "Ingrese la ciudad.",
+
+      "officerState": "Estado",
+      "officerStatePlaceholder": "CA",
+      "officerStateDesc": "Estado de residencia.",
+      "officerStateError": "Ingrese el estado.",
+
+      "officerZip": "Código postal",
+      "officerZipPlaceholder": "92101",
+      "officerZipDesc": "Código postal de 5 dígitos.",
+      "officerZipError": "Ingrese un código postal válido.",
+
+      "orderingName": "Contacto para pedidos",
+      "orderingNamePlaceholder": "María López",
+      "orderingNameDesc": "Persona responsable de realizar los pedidos.",
+      "orderingNameError": "Ingrese el nombre del contacto.",
+
+      "orderingPhone": "Teléfono para pedidos",
+      "orderingPhonePlaceholder": "(555) 222-3344",
+      "orderingPhoneDesc": "Número para consultas relacionadas con pedidos.",
+      "orderingPhoneError": "Ingrese un número de teléfono válido.",
+
+      "apEmail": "Correo de cuentas por pagar",
+      "apEmailPlaceholder": "ap@negocio.com",
+      "apEmailDesc": "Correo utilizado para facturación y pagos.",
+      "apEmailError": "Ingrese un correo electrónico válido.",
+
+      "guarantorName": "Nombre completo del garante",
+      "guarantorNamePlaceholder": "Juan A. Pérez",
+      "guarantorNameDesc": "Nombre legal completo del garante personal.",
+      "guarantorNameError": "Ingrese el nombre completo del garante.",
+
+      "guarantorTitle": "Cargo del garante",
+      "guarantorTitlePlaceholder": "Seleccione",
+      "guarantorTitleDesc": "Cargo o función del garante.",
+      "guarantorTitleError": "Ingrese el cargo.",
+
+      "salesRep": "Representante de ventas",
+      "salesRepPlaceholder": "Seleccione",
+      "salesRepDesc": "Seleccione el representante de ventas con el que trabaja actualmente, si corresponde.",
+      "salesRepError": "Seleccione un representante de ventas.",
+
+      "lockboxPermission": "¿Podemos instalar una caja de seguridad?",
+      "lockboxPermissionDesc": "Permite a los conductores acceder de forma segura si es necesario.",
+      "lockboxPermissionError": "Seleccione una opción.",
+
+      "primaryDay": "Día principal de entrega",
+      "primaryDayPlaceholder": "Seleccione un día",
+      "primaryDayDesc": "Día preferido para entregas regulares.",
+      "primaryDayError": "Seleccione un día principal de entrega.",
+
+      "primaryWindow": "Horario principal de entrega",
+      "primaryWindowPlaceholder": "Ej. 6:00 AM – 9:00 AM",
+      "primaryWindowDesc": "Horario preferido para la entrega.",
+      "primaryWindowError": "Seleccione un horario de entrega.",
+
+      "secondaryDay": "Día secundario de entrega",
+      "secondaryDayPlaceholder": "Seleccione un día",
+      "secondaryDayDesc": "Día alternativo si el principal no está disponible.",
+      "secondaryDayError": "Seleccione un día secundario de entrega.",
+
+      "secondaryWindow": "Horario secundario de entrega",
+      "secondaryWindowPlaceholder": "Ej. 10:00 AM – 1:00 PM",
+      "secondaryWindowDesc": "Horario alternativo para la entrega.",
+      "secondaryWindowError": "Seleccione un horario de entrega.",
+
+      "receivingName": "Contacto de recepción",
+      "receivingNamePlaceholder": "Encargado de cocina",
+      "receivingNameDesc": "Persona responsable de recibir las entregas.",
+      "receivingNameError": "Ingrese el nombre del contacto de recepción.",
+
+      "receivingPhone": "Teléfono de recepción",
+      "receivingPhonePlaceholder": "(555) 444-5566",
+      "receivingPhoneDesc": "Número que el conductor puede llamar al llegar.",
+      "receivingPhoneError": "Ingrese un número de teléfono válido.",
+
+      "deliveryInstructions": "Instrucciones de entrega / Código de alarma",
+      "deliveryInstructionsPlaceholder": "Código de acceso, alarma o instrucciones especiales",
+      "deliveryInstructionsDesc": "Información adicional para completar la entrega correctamente.",
+      "deliveryInstructionsError": "Ingrese instrucciones válidas.",
+
+      "resaleCertificate": "Certificado de reventa de impuestos",
+      "resaleCertificateDesc": "Cargue un certificado de reventa válido para exención de impuestos.",
+      "resaleCertificateError": "Debe cargar el certificado de reventa.",
+
+      "dlFront": "Licencia de conducir (frente)",
+      "dlFrontDesc": "Cargue una imagen clara del frente de la licencia.",
+      "dlFrontError": "El frente de la licencia es obligatorio.",
+
+      "dlBack": "Licencia de conducir (reverso)",
+      "dlBackDesc": "Cargue una imagen clara del reverso de la licencia.",
+      "dlBackError": "El reverso de la licencia es obligatorio.",
+
+      "signature": "Firma",
+      "signatureDesc": "Use el mouse o el dedo para firmar. Haga clic en “Borrar” para repetir.",
+      "signatureError": "La firma es obligatoria.",
+
+      "guarantorSignature": "Firma electrónica del garante",
+      "guarantorSignaturePlaceholder": "Escriba su nombre legal completo",
+      "guarantorSignatureDesc": "Al escribir su nombre completo, acepta como firma electrónica.",
+      "guarantorSignatureError": "La firma del garante es obligatoria.",
+
+      "guaranteeAck": "Acuerdo de garantía personal",
+      "guaranteeAckDesc": " I acknowledge that I have read, understand, and agree to the Personal Guarantee Agreement above. I agree that this electronic submission serves as my legally binding signature.",
+      "guaranteeAckError": "Debe aceptar el acuerdo de garantía personal."
+    }
+  }
+}

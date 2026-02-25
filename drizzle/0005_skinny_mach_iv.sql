@@ -1,0 +1,46 @@
+CREATE TABLE "job_applications" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"position" text NOT NULL,
+	"declaration" boolean NOT NULL,
+	"applicant_name" text NOT NULL,
+	"status" text DEFAULT 'new' NOT NULL,
+	"first_name" text NOT NULL,
+	"last_name" text NOT NULL,
+	"phone" text NOT NULL,
+	"email" text NOT NULL,
+	"dob" date NOT NULL,
+	"social_security" text NOT NULL,
+	"available_start_date" date NOT NULL,
+	"has_legal_rights" text NOT NULL,
+	"current_address" jsonb NOT NULL,
+	"mailing_address" jsonb NOT NULL,
+	"addresses" jsonb DEFAULT '[]'::jsonb,
+	"current_license" jsonb DEFAULT '[]'::jsonb,
+	"driving_experiences" jsonb DEFAULT '[]'::jsonb,
+	"accident_history" jsonb DEFAULT '[]'::jsonb,
+	"traffic_convictions" jsonb DEFAULT '[]'::jsonb,
+	"employments" jsonb DEFAULT '[]'::jsonb,
+	"high_school" jsonb,
+	"collage" jsonb,
+	"other_educations" jsonb DEFAULT '[]'::jsonb,
+	"driving_license_front_url" text NOT NULL,
+	"driving_license_back_url" text NOT NULL,
+	"social_security_front_url" text NOT NULL,
+	"social_security_back_url" text NOT NULL,
+	"dot_front_url" text NOT NULL,
+	"dot_back_url" text NOT NULL,
+	"signature_url" text NOT NULL,
+	"agreement_url" text,
+	"agreement_date" text,
+	"agreement_signature_url" text,
+	"reviewed_id" text,
+	"reviewed_at" timestamp,
+	"internal_notes" text,
+	"created_at" timestamp DEFAULT now(),
+	"updated_at" timestamp DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
+ALTER TABLE "job_applications" ADD CONSTRAINT "job_applications_reviewed_id_user_id_fk" FOREIGN KEY ("reviewed_id") REFERENCES "public"."user"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
+CREATE INDEX "job_application_position_idx" ON "job_applications" USING btree ("position");--> statement-breakpoint
+CREATE INDEX "job_application_status_idx" ON "job_applications" USING btree ("status");--> statement-breakpoint
+CREATE INDEX "customer_invite_status_idx" ON "customer_invite" USING btree ("status");
