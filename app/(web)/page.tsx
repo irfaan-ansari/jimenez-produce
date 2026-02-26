@@ -128,7 +128,7 @@ export default function Page() {
                 Featured Categories
               </h2>
               <Button asChild size="xl">
-                <Link href="/catalog">
+                <Link href="/products">
                   View catalog
                   <ArrowRight />
                 </Link>
