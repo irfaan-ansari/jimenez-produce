@@ -51,7 +51,7 @@ const CareersPage = () => {
                 <Card>
                   <CardContent className="flex gap-8">
                     <div className="flex-1">
-                      <CardTitle className="text-xl font-medium font-heading mb-3">
+                      <CardTitle className="text-3xl uppercase font-semibold font-heading mb-3">
                         {position.title}
                       </CardTitle>
                       <div className="flex gap-4 items-center mb-6">

@@ -15,7 +15,7 @@ export const Header = () => {
 
   return (
     <header className="sticky top-0 z-10 bg-background shadow-md backdrop-blur-md">
-      <div className="max-w-7xl mx-auto px-8 py-6">
+      <div className="max-w-7xl mx-auto px-8 py-2">
         <div className="flex w-full items-center">
           <div className="inline-flex flex-[1_1_0]">
             <Link href="/">
@@ -24,8 +24,8 @@ export const Header = () => {
                   width={500}
                   height={500}
                   alt="Logo"
-                  src={SITE_CONFIG.logo2}
-                  className="w-full max-w-32 md:max-w-36"
+                  src={SITE_CONFIG.logo}
+                  className="w-full max-w-18 md:max-w-20"
                 />
               </h1>
             </Link>
@@ -45,7 +45,12 @@ export const Header = () => {
               ))}
             </ul>
           </nav>
-          <div className="flex-[1_1_0] justify-end hidden md:flex">
+          <div className="flex-[1_1_0] justify-end hidden md:flex gap-4">
+            <Button asChild size="xl" variant="outline">
+              <a href="https://order.jimenezproduce.com" target="_blank">
+                Place Order
+              </a>
+            </Button>
             <Button asChild size="xl">
               <Link href="/apply">Apply for an Account</Link>
             </Button>

@@ -16,6 +16,7 @@ import {
   AccordionContent,
 } from "@/components/ui/accordion";
 import { AtSign, MapPinned, Phone, Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
   title: "Contact",
@@ -56,7 +57,7 @@ const ContactPage = () => {
                     {contact.title}
                   </CardTitle> */}
                 </CardHeader>
-                <CardContent className="pt-6 md:pt-10 flex flex-col">
+                <CardContent className="pt-6 md:pt-10 flex flex-col text-base">
                   <h5 className="text-xl font-heading font-medium mb-2">
                     {contact.label}
                   </h5>
@@ -72,9 +73,7 @@ const ContactPage = () => {
                   >
                     {contact.email}
                   </a>
-                  <p className="text-sm text-muted-foreground">
-                    {contact.description}
-                  </p>
+                  <p className="text-muted-foreground">{contact.description}</p>
                 </CardContent>
               </Card>
             ))}
@@ -106,7 +105,7 @@ const ContactPage = () => {
                   <AccordionItem key={index} value={`item-${index + 1}`}>
                     <AccordionTrigger
                       data-slot="accordion-trigger"
-                      className="focus-visible:border-ring focus-visible:ring-ring/50 flex flex-1 items-center justify-between gap-4 rounded-md py-4 text-left text-sm font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&>svg>path:last-child]:origin-center [&>svg>path:last-child]:transition-all [&>svg>path:last-child]:duration-200 [&[data-state=open]>svg]:rotate-180 [&[data-state=open]>svg>path:last-child]:rotate-90 [&[data-state=open]>svg>path:last-child]:opacity-0 [&_svg:not([class*='plus-'])]:hidden"
+                      className="focus-visible:border-ring text-base focus-visible:ring-ring/50 flex flex-1 items-center justify-between gap-4 rounded-md py-4 text-left font-medium transition-all outline-none hover:underline focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&>svg>path:last-child]:origin-center [&>svg>path:last-child]:transition-all [&>svg>path:last-child]:duration-200 [&[data-state=open]>svg]:rotate-180 [&[data-state=open]>svg>path:last-child]:rotate-90 [&[data-state=open]>svg>path:last-child]:opacity-0 [&_svg:not([class*='plus-'])]:hidden"
                     >
                       {item.title}
                       <Plus className="text-muted-foreground pointer-events-none size-4 shrink-0 transition-transform duration-200 plus-icon" />
@@ -114,6 +113,20 @@ const ContactPage = () => {
 
                     <AccordionContent className="text-muted-foreground">
                       {item.content}
+
+                      {item.cta && (
+                        <div className="mt-4">
+                          <Button className="px-4" asChild variant="default">
+                            <a
+                              href="https://order.jimenezproduce.com"
+                              target="_blank"
+                              className="no-underline! hover:text-primary-foreground!"
+                            >
+                              Place Your Order
+                            </a>
+                          </Button>
+                        </div>
+                      )}
                     </AccordionContent>
                   </AccordionItem>
                 ))}

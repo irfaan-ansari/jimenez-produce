@@ -308,7 +308,7 @@ export const CONTACT_SECTIONS = {
     {
       name: "Louisiana",
       street: "100 Goldenrod Dr, Lafayette, LA 70507",
-      phone: "+1 (251) 262-2607",
+      phone: "+1 (337) 806-9008 ",
       email: "yhessenia@jimenezproduce.com",
       lng: -92.0174859,
       lat: 30.282803,
@@ -339,16 +339,8 @@ export const CONTACT_SECTIONS = {
       label: "Lafayette warehouse team",
       description:
         "Questions about receiving, pickups, delivery scheduling, and current inventory availability.",
-      email: "jorge@jimenezproduce.com",
-      phone: "(251) 262-2607",
-    },
-    {
-      title: "Accounts",
-      icon: FileText,
-      label: "Contact accounts",
-      description: "Billing questions, invoices, and payment assistance.",
-      email: "elizabeth@jimenezproduce.com",
-      phone: "(251) 262-2607",
+      email: "yhessenia@jimenezproduce.com",
+      phone: "(337) 806-9008 ",
     },
     {
       title: "Fleet",
@@ -384,6 +376,12 @@ export const CONTACT_SECTIONS = {
       title: "What are your receiving hours?",
       content:
         "Receiving hours are Monday through Saturday from 8:00 AM to 4:00 PM, by appointment only.",
+    },
+    {
+      title: "How do I place an order?",
+      content:
+        "You can place an order directly through our online ordering portal at /order. If you need assistance, our team is happy to help by phone or email with product availability and recommendations.",
+      cta: true,
     },
     {
       title: "How do I place or modify an order?",
@@ -448,6 +446,7 @@ export const OPEN_POSITIONS = [
     type: "Full-time",
     department: "Operations",
     href: "operations",
+
     description:
       "Support daily warehouse and operational activities to ensure orders are processed accurately, efficiently, and on schedule.",
     details: `

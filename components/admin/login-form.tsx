@@ -34,6 +34,7 @@ import { Alert, AlertAction, AlertDescription, AlertTitle } from "../ui/alert";
 import { useSignin } from "@/hooks/use-auth";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { authClient } from "@/lib/auth/client";
 
 const schema = z.object({
   email: z.email("Enter valid email"),

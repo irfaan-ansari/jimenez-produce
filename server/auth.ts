@@ -48,8 +48,6 @@ export const signIn = async (data: LoginProps) => {
   });
 };
 
-export const forgetPass = async () => {};
-
 /**
  * signout
  * @returns

@@ -38,7 +38,7 @@ export default function Page() {
           <div className="col-start-1 row-start-1 size-full">
             <Container className="h-full">
               <div className="relative py-20 max-w-2xl">
-                <span className="absolute -inset-40 bg-primary/10 mask-x-from-90% mask-y-from-90% backdrop-blur-md"></span>
+                <span className="absolute -inset-40 bg-primary/10 mask-x-from-70% mask-y-from-90% backdrop-blur-xs"></span>
                 <div className="flex items-start flex-col gap-8 relative ">
                   <h1 className="text-5xl/tight md:text-7xl/tight font-bold uppercase font-heading">
                     {hero.title}
@@ -81,7 +81,7 @@ export default function Page() {
                     </span>
                   </CardHeader>
                   <CardContent className="space-y-3 pt-10">
-                    <h4 className="text-xl font-medium font-heading">
+                    <h4 className="text-3xl uppercase font-semibold font-heading">
                       {item.title}
                     </h4>
                     <p className="text-base">{item.description}</p>
@@ -100,7 +100,7 @@ export default function Page() {
             <div className="flex gap-16 items-center">
               {marquee.map((img, i) => (
                 <div
-                  className="p-4 bg-linear-to-br from-foreground/5 to-foreground/20"
+                  className="bg-linear-to-br from-foreground/5 to-foreground/20"
                   key={img + i}
                 >
                   <Image
@@ -249,9 +249,9 @@ export default function Page() {
               />
             </div>
 
-            <div className="col-start-1 row-start-1 flex flex-col h-full justify-center">
-              <div className="max-w-2xl px-6 py-20 h-full relative">
-                <span className="absolute inset-0 z-0 bg-linear-to-r from-black/50 backdrop-blur-sm mask-r-from-60% mask-y-from-80%"></span>
+            <div className="col-start-1 row-start-1 flex flex-col h-full justify-center relative">
+              <span className="absolute inset-0 z-0 bg-linear-to-r from-black/60 backdrop-blur-sm"></span>
+              <div className="max-w-4xl mx-auto text-center px-6 py-20">
                 <h2 className="text-4xl/tight relative sm:text-5xl/tight md:text-7xl/tight flex-1 font-heading font-bold uppercase text-primary-foreground">
                   Fast & Reliable Delivery
                 </h2>
