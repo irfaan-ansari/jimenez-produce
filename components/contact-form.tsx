@@ -8,15 +8,16 @@ import { useAppForm } from "@/hooks/form-context";
 import { Textarea } from "@/components/ui/textarea";
 import { BUSINESS_TYPES } from "@/lib/constants/customer";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
-import { useCreateInvite } from "@/hooks/use-customer";
+
 import { useConfirm } from "@/hooks/use-confirm";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { createRequest } from "@/server/catalog-access";
 
 export const CONTACT_SCHEMA = z.object({
   name: z.string().min(2, "Name is required"),
-  companyName: z.string().min(2, "Business name is required"),
-  companyType: z.string().min(1, "Business type is required"),
+  businessName: z.string().min(2, "Business name is required"),
+  businessType: z.string().min(1, "Business type is required"),
   email: z.email("Invalid email address"),
   phone: z
     .string()
@@ -31,39 +32,35 @@ export const CONTACT_SCHEMA = z.object({
 export const ContactForm = () => {
   const router = useRouter();
   const { success } = useConfirm();
-  const { mutate, isPending } = useCreateInvite();
 
   const form = useAppForm({
     defaultValues: {
       name: "",
-      companyName: "",
-      companyType: "",
+      businessName: "",
+      businessType: "",
       email: "",
       phone: "",
       message: "",
     },
-    onSubmit: ({ value }) => {
-      const [firstName, lastName] = value.name.split(" ");
+    onSubmit: async ({ value }) => {
+      const res = await createRequest(value);
 
-      mutate(
-        { ...value, firstName, lastName, status: "applied" },
-        {
-          onSuccess: () => {
-            success({
-              title: "Application Submitted Successfully",
-              description: `Your application has been successfully submitted and is now under review. 
+      if (!res.success) {
+        toast.error(res.error.message);
+        return;
+      }
+
+      success({
+        title: "Application Submitted Successfully",
+        description: `Your application has been successfully submitted and is now under review.
                 If additional information is required, our team will contact you.`,
-              actionLabel: "Back to home",
-              action: () => router.push("/"),
-            });
-            form.reset();
-          },
-          onError: (err) => toast.error(err.message),
-        }
-      );
+        actionLabel: "Back to home",
+        action: () => router.push("/"),
+      });
+      form.reset();
     },
     validators: {
-      onBlur: CONTACT_SCHEMA,
+      onChange: CONTACT_SCHEMA,
     },
   });
 
@@ -83,7 +80,7 @@ export const ContactForm = () => {
       />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <form.AppField
-          name="companyName"
+          name="businessName"
           children={(field) => {
             return (
               <field.TextField
@@ -94,7 +91,7 @@ export const ContactForm = () => {
           }}
         />
         <form.AppField
-          name="companyType"
+          name="businessType"
           children={(field) => (
             <field.SelectField
               label="Business Type"
@@ -152,11 +149,11 @@ export const ContactForm = () => {
         {({ isSubmitting, canSubmit }) => (
           <Button
             type="submit"
-            disabled={!canSubmit || isSubmitting || isPending}
+            disabled={!canSubmit || isSubmitting}
             size="xl"
             className="min-w-40 self-end"
           >
-            {(isPending || isSubmitting) && <Loader className="animate-spin" />}
+            {isSubmitting && <Loader className="animate-spin" />}
             Submit
           </Button>
         )}

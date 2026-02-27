@@ -51,19 +51,24 @@ const CareersPage = () => {
                 <Card>
                   <CardContent className="flex gap-8">
                     <div className="flex-1">
-                      <CardTitle className="text-3xl uppercase font-semibold font-heading mb-3">
+                      <CardTitle className="text-3xl uppercase font-semibold font-heading mb-4">
                         {position.title}
                       </CardTitle>
                       <div className="flex gap-4 items-center mb-6">
-                        <Badge variant="secondary" className="text-sm h-6">
-                          {position.type}
-                        </Badge>
-                        <Badge variant="secondary" className="text-sm h-6">
-                          {position.department}
-                        </Badge>
-                        <Badge variant="secondary" className="text-sm h-6">
-                          {position.location}
-                        </Badge>
+                        {position.tags.map((tag, i) => (
+                          <Badge
+                            key={i}
+                            variant="secondary"
+                            className="text-sm h-6"
+                          >
+                            {tag}
+                          </Badge>
+                        ))}
+                        {position.location && (
+                          <Badge variant="secondary" className="text-sm h-6">
+                            {position.location}
+                          </Badge>
+                        )}
                       </div>
 
                       <CardDescription className="text-base">

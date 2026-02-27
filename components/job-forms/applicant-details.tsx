@@ -71,6 +71,15 @@ export const ApplicantDetails = withForm({
             />
           )}
         />
+        <form.AppField
+          name="location"
+          children={(field) => (
+            <field.SelectField
+              label="Select Job Location"
+              options={["Alabama", "Louisiana"]}
+            />
+          )}
+        />
       </FieldGroup>
     );
   },

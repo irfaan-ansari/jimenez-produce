@@ -16,7 +16,7 @@ import { Button } from "../ui/button";
 import { steps } from "@/lib/constants/driver-form-steps";
 import { useAppForm } from "@/hooks/form-context";
 import { driverFormSchema, DriverFormType } from "@/lib/form-schema/job-schema";
-import { formOptions, useStore } from "@tanstack/react-form";
+import { useStore } from "@tanstack/react-form";
 import { ArrowLeft, ArrowRight, Eye, Loader } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { useCreateJobApplication } from "@/hooks/use-job-application";
@@ -38,23 +38,29 @@ const defaultValues: DriverFormType = {
   position: "Route Driver",
 };
 
-const formOpts = formOptions({
-  defaultValues: defaultValues,
-  validators: {
-    onSubmit: ({ value, formApi }) => {
-      return formApi.parseValuesWithSchema(
-        steps[value.step as number].schema as typeof driverFormSchema
-      );
-    },
-  },
-});
-
-export const DriverForm = () => {
+export const DriverForm = ({
+  position,
+  location,
+}: {
+  position: string;
+  location: string;
+}) => {
   const router = useRouter();
   const { mutate, isPending } = useCreateJobApplication();
   const confirm = useConfirm();
   const form = useAppForm({
-    ...formOpts,
+    defaultValues: {
+      ...defaultValues,
+      location,
+      position,
+    },
+    validators: {
+      onSubmit: ({ value, formApi }) => {
+        return formApi.parseValuesWithSchema(
+          steps[value.step as number].schema as typeof driverFormSchema
+        );
+      },
+    },
     onSubmit: async ({ value, formApi }) => {
       if (value.step < steps.length - 1)
         formApi.setFieldValue("step", value.step + 1);

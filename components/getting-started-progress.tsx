@@ -48,7 +48,9 @@ export function GettingStartedList({
             </span>
           </CardHeader>
           <CardContent className="space-y-3 px-0">
-            <h3 className="text-xl font-medium font-heading">{step.title}</h3>
+            <h3 className="text-3xl uppercase font-semibold font-heading">
+              {step.title}
+            </h3>
             <p className="opacity-80 text-base">{step.description}</p>
           </CardContent>
         </Card>

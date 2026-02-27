@@ -222,7 +222,7 @@ const AboutPage = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {ABOUT_SECTIONS.howWeWork.map((item, i) => (
                 <div key={i} className="flex flex-col gap-4 shadow-sm p-6">
-                  <h4 className="text-xl font-medium font-heading">
+                  <h4 className="text-3xl uppercase font-semibold font-heading">
                     {item.title}
                   </h4>
                   <p className="text-muted-foreground">{item.description}</p>

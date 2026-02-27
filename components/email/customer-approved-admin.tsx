@@ -42,37 +42,45 @@ export const CustomerApprovedAdmin = ({ name, companyName }: Props) => {
 
             {/* Body */}
             <Section className="px-6">
-              <Hr className="m-0" />
-
-              <Heading className="text-2xl my-6 text-black font-bold">
-                Application Approved
-              </Heading>
-
               <Text className="text-base text-[#404040] mb-4">
                 A customer account application has been approved. Details are
                 below:
               </Text>
 
-              <Section className="bg-[#f9f9f9] border border-[#e0e0e0] rounded-lg p-4 mb-6">
+              <Section className="shadow-sm p-6">
+                <Text className="text-lg mt-0 uppercase font-semibold text-[#80b83a]">
+                  Account Summary
+                </Text>
+
                 <Text className="text-base font-semibold mb-1">
                   Applicant Name:
                 </Text>
-                <Text className="text-base text-[#404040] mb-2">
+                <Text className="text-lg font-semibold mb-2">
                   {name || "N/A"}
                 </Text>
 
                 <Text className="text-base font-semibold mb-1">
                   Company Name:
                 </Text>
-                <Text className="text-base text-[#404040] mb-2">
+                <Text className="text-lg font-semibold mb-2">
                   {companyName || "N/A"}
                 </Text>
 
-                <Text className="text-base font-semibold mb-1">
-                  Account Status:
+                <Text className="text-lg font-semibold">
+                  Phone: {companyName || "Company Name"}
                 </Text>
-                <Text className="text-base text-[#404040] mb-2">
-                  Approved ✅
+                <Text className="text-lg font-semibold">
+                  Email: {companyName || "Company Name"}
+                </Text>
+                <Text className="text-lg font-semibold">
+                  Address: {companyName || "Company Name"}
+                </Text>
+
+                <Text className="text-lg font-semibold">
+                  Primary Contact: {companyName || "Company Name"}
+                </Text>
+                <Text className="text-lg font-semibold">
+                  Primary Contact: {companyName || "Company Name"}
                 </Text>
               </Section>
 

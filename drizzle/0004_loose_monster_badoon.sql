@@ -1,0 +1,1 @@
+ALTER TABLE "catalog_access" ADD COLUMN "message" text;

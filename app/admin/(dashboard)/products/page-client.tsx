@@ -47,9 +47,6 @@ export const PageClient = () => {
         <div className="grid grid-cols-2 gap-4 lg:gap-6 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
           {data?.data?.map((product, i) => {
             const map = STATUS_MAP[product.status as keyof typeof STATUS_MAP];
-            const img =
-              product.image ||
-              `https://api.dicebear.com/9.x/initials/svg?seed=${product.title}&scale=80`;
 
             const onOffer =
               product.offerPrice && product.offerPrice < product.price!;
@@ -57,7 +54,7 @@ export const PageClient = () => {
               <Card
                 size="sm"
                 key={i}
-                className="rounded-2xl pt-0 hover:ring-2 hover:ring-offset-1 relative hover:ring-offset-background transition ease-out"
+                className="rounded-2xl pt-0! hover:ring-2 hover:ring-offset-1 relative hover:ring-offset-background transition ease-out"
                 style={{ "--color": map.color } as React.CSSProperties}
               >
                 <div className="bg-background absolute left-2 top-2 z-2 rounded-xl">
@@ -70,11 +67,13 @@ export const PageClient = () => {
                 <ProductAction product={product} />
 
                 <div className="rounded-t-[0.5rem] overflow-hidden relative">
+                  {}
                   <Image
-                    width={600}
-                    height={900}
-                    src={img}
+                    width={400}
+                    height={400}
+                    src={product.image!}
                     alt={product.title}
+                    unoptimized={product?.image?.includes("api.dicebear.com")}
                     loading="lazy"
                     className="relative z-1 w-full object-cover transition ease-out aspect-square rounded-lg"
                   />

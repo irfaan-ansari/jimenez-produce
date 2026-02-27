@@ -8,12 +8,7 @@ import { sendJobEmail } from "@/lib/email";
 import { revalidatePath } from "next/cache";
 import { waitUntil } from "@vercel/functions";
 import { JobApplicationStatus } from "@/lib/types";
-import {
-  jobApplications,
-  JobApplicationInsertType,
-  JobPostInsertType,
-  jobPost,
-} from "@/lib/db/schema";
+import { jobApplications, JobApplicationInsertType } from "@/lib/db/schema";
 
 /**
  * Create job application
@@ -107,76 +102,5 @@ export const deleteJobApplication = async (id: number) => {
     .where(eq(jobApplications.id, id))
     .returning({ id: jobApplications.id });
   revalidatePath("/admin/job-applications");
-  return result;
-};
-
-/**========================================================
- * JOB POST
- =========================================================*/
-
-/**
- * Create job post
- * @param data
- * @returns
- */
-export const createJobPost = async (data: JobPostInsertType) => {
-  const session = await getSession();
-  if (!session) throw new Error("Authentication required.");
-
-  const [result] = await db
-    .insert(jobPost)
-    .values(data)
-    .returning({ id: jobPost.id });
-  return result;
-};
-
-/**
- * update job post
- * @param id
- * @param data
- * @returns
- */
-export const updateJobPost = async (
-  id: number,
-  data: Partial<JobPostInsertType>
-) => {
-  const session = await getSession();
-  if (!session) throw new Error("Authentication required.");
-
-  const existing = await db.query.jobPost.findFirst({
-    where: eq(jobPost.id, id),
-  });
-
-  if (!existing) throw new Error("Resource not found.");
-
-  const [result] = await db
-    .update(jobPost)
-    .set(data)
-    .where(eq(jobPost.id, id))
-    .returning();
-
-  return result;
-};
-
-/**
- * delete job post
- * @param id
- * @returns
- */
-export const deleteJobPost = async (id: number) => {
-  const session = await getSession();
-  if (!session) throw new Error("Authentication required.");
-
-  const existing = await db.query.jobPost.findFirst({
-    where: eq(jobPost.id, id),
-  });
-
-  if (!existing) throw new Error("Resource not found.");
-
-  const [result] = await db
-    .delete(jobPost)
-    .where(eq(jobPost.id, id))
-    .returning({ id: jobPost.id });
-
   return result;
 };

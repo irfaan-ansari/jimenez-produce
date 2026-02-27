@@ -139,7 +139,7 @@ export const statusMap = {
     icon: Circle,
     actions: [
       {
-        label: "Accept Application",
+        label: "Approve Application",
         action: "active",
         icon: CheckCircle,
       },
@@ -156,7 +156,7 @@ export const statusMap = {
     ],
   },
   active: {
-    label: "Active",
+    label: "Approved",
     color: "#22C55E",
     icon: CheckCircle,
     actions: [],
@@ -179,7 +179,7 @@ export const statusMap = {
     icon: Clock,
     actions: [
       {
-        label: "Accept Application",
+        label: "Approve Application",
         action: "active",
         icon: CheckCircle,
       },

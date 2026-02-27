@@ -53,12 +53,9 @@ const ContactPage = () => {
                   <span className="size-12 border inline-flex items-center justify-center text-highlight">
                     <contact.icon className="size-5" />
                   </span>
-                  {/* <CardTitle className="text-xl font-semibold">
-                    {contact.title}
-                  </CardTitle> */}
                 </CardHeader>
                 <CardContent className="pt-6 md:pt-10 flex flex-col text-base">
-                  <h5 className="text-xl font-heading font-medium mb-2">
+                  <h5 className="text-3xl uppercase font-semibold font-heading mb-4">
                     {contact.label}
                   </h5>
                   <a

@@ -1,24 +1,18 @@
-import { Column, Heading, Img, Row, Section } from "@react-email/components";
+import { Heading, Img, Section } from "@react-email/components";
 
 export const Header = () => {
   return (
-    <Section className="flex gap-4 p-6">
-      <Row className="gap-4">
-        <Column>
-          <Img
-            src={`${process.env.BETTER_AUTH_URL}/logo.png`}
-            width="60"
-            height="60"
-            alt="Logo"
-            className="h-14 w-auto"
-          />
-        </Column>
-        <Column>
-          <Heading className="ml-4 inline-block text-center font-semibold text-xl text-black">
-            Jimenez Produce
-          </Heading>
-        </Column>
-      </Row>
+    <Section className="py-10  text-center bg-[#80b83a]">
+      <Img
+        src={`https://jimenezproduce.com/logo.png`}
+        width="100"
+        height="100"
+        alt="Logo"
+        className="h-24 w-auto mx-auto aspect-square object-contain bg-white p-2 rounded-full"
+      />
+      <Heading className="text-4xl font-bold text-center text-white">
+        Application Approved
+      </Heading>
     </Section>
   );
 };

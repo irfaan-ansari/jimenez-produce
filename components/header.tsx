@@ -15,22 +15,20 @@ export const Header = () => {
 
   return (
     <header className="sticky top-0 z-10 bg-background shadow-md backdrop-blur-md">
-      <div className="max-w-7xl mx-auto px-8 py-2">
-        <div className="flex w-full items-center">
-          <div className="inline-flex flex-[1_1_0]">
+      <div className="max-w-7xl mx-auto px-8 py-3">
+        <div className="flex w-full items-center h-14 lg:h-20">
+          <div className="inline-flex flex-[1_1_0] self-center">
             <Link href="/">
-              <h1 className="text-2xl font-bold text-primary">
-                <Image
-                  width={500}
-                  height={500}
-                  alt="Logo"
-                  src={SITE_CONFIG.logo}
-                  className="w-full max-w-18 md:max-w-20"
-                />
-              </h1>
+              <Image
+                width={100}
+                height={100}
+                alt="Logo"
+                src={SITE_CONFIG.logo}
+                className="w-18 lg:w-24"
+              />
             </Link>
           </div>
-          <nav className="items-center justify-center hidden md:flex">
+          <nav className="items-center justify-center hidden lg:flex">
             <ul className="flex items-center gap-4">
               {SITE_CONFIG.pages.map((page) => (
                 <li key={page.href}>
@@ -45,7 +43,7 @@ export const Header = () => {
               ))}
             </ul>
           </nav>
-          <div className="flex-[1_1_0] justify-end hidden md:flex gap-4">
+          <div className="flex-[1_1_0] justify-end hidden lg:flex gap-4">
             <Button asChild size="xl" variant="outline">
               <a href="https://order.jimenezproduce.com" target="_blank">
                 Place Order

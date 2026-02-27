@@ -10,19 +10,19 @@ import {
   applicantLicence,
 } from "@/lib/constants/job";
 import { Button } from "../ui/button";
+import { useRouter } from "next/navigation";
 import { useStore } from "@tanstack/react-form";
-import { steps } from "@/lib/constants/manager-form-steps";
+import { useConfirm } from "@/hooks/use-confirm";
 import { useAppForm } from "@/hooks/form-context";
+import { steps } from "@/lib/constants/manager-form-steps";
 import { ArrowLeft, ArrowRight, Eye, Loader } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import {
   CareersFormType,
   driverFormSchema,
 } from "@/lib/form-schema/job-schema";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { upload } from "@vercel/blob/client";
 import { useCreateJobApplication } from "@/hooks/use-job-application";
-import { useRouter } from "next/navigation";
-import { useConfirm } from "@/hooks/use-confirm";
 
 const defaultValues: CareersFormType = {
   ...applicantAddress,
@@ -35,15 +35,23 @@ const defaultValues: CareersFormType = {
   position: "",
 };
 
-export const TerritoryManagerForm = ({ position }: { position: string }) => {
+export const TerritoryManagerForm = ({
+  position,
+  location,
+}: {
+  position: string;
+  location: string;
+}) => {
   const router = useRouter();
   const confirm = useConfirm();
 
   const { mutate, isPending } = useCreateJobApplication();
+
   const form = useAppForm({
     defaultValues: {
       ...defaultValues,
       position,
+      location,
     },
     validators: {
       onSubmit: ({ value, formApi }) => {
@@ -99,19 +107,22 @@ export const TerritoryManagerForm = ({ position }: { position: string }) => {
           signatureUrl: sign.url,
         };
 
-        mutate(values, {
-          onError: (error) => toast.error(error.message),
-          onSuccess: () => {
-            confirm.success({
-              title: "Application Submitted Successfully",
-              description: `Your application has been successfully submitted and is now under review. 
+        mutate(
+          { ...values, cvUrl: "" },
+          {
+            onError: (error) => toast.error(error.message),
+            onSuccess: () => {
+              confirm.success({
+                title: "Application Submitted Successfully",
+                description: `Your application has been successfully submitted and is now under review. 
                 If additional information is required, our team will contact you.`,
-              actionLabel: "Back to home",
-              action: () => router.push("/"),
-            });
-            form.reset();
-          },
-        });
+                actionLabel: "Back to home",
+                action: () => router.push("/"),
+              });
+              form.reset();
+            },
+          }
+        );
       }
     },
   });

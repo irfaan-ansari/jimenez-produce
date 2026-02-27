@@ -36,10 +36,10 @@ export const CustomerAction = ({ id, status, showView = true }: Props) => {
         break;
       case "active":
         confirm.info({
-          title: "Accept Application",
+          title: "Approve Application",
           description:
             "Approving this application will activate the customer account and send a notification to the customer.",
-          actionLabel: "Yes, Accept",
+          actionLabel: "Yes, Approve",
           cancelLabel: "Cancel",
           action: () =>
             new Promise((res) =>
@@ -48,7 +48,7 @@ export const CustomerAction = ({ id, status, showView = true }: Props) => {
                 {
                   onError: (e) => toast.error(e.message),
                   onSuccess: (res) =>
-                    toast.success("Application has been accepted."),
+                    toast.success("Application has been approved"),
                   onSettled: () => res(),
                 }
               )

@@ -29,6 +29,7 @@ import { ChevronRight, Lock, LogOut, User } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { useRouter } from "next/navigation";
 import { ChangePasswordDialog } from "../change-password";
+import { getAvatarFallback } from "@/lib/utils";
 
 export function AppSidebar() {
   const { pathname, buildPath, isActive: subItemActive } = useTabRouter();
@@ -51,7 +52,7 @@ export function AppSidebar() {
               />
             </AvatarImage>
             <AvatarFallback className="bg-primary/40 font-medium text-xs">
-              {SITE_CONFIG.name}
+              {getAvatarFallback(SITE_CONFIG.name)}
             </AvatarFallback>
           </Avatar>
 
@@ -154,7 +155,7 @@ const Profile = () => {
             <Avatar className="rounded-xl **:rounded-xl after:hidden size-9 ring-2 ring-offset-1 ring-green-600/20">
               <AvatarImage src={data?.user.image!} alt="profile image" />
               <AvatarFallback className="rounded-xl bg-primary/40 font-semibold text-xs text-primary">
-                {data?.user.name}
+                {getAvatarFallback(data?.user.name)}
               </AvatarFallback>
             </Avatar>
             <div className="flex flex-col">

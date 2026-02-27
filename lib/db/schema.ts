@@ -213,6 +213,7 @@ export const product = pgTable(
     id: serial("id").primaryKey(),
     title: text("title").notNull(),
     identifier: text("identifier"),
+    type: text("type"),
     description: text("description"),
     categories: jsonb("categories")
       .$type<string[]>()
@@ -286,6 +287,7 @@ export const jobApplications = pgTable(
   {
     id: serial("id").primaryKey(),
     position: text("position").notNull(),
+    location: text("location"),
     declaration: boolean("declaration").notNull(),
     applicantName: text("applicant_name").notNull(),
     status: text("status").notNull().default("new"),
@@ -432,6 +434,7 @@ export const jobApplications = pgTable(
     dotFrontUrl: text("dot_front_url").notNull(),
     dotBackUrl: text("dot_back_url").notNull(),
     signatureUrl: text("signature_url").notNull(),
+    cvUrl: text("cv_url").notNull(),
     agreementUrl: text("agreement_url"),
     agreementDate: text("agreement_date"),
     agreementSignatureUrl: text("agreement_signature_url"),
@@ -466,24 +469,25 @@ export const applicantRelations = relations(jobApplications, ({ one }) => ({
 export type JobApplicationInsertType = InferInsertModel<typeof jobApplications>;
 export type JobApplicationSelectType = InferSelectModel<typeof jobApplications>;
 
-export const jobPost = pgTable(
-  "job-post",
+export const catalogAccess = pgTable(
+  "catalog_access",
   {
     id: serial("id").primaryKey(),
-    title: text("title").notNull(),
-    description: text("description").notNull(),
-    responsibility: text("responsibility"),
-    categories: jsonb("categories").$type<string[]>().default([]),
-    form: text("form").notNull().default("driver"),
-    status: text("status").notNull().default("draft"), // draft / new /
+    name: text("name").notNull(),
+    businessName: text("business_name").notNull(),
+    businessType: text("business_type"),
+    email: text("email").notNull(),
+    phone: text("phone").notNull(),
+    message: text("message"),
+    status: text("status").notNull().default("new"), // new / approved / rejected / revoked
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at")
       .defaultNow()
       .$onUpdate(() => /* @__PURE__ */ new Date())
       .notNull(),
   },
-  (table) => [index("job_post_status_idx").on(table.status)]
+  (table) => [index("catalog_access_status_idx").on(table.status)]
 );
 
-export type JobPostInsertType = InferInsertModel<typeof jobPost>;
-export type JobPostSelectType = InferSelectModel<typeof jobPost>;
+export type CatalogAccessInsertType = InferInsertModel<typeof catalogAccess>;
+export type CatalogAccessSelectType = InferSelectModel<typeof catalogAccess>;

@@ -16,6 +16,7 @@ import {
   Button,
 } from "@react-email/components";
 import { Header } from "./header";
+import { Footer } from "./footer";
 
 interface CustomerApprovedProps {
   name: string;
@@ -36,39 +37,36 @@ export const CustomerApproved = ({
           presets: [pixelBasedPreset],
         }}
       >
-        <Body className="mx-auto my-auto px-4 font-sans bg-white">
+        <Body className="mx-auto my-auto px-4 font-sans bg-[#f2f8eb]">
           <Preview>{previewText}</Preview>
 
-          <Container className="mx-auto my-20 max-w-[560px] border border-[#eaeaea] overflow-hidden">
+          <Container className="mx-auto my-20 max-w-[660px] border bg-white border-[#eaeaea] overflow-hidden">
             {/* Header */}
             <Header />
-
             {/* Body */}
-            <Section className="px-6">
-              <Hr className="m-0" />
-
-              <Heading className="text-2xl my-6 text-black font-bold">
-                Application Approved
-              </Heading>
-
-              <Text className="text-base text-black font-semibold mb-2">
+            <Section className="p-6">
+              <Text className="text-xl text-black font-semibold mb-2">
                 Hello {name || "Valued Customer"},
               </Text>
 
-              <Text className="text-base text-[#404040] mb-4">
+              <Text className="text-lg">
                 We are pleased to inform you that your account application for{" "}
-                <strong>{companyName}</strong> has been approved.
+                <span className="font-semibold inline-block uppercase">
+                  {companyName || "Company Name"}
+                </span>{" "}
+                has been approved.
               </Text>
 
-              <Text className="text-base font-semibold my-4">
+              <Text className="text-xl font-semibold mt-8 mb-0">
                 Your account is now active in our system.
               </Text>
-
-              <Section className="bg-[#f9f9f9] border border-[#e0e0e0] rounded-lg p-4 mb-6">
-                <Text className="text-base font-semibold mb-2 mt-6">
-                  Ordering Information:
+            </Section>
+            <Section className="p-6">
+              <Section className=" shadow-sm p-6">
+                <Text className="text-lg uppercase font-semibold text-[#80b83a]">
+                  Ordering Information
                 </Text>
-                <Text className="text-base text-[#404040] mb-4">
+                <Text className="text-lg">
                   <strong>*</strong> Orders must be placed the day before
                   delivery
                   <br />
@@ -80,40 +78,26 @@ export const CustomerApproved = ({
                   <strong>*</strong> Orders placed after 3:00 PM will move to
                   the next available delivery date
                 </Text>
-              </Section>
-              <Section className="bg-[#f9f9f9] border border-[#e0e0e0] rounded-lg p-4 mb-6">
-                <Text className="text-base font-semibold mb-2">
-                  You may now begin placing orders through:
-                </Text>
-                <Text className="text-base text-[#404040] mb-4">
-                  * Your assigned sales representative
-                  <br />* Our online ordering portal
-                </Text>
 
                 <Button
                   href="https://order.jimenezproduce.com"
                   target="_blank"
-                  className="bg-[#80b83a] rounded-lg px-4 text-white uppercase text-sm font-semibold inline-flex items-center h-10 mb-4"
+                  className="bg-[#80b83a] px-4 text-white uppercase text-sm font-semibold text-center justify-center flex items-center h-12 mb-4"
                 >
                   Place Your Order
                 </Button>
               </Section>
-              <Text className="text-base text-[#404040] mb-4">
+
+              <Text className="text-lg mt-6">
                 If you have any questions regarding pricing, delivery schedule,
                 or product availability, please contact our team.
-                <br />
-                <br />
-                <strong>We look forward to serving your business.</strong>
               </Text>
-
-              <Text className="text-base mt-10 text-[#404040]">
-                Best regards,
-                <br />
-                <strong className="text-black">Jimenez Produce</strong>
-                <br />
-                Customer Accounts Department
+              <Text className="text-xl font-semibold">
+                We look forward to serving your business.
               </Text>
             </Section>
+            {/* footer */}
+            <Footer />
           </Container>
         </Body>
       </Tailwind>

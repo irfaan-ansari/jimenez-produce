@@ -21,8 +21,7 @@ export const WelcomeBanner = () => {
       </h1>
 
       <p className="text-muted-foreground text-base max-w-2xl mt-1">
-        Manage customers, job applications, invites, and products — all from
-        your central operations hub.
+        Manage customers, job applications, invites, and products.
       </p>
     </div>
   );

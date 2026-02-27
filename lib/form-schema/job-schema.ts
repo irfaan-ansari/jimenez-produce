@@ -9,6 +9,7 @@ const applicantSchema = z.object({
   socialSecurity: z.string().min(1, "Social security is required"),
   availableStartDate: z.string().min(1, "Available date is required"),
   hasLegalRights: z.string().min(1, "Select option"),
+  location: z.string().min(1, "Select location"),
 });
 
 const address = z.object({

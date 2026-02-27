@@ -1,0 +1,7 @@
+[
+  {
+    "item": "4PB32MJ48",
+    "error": "Failed query: insert into \"product\" (\"id\", \"title\", \"identifier\", \"type\", \"description\", \"categories\", \"price\", \"offer_price\", \"status\", \"image\", \"images\", \"created_at\", \"updated_at\") values (default, $1, $2, $3, default, $4, default, default, $5, $6, default, default, default)\nparams: 32oz Foam Bowl 500ct (32MJ48),4PB32MJ48,Inventory Part,[\"Disposable\",\"Cups & Lids\"],private,https://bnl8ryis1b5ogqgd.public.blob.vercel-storage.com/products/4pb32mj48-9YDyUdXdx5o8nrZIM3nYejSsjAXj2H.avif",
+    "timestamp": "2026-02-26T21:22:36.636Z"
+  }
+]

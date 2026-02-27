@@ -13,3 +13,19 @@ export type CustomerInviteStatus = keyof typeof inviteStatusMap;
 export type CustomerApplicationStatus =
   | keyof typeof statusMap
   | CustomerInviteStatus;
+
+type ActionSuccess<T> = {
+  success: true;
+  data: T;
+  error: null;
+};
+
+type ActionError = {
+  success: false;
+  data: null;
+  error: {
+    message: string;
+  };
+};
+
+export type ActionResult<T> = ActionSuccess<T> | ActionError;

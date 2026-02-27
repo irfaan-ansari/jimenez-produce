@@ -21,7 +21,7 @@ export const MobileNav = ({
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger className="md:hidden">
+      <PopoverTrigger className="lg:hidden">
         {open ? <X /> : <Menu />}
       </PopoverTrigger>
       <PopoverContent

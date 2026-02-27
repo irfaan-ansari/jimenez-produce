@@ -2,6 +2,7 @@ import {
   ClipboardList,
   LayoutDashboard,
   MailPlus,
+  Shield,
   Tag,
   UserPlus,
   Users,
@@ -64,7 +65,7 @@ export const SIDEBAR_MENU = [
         query: { status: "new" },
       },
       {
-        label: "Active",
+        label: "Approved",
         href: "/admin/customers",
         color: "#22C55E",
         query: { status: "active" },
@@ -114,6 +115,7 @@ export const SIDEBAR_MENU = [
       },
     ],
   },
+
   {
     label: "Job Applications",
     icon: ClipboardList,
@@ -217,6 +219,37 @@ export const SIDEBAR_MENU = [
         href: "/admin/invites",
         color: "#EF4444",
         query: { status: "rejected" },
+      },
+    ],
+  },
+  {
+    label: "Catalog Requests",
+    icon: Shield,
+    href: "/admin/catalog-requests",
+    items: [
+      {
+        label: "All",
+        href: "/admin/catalog-requests",
+        color: "#A1A1AA",
+        query: { status: "" },
+      },
+      {
+        label: "Approved",
+        href: "/admin/catalog-requests",
+        color: "#22C55E",
+        query: { status: "approved" },
+      },
+      {
+        label: "Rejected",
+        href: "/admin/catalog-requests",
+        color: "#6366F1",
+        query: { status: "rejected" },
+      },
+      {
+        label: "Revoked",
+        href: "/admin/catalog-requests",
+        color: "#71717A",
+        query: { status: "revoked" },
       },
     ],
   },

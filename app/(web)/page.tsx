@@ -43,8 +43,10 @@ export default function Page() {
                   <h1 className="text-5xl/tight md:text-7xl/tight font-bold uppercase font-heading">
                     {hero.title}
                   </h1>
-                  <h2 className="text-xl max-w-lg">{hero.description}</h2>
-                  <p className="text-sm italic">{hero.badge}</p>
+                  <h2 className="text-xl font-medium max-w-lg">
+                    {hero.description}
+                  </h2>
+                  <p className="text-base italic">{hero.badge}</p>
                   <div className="flex flex-wrap gap-4">
                     <Button asChild size="xl" className="">
                       <Link href="/about">Apply for an Account</Link>
@@ -55,7 +57,7 @@ export default function Page() {
                       variant="outline"
                       className="text-foreground"
                     >
-                      <Link href="/about">View Products</Link>
+                      <Link href="/products">View Products</Link>
                     </Button>
                   </div>
                 </div>
@@ -124,7 +126,7 @@ export default function Page() {
         <Container>
           <div className="space-y-8">
             <div className="flex flex-col items-start gap-4 justify-between sm:flex-row sm:items-center">
-              <h2 className="text-4xl font-semibold font-heading">
+              <h2 className="text-4xl uppercase font-semibold font-heading">
                 Featured Categories
               </h2>
               <Button asChild size="xl">
@@ -211,10 +213,10 @@ export default function Page() {
                       <CircleCheck className="size-6 text-primary" />
                     </div>
                     <div className="space-y-1">
-                      <h4 className="text-xl font-medium font-heading">
+                      <h4 className="text-3xl uppercase font-semibold font-heading">
                         {item.title}
                       </h4>
-                      <p className="text-muted-foreground">
+                      <p className="text-muted-foreground text-lg font-medium">
                         {item.description}
                       </p>
                     </div>
@@ -255,7 +257,7 @@ export default function Page() {
                 <h2 className="text-4xl/tight relative sm:text-5xl/tight md:text-7xl/tight flex-1 font-heading font-bold uppercase text-primary-foreground">
                   Fast & Reliable Delivery
                 </h2>
-                <p className="text-white text-lg mt-4 relative">
+                <p className="text-white text-lg mt-4 relative font-medium">
                   We take pride in delivering our products with our own fleet of
                   trucks, operated exclusively by professional drivers. This
                   ensures the highest level of care, reliability, and efficiency
@@ -299,7 +301,7 @@ export default function Page() {
                       className="aspect-video object-cover"
                     />
                   </div>
-                  <h4 className="text-xl font-medium">{item.title}</h4>
+                  <h4 className="text-xl font-semibold">{item.title}</h4>
                 </div>
               ))}
             </div>

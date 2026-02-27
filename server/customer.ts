@@ -107,12 +107,6 @@ export const updateCustomer = async (
 
   const nextStatus = data.status;
 
-  const canUpdate = statusMap[
-    existing.status as keyof typeof statusMap
-  ].actions.some((action) => action.action === data.status);
-
-  if (!canUpdate) throw new Error("Invalid request data.");
-
   const [result] = await db
     .update(customer)
     .set({

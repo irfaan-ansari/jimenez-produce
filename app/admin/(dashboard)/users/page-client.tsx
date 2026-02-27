@@ -64,7 +64,7 @@ export const PageClient = () => {
                     <TableRow key={row.id}>
                       <TableCell className="p-4">
                         <div className="flex gap-3 items-center">
-                          <Avatar className="rounded-xl size-9 ring-2 ring-offset-1 ring-green-600/20">
+                          <Avatar className="rounded-xl after:hidden size-9 ring-2 ring-offset-1 ring-green-600/20">
                             <AvatarImage
                               src={row.image ?? undefined}
                               alt="profile image"

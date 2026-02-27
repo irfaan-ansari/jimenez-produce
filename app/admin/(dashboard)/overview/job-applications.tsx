@@ -48,9 +48,9 @@ export const JobApplications = () => {
                     <TableHead>Status</TableHead>
                   </TableRow>
                 </TableHeader>
-                {data?.data && data.data?.length > 0 ? (
-                  <TableBody>
-                    {data?.data?.map((cus) => {
+                <TableBody>
+                  {data?.data && data.data?.length > 0 ? (
+                    data?.data?.map((cus) => {
                       const map =
                         jobApplicationStatusMap[
                           cus.status as keyof typeof jobApplicationStatusMap
@@ -83,15 +83,15 @@ export const JobApplications = () => {
                           </TableCell>
                         </TableRow>
                       );
-                    })}
-                  </TableBody>
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan={5} className="h-24 text-center">
-                      <EmptyComponent variant="empty" />
-                    </TableCell>
-                  </TableRow>
-                )}
+                    })
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={5} className="h-24 text-center">
+                        <EmptyComponent variant="empty" />
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
               </Table>
             )}
           </div>

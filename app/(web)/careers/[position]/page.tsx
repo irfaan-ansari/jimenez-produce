@@ -1,15 +1,8 @@
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Info } from "lucide-react";
-import { OPEN_POSITIONS } from "@/lib/constants/web";
+import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Markdown from "@/components/markdown";
-import { Button } from "@/components/ui/button";
 import { Container } from "@/components/container";
-import { Metadata } from "next";
+import { OPEN_POSITIONS } from "@/lib/constants/web";
 
 export const generateMetadata = async ({
   params,
@@ -58,38 +51,19 @@ const ApplicationPage = async ({
       {/* page content */}
       <section className="mt-16">
         <Container>
-          <div className="grid grid-cols-8 gap-16">
-            <div className="col-span-8 lg:col-span-5 @container">
-              {/* requirments/additional details - phone */}
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="secondary"
-                    size="lg"
-                    className="w-full justify-start mb-16 md:hidden"
-                  >
-                    <Info />
-                    Learn More About This Role
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent
-                  side="bottom"
-                  align="center"
-                  className="w-(--radix-popover-trigger-width)"
-                >
-                  <Markdown content={content.details} />
-                </PopoverContent>
-              </Popover>
-
-              {/* form */}
-              <content.form position={content.title} />
-            </div>
-
+          <div className="grid grid-cols-8 gap-16 @container">
             {/* requirments/additional details - desktop */}
-            <div className="lg:col-span-3 hidden md:block">
+            <div className="col-span-8 lg:col-span-3 lg:order-2">
               <div className="bg-secondary p-6 sticky top-24">
                 <Markdown content={content.details} />
               </div>
+            </div>
+            <div className="col-span-8 lg:col-span-5">
+              {/* form */}
+              <content.form
+                position={content.title}
+                location={content.location}
+              />
             </div>
           </div>
         </Container>

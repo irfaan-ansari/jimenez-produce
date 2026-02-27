@@ -1,6 +1,7 @@
 import { Container } from "@/components/container";
 import { CustomerForm } from "@/components/customer-form/form";
 import { LanguageProvider } from "@/components/ui/language-selector";
+
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -9,7 +10,7 @@ export const metadata: Metadata = {
     "Apply for a foodservice distribution account and get reliable delivery of fresh produce and supplies for your restaurant or kitchen.",
 };
 
-const CustomerApplicationPage = () => {
+const CustomerApplicationPage = async () => {
   return (
     <LanguageProvider defaultLanguage="en">
       {/* page title*/}

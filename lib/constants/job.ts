@@ -26,6 +26,7 @@ export const applicantDetail: ApplicantDetailsType = {
   socialSecurity: "",
   availableStartDate: "",
   hasLegalRights: "yes",
+  location: "",
 };
 export const applicantAddress: ApplicantAddressType = {
   currentAddress: {

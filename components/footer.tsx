@@ -17,13 +17,18 @@ export const Footer = () => {
         <div className="grid grid-cols-9 gap-8">
           {/* branding */}
           <div className="col-span-9 md:col-span-3 space-y-8">
-            <Image
-              width={500}
-              height={500}
-              alt="Logo"
-              src={SITE_CONFIG.logo}
-              className="w-full max-w-28"
-            />
+            <Link
+              href="/"
+              className="rounded-full inline-block ring-2 ring-offset-background ring-primary/20"
+            >
+              <Image
+                width={100}
+                height={100}
+                alt="Logo"
+                src={SITE_CONFIG.logo}
+                className="w-full max-w-24 object-contain aspect-square"
+              />
+            </Link>
             <div className="flex flex-col gap-6">
               {CONTACT_SECTIONS.locations.map((loc) => (
                 <div className="space-y-2" key={loc.name}>

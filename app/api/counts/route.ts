@@ -4,7 +4,6 @@ import {
   customer,
   customerInvite,
   jobApplications,
-  jobPost,
   product,
 } from "@/lib/db/schema";
 import { getSession } from "@/server/auth";
@@ -43,14 +42,6 @@ const map = {
       })
       .from(jobApplications)
       .groupBy(jobApplications.status),
-  "job-posts": () =>
-    db
-      .select({
-        status: jobPost.status,
-        value: count(),
-      })
-      .from(jobPost)
-      .groupBy(jobPost.status),
 };
 export async function GET(req: NextRequest) {
   try {
