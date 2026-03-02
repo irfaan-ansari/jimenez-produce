@@ -23,7 +23,7 @@ export const CustomerInvite = ({ name, message }: CustomerApprovedProps) => {
         <Button
           href="https://jimenezproduce.com/apply"
           target="_blank"
-          className="bg-[#80b83a] p-4 text-white uppercase text-sm font-semibold inline-flex items-center mb-4"
+          className="bg-[#80b83a] p-4 text-white uppercase text-sm font-semibold text-center mb-4"
         >
           complete the application form
         </Button>

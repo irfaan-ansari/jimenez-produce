@@ -23,6 +23,7 @@ import {
 import { Textarea } from "../ui/textarea";
 import { toast } from "sonner";
 import { createInvite } from "@/server/customer";
+import { useQueryClient } from "@tanstack/react-query";
 
 const schema = z.object({
   name: z.string().min(1, "Enter name"),
@@ -55,7 +56,7 @@ export const CustomerInviteDialog = ({
   type: "invitation" | "request";
 }) => {
   const [open, setOpen] = useState(false);
-
+  const queryClient = useQueryClient();
   const config = CONFIG[type];
 
   const form = useAppForm({
@@ -80,6 +81,8 @@ export const CustomerInviteDialog = ({
       });
       if (success) {
         toast.success(config.success);
+        queryClient.invalidateQueries({ queryKey: ["invites"] });
+        queryClient.invalidateQueries({ queryKey: ["customers"] });
         setOpen(false);
         form.reset();
       } else {

@@ -16,6 +16,7 @@ import { Loader } from "lucide-react";
 import { Textarea } from "../ui/textarea";
 import { useAppForm } from "@/hooks/form-context";
 import { updateInvite } from "@/server/customer";
+import { useQueryClient } from "@tanstack/react-query";
 
 const schema = z.object({
   statusReason: z.string().min(1, "Select reason"),
@@ -66,7 +67,7 @@ export const CustomerInviteStatusDialog = ({
   variant: StatusVariant;
 }) => {
   const config = CUSTOMER_STATUS_DIALOG_CONFIG[variant];
-
+  const queryClient = useQueryClient();
   const form = useAppForm({
     defaultValues: {
       statusReason: "",
@@ -80,7 +81,12 @@ export const CustomerInviteStatusDialog = ({
     onSubmit: async ({ value }) => {
       const { success, error } = await updateInvite(id, { ...value });
       if (!success) toast.error(error.message);
-      else toast.success(config.successMessage);
+      else {
+        form.reset();
+        queryClient.invalidateQueries({ queryKey: ["invites"] });
+        setShowDialog(false);
+        toast.success(config.successMessage);
+      }
     },
   });
 

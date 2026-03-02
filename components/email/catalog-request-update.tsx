@@ -64,7 +64,7 @@ const CatalogRequestUpdate = ({
           <Button
             href={link}
             target="_blank"
-            className="bg-[#80b83a] rounded-lg p-4 text-white uppercase text-sm font-semibold inline-flex items-center mb-4"
+            className="bg-[#80b83a] rounded-lg p-4 text-white uppercase text-sm font-semibold text-center mb-4"
           >
             View Products
           </Button>

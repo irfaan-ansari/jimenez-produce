@@ -1,8 +1,8 @@
 "use client";
 import {
+  useTranslation,
   LanguageSelector,
   type Translations,
-  useTranslation,
 } from "../ui/language-selector";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { upload } from "@vercel/blob/client";
 import { useConfirm } from "@/hooks/use-confirm";
 import { useAppForm } from "@/hooks/form-context";
+import { createCustomer } from "@/server/customer";
 import { defaultValues } from "@/lib/constants/customer";
 import { steps } from "@/lib/constants/customer-form-steps";
 import { ArrowLeft, ArrowRight, Loader } from "lucide-react";
@@ -17,7 +18,6 @@ import translations from "@/lib/constants/translations.json";
 import { formOptions, useStore } from "@tanstack/react-form";
 import { customerSchema } from "@/lib/form-schema/customer-schema";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "../ui/tabs";
-import { createCustomer } from "@/server/customer";
 
 export const formOpts = formOptions({
   defaultValues: {

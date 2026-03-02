@@ -6,6 +6,7 @@ import { Button } from "../ui/button";
 import { useConfirm } from "@/hooks/use-confirm";
 import { statusMap } from "@/lib/constants/customer";
 import { PopoverXDrawer } from "../popover-x-drawer";
+import { useQueryClient } from "@tanstack/react-query";
 import { Eye, FileText, MoreVertical, Trash2 } from "lucide-react";
 import { CustomerStatusDialog } from "./customer-status-dialog";
 import { deleteCustomer, updateCustomer } from "@/server/customer";
@@ -20,8 +21,8 @@ interface Props {
 export const CustomerAction = ({ id, status, showView = true }: Props) => {
   const [open, setOpen] = useState(false);
   const confirm = useConfirm();
-
-  const [statusVariant, setStatusVariant] = useState("reject");
+  const queryClient = useQueryClient();
+  const [statusVariant, setStatusVariant] = useState("rejected");
   const [showStatusDialog, setShowStatusDialog] = useState(false);
 
   const availableActions = statusMap[status].actions;
@@ -40,8 +41,10 @@ export const CustomerAction = ({ id, status, showView = true }: Props) => {
               status: "active",
             });
 
-            if (success) toast.success("Application has been approved");
-            else toast.error(error.message);
+            if (success) {
+              queryClient.invalidateQueries({ queryKey: ["customers"] });
+              toast.success("Application has been approved");
+            } else toast.error(error.message);
           },
         });
 
@@ -59,20 +62,20 @@ export const CustomerAction = ({ id, status, showView = true }: Props) => {
               status: "under_review",
             });
 
-            if (success) toast.success("Application moved to review!");
-            else toast.error(error.message);
+            if (success) {
+              queryClient.invalidateQueries({ queryKey: ["customers"] });
+              toast.success("Application moved to review!");
+            } else toast.error(error.message);
           },
         });
 
         break;
       case "on_hold":
-        setStatusVariant("hold");
-        setShowStatusDialog(true);
-        break;
       case "rejected":
-        setStatusVariant("reject");
+        setStatusVariant(action);
         setShowStatusDialog(true);
         break;
+
       case "delete":
         confirm.delete({
           title: "Delete Application",
@@ -82,8 +85,10 @@ export const CustomerAction = ({ id, status, showView = true }: Props) => {
           action: async () => {
             const { success, error } = await deleteCustomer(id);
 
-            if (success) toast.success("Application has been deleted.");
-            else toast.error(error.message);
+            if (success) {
+              queryClient.invalidateQueries({ queryKey: ["customers"] });
+              toast.success("Application has been deleted.");
+            } else toast.error(error.message);
           },
           cancelLabel: "Cancel",
         });

@@ -5,6 +5,7 @@ import {
   Circle,
   CircleOff,
   Clock,
+  FileEdit,
   FileText,
   Send,
 } from "lucide-react";
@@ -75,7 +76,7 @@ export const businessAuthorization: BusinessAuthorizationType = {
 };
 
 export const defaultValues: CustomerFormType = {
-  step: 4,
+  step: 0,
   ...businessDetails,
   ...businessContacts,
   ...businessAdditionalContact,
@@ -162,8 +163,8 @@ export const statusMap = {
   },
   under_review: {
     label: "Under Review",
-    color: "#22C55E",
-    icon: CheckCircle,
+    color: "#8B5CF6",
+    icon: FileEdit,
     actions: [
       {
         label: "Approve",

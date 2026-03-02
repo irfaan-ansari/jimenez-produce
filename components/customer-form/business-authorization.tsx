@@ -34,7 +34,7 @@ export const Authorization = withForm({
           children={(field) => <field.FileField label={t[field.name]} />}
         />
         <form.AppField
-          name="dlFront"
+          name="dlBack"
           children={(field) => <field.FileField label={t[field.name]} />}
         />
 

@@ -19,7 +19,7 @@ const STATUS_MESSAGE = {
   under_review: "The customer account application is currently under review.",
   on_hold: "The customer account application has been placed on hold.",
   approved: "The customer account application has been approved.",
-  rejected: "The customer account application has been rejected.",
+  rejected: "The customer account application has been declined.",
 };
 export const CustomerAdmin = ({
   name,

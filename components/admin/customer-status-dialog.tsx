@@ -22,6 +22,7 @@ import { Loader } from "lucide-react";
 import { Textarea } from "../ui/textarea";
 import { useAppForm } from "@/hooks/form-context";
 import { updateCustomer } from "@/server/customer";
+import { useQueryClient } from "@tanstack/react-query";
 
 const schema = z.object({
   statusReason: z.string().min(1, "Select reason"),
@@ -43,14 +44,14 @@ const CUSTOMER_REJECT_OPTIONS = [
 ];
 
 const CUSTOMER_STATUS_DIALOG_CONFIG = {
-  reject: {
+  rejected: {
     title: "Reject Application",
     description: "Please provide a reason for rejecting this application.",
     submitLabel: "Reject Application",
     successMessage: "Application has been rejected!",
     status: "rejected",
   },
-  hold: {
+  on_hold: {
     title: "Hold Application",
     description:
       "Provide a reason for holding this application. The applicant will be notified.",
@@ -60,7 +61,7 @@ const CUSTOMER_STATUS_DIALOG_CONFIG = {
   },
 };
 
-type StatusVariant = "reject" | "hold";
+type StatusVariant = "rejected" | "on_hold";
 
 export const CustomerStatusDialog = ({
   id,
@@ -75,7 +76,7 @@ export const CustomerStatusDialog = ({
   variant: StatusVariant;
 }) => {
   const config = CUSTOMER_STATUS_DIALOG_CONFIG[variant];
-
+  const queryClient = useQueryClient();
   const form = useAppForm({
     defaultValues: {
       statusReason: "",
@@ -90,6 +91,7 @@ export const CustomerStatusDialog = ({
       const { success, error } = await updateCustomer(id, { ...value });
       if (success) {
         form.reset();
+        queryClient.invalidateQueries({ queryKey: ["customers"] });
         setShowDialog(false);
         toast.success(config.successMessage);
       } else {

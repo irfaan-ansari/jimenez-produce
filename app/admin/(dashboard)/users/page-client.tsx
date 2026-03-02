@@ -138,9 +138,9 @@ const DeleteAction = ({ id }: { id: string }) => {
   const router = useRouter();
   const handleDelete = () => {
     error({
-      title: "Permanently Delete User?",
+      title: "Delete User?",
       description:
-        "This action will permanently delete this user and remove all associated data. This cannot be undone.",
+        "This action will permanently delete this user. This cannot be undone.",
       actionLabel: "Delete User",
       cancelLabel: "Cancel",
       action: async () => {

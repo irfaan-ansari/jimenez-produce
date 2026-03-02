@@ -15,7 +15,7 @@ import {
   DialogTrigger,
 } from "../ui/dialog";
 import z from "zod";
-import React from "react";
+import React, { useRef } from "react";
 import { toast } from "sonner";
 import Image from "next/image";
 import { useState } from "react";
@@ -35,14 +35,13 @@ import {
 import { Check, Loader, Trash2, X } from "lucide-react";
 
 import { ProductSelectType } from "@/lib/db/schema";
-import MultipleSelector from "@/components/multiple-select";
 
 const schema = z.object({
   identifier: z.string(),
   title: z.string().min(1, "Enter title"),
-  description: z.string().min(1, "Enter description"),
+  description: z.string(),
   categories: z.array(z.string()).min(1, "Select categories"),
-  price: z.string().min(1, "Enter price"),
+  price: z.string(),
   offerPrice: z.string(),
   status: z.string().min(1, "Select status"),
   image: z.string(),
@@ -355,20 +354,37 @@ export const ProductDialog = ({
 };
 
 const CategorySelector = ({ field }: { field: AnyFieldApi }) => {
+  const ref = useRef<HTMLDivElement>(null);
   const [value, setValue] = useState("");
   const [open, setOpen] = useState(false);
   const { data } = useCategories();
+
   const filtered =
     data?.data?.filter((i) =>
       i?.toLowerCase().includes(value?.toLowerCase())
     ) ?? [];
 
+  React.useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (!ref.current) return;
+
+      if (!ref.current.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   return (
-    <div className="relative">
+    <div className="relative" ref={ref}>
       <Input
         className="rounded-xl"
         onFocus={() => setOpen(true)}
-        onBlur={() => setTimeout(() => setOpen(false), 100)}
         onChange={(e) => setValue(e.target.value)}
         value={value}
         onKeyDown={(e) => {
@@ -380,7 +396,7 @@ const CategorySelector = ({ field }: { field: AnyFieldApi }) => {
         }}
       />
       <div
-        className={`absolute overflow-auto max-h-36 z-5 **:rounded-xl shadow-xl h-auto **:justify-between no-scrolllbar p-2 flex-col gap-0.5 top-[calc(100%+2px)] inset-x-0 border rounded-2xl bg-white ${
+        className={`absolute no-scrollbar overflow-auto max-h-36 z-5 **:rounded-xl shadow-xl h-auto **:justify-between no-scrolllbar p-2 flex-col gap-0.5 top-[calc(100%+2px)] inset-x-0 border rounded-2xl bg-white ${
           open ? "flex" : "hidden"
         }`}
       >

@@ -56,7 +56,7 @@ export const CustomerApproved = ({ name, company }: CustomerApprovedProps) => {
           <Button
             href="https://order.jimenezproduce.com"
             target="_blank"
-            className="bg-[#80b83a] p-4 text-white uppercase text-sm font-semibold text-center justify-center flex items-center"
+            className="bg-[#80b83a] p-4 text-white uppercase text-sm font-semibold text-center"
           >
             Place Your Order
           </Button>

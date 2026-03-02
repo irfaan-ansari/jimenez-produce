@@ -9,6 +9,7 @@ import { PopoverXDrawer } from "../popover-x-drawer";
 import { inviteStatusMap } from "@/lib/constants/customer";
 import { deleteInvite, updateInvite } from "@/server/customer";
 import { CustomerInviteStatusDialog } from "./customer-invite-status-dialog";
+import { useQueryClient } from "@tanstack/react-query";
 
 type Status = keyof typeof inviteStatusMap;
 
@@ -20,7 +21,7 @@ export const CustomerInviteAction = ({ id, status }: Props) => {
   const confirm = useConfirm();
   const [open, setOpen] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
-
+  const queryClient = useQueryClient();
   const [variant, setVariant] = useState("revoked");
 
   const availableActions =
@@ -46,6 +47,7 @@ export const CustomerInviteAction = ({ id, status }: Props) => {
               status: "approved",
             });
             if (success) {
+              queryClient.invalidateQueries({ queryKey: ["invites"] });
               toast.success("Request approved successfully.");
             } else {
               toast.error(error.message);
@@ -67,6 +69,7 @@ export const CustomerInviteAction = ({ id, status }: Props) => {
               status: "new",
             });
             if (success) {
+              queryClient.invalidateQueries({ queryKey: ["invites"] });
               toast.success("Request moved to new successfully");
             } else {
               toast.error(error.message);
@@ -85,6 +88,7 @@ export const CustomerInviteAction = ({ id, status }: Props) => {
           action: async () => {
             const { success, error } = await deleteInvite(id);
             if (success) {
+              queryClient.invalidateQueries({ queryKey: ["invites"] });
               toast.success("Application deleted successfully");
             } else {
               toast.error(error.message);

@@ -38,8 +38,8 @@ export const createCustomer = handleAction(async (data: CustomerInsertType) => {
   };
 
   const [result] = await db.insert(customer).values(values).returning();
-  revalidatePath("/admin/customers");
 
+  waitUntil(sendApplicationStatusEmails(result));
   waitUntil(
     linkCustomerInvite({
       id: `${result.id}`,
@@ -109,8 +109,6 @@ export const updateCustomer = handleAction(
       })
       .where(eq(customer.id, id))
       .returning();
-
-    revalidatePath("/admin/customers");
 
     waitUntil(
       linkCustomerInvite({
@@ -193,8 +191,6 @@ export const createInvite = handleAction(
     };
 
     const [result] = await db.insert(customerInvite).values(values).returning();
-    revalidatePath("/admin/invites");
-    revalidatePath("/admin/catalog-requests");
 
     if (data.type === "request") {
       // send application request received email
@@ -249,10 +245,6 @@ export const updateInvite = handleAction(
       .set({ ...data, reviewedBy: session.user.id, reviewedAt: new Date() })
       .where(eq(customerInvite.id, id))
       .returning();
-
-    // revalidate path
-    revalidatePath("/admin/invites");
-    revalidatePath("/admin/catalog-requests");
 
     if (result.status === "rejected" || result.status === "revoked") {
       // send rejected | revoked email
@@ -313,8 +305,6 @@ export const deleteInvite = handleAction(async (id: number) => {
     .delete(customerInvite)
     .where(eq(customerInvite.id, id))
     .returning();
-
-  revalidatePath("/admin/invites");
 
   return result;
 });

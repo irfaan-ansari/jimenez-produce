@@ -71,7 +71,7 @@ export async function sendApplicationStatusEmails({
       template: CustomerNew,
       extraVars: {},
     },
-    approved: {
+    active: {
       subject: "Application Approved",
       template: CustomerApproved,
       extraVars: {},
