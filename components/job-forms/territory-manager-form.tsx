@@ -22,7 +22,7 @@ import {
   driverFormSchema,
 } from "@/lib/form-schema/job-schema";
 import { upload } from "@vercel/blob/client";
-import { useCreateJobApplication } from "@/hooks/use-job-application";
+import { createJobApplication } from "@/server/job";
 
 const defaultValues: CareersFormType = {
   ...applicantAddress,
@@ -44,8 +44,6 @@ export const TerritoryManagerForm = ({
 }) => {
   const router = useRouter();
   const confirm = useConfirm();
-
-  const { mutate, isPending } = useCreateJobApplication();
 
   const form = useAppForm({
     defaultValues: {
@@ -98,6 +96,7 @@ export const TerritoryManagerForm = ({
 
         const values = {
           ...rest,
+          cvUrl: "",
           drivingLicenseFrontUrl: dlFront.url,
           drivingLicenseBackUrl: dlBack.url,
           dotFrontUrl: dtFront.url,
@@ -107,22 +106,19 @@ export const TerritoryManagerForm = ({
           signatureUrl: sign.url,
         };
 
-        mutate(
-          { ...values, cvUrl: "" },
-          {
-            onError: (error) => toast.error(error.message),
-            onSuccess: () => {
-              confirm.success({
-                title: "Application Submitted Successfully",
-                description: `Your application has been successfully submitted and is now under review. 
-                If additional information is required, our team will contact you.`,
-                actionLabel: "Back to home",
-                action: () => router.push("/"),
-              });
-              form.reset();
-            },
-          }
-        );
+        const { success, error } = await createJobApplication(values);
+        if (success) {
+          confirm.success({
+            title: "Application Submitted Successfully",
+            description: `Your application has been successfully submitted and is now under review. 
+            If additional information is required, our team will contact you.`,
+            actionLabel: "Back to home",
+            action: () => router.push("/"),
+          });
+          form.reset();
+        } else {
+          toast.error(error.message);
+        }
       }
     },
   });
@@ -190,19 +186,6 @@ export const TerritoryManagerForm = ({
             </Button>
           )}
 
-          {/* preview button*/}
-          {step === steps.length - 1 && (
-            <Button
-              size="xl"
-              className="min-w-32"
-              type="button"
-              variant="secondary"
-            >
-              <Eye />
-              Preview
-            </Button>
-          )}
-
           {/* submit button */}
           <form.Subscribe
             children={({ isSubmitting }) => (
@@ -210,11 +193,9 @@ export const TerritoryManagerForm = ({
                 size="xl"
                 className="min-w-32"
                 type="submit"
-                disabled={isSubmitting || isPending}
+                disabled={isSubmitting}
               >
-                {(isPending || isSubmitting) && (
-                  <Loader className="animate-spin" />
-                )}
+                {isSubmitting && <Loader className="animate-spin" />}
                 {step < steps.length - 1 ? "Next" : "Submit"}
                 {step < steps.length && <ArrowRight />}
               </Button>

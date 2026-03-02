@@ -40,7 +40,7 @@ export const steps: StepsType = [
   {
     title: "License Information",
     description:
-      "Enter your driver’s license details, including state of issue and expiration date.",
+      "Enter your license details, including state of issue and expiration date.",
     component: ApplicantLicense,
     schema: licenseSchema,
   },

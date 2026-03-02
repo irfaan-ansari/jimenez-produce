@@ -1,108 +1,69 @@
-import {
-  Body,
-  Container,
-  Head,
-  Heading,
-  Hr,
-  Html,
-  Preview,
-  pixelBasedPreset,
-  Section,
-  Tailwind,
-  Text,
-} from "@react-email/components";
-import { Header } from "./header";
+import { Section, Text } from "@react-email/components";
+
+import { EmailTemplate } from "./email-template";
 
 interface Props {
   name: string;
-  companyName: string;
+  company: string;
 }
 
-export const CustomerNew = ({ name, companyName }: Props) => {
-  const previewText = `Your Application to Jimenez Produce Has Been Received`;
-
+export const CustomerNew = ({ name, company }: Props) => {
   return (
-    <Html>
-      <Head />
-      <Tailwind
-        config={{
-          presets: [pixelBasedPreset],
-        }}
-      >
-        <Body className="mx-auto my-auto px-4 font-sans bg-white">
-          <Preview>{previewText}</Preview>
+    <EmailTemplate template="customer" heading="Application Submitted">
+      <Section className="p-6">
+        <Text className="text-xl text-black font-semibold mb-2">
+          Hello {name || "Name"},
+        </Text>
 
-          <Container className="mx-auto my-20 max-w-[560px] border border-[#eaeaea] border-solid">
-            <Header />
-            <Section className="px-6 py-6">
-              <Hr className="my-0" />
-              <Heading className="text-2xl mb-6 text-black font-bold">
-                Application Received
-              </Heading>
+        <Text className="text-lg">
+          Thank you for submitting your account application with{" "}
+          <strong>Jimenez Produce</strong>, your trusted fresh produce
+          distributor.
+        </Text>
 
-              <Text className="text-black font-semibold text-base">
-                Hello {name || "Applicant"},
-              </Text>
+        <Text className="text-lg mb-0">
+          Our Customer Accounts Department has received your application and
+          will review it within 24–48 business hours.
+        </Text>
 
-              <Text className="text-base text-[#404040] mt-2">
-                Thank you for submitting your account application with{" "}
-                <strong>Jimenez Produce</strong>, your trusted fresh produce
-                distributor.
-              </Text>
+        <Section className="border border-[#f4f5f6] p-6 mt-6">
+          <Text className="text-lg uppercase font-semibold text-[#80b83a] mt-0">
+            Next steps:
+          </Text>
 
-              <Section className="bg-[#f9f9f9] border border-[#e0e0e0] rounded-lg p-4 mb-6">
-                <Text className="text-base font-semibold mb-1">
-                  Officer Name:
-                </Text>
-                <Text className="text-base text-[#404040] mb-2">
-                  {name || "N/A"}
-                </Text>
+          <Text className="text-base font-semibold mb-0">
+            • Our team reviews your submitted documentation. <br />
+            • Once approved, you will receive a confirmation email. <br />•
+            After approval, you can start placing orders for fresh produce,
+            dairy, beverages, dry goods, and specialty foodservice items.
+          </Text>
+        </Section>
+        <Section className="border border-[#f4f5f6] p-6 mt-6">
+          <Text className="text-lg uppercase font-semibold text-[#80b83a]">
+            Ordering & Delivery:
+          </Text>
 
-                <Text className="text-base font-semibold mb-1">
-                  Company Name:
-                </Text>
-                <Text className="text-base text-[#404040]">
-                  {companyName || "N/A"}
-                </Text>
-              </Section>
-
-              <Text className="text-base text-[#404040] mt-2">
-                Our Customer Accounts Department has received your application
-                and will review it within 24–48 business hours.
-              </Text>
-
-              <Hr className="my-6" />
-
-              <Text className="text-base font-semibold mb-2">Next Steps:</Text>
-
-              <Text className="text-base mt-0 text-[#404040]">
-                • Our team reviews your submitted documentation. <br />
-                • Once approved, you will receive a confirmation email. <br />•
-                After approval, you can start placing orders for fresh produce,
-                dairy, beverages, dry goods, and specialty foodservice items.
-              </Text>
-              <Hr className="my-6" />
-
-              <Text className="text-base mt-6 text-[#404040]">
-                We distribute produce, dairy, dry goods, beverages, and
-                specialty foodservice products throughout the Gulf Coast region.
-                <br />
-                <br />
-                <strong>We look forward to reviewing your application.</strong>
-              </Text>
-
-              <Text className="text-base mt-10 text-[#404040]">
-                Best regards,
-                <br />
-                <strong className="text-black">Jimenez Produce</strong>
-                <br />
-                Customer Accounts Department
-              </Text>
-            </Section>
-          </Container>
-        </Body>
-      </Tailwind>
-    </Html>
+          <Text className="text-lg">
+            <strong>*</strong> Orders must be placed the day before delivery
+            <br />
+            <strong>*</strong> Daily cutoff time: 3:00 PM
+            <br />
+            <strong>*</strong> Deliveries are made the following scheduled
+            delivery day
+            <br />
+            <strong>*</strong> Orders placed after 3:00 PM will move to the next
+            available delivery date
+          </Text>
+        </Section>
+        <Text className="text-lg">
+          We distribute produce, dairy, dry goods, beverages, and specialty
+          foodservice products throughout the Gulf Coast region.
+        </Text>
+        <Text className="font-semibold text-lg">
+          We look forward to reviewing your application.
+        </Text>
+      </Section>
+    </EmailTemplate>
   );
 };
 

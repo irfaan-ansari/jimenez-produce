@@ -23,6 +23,9 @@ import {
   ChevronDownIcon,
   Calendar as CalendarIcon,
   Eraser,
+  Paperclip,
+  Trash2,
+  Upload,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -276,4 +279,62 @@ const SignatureField = ({
   );
 };
 
-export { TextField, DateField, SelectField, SignatureField, RadioField };
+const FileField = ({ label, className }: FieldProps) => {
+  const field = useFieldContext<File>();
+
+  const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
+  return (
+    <Field className={className}>
+      <FieldLegend variant="label" className="m-0">
+        {label}
+      </FieldLegend>
+      <FieldLabel
+        htmlFor={field.name}
+        className={`h-12 px-4 border border-primary border-dashed bg-primary/20`}
+      >
+        {field.state.value ? (
+          <>
+            <Paperclip className="size-4 shrink-0" />
+            <span className="truncate">{field.state.value?.name}</span>
+            <Button
+              variant="outline"
+              type="button"
+              size="icon-sm"
+              className="ml-auto"
+              onClick={(e) => {
+                e.preventDefault();
+                field.handleChange(undefined as any);
+              }}
+            >
+              <Trash2 />
+            </Button>
+          </>
+        ) : (
+          <>
+            <Upload className="size-4" /> Upload
+          </>
+        )}
+
+        <Input
+          type="file"
+          id={field.name}
+          onChange={(e) => {
+            field.handleChange(e.target.files?.[0] as File);
+          }}
+          className="sr-only"
+          accept="image/jpeg, image/png, application/pdf"
+        />
+      </FieldLabel>
+
+      {isInvalid && <FieldError errors={field.state.meta.errors} />}
+    </Field>
+  );
+};
+export {
+  TextField,
+  DateField,
+  SelectField,
+  SignatureField,
+  RadioField,
+  FileField,
+};

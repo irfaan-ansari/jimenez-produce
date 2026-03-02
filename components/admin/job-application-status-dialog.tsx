@@ -21,11 +21,12 @@ import { Button } from "../ui/button";
 import { Loader } from "lucide-react";
 import { Textarea } from "../ui/textarea";
 import { useAppForm } from "@/hooks/form-context";
-import { useUpdateJobApplication } from "@/hooks/use-job-application";
+
 import {
   JOB_APPLICATION_REJECT_OPTIONS,
   JOB_STATUS_DIALOG_CONFIG,
 } from "@/lib/constants/job";
+import { updateJobApplication } from "@/server/job";
 
 const schema = z.object({
   statusReason: z.string().min(1, "Select reason"),
@@ -50,7 +51,6 @@ export const JobApplicationStatusDialog = ({
 }) => {
   const config = JOB_STATUS_DIALOG_CONFIG[variant];
 
-  const { mutate, isPending } = useUpdateJobApplication();
   const form = useAppForm({
     defaultValues: {
       statusReason: variant === "interview" ? "Interview" : "",
@@ -62,22 +62,15 @@ export const JobApplicationStatusDialog = ({
       onSubmit: schema,
     },
     onSubmit: async ({ value }) => {
-      mutate(
-        {
-          id,
-          ...value,
-        },
-        {
-          onError: (error) => {
-            toast.error(error.message);
-          },
-          onSuccess: () => {
-            form.reset();
-            setShowDialog(false);
-            toast.success(config.successMessage);
-          },
-        }
-      );
+      const { success, error } = await updateJobApplication(id, value);
+
+      if (success) {
+        form.reset();
+        setShowDialog(false);
+        toast.success(config.successMessage);
+      } else {
+        toast.error(error.message);
+      }
     },
   });
 
@@ -185,17 +178,18 @@ export const JobApplicationStatusDialog = ({
               Cancel
             </Button>
             <form.Subscribe
-              selector={({ canSubmit }) => ({
+              selector={({ canSubmit, isSubmitting }) => ({
                 canSubmit,
+                isSubmitting,
               })}
-              children={({ canSubmit }) => (
+              children={({ canSubmit, isSubmitting }) => (
                 <Button
                   type="submit"
                   size="xl"
                   className="rounded-xl"
-                  disabled={!canSubmit || isPending}
+                  disabled={!canSubmit || isSubmitting}
                 >
-                  {isPending ? (
+                  {isSubmitting ? (
                     <Loader className="animate-spin" />
                   ) : (
                     config.submitLabel

@@ -10,6 +10,7 @@ export async function fetcher<T>(url: string): Promise<T> {
 
     return data;
   } catch (error: any) {
+    console.error(error);
     throw new Error(
       error?.message ?? "Network error. Please check your connection."
     );

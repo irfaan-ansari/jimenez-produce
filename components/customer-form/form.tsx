@@ -10,7 +10,6 @@ import { useRouter } from "next/navigation";
 import { upload } from "@vercel/blob/client";
 import { useConfirm } from "@/hooks/use-confirm";
 import { useAppForm } from "@/hooks/form-context";
-import { useCreateCustomer } from "@/hooks/use-customer";
 import { defaultValues } from "@/lib/constants/customer";
 import { steps } from "@/lib/constants/customer-form-steps";
 import { ArrowLeft, ArrowRight, Loader } from "lucide-react";
@@ -18,6 +17,7 @@ import translations from "@/lib/constants/translations.json";
 import { formOptions, useStore } from "@tanstack/react-form";
 import { customerSchema } from "@/lib/form-schema/customer-schema";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "../ui/tabs";
+import { createCustomer } from "@/server/customer";
 
 export const formOpts = formOptions({
   defaultValues: {
@@ -39,7 +39,6 @@ export const CustomerForm = () => {
     translations as Translations,
     "en"
   );
-  const { isPending, mutate } = useCreateCustomer();
 
   const form = useAppForm({
     ...formOpts,
@@ -67,29 +66,26 @@ export const CustomerForm = () => {
       );
       const { certificate, dlFront, dlBack, signature, ...rest } = value;
       // submit form
-      mutate(
-        {
-          ...rest,
-          certificateUrl: cert.url,
-          dlFrontUrl: front.url,
-          dlBackUrl: back.url,
-          signatureUrl: sig.url,
-        },
+      const { success, error } = await createCustomer({
+        ...rest,
+        certificateUrl: cert.url,
+        dlFrontUrl: front.url,
+        dlBackUrl: back.url,
+        signatureUrl: sig.url,
+      });
 
-        {
-          onError: (error) => toast.error(error.message),
-          onSuccess: () => {
-            confirm.success({
-              title: "Application Submitted Successfully",
-              description: `Your application has been successfully submitted and is now under review. 
-                If additional information is required, our team will contact you.`,
-              actionLabel: "Back to home",
-              action: () => router.push("/"),
-            });
-            form.reset();
-          },
-        }
-      );
+      if (success) {
+        confirm.success({
+          title: "Application Submitted Successfully",
+          description: `Your application has been successfully submitted and is now under review. 
+            If additional information is required, our team will contact you.`,
+          actionLabel: "Back to home",
+          action: () => router.push("/"),
+        });
+        form.reset();
+      } else {
+        toast.error(error.message);
+      }
     },
   });
 
@@ -166,11 +162,9 @@ export const CustomerForm = () => {
                 size="xl"
                 className="min-w-32"
                 type="submit"
-                disabled={isPending}
+                disabled={isSubmitting}
               >
-                {(isPending || isSubmitting) && (
-                  <Loader className="animate-spin" />
-                )}
+                {isSubmitting && <Loader className="animate-spin" />}
                 {step < steps.length - 1 ? "Next" : "Submit"}
                 {step < steps.length && <ArrowRight />}
               </Button>

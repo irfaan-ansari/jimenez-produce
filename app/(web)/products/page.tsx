@@ -1,10 +1,13 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Metadata } from "next";
-import { getProducts } from "@/lib/product";
+
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/container";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+
+import { fetcher } from "@/lib/helper/fetcher";
+import { ProductResponse } from "@/lib/types";
+import { Pagination } from "@/components/admin/pagination";
 
 export const metadata: Metadata = {
   title: "Catalog",
@@ -19,38 +22,37 @@ const CatalogPage = async ({
 }) => {
   const query = (await searchParams) || {};
 
-  const currentPage = parseInt(query.page || "1");
+  const response = await fetcher<ProductResponse & { access: string }>(
+    `${process.env.BETTER_AUTH_URL}/api/products`
+  );
 
-  const { data, pagination, hasAccess } = await getProducts(currentPage, 20);
-
-  const { page, totalItems, totalPages, limit } = pagination;
-
-  const startItem = (page - 1) * limit + 1;
-  const endItem = Math.min(page * limit, totalItems);
+  const { data, access, pagination } = response;
 
   return (
     <section className="my-16">
       <Container>
         <div className="flex gap-6 justify-between items-center mb-6">
           <span className="font-medium font-heading uppercase">
-            Products {totalItems}
+            Products {pagination.total}
           </span>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 md:gap-8">
           {data.map((product) => (
             <div
-              key={`${product.title}-${product.item}`}
+              key={product.identifier}
               className="rounded-[0.5rem] hover:[&_img]:scale-110 bg-linear-to-br from-secondary via-background to-secondary  relative shadow-sm"
             >
-              <div className="rounded-[0.5rem] overflow-hidden relative">
-                <Image
-                  width={600}
-                  height={900}
-                  src={product.image}
-                  alt={product.title}
-                  loading="lazy"
-                  className="relative z-1 w-full object-contain transition ease-out aspect-square rounded-lg"
-                />
+              <div className="rounded-[0.5rem] overflow-hidden relative aspect-square">
+                {product.image && (
+                  <Image
+                    width={600}
+                    height={900}
+                    src={product.image}
+                    alt={product.title}
+                    loading="lazy"
+                    className="relative z-1 w-full object-contain transition ease-out aspect-square rounded-lg"
+                  />
+                )}
               </div>
               <div className="p-4 mt-auto">
                 <h3 className="font-medium text-sm lg:text-base">
@@ -62,47 +64,7 @@ const CatalogPage = async ({
         </div>
 
         {/* pagination */}
-        {hasAccess ? (
-          <div className="flex gap-6 items-center justify-center mt-16">
-            <Button
-              asChild
-              size="lg"
-              className="min-w-36"
-              variant={page > 1 ? "default" : "secondary"}
-            >
-              {page > 1 ? (
-                <Link
-                  href={page === 2 ? "/catalog" : `/catalog?page=${page - 1}`}
-                >
-                  <ArrowLeft /> Previous
-                </Link>
-              ) : (
-                <span>
-                  <ArrowLeft /> Previous
-                </span>
-              )}
-            </Button>
-
-            <Button
-              asChild
-              size="lg"
-              className="min-w-36"
-              variant={page < totalPages ? "default" : "secondary"}
-            >
-              {page < totalPages ? (
-                <Link href={`/catalog?page=${page + 1}`}>
-                  Next
-                  <ArrowRight />
-                </Link>
-              ) : (
-                <span>
-                  Next
-                  <ArrowRight />
-                </span>
-              )}
-            </Button>
-          </div>
-        ) : (
+        {access === "no_access" ? (
           <div className="mt-16 py-16 px-6 lg:px-16 bg-primary">
             <div className="space-y-8">
               <div className="space-y-4 text-center max-w-2xl mx-auto text-background">
@@ -126,6 +88,14 @@ const CatalogPage = async ({
               </div>
             </div>
           </div>
+        ) : (
+          <Pagination
+            page={pagination.page}
+            limit={pagination.limit}
+            total={pagination.total}
+            totalPages={pagination.totalPages}
+            onPageChange={(e) => console.log(e)}
+          />
         )}
       </Container>
     </section>

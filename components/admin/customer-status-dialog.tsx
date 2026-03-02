@@ -21,11 +21,7 @@ import { Button } from "../ui/button";
 import { Loader } from "lucide-react";
 import { Textarea } from "../ui/textarea";
 import { useAppForm } from "@/hooks/form-context";
-import { useUpdateCustomer } from "@/hooks/use-customer";
-import {
-  CUSTOMER_REJECT_OPTIONS,
-  CUSTOMER_STATUS_DIALOG_CONFIG,
-} from "@/lib/constants/customer";
+import { updateCustomer } from "@/server/customer";
 
 const schema = z.object({
   statusReason: z.string().min(1, "Select reason"),
@@ -33,6 +29,36 @@ const schema = z.object({
   internalNotes: z.string(),
   status: z.string(),
 });
+
+const CUSTOMER_REJECT_OPTIONS = [
+  "Incomplete application",
+  "Invalid information",
+  "Eligibility not met",
+  "Policy violation",
+  "Duplicate application",
+  "Incorrect details",
+  "Documents unclear",
+  "Requires correction",
+  "Verification failed",
+];
+
+const CUSTOMER_STATUS_DIALOG_CONFIG = {
+  reject: {
+    title: "Reject Application",
+    description: "Please provide a reason for rejecting this application.",
+    submitLabel: "Reject Application",
+    successMessage: "Application has been rejected!",
+    status: "rejected",
+  },
+  hold: {
+    title: "Hold Application",
+    description:
+      "Provide a reason for holding this application. The applicant will be notified.",
+    submitLabel: "Put on Hold",
+    successMessage: "Application has been placed on hold.",
+    status: "on_hold",
+  },
+};
 
 type StatusVariant = "reject" | "hold";
 
@@ -50,8 +76,6 @@ export const CustomerStatusDialog = ({
 }) => {
   const config = CUSTOMER_STATUS_DIALOG_CONFIG[variant];
 
-  const { mutate, isPending } = useUpdateCustomer();
-
   const form = useAppForm({
     defaultValues: {
       statusReason: "",
@@ -63,22 +87,14 @@ export const CustomerStatusDialog = ({
       onSubmit: schema,
     },
     onSubmit: async ({ value }) => {
-      mutate(
-        {
-          id,
-          ...value,
-        },
-        {
-          onError: (error) => {
-            toast.error(error.message);
-          },
-          onSuccess: () => {
-            form.reset();
-            setShowDialog(false);
-            toast.success(config.submitLabel);
-          },
-        }
-      );
+      const { success, error } = await updateCustomer(id, { ...value });
+      if (success) {
+        form.reset();
+        setShowDialog(false);
+        toast.success(config.successMessage);
+      } else {
+        toast.error(error.message);
+      }
     },
   });
 
@@ -186,17 +202,18 @@ export const CustomerStatusDialog = ({
               Cancel
             </Button>
             <form.Subscribe
-              selector={({ canSubmit }) => ({
+              selector={({ canSubmit, isSubmitting }) => ({
                 canSubmit,
+                isSubmitting,
               })}
-              children={({ canSubmit }) => (
+              children={({ canSubmit, isSubmitting }) => (
                 <Button
                   type="submit"
                   size="xl"
                   className="rounded-xl"
-                  disabled={!canSubmit || isPending}
+                  disabled={!canSubmit || isSubmitting}
                 >
-                  {isPending ? (
+                  {isSubmitting ? (
                     <Loader className="animate-spin" />
                   ) : (
                     config.submitLabel

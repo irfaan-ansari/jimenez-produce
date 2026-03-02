@@ -1,86 +1,63 @@
-import {
-  Body,
-  Container,
-  Head,
-  Heading,
-  Hr,
-  Html,
-  pixelBasedPreset,
-  Section,
-  Tailwind,
-  Text,
-} from "@react-email/components";
-import { Header } from "./header";
+import { EmailTemplate } from "./email-template";
+import { Section, Text } from "@react-email/components";
+
+interface JobRejectedProps {
+  name: string;
+  position: string;
+  reason: string;
+  detailedReason: string;
+}
 
 export const JobRejected = ({
   name,
   position,
   reason,
   detailedReason,
-}: {
-  name: string;
-  position: string;
-  reason: string;
-  detailedReason: string;
-}) => {
+}: JobRejectedProps) => {
   return (
-    <Html>
-      <Head />
-      <Tailwind
-        config={{
-          presets: [pixelBasedPreset],
-        }}
-      >
-        <Body className="mx-auto my-auto px-4 font-sans bg-white">
-          <Container className="mx-auto my-20 max-w-[560px] border border-[#eaeaea] border-solid">
-            {/* header */}
-            <Header />
+    <EmailTemplate template="customer" heading="Application Status Update">
+      <Section className="p-6">
+        <Text className="text-xl text-black font-semibold mb-2">
+          Hello {name || "Applicant"},
+        </Text>
 
-            {/* body */}
-            <Section className="px-6">
-              <Hr className="m-0" />
-              <Heading className="text-2xl my-6 text-black font-bold">
-                Application Status – Jimenez Produce
-              </Heading>
+        <Text className="text-lg">
+          Thank you for your interest in the{" "}
+          <span className="font-semibold inline-block uppercase">
+            {position}
+          </span>{" "}
+          position with Jimenez Produce.
+        </Text>
 
-              <Text className="text-black font-semibold text-base">
-                Hello {name},
-              </Text>
-              <Text className="text-base">
-                Thank you for your interest in the {position} position with
-                Jimenez Produce.
-              </Text>
-              <Text className="text-base">
-                After careful consideration, we have decided to move forward
-                with other candidates at this time.
-              </Text>
+        <Text className="text-lg mt-4">
+          After careful consideration, we regret to inform you that we will not
+          be moving forward with your application at this time.
+        </Text>
 
-              <Section className="bg-[#f9f9f9] border border-[#e0e0e0] rounded-lg p-4 mb-6">
-                <Text className="text-base font-semibold mb-2">Reason:</Text>
-                <Text className="text-base mt-0">{reason}</Text>
-                <Text className="text-base font-semibold mb-2">Details:</Text>
-                <Text className="text-base mt-0">{detailedReason}</Text>
-              </Section>
+        <Section className="border border-[#f4f5f6] p-6 mt-6">
+          <Text className="text-lg uppercase font-semibold text-[#80b83a]">
+            Application Review Summary
+          </Text>
 
-              <Text className="text-base">
-                We appreciate the time you invested in applying and encourage
-                you to apply for future openings that match your qualifications.
-              </Text>
-              <Text className="text-base font-semibold">
-                We wish you the best in your continued career pursuits.
-              </Text>
-              <Text className="text-base mt-10 text-[#404040]">
-                Respectfully,
-                <br />
-                <strong className="text-black"> Jimenez Produce</strong>
-                <br />
-                Human Resources
-              </Text>
-            </Section>
-          </Container>
-        </Body>
-      </Tailwind>
-    </Html>
+          <Text className="text-lg mt-2 font-semibold">Reason:</Text>
+          <Text className="text-lg mt-1">{reason}</Text>
+
+          {detailedReason && (
+            <Text className="text-lg mt-1">{detailedReason}</Text>
+          )}
+        </Section>
+
+        <Text className="text-lg mt-6">
+          We sincerely appreciate the time and effort you invested in your
+          application. We encourage you to apply for future opportunities that
+          align with your qualifications and experience.
+        </Text>
+
+        <Text className="font-semibold text-lg mt-6">
+          We wish you continued success in your professional endeavors.
+        </Text>
+      </Section>
+    </EmailTemplate>
   );
 };
 

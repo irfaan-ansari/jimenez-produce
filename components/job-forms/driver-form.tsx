@@ -17,12 +17,12 @@ import { steps } from "@/lib/constants/driver-form-steps";
 import { useAppForm } from "@/hooks/form-context";
 import { driverFormSchema, DriverFormType } from "@/lib/form-schema/job-schema";
 import { useStore } from "@tanstack/react-form";
-import { ArrowLeft, ArrowRight, Eye, Loader } from "lucide-react";
+import { ArrowLeft, ArrowRight, Loader } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
-import { useCreateJobApplication } from "@/hooks/use-job-application";
 import { useConfirm } from "@/hooks/use-confirm";
 import { upload } from "@vercel/blob/client";
 import { useRouter } from "next/navigation";
+import { createJobApplication } from "@/server/job";
 
 const defaultValues: DriverFormType = {
   ...applicantAccidentHistory,
@@ -46,7 +46,7 @@ export const DriverForm = ({
   location: string;
 }) => {
   const router = useRouter();
-  const { mutate, isPending } = useCreateJobApplication();
+
   const confirm = useConfirm();
   const form = useAppForm({
     defaultValues: {
@@ -99,6 +99,7 @@ export const DriverForm = ({
 
         const values = {
           ...rest,
+          cvUrl: "",
           drivingLicenseFrontUrl: dlFront.url,
           drivingLicenseBackUrl: dlBack.url,
           dotFrontUrl: dtFront.url,
@@ -108,24 +109,19 @@ export const DriverForm = ({
           signatureUrl: sign.url,
         };
 
-        mutate(
-          // @ts-expect-error
-
-          { values },
-          {
-            onError: (error) => toast.error(error.message),
-            onSuccess: () => {
-              confirm.success({
-                title: "Application Submitted Successfully",
-                description: `Your application has been successfully submitted and is now under review. 
-                If additional information is required, our team will contact you.`,
-                actionLabel: "Back to home",
-                action: () => router.push("/"),
-              });
-              form.reset();
-            },
-          }
-        );
+        const { success, error } = await createJobApplication(values);
+        if (success) {
+          confirm.success({
+            title: "Application Submitted Successfully",
+            description: `Your application has been successfully submitted and is now under review. 
+            If additional information is required, our team will contact you.`,
+            actionLabel: "Back to home",
+            action: () => router.push("/"),
+          });
+          form.reset();
+        } else {
+          toast.error(error.message);
+        }
       }
     },
   });
@@ -193,19 +189,6 @@ export const DriverForm = ({
             </Button>
           )}
 
-          {/* preview button*/}
-          {step === steps.length - 1 && (
-            <Button
-              size="xl"
-              className="min-w-32"
-              type="button"
-              variant="secondary"
-            >
-              <Eye />
-              Preview
-            </Button>
-          )}
-
           {/* submit button */}
           <form.Subscribe
             children={({ isSubmitting }) => (
@@ -213,11 +196,9 @@ export const DriverForm = ({
                 size="xl"
                 className="min-w-32"
                 type="submit"
-                disabled={isPending || isSubmitting}
+                disabled={isSubmitting}
               >
-                {(isPending || isSubmitting) && (
-                  <Loader className="animate-spin" />
-                )}
+                {isSubmitting && <Loader className="animate-spin" />}
                 {step < steps.length - 1 ? "Next" : "Submit"}
                 {step < steps.length && <ArrowRight />}
               </Button>

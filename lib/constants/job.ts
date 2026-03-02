@@ -2,7 +2,6 @@ import {
   CheckCircle,
   Circle,
   Clock,
-  FileEdit,
   MessageCircle,
   XCircle,
 } from "lucide-react";
@@ -204,7 +203,14 @@ export const US_STATES = [
   "District of Columbia",
 ];
 
-export const CDL_CLASSES = ["Non-CDL", "Class A", "Class B", "Class C"];
+export const CDL_CLASSES = [
+  "Class C",
+  "Class D",
+  "CDL A",
+  "CDL B",
+  "Chauffeur's License",
+  "State-issued Identification Card",
+];
 
 export const CDL_ENDORSEMENTS = [
   "None",
@@ -244,7 +250,7 @@ export const jobApplicationStatusMap = {
         icon: MessageCircle,
       },
       {
-        label: "Reject Application",
+        label: "Reject",
         action: "rejected",
         icon: XCircle,
       },
@@ -266,14 +272,14 @@ export const jobApplicationStatusMap = {
         icon: CheckCircle,
       },
       {
-        label: "Reject Application",
+        label: "Reject",
         action: "rejected",
         icon: XCircle,
       },
     ],
   },
   pending: {
-    label: "Pending",
+    label: "Agreement",
     color: "#3B82F6",
     icon: Clock,
     actions: [
@@ -283,7 +289,7 @@ export const jobApplicationStatusMap = {
         icon: CheckCircle,
       },
       {
-        label: "Reject Application",
+        label: "Reject",
         action: "rejected",
         icon: XCircle,
       },
@@ -301,7 +307,7 @@ export const jobApplicationStatusMap = {
     icon: XCircle,
     actions: [
       {
-        label: "Move to Review",
+        label: "Move to New",
         action: "new",
         icon: CheckCircle,
       },
@@ -339,32 +345,5 @@ export const JOB_STATUS_DIALOG_CONFIG = {
     submitLabel: "Send",
     successMessage: "Interview details sent successfully.",
     status: "interview",
-  },
-};
-
-export const jobPostStatusMap = {
-  draft: {
-    label: "Draft",
-    color: "#F59E0B",
-    icon: FileEdit,
-    actions: [
-      {
-        label: "Publish",
-        action: "published",
-        icon: CheckCircle,
-      },
-    ],
-  },
-  published: {
-    label: "Published",
-    color: "#22C55E",
-    icon: CheckCircle,
-    actions: [
-      {
-        label: "Move to Draft",
-        action: "draft",
-        icon: FileEdit,
-      },
-    ],
   },
 };

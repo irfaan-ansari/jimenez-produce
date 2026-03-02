@@ -6,21 +6,13 @@ import {
   getCategories,
   updateProduct,
 } from "@/server/product";
-import { ProductInsertType, ProductSelectType } from "@/lib/db/schema";
+import { ProductInsertType } from "@/lib/db/schema";
+import { ProductResponse } from "@/lib/types";
 
 type ProductMutateResponse = {
   id: number;
 };
 
-type ProductResponse = {
-  data: ProductSelectType[];
-  pagination: {
-    total: number;
-    page: number;
-    totalPages: number;
-    limit: number;
-  };
-};
 export const useProducts = (query: string) => {
   return useQuery({
     queryKey: ["products", query],

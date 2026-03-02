@@ -249,18 +249,23 @@ export const customerInvite = pgTable(
     phone: text("phone"),
     email: text("email").notNull().unique(),
     companyName: text("company_name"),
+    type: text("type"), // Invitation / Request
     companyType: text("company_type"),
-    status: text("status").notNull().default("invited"), // applied/ invited / converted / rejected
+    status: text("status").notNull().default("invited"), // new / applied / invited / approved / rejected / revoked
     message: text("message"),
-    ipAddress: text("ip_address"),
-    userAgent: text("user_agent"),
     customerId: integer("customer_id").references(() => customer.id, {
       onDelete: "set null",
     }),
-    createdBy: text("created_by").references(() => user.id, {
+    reviewedAt: timestamp("reviewed_at"),
+    reviewedBy: text("reviewed_by").references(() => user.id, {
       onDelete: "set null",
     }),
-    statusUpdateBy: text("status_updated_by").references(() => user.id, {
+    statusReason: text("status_reason"),
+    statusDetails: text("status_details"),
+    internalNotes: text("internal_notes"),
+    ipAddress: text("ip_address"),
+    userAgent: text("user_agent"),
+    createdBy: text("created_by").references(() => user.id, {
       onDelete: "set null",
     }),
     createdAt: timestamp("created_at").defaultNow(),
@@ -468,26 +473,3 @@ export const applicantRelations = relations(jobApplications, ({ one }) => ({
 
 export type JobApplicationInsertType = InferInsertModel<typeof jobApplications>;
 export type JobApplicationSelectType = InferSelectModel<typeof jobApplications>;
-
-export const catalogAccess = pgTable(
-  "catalog_access",
-  {
-    id: serial("id").primaryKey(),
-    name: text("name").notNull(),
-    businessName: text("business_name").notNull(),
-    businessType: text("business_type"),
-    email: text("email").notNull(),
-    phone: text("phone").notNull(),
-    message: text("message"),
-    status: text("status").notNull().default("new"), // new / approved / rejected / revoked
-    createdAt: timestamp("created_at").defaultNow(),
-    updatedAt: timestamp("updated_at")
-      .defaultNow()
-      .$onUpdate(() => /* @__PURE__ */ new Date())
-      .notNull(),
-  },
-  (table) => [index("catalog_access_status_idx").on(table.status)]
-);
-
-export type CatalogAccessInsertType = InferInsertModel<typeof catalogAccess>;
-export type CatalogAccessSelectType = InferSelectModel<typeof catalogAccess>;

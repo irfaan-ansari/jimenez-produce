@@ -20,24 +20,23 @@ export const ApplicantExperience = withForm({
                 {field.state.value.map((subField, i) => {
                   return (
                     <React.Fragment key={i}>
-                      <div className="p-4 border-l-4 border-blue-500 bg-secondary font-medium text-base @2xl:col-span-2 flex justify-between items-center">
-                        Employement {i + 1}
-                        {i > 0 && (
+                      {i > 0 && (
+                        <div className="p-4 border-l-4 border-blue-500 bg-secondary font-medium text-base @2xl:col-span-2 flex justify-between items-center">
                           <Button
                             variant="outline"
                             size="icon"
                             type="button"
                             onClick={() => field.removeValue(i)}
+                            className="ml-auto"
                           >
                             <Trash2 />
                           </Button>
-                        )}
-                      </div>
-
+                        </div>
+                      )}
                       <form.AppField
                         name={`experience[${i}].employerName`}
                         children={(field) => (
-                          <field.TextField label="Epmloyer Name" />
+                          <field.TextField label="Employer Name" />
                         )}
                       />
                       <form.AppField
@@ -84,8 +83,8 @@ export const ApplicantExperience = withForm({
                             label="While employed here, were you subject to the Federal Motor Carrier Safety Regulations?"
                             className="@2xl:col-span-2"
                             options={[
-                              { label: "Yes", value: "yes" },
                               { label: "No", value: "no" },
+                              { label: "Yes", value: "yes" },
                             ]}
                           />
                         )}
@@ -97,8 +96,8 @@ export const ApplicantExperience = withForm({
                             label="Was the job designated as a safety-sensitive function subject to DOT alcohol/controlled substances testing (49 CFR Part 40)?"
                             className="@2xl:col-span-2"
                             options={[
-                              { label: "Yes", value: "yes" },
                               { label: "No", value: "no" },
+                              { label: "Yes", value: "yes" },
                             ]}
                           />
                         )}

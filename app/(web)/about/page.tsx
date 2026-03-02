@@ -10,13 +10,15 @@ import { CTA } from "@/components/cta";
 import Markdown from "@/components/markdown";
 import { Marquee } from "@/components/ui/marquee";
 import { Container } from "@/components/container";
-import { Card, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { AtSign, MapPinned, Phone } from "lucide-react";
 import {
   ABOUT_SECTIONS,
   CONTACT_SECTIONS,
   COVERAGE_LOCATIONS,
 } from "@/lib/constants/web";
+import { AnimatedCircularProgressBar } from "@/components/ui/animated-circular-progress-bar";
+import { OrbitingCircles } from "@/components/ui/orbiting-circles";
 
 export const metadata: Metadata = {
   title: "About",
@@ -24,6 +26,9 @@ export const metadata: Metadata = {
     "Learn about our commitment to reliable foodservice distribution, fresh produce sourcing, and dependable delivery for Gulf Coast restaurants.",
 };
 
+const uniqueCodes = [
+  ...new Set(COVERAGE_LOCATIONS.map((item) => item.label.slice(-2))),
+];
 const AboutPage = () => {
   return (
     <>
@@ -88,7 +93,7 @@ const AboutPage = () => {
       <section className="mt-16">
         <Container>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
-            <div className="bg-secondary">
+            <div className="bg-background">
               <Image
                 src="/hero-2.png"
                 alt="What we do"
@@ -115,22 +120,47 @@ const AboutPage = () => {
               <div className="grid grid-cols-2 gap-8">
                 <Card className="ring-0 shadow-sm">
                   <div className="space-y-6 px-6">
-                    <CardTitle className="text-3xl font-bold text-primary">
-                      150+
-                    </CardTitle>
-                    <p className="text-base text-muted-foreground">
+                    <CardTitle className="text-3xl uppercase font-semibold font-heading">
                       Active Customers
-                    </p>
+                    </CardTitle>
+                    <div className="flex h-56 items-center justify-center aspect-aquare">
+                      <AnimatedCircularProgressBar
+                        min={0}
+                        max={200}
+                        value={150}
+                        gaugePrimaryColor="#80b83a"
+                        gaugeSecondaryColor="rgba(0, 0, 0, 0.1)"
+                      />
+                    </div>
                   </div>
                 </Card>
                 <Card className="ring-0 shadow-sm">
                   <div className="space-y-6 px-6">
-                    <CardTitle className="text-3xl font-bold text-primary">
-                      10+
-                    </CardTitle>
-                    <p className="text-base text-muted-foreground">
+                    <CardTitle className="text-3xl uppercase font-semibold font-heading">
                       Coverage Areas
-                    </p>
+                    </CardTitle>
+                    <CardContent className="relative  flex h-56 mt-auto w-full text-primary-foreground flex-col items-center justify-center overflow-hidden">
+                      <OrbitingCircles radius={80} path={true} iconSize={20}>
+                        {uniqueCodes.map((code) => (
+                          <span
+                            key={code}
+                            className="bg-primary font-heading font-medium shrink-0 rounded-full size-8 inline-flex items-center justify-center"
+                          >
+                            {code}
+                          </span>
+                        ))}
+                      </OrbitingCircles>
+                      <OrbitingCircles radius={40} reverse speed={2}>
+                        {uniqueCodes.map((code) => (
+                          <span
+                            key={code}
+                            className="bg-primary shrink-0 font-heading font-medium rounded-full size-8 inline-flex items-center justify-center"
+                          >
+                            {code}
+                          </span>
+                        ))}
+                      </OrbitingCircles>
+                    </CardContent>
                   </div>
                 </Card>
               </div>

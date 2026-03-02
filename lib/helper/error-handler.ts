@@ -1,27 +1,30 @@
 import { DrizzleQueryError } from "drizzle-orm";
+import { ActionResult } from "../types";
 
-type ActionResult<T> =
-  | { success: true; data: T }
-  | { success: false; message: string };
-
-export const asyncHandler =
-  <T extends (...args: any[]) => Promise<any>>(fn: T) =>
-  async (
-    ...args: Parameters<T>
-  ): Promise<ActionResult<Awaited<ReturnType<T>>>> => {
+export function handleAction<Args extends unknown[], T>(
+  action: (...args: Args) => Promise<T>
+) {
+  return async (...args: Args): Promise<ActionResult<T>> => {
     try {
-      const data = await fn(...args);
+      const data = await action(...args);
 
-      return data;
-    } catch (error: unknown) {
-      console.error("Unhandled Error:", error);
+      return {
+        success: true,
+        data,
+        error: null,
+      };
+    } catch (error) {
+      console.error("Error:", error);
+      const err =
+        error instanceof DrizzleQueryError
+          ? { message: "Unexpected error occurred. Please try again." }
+          : { message: (error as Error).message || "Something went wrong." };
 
-      if (error instanceof DrizzleQueryError) {
-        throw new Error("Internal server error");
-      }
-
-      if (error instanceof Error) throw error;
-
-      throw new Error("Internal server error");
+      return {
+        success: false,
+        data: null,
+        error: err,
+      };
     }
   };
+}

@@ -1,4 +1,12 @@
-import { CheckCircle, Lock, Archive } from "lucide-react";
+import {
+  CheckCircle,
+  Lock,
+  Archive,
+  FileEdit,
+  CircleOff,
+  Ban,
+  Circle,
+} from "lucide-react";
 
 export const STATUS_MAP = {
   active: {

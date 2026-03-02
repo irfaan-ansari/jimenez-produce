@@ -21,21 +21,42 @@ import {
   FieldLabel,
 } from "../ui/field";
 import { Textarea } from "../ui/textarea";
-import { useCreateInvite } from "@/hooks/use-customer";
 import { toast } from "sonner";
+import { createInvite } from "@/server/customer";
 
 const schema = z.object({
   name: z.string().min(1, "Enter name"),
   companyName: z.string().min(1, "Enter company name"),
   phone: z.string().min(1, "Enter phone"),
   email: z.email("Enter valid email"),
+  type: z.string().min(1, "Enter message"),
   message: z.string().min(1, "Enter message"),
 });
 
-export const CustomerInviteDialog = () => {
+const CONFIG = {
+  invitation: {
+    button: "Invite Customer",
+    title: "Customer Invitations",
+    description: "Invite a business to become a customer.",
+    success: "Customer invited successfully",
+  },
+  request: {
+    button: "Assign Access",
+    title: "Catalog Access",
+    description:
+      "Assign catalog access to a customer, allowing them to view your product catalog.",
+    success: "Catalog access granted.",
+  },
+};
+
+export const CustomerInviteDialog = ({
+  type,
+}: {
+  type: "invitation" | "request";
+}) => {
   const [open, setOpen] = useState(false);
 
-  const { mutate, isPending } = useCreateInvite();
+  const config = CONFIG[type];
 
   const form = useAppForm({
     defaultValues: {
@@ -44,6 +65,7 @@ export const CustomerInviteDialog = () => {
       phone: "",
       email: "",
       message: "",
+      type: type as string,
     },
     validators: {
       onSubmit: schema,
@@ -51,22 +73,18 @@ export const CustomerInviteDialog = () => {
     onSubmit: async ({ value }) => {
       const [firstName, lastName] = value.name.split(" ");
 
-      mutate(
-        {
-          ...value,
-          firstName,
-          lastName,
-          status: "invited",
-        },
-        {
-          onSuccess: () => {
-            toast.success("Invitation sent successfully.");
-            setOpen(false);
-            form.reset();
-          },
-          onError: (err) => toast.error(err.message),
-        }
-      );
+      const { success, error } = await createInvite({
+        ...value,
+        firstName,
+        lastName,
+      });
+      if (success) {
+        toast.success(config.success);
+        setOpen(false);
+        form.reset();
+      } else {
+        toast.error(error.message);
+      }
     },
   });
 
@@ -74,17 +92,16 @@ export const CustomerInviteDialog = () => {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button size="xl" className="rounded-xl ml-auto min-w-32 px-8">
-          <PlusCircle /> Invite Customer
+          <PlusCircle /> {config.button}
         </Button>
       </DialogTrigger>
       <DialogContent className="ring-ring/10 rounded-2xl sm:max-w-lg py-8">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold">
-            Invite Customer
+            {config.title}
           </DialogTitle>
           <DialogDescription className="text-base">
-            Send an invitation to the business to join as a customer and get
-            started.
+            {config.description}
           </DialogDescription>
         </DialogHeader>
         <form
@@ -184,12 +201,12 @@ export const CustomerInviteDialog = () => {
                   type="submit"
                   size="xl"
                   className="rounded-xl"
-                  disabled={isSubmitting || !canSubmit || isPending}
+                  disabled={isSubmitting || !canSubmit}
                 >
-                  {isSubmitting || isPending ? (
+                  {isSubmitting ? (
                     <Loader className="animate-spin" />
                   ) : (
-                    "Send Invitation"
+                    config.button
                   )}
                 </Button>
               )}

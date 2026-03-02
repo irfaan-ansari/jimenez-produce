@@ -1,113 +1,81 @@
-import {
-  Body,
-  Container,
-  Head,
-  Heading,
-  Hr,
-  Html,
-  Preview,
-  pixelBasedPreset,
-  Section,
-  Tailwind,
-  Text,
-  Button,
-} from "@react-email/components";
-import { Header } from "./header";
+import { EmailTemplate } from "./email-template";
+import { Section, Text, Button } from "@react-email/components";
 
-interface CustomerApprovedProps {
-  name?: string;
+interface JobAgreementProps {
+  name: string;
   email: string;
-  position?: string;
+  position: string;
 }
 
-export const JobAgreement = ({
-  name,
-  email,
-  position,
-}: CustomerApprovedProps) => {
-  const previewText = ` Next Steps – Employment Application`;
-
+export const JobAgreement = ({ name, email, position }: JobAgreementProps) => {
   return (
-    <Html>
-      <Head />
-      <Tailwind
-        config={{
-          presets: [pixelBasedPreset],
-        }}
-      >
-        <Body className="mx-auto my-auto px-4 font-sans bg-white">
-          <Preview>{previewText}</Preview>
-          <Container className="mx-auto my-20 max-w-[560px] border border-[#eaeaea] border-solid">
-            {/* header */}
-            <Header />
+    <EmailTemplate
+      template="customer"
+      heading="Next Steps – Employment Application"
+    >
+      <Section className="p-6">
+        <Text className="text-xl text-black font-semibold mb-2">
+          Hello {name || "Applicant"},
+        </Text>
 
-            {/* body */}
-            <Section className="px-6">
-              <Hr className="m-0" />
-              <Heading className="text-2xl my-6 text-black font-bold">
-                Next Steps – Employment Application
-              </Heading>
+        <Text className="text-lg">
+          Thank you for your interest in the{" "}
+          <span className="font-semibold inline-block uppercase">
+            {position}
+          </span>{" "}
+          position with Jimenez Produce.
+        </Text>
 
-              <Text className="text-black font-semibold text-base">
-                Hello {name},
-              </Text>
-              <Text className="text-base text-[#404040]">
-                Thank you for your interest in the {position} position with
-                Jimenez Produce.
-                <br />
-                We would like to move forward with your application.
-                <br />
-              </Text>
+        <Text className="text-lg mt-4">
+          We are pleased to move forward with your application. Please complete
+          the required onboarding steps through our secure portal.
+        </Text>
 
-              <Text className="text-base text-[#404040]">
-                Please complete the onboarding steps through the portal:
-              </Text>
+        <Section className="border border-[#f4f5f6] p-6 mt-6">
+          <Text className="text-lg uppercase font-semibold text-[#80b83a]">
+            Required Onboarding Steps
+          </Text>
 
-              <Button
-                href={`https://jimenezproduce.com/onboarding?applicant=${email}`}
-                target="_blank"
-                className="bg-[#80b83a] rounded-lg px-4 text-white uppercase text-sm font-semibold inline-flex items-center h-10 mb-4"
-              >
-                Completed onboarding
-              </Button>
+          <Text className="text-lg mt-2">
+            <strong>*</strong> Complete and sign all employment documents
+            <br />
+            <strong>*</strong> Review and sign company agreements (PDF required)
+            <br />
+            <strong>*</strong> Submit identification documents
+            <br />
+            <strong>*</strong> Provide consent for background screening
+          </Text>
 
-              <Text className="text-base font-semibold mb-2">
-                Required Steps:
-              </Text>
-              <Text className="text-base mt-0">
-                * Complete and sign all employment documents
-                <br />
-                * Review and sign company agreements (PDF required)
-                <br />
-                * Submit identification documents <br />* Consent to background
-                screening
-              </Text>
+          <Button
+            href={`https://jimenezproduce.com/onboarding?applicant=${email}`}
+            target="_blank"
+            className="bg-[#80b83a] p-4 text-white uppercase text-sm font-semibold text-center justify-center flex items-center mt-6"
+          >
+            Complete Onboarding
+          </Button>
+        </Section>
 
-              <Text className="text-base">
-                <strong>Please note:</strong> Employment is contingent upon
-                successful completion
-              </Text>
-              <Text className="text-base mt-0">
-                * Background check
-                <br />
-                * Verification of eligibility to work
-                <br />* Signed company policies and agreements delivery day
-              </Text>
-              <Text className="text-base font-semibold">
-                We look forward to welcoming you to the team.
-              </Text>
-              <Text className="text-base mt-10 text-[#404040]">
-                Sincerely,
-                <br />
-                <strong className="text-black"> Jimenez Produce</strong>
-                <br />
-                HR Department
-              </Text>
-            </Section>
-          </Container>
-        </Body>
-      </Tailwind>
-    </Html>
+        <Section className="border border-[#f4f5f6] p-6 mt-6">
+          <Text className="text-lg uppercase font-semibold text-[#80b83a]">
+            Important Notice
+          </Text>
+
+          <Text className="text-lg mt-2">
+            Employment is contingent upon successful completion of:
+            <br />
+            <strong>*</strong> Background check
+            <br />
+            <strong>*</strong> Verification of eligibility to work
+            <br />
+            <strong>*</strong> Signed company policies and agreements
+          </Text>
+        </Section>
+
+        <Text className="font-semibold text-lg mt-6">
+          We look forward to welcoming you to the team.
+        </Text>
+      </Section>
+    </EmailTemplate>
   );
 };
 

@@ -69,13 +69,11 @@ const columns: ColumnDef<JobApplicationSelectType>[] = [
     id: "position",
     header: "Position",
     cell: ({ row }) => {
-      const { position, createdAt } = row.original;
+      const { position, createdAt, location } = row.original;
       return (
         <div className="space-y-1">
           <div className="font-medium">{position}</div>
-          <div className="text-sm text-muted-foreground">
-            Applied: {format(new Date(createdAt!), "dd MMM yyyy")}
-          </div>
+          <div className="text-sm text-muted-foreground">{location}</div>
         </div>
       );
     },

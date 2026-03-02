@@ -17,11 +17,11 @@ export const ApplicantEducation = withForm({
         </div>
         <form.AppField
           name={`highSchool.institutionName`}
-          children={(field) => <field.TextField label="Institution Name" />}
+          children={(field) => <field.TextField label="Name" />}
         />
         <form.AppField
           name={`highSchool.fieldOfStudy`}
-          children={(field) => <field.TextField label="Course of Study" />}
+          children={(field) => <field.TextField label="School" />}
         />
         <form.AppField
           name={`highSchool.location`}
@@ -54,11 +54,11 @@ export const ApplicantEducation = withForm({
           }}
         />
         <div className="p-4 border-l-4 border-blue-500 bg-secondary font-medium text-base @2xl:col-span-2">
-          Collage
+          College
         </div>
         <form.AppField
           name={`collage.institutionName`}
-          children={(field) => <field.TextField label="Institution Name" />}
+          children={(field) => <field.TextField label="Name" />}
         />
         <form.AppField
           name={`collage.fieldOfStudy`}
@@ -104,7 +104,7 @@ export const ApplicantEducation = withForm({
                   return (
                     <React.Fragment key={i}>
                       <div className="p-4 border-l-4 border-blue-500 bg-secondary font-medium text-base @2xl:col-span-2 flex justify-between items-center">
-                        Other Education {i + 1}
+                        Other Education
                         <Button
                           variant="outline"
                           size="icon"
@@ -117,9 +117,7 @@ export const ApplicantEducation = withForm({
 
                       <form.AppField
                         name={`educations[${i}].institutionName`}
-                        children={(field) => (
-                          <field.TextField label="Institution Name" />
-                        )}
+                        children={(field) => <field.TextField label="Name" />}
                       />
                       <form.AppField
                         name={`educations[${i}].fieldOfStudy`}

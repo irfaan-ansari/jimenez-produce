@@ -6,9 +6,9 @@ import { Button } from "../ui/button";
 import { useConfirm } from "@/hooks/use-confirm";
 import { statusMap } from "@/lib/constants/customer";
 import { PopoverXDrawer } from "../popover-x-drawer";
-import { Eye, FileText, Mail, MoreVertical, Trash2 } from "lucide-react";
+import { Eye, FileText, MoreVertical, Trash2 } from "lucide-react";
 import { CustomerStatusDialog } from "./customer-status-dialog";
-import { useUpdateCustomer, useDeleteCustomer } from "@/hooks/use-customer";
+import { deleteCustomer, updateCustomer } from "@/server/customer";
 
 type Status = keyof typeof statusMap;
 
@@ -20,8 +20,6 @@ interface Props {
 export const CustomerAction = ({ id, status, showView = true }: Props) => {
   const [open, setOpen] = useState(false);
   const confirm = useConfirm();
-  const { mutate: accept } = useUpdateCustomer();
-  const { mutate: remove } = useDeleteCustomer();
 
   const [statusVariant, setStatusVariant] = useState("reject");
   const [showStatusDialog, setShowStatusDialog] = useState(false);
@@ -30,10 +28,6 @@ export const CustomerAction = ({ id, status, showView = true }: Props) => {
 
   const handleAction = (action: string) => {
     switch (action) {
-      case "rejected":
-        setStatusVariant("reject");
-        setShowStatusDialog(true);
-        break;
       case "active":
         confirm.info({
           title: "Approve Application",
@@ -41,46 +35,42 @@ export const CustomerAction = ({ id, status, showView = true }: Props) => {
             "Approving this application will activate the customer account and send a notification to the customer.",
           actionLabel: "Yes, Approve",
           cancelLabel: "Cancel",
-          action: () =>
-            new Promise((res) =>
-              accept(
-                { id, status: "active" },
-                {
-                  onError: (e) => toast.error(e.message),
-                  onSuccess: (res) =>
-                    toast.success("Application has been approved"),
-                  onSettled: () => res(),
-                }
-              )
-            ),
+          action: async () => {
+            const { success, error } = await updateCustomer(id, {
+              status: "active",
+            });
+
+            if (success) toast.success("Application has been approved");
+            else toast.error(error.message);
+          },
         });
 
         break;
 
-      case "new":
+      case "under_review":
         confirm.info({
           title: "Move to Review?",
           description:
-            "This will move the application back to the review stage and update its status to 'New'. You can continue reviewing and make changes before approval.",
+            "This will move the application back to the review stage and update its status to 'Under Review'.",
           actionLabel: "Yes, Move",
           cancelLabel: "Cancel",
-          action: () =>
-            new Promise((res) =>
-              accept(
-                { id, status: "new" },
-                {
-                  onError: (e) => toast.error(e.message),
-                  onSuccess: (res) =>
-                    toast.success("Application moved to review!"),
-                  onSettled: () => res(),
-                }
-              )
-            ),
+          action: async () => {
+            const { success, error } = await updateCustomer(id, {
+              status: "under_review",
+            });
+
+            if (success) toast.success("Application moved to review!");
+            else toast.error(error.message);
+          },
         });
 
         break;
       case "on_hold":
         setStatusVariant("hold");
+        setShowStatusDialog(true);
+        break;
+      case "rejected":
+        setStatusVariant("reject");
         setShowStatusDialog(true);
         break;
       case "delete":
@@ -89,15 +79,12 @@ export const CustomerAction = ({ id, status, showView = true }: Props) => {
           description:
             "This action will permanently remove the application and this cannot be undone.",
           actionLabel: "Yes, Delete",
-          action: () =>
-            new Promise((res) =>
-              remove(id, {
-                onError: (e) => toast.error(e.message),
-                onSuccess: (res) =>
-                  toast.success("Application has been deleted."),
-                onSettled: () => res(),
-              })
-            ),
+          action: async () => {
+            const { success, error } = await deleteCustomer(id);
+
+            if (success) toast.success("Application has been deleted.");
+            else toast.error(error.message);
+          },
           cancelLabel: "Cancel",
         });
         break;
@@ -143,9 +130,6 @@ export const CustomerAction = ({ id, status, showView = true }: Props) => {
         </Button>
       ))}
 
-      <Button variant="ghost" onClick={() => handleAction("send-pdf")}>
-        <Mail /> Send PDF
-      </Button>
       <Button variant="ghost" asChild>
         <a href={`/api/customers/${id}/pdf`} target="_blank">
           <FileText /> Download PDF

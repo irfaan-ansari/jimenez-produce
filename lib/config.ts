@@ -65,6 +65,12 @@ export const SIDEBAR_MENU = [
         query: { status: "new" },
       },
       {
+        label: "Under Review",
+        href: "/admin/customers",
+        color: "#8B5CF6",
+        query: { status: "under_review" },
+      },
+      {
         label: "Approved",
         href: "/admin/customers",
         color: "#22C55E",
@@ -160,31 +166,6 @@ export const SIDEBAR_MENU = [
       },
     ],
   },
-  // {
-  //   label: "Job Posts",
-  //   icon: Briefcase,
-  //   href: "/admin/job-posts",
-  //   items: [
-  //     {
-  //       label: "All",
-  //       href: "/admin/job-posts",
-  //       color: "#A1A1AA",
-  //       query: { status: "" },
-  //     },
-  //     {
-  //       label: "Published",
-  //       href: "/admin/job-posts",
-  //       color: "#22C55E",
-  //       query: { status: "published" },
-  //     },
-  //     {
-  //       label: "Draft",
-  //       href: "/admin/job-posts",
-  //       color: "#F59E0B",
-  //       query: { status: "draft" },
-  //     },
-  //   ],
-  // },
   {
     label: "Customer Invitations",
     icon: MailPlus,
@@ -199,7 +180,7 @@ export const SIDEBAR_MENU = [
       {
         label: "Invited",
         href: "/admin/invites",
-        color: "#22C55E",
+        color: "#F59E0B",
         query: { status: "invited" },
       },
       {
@@ -213,12 +194,6 @@ export const SIDEBAR_MENU = [
         href: "/admin/invites",
         color: "#22C55E",
         query: { status: "converted" },
-      },
-      {
-        label: "Rejected",
-        href: "/admin/invites",
-        color: "#EF4444",
-        query: { status: "rejected" },
       },
     ],
   },
@@ -234,6 +209,12 @@ export const SIDEBAR_MENU = [
         query: { status: "" },
       },
       {
+        label: "New",
+        href: "/admin/invites",
+        color: "#F59E0B",
+        query: { status: "new" },
+      },
+      {
         label: "Approved",
         href: "/admin/catalog-requests",
         color: "#22C55E",
@@ -242,7 +223,7 @@ export const SIDEBAR_MENU = [
       {
         label: "Rejected",
         href: "/admin/catalog-requests",
-        color: "#6366F1",
+        color: "#EF4444",
         query: { status: "rejected" },
       },
       {

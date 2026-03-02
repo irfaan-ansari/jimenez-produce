@@ -6,18 +6,18 @@ import { Button } from "@/components/ui/button";
 
 import { useAppForm } from "@/hooks/form-context";
 import { Textarea } from "@/components/ui/textarea";
-import { BUSINESS_TYPES } from "@/lib/constants/customer";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 
 import { useConfirm } from "@/hooks/use-confirm";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { createRequest } from "@/server/catalog-access";
+import { createInvite } from "@/server/customer";
+import { BUSINESS_TYPES } from "@/lib/constants/customer";
 
 export const CONTACT_SCHEMA = z.object({
   name: z.string().min(2, "Name is required"),
-  businessName: z.string().min(2, "Business name is required"),
-  businessType: z.string().min(1, "Business type is required"),
+  companyName: z.string().min(2, "Business name is required"),
+  companyType: z.string().min(2, "Business type is required"),
   email: z.email("Invalid email address"),
   phone: z
     .string()
@@ -36,14 +36,20 @@ export const ContactForm = () => {
   const form = useAppForm({
     defaultValues: {
       name: "",
-      businessName: "",
-      businessType: "",
+      companyName: "",
+      companyType: "",
       email: "",
       phone: "",
       message: "",
     },
     onSubmit: async ({ value }) => {
-      const res = await createRequest(value);
+      const [firstName, lastName] = value.name.split(" ");
+      const res = await createInvite({
+        ...value,
+        firstName,
+        lastName,
+        type: "request",
+      });
 
       if (!res.success) {
         toast.error(res.error.message);
@@ -51,9 +57,8 @@ export const ContactForm = () => {
       }
 
       success({
-        title: "Application Submitted Successfully",
-        description: `Your application has been successfully submitted and is now under review.
-                If additional information is required, our team will contact you.`,
+        title: "Application Submitted",
+        description: `Your application has been successfully submitted and is now under review.`,
         actionLabel: "Back to home",
         action: () => router.push("/"),
       });
@@ -78,9 +83,10 @@ export const ContactForm = () => {
           return <field.TextField label="Name" placeholder="Enter name" />;
         }}
       />
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <form.AppField
-          name="businessName"
+          name="companyName"
           children={(field) => {
             return (
               <field.TextField
@@ -91,7 +97,7 @@ export const ContactForm = () => {
           }}
         />
         <form.AppField
-          name="businessType"
+          name="companyType"
           children={(field) => (
             <field.SelectField
               label="Business Type"
@@ -101,6 +107,7 @@ export const ContactForm = () => {
           )}
         />
       </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <form.AppField
           name="email"

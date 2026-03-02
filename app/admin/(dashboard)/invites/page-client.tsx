@@ -16,12 +16,17 @@ import { DataTable } from "@/components/admin/data-table";
 import { CustomerInviteSelectType } from "@/lib/db/schema";
 import { inviteStatusMap } from "@/lib/constants/customer";
 import { CustomerInviteAction } from "@/components/admin/customer-invite-actions";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
 
 export const PageClient = () => {
-  const { searchParams } = useRouterStuff();
+  const { getQueryString } = useRouterStuff();
 
   const { data, isPending, isError, error } = useInvites(
-    searchParams.toString()
+    getQueryString({ type: "invitation" })
   );
 
   // loading
@@ -54,7 +59,7 @@ export const columns: ColumnDef<CustomerInviteSelectType>[] = [
             {firstName} {lastName}
           </span>
           <span className="text-sm text-muted-foreground">
-            {format(createdAt!, "dd-MM-yyyy hh:mm a")}
+            {format(createdAt!, "dd-MM-yyyy")}
           </span>
         </div>
       );
@@ -91,26 +96,30 @@ export const columns: ColumnDef<CustomerInviteSelectType>[] = [
     },
   },
   {
-    id: "customer",
-    header: "Customer",
-    cell: ({ row }) => {
-      const { customerId } = row.original;
-      return (
-        <Button variant="link" asChild>
-          {customerId ? (
-            <Link href={`/admin/customers/${customerId}`}>View</Link>
-          ) : (
-            <span className="no-underline text-muted-foreground!">-</span>
-          )}
-        </Button>
-      );
-    },
+    accessorKey: "message",
+    header: "Message",
+    cell: ({ row }) => (
+      <HoverCard>
+        <HoverCardTrigger asChild>
+          <Button
+            variant="link"
+            className="max-w-[10ch] truncate text-foreground"
+          >
+            {row.original.message}
+          </Button>
+        </HoverCardTrigger>
+        <HoverCardContent className="whitespace-pre-line">
+          {row.original.message}
+        </HoverCardContent>
+      </HoverCard>
+    ),
   },
+
   {
     accessorKey: "status",
     header: "Status",
-    cell: ({ getValue }) => {
-      const status = getValue<string>();
+    cell: ({ row }) => {
+      const { status, customerId } = row.original;
 
       const map = inviteStatusMap[status as keyof typeof inviteStatusMap];
 
@@ -123,6 +132,15 @@ export const columns: ColumnDef<CustomerInviteSelectType>[] = [
           <map.icon className="text-(--color)" />
 
           {map.label}
+
+          {customerId && (
+            <Link
+              href={`/admin/customers/${customerId}`}
+              className="text-xs text-primary underline"
+            >
+              View
+            </Link>
+          )}
         </Badge>
       );
     },

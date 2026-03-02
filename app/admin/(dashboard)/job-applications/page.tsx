@@ -1,7 +1,7 @@
 import { SIDEBAR_MENU } from "@/lib/config";
 import { FilterTabs } from "@/components/admin/filter-tabs";
 import { SearchBar } from "@/components/admin/search-filters";
-import { CustomerInviteDialog } from "@/components/admin/customer-invite-dialog";
+
 import { PageClient } from "./page-client";
 
 const TAB_OPTIONS =
@@ -9,7 +9,7 @@ const TAB_OPTIONS =
   SIDEBAR_MENU[0]["items"];
 
 export const metadata = {
-  title: "Job Applications",
+  title: "Invite Candidate",
 };
 const JobApplicationPage = async () => {
   return (
@@ -20,7 +20,7 @@ const JobApplicationPage = async () => {
 
       <div className="flex gap-4 items-center">
         <SearchBar />
-        <CustomerInviteDialog />
+        Invite candidate
       </div>
       {/* content */}
       <PageClient />

@@ -49,7 +49,7 @@ const CareersPage = () => {
                 className="flex"
               >
                 <Card>
-                  <CardContent className="flex gap-8">
+                  <CardContent className="flex flex-col md:flex-row gap-8">
                     <div className="flex-1">
                       <CardTitle className="text-3xl uppercase font-semibold font-heading mb-4">
                         {position.title}
@@ -76,7 +76,7 @@ const CareersPage = () => {
                       </CardDescription>
                     </div>
                     <div className="shrink-0">
-                      <Button size="lg" className="min-w-40">
+                      <Button size="xl" className="w-full md:w-auto min-w-40">
                         Apply
                       </Button>
                     </div>

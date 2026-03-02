@@ -75,7 +75,7 @@ export const businessAuthorization: BusinessAuthorizationType = {
 };
 
 export const defaultValues: CustomerFormType = {
-  step: 0,
+  step: 4,
   ...businessDetails,
   ...businessContacts,
   ...businessAdditionalContact,
@@ -139,7 +139,12 @@ export const statusMap = {
     icon: Circle,
     actions: [
       {
-        label: "Approve Application",
+        label: "Review",
+        action: "under_review",
+        icon: CheckCircle,
+      },
+      {
+        label: "Approve",
         action: "active",
         icon: CheckCircle,
       },
@@ -149,7 +154,29 @@ export const statusMap = {
         icon: AlarmClock,
       },
       {
-        label: "Reject Application",
+        label: "Reject",
+        action: "rejected",
+        icon: CircleOff,
+      },
+    ],
+  },
+  under_review: {
+    label: "Under Review",
+    color: "#22C55E",
+    icon: CheckCircle,
+    actions: [
+      {
+        label: "Approve",
+        action: "active",
+        icon: CheckCircle,
+      },
+      {
+        label: "Put On Hold",
+        action: "on_hold",
+        icon: AlarmClock,
+      },
+      {
+        label: "Reject",
         action: "rejected",
         icon: CircleOff,
       },
@@ -168,7 +195,7 @@ export const statusMap = {
     actions: [
       {
         label: "Move to Review",
-        action: "new",
+        action: "under_review",
         icon: CheckCircle,
       },
     ],
@@ -179,12 +206,12 @@ export const statusMap = {
     icon: Clock,
     actions: [
       {
-        label: "Approve Application",
+        label: "Approve",
         action: "active",
         icon: CheckCircle,
       },
       {
-        label: "Reject Application",
+        label: "Reject",
         action: "rejected",
         icon: CircleOff,
       },
@@ -197,11 +224,10 @@ export const inviteStatusMap = {
     label: "Invited",
     color: "#F59E0B",
     icon: Send,
-    query: { status: "invited" },
     actions: [
       {
-        label: "Mark as Converted",
-        action: "converted",
+        label: "Mark as Approved",
+        action: "approved",
         icon: CheckCircle,
       },
     ],
@@ -212,57 +238,63 @@ export const inviteStatusMap = {
     icon: FileText,
     actions: [
       {
-        label: "Send Invitation",
-        action: "invited",
-        icon: Send,
+        label: "Mark as Approved",
+        action: "approved",
+        icon: CheckCircle,
       },
+    ],
+  },
+  approved: {
+    label: "Approved",
+    color: "#22C55E",
+    icon: CheckCircle,
+    actions: [
       {
-        label: "Reject Application",
-        action: "rejected",
+        label: "Revoke",
+        action: "revoked",
         icon: Ban,
       },
     ],
   },
-  converted: {
-    label: "Approved",
-    color: "#22C55E",
-    icon: CheckCircle,
-    actions: [],
+  new: {
+    label: "New",
+    color: "#F59E0B",
+    icon: Circle,
+    actions: [
+      {
+        label: "Approve",
+        action: "approved",
+        icon: CheckCircle,
+      },
+      {
+        label: "Reject",
+        action: "rejected",
+        icon: CircleOff,
+      },
+    ],
   },
   rejected: {
     label: "Rejected",
     color: "#EF4444",
     icon: CircleOff,
-    actions: [],
+    actions: [
+      {
+        label: "Move to New",
+        action: "new",
+        icon: Circle,
+      },
+    ],
+  },
+  revoked: {
+    label: "Revoked",
+    color: "#71717A",
+    icon: Ban,
+    actions: [
+      {
+        label: "Move to New",
+        action: "new",
+        icon: Circle,
+      },
+    ],
   },
 } as const;
-
-export const CUSTOMER_REJECT_OPTIONS = [
-  "Incomplete application",
-  "Invalid information",
-  "Eligibility not met",
-  "Policy violation",
-  "Duplicate application",
-  "Incorrect details",
-  "Documents unclear",
-  "Requires correction",
-  "Verification failed",
-];
-
-export const CUSTOMER_STATUS_DIALOG_CONFIG = {
-  reject: {
-    title: "Reject Application",
-    description: "Please provide a reason for rejecting this application.",
-    submitLabel: "Reject Application",
-    successMessage: "Application has been rejected!",
-    status: "rejected",
-  },
-  hold: {
-    title: "Hold Application",
-    description:
-      "Provide a reason for holding this application. The applicant will be notified.",
-    submitLabel: "Put on Hold",
-    successMessage: "Application has been placed on hold.",
-    status: "on_hold",
-  },
-};

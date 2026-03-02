@@ -4,7 +4,6 @@ import {
   Briefcase,
   Building2,
   Factory,
-  FileText,
   MapPinned,
   Tag,
   Truck,
@@ -231,7 +230,7 @@ export const HOME_SECTIONS = {
   chooseUs: [
     {
       title: "Reliable Service",
-      description: "Free Consulting With Experet Saving Money",
+      description: "Free Consulting With Expert Saving Money",
     },
     {
       title: "Quality Products",
@@ -248,19 +247,34 @@ export const HOME_SECTIONS = {
   ],
   quality: [
     {
-      title: "Proper product handling and storage",
-      description: "",
-      image: "/storage.png",
+      title: "Handling & Storage Standards",
+      items: [
+        "Temperature-controlled storage and transport",
+        "Strict FIFO (First In, First Out) rotation system",
+        "Segregated storage for dry, refrigerated, and frozen goods",
+        "Daily warehouse sanitation protocols",
+        "Proper pallet stacking and secure load practices",
+      ],
     },
     {
-      title: "Clean, organized warehouse operations",
-      description: "",
-      image: "/handling.png",
+      title: "Receiving & Inspection Process",
+      items: [
+        "Incoming product quality inspections",
+        "Lot tracking and traceability procedures",
+        "Vendor verification and compliance checks",
+        "Damage and return documentation system",
+        "Cold chain verification at receiving",
+      ],
     },
     {
-      title: "Quality checks throughout the supply process",
-      description: "",
-      image: "/quality-check.png",
+      title: "Delivery & Accountability",
+      items: [
+        "Organized route loading for accuracy",
+        "Delivery verification at drop-off",
+        "Secure handling from dock to customer",
+        "Timely, scheduled restaurant deliveries",
+        "Issue reporting and resolution tracking",
+      ],
     },
   ],
 };

@@ -1,6 +1,7 @@
 "use client";
 import {
   DateField,
+  FileField,
   RadioField,
   SelectField,
   SignatureField,
@@ -20,6 +21,7 @@ const { useAppForm, withForm } = createFormHook({
     SelectField,
     SignatureField,
     RadioField,
+    FileField,
   },
   formComponents: {},
 });

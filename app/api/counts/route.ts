@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { count } from "drizzle-orm";
+import { count, eq } from "drizzle-orm";
 import {
   customer,
   customerInvite,
@@ -25,6 +25,16 @@ const map = {
         value: count(),
       })
       .from(customerInvite)
+      .where(eq(customerInvite.type, "invitation"))
+      .groupBy(customerInvite.status),
+  requests: () =>
+    db
+      .select({
+        status: customerInvite.status,
+        value: count(),
+      })
+      .from(customerInvite)
+      .where(eq(customerInvite.type, "request"))
       .groupBy(customerInvite.status),
   products: () =>
     db

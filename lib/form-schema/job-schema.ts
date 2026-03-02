@@ -1,4 +1,5 @@
 import { z } from "zod";
+const MAX_UPLOAD_SIZE = 5 * 1024 * 1024; // 10MB
 
 const applicantSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
@@ -122,36 +123,42 @@ const educationSchema = z.object({
 const authorizationSchema = z.object({
   drivingLicenseFront: z
     .file("License is required")
+    .max(MAX_UPLOAD_SIZE, "Upload file less tant 5MB")
     .mime(
       ["image/png", "image/jpeg", "application/pdf"],
       "File type is not allowed"
     ),
   drivingLicenseBack: z
     .file("License is required")
+    .max(MAX_UPLOAD_SIZE, "Upload file less tant 5MB")
     .mime(
       ["image/png", "image/jpeg", "application/pdf"],
       "File type is not allowed"
     ),
   socialSecurityFront: z
     .file("Security card is required")
+    .max(MAX_UPLOAD_SIZE, "Upload file less tant 5MB")
     .mime(
       ["image/png", "image/jpeg", "application/pdf"],
       "File type is not allowed"
     ),
   socialSecurityBack: z
     .file("Security card is required")
+    .max(MAX_UPLOAD_SIZE, "Upload file less tant 5MB")
     .mime(
       ["image/png", "image/jpeg", "application/pdf"],
       "File type is not allowed"
     ),
   dotFront: z
     .file("DOT is required")
+    .max(MAX_UPLOAD_SIZE, "Upload file less tant 5MB")
     .mime(
       ["image/png", "image/jpeg", "application/pdf"],
       "File type is not allowed"
     ),
   dotBack: z
     .file("DOT is required")
+    .max(MAX_UPLOAD_SIZE, "Upload file less tant 5MB")
     .mime(
       ["image/png", "image/jpeg", "application/pdf"],
       "File type is not allowed"

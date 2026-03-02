@@ -277,32 +277,41 @@ export default function Page() {
       {/* safetty and quality */}
       <section className="mt-16">
         <Container>
-          <div className="space-y-8">
-            <div className="space-y-4 max-w-3xl">
-              <h2 className="text-4xl/tight sm:text-5xl/tight md:text-7xl/tight flex-1 font-heading font-bold uppercase">
-                Food Safety & Quality
-              </h2>
-              <p className="text-muted-foreground">
-                We take food safety seriously. From receiving to delivery, our
-                trained team handles every step with care, cleanliness, and
-                consistency. You can count on us for safe, reliable distribution
-                that helps your operation run smoothly and confidently.
-              </p>
+          <div className="grid  grid-cols-1 lg:grid-cols-2 gap-16">
+            <div className="max-w-3xl">
+              <div className="space-y-4 sticky top-28">
+                <h2 className="text-4xl/tight sm:text-5xl/tight md:text-7xl/tight flex-1 font-heading font-bold uppercase">
+                  Food Safety & <span className="text-primary">Quality</span>
+                </h2>
+                <p className="text-muted-foreground">
+                  We take food safety seriously. From receiving to delivery, our
+                  trained team handles every step with care, cleanliness, and
+                  consistency. You can count on us for safe, reliable
+                  distribution that helps your operation run smoothly and
+                  confidently.
+                </p>
+              </div>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="flex flex-row flex-nowrap overflow-x-scroll -m-2 p-2 snap-x snap-mandatory no-scrollbar gap-8 lg:flex-col lg:snap-none">
               {HOME_SECTIONS.quality.map((item, i) => (
-                <div key={i} className="space-y-6 rounded-lg overflow-hidden">
-                  <div className="aspect-video bg-secondary rounded-lg overflow-hidden">
-                    <Image
-                      src={item.image}
-                      width={600}
-                      height={400}
-                      alt={item.title}
-                      className="aspect-video object-cover"
-                    />
-                  </div>
-                  <h4 className="text-xl font-semibold">{item.title}</h4>
-                </div>
+                <Card
+                  key={i}
+                  className="ring-0 py-10 shadow-none basis-3/4 lg:basis-auto shrink-0 snap-start bg-secondary"
+                >
+                  <CardHeader className="px-10">
+                    <h4 className="text-3xl uppercase font-semibold font-heading">
+                      {item.title}
+                    </h4>
+                  </CardHeader>
+                  <CardContent className="space-y-4 px-10">
+                    {item.items.map((text, i) => (
+                      <div className="flex items-center gap-4" key={i}>
+                        <CircleCheck className="size-6 text-primary shrink-0" />
+                        <p className="text-lg font-medium opacity-80">{text}</p>
+                      </div>
+                    ))}
+                  </CardContent>
+                </Card>
               ))}
             </div>
           </div>

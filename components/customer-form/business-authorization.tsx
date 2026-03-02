@@ -7,7 +7,6 @@ import {
   FieldLabel,
   FieldTitle,
 } from "../ui/field";
-import { Input } from "../ui/input";
 import { Checkbox } from "../ui/checkbox";
 import { withForm } from "@/hooks/form-context";
 import translations from "@/lib/constants/translations.json";
@@ -20,91 +19,25 @@ export const Authorization = withForm({
     const { t } = useTranslation(translations as Translations, "en");
     return (
       <FieldGroup className="grid grid-cols-2">
-        <form.Field
-          name="certificate"
-          children={(field) => {
-            const isInvalid =
-              field.state.meta.isTouched && !field.state.meta.isValid;
-
-            return (
-              <Field className="gap-2 col-span-2">
-                <FieldLabel htmlFor={field.name}>{t[field.name]}</FieldLabel>
-                <Input
-                  type="file"
-                  id={field.name}
-                  // @ts-expect-error
-                  onChange={(e) => field.handleChange(e.target.files?.[0])}
-                  // @ts-expect-error
-                  onBlur={(e) => field.handleBlur(e.target.files?.[0])}
-                  className="py-[0.6rem]"
-                  accept="image/jpeg, image/png, application/pdf"
-                />
-                <FieldDescription>
-                  {/* Accepted formats: PDF, JPG, PNG. Max 10 MB. */}
-                  {t[`${field.name}Desc`]}
-                </FieldDescription>
-                {isInvalid && <FieldError errors={field.state.meta.errors} />}
-              </Field>
-            );
-          }}
-        />
-        <form.Field
-          name="dlFront"
-          children={(field) => {
-            const isInvalid =
-              field.state.meta.isTouched && !field.state.meta.isValid;
-
-            return (
-              <Field className="gap-2">
-                <FieldLabel htmlFor={field.name}>{t[field.name]}</FieldLabel>
-                <Input
-                  type="file"
-                  id={field.name}
-                  // @ts-expect-error
-                  onChange={(e) => field.handleChange(e.target.files?.[0])}
-                  // @ts-expect-error
-                  onBlur={(e) => field.handleBlur(e.target.files?.[0])}
-                  className="py-[0.6rem]"
-                  accept="image/jpeg, image/png, application/pdf"
-                />
-                <FieldDescription>{t[`${field.name}Desc`]}</FieldDescription>
-                {isInvalid && <FieldError errors={field.state.meta.errors} />}
-              </Field>
-            );
-          }}
-        />
-        <form.Field
-          name="dlBack"
-          children={(field) => {
-            const isInvalid =
-              field.state.meta.isTouched && !field.state.meta.isValid;
-
-            return (
-              <Field className="gap-2">
-                <FieldLabel htmlFor={field.name}>{t[field.name]}</FieldLabel>
-                <Input
-                  type="file"
-                  id={field.name}
-                  // @ts-expect-error
-                  onChange={(e) => field.handleChange(e.target.files?.[0])}
-                  // @ts-expect-error
-                  onBlur={(e) => field.handleBlur(e.target.files?.[0])}
-                  className="py-[0.6rem]"
-                  accept="image/jpeg, image/png, application/pdf"
-                />
-                <FieldDescription>{t[`${field.name}Desc`]}</FieldDescription>
-                {isInvalid && <FieldError errors={field.state.meta.errors} />}
-              </Field>
-            );
-          }}
-        />
-        <div className="col-span-2">
-          <h4 className="text-xl font-semibold mb-1">Verification Documents</h4>
-          <p className="mb-4 text-muted-foreground">
-            Review, accept, and sign the personal guarantee to complete your
-            application
-          </p>
+        <div className="col-span-2 bg-amber-600/10 text-amber-600 font-medium p-4 border border-amber-600/10 rounded-2xl">
+          All uploaded files must be in PDF, JPG, or PNG format and must not
+          exceed 5 MB per file.
         </div>
+
+        <form.AppField
+          name="certificate"
+          children={(field) => <field.FileField label={t[field.name]} />}
+        />
+
+        <form.AppField
+          name="dlFront"
+          children={(field) => <field.FileField label={t[field.name]} />}
+        />
+        <form.AppField
+          name="dlFront"
+          children={(field) => <field.FileField label={t[field.name]} />}
+        />
+
         <form.AppField
           name="signatureName"
           children={(field) => (

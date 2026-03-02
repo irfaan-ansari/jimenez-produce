@@ -15,13 +15,13 @@ const TAB_OPTIONS =
 const InvitesPage = async () => {
   return (
     <div className="flex flex-col h-full gap-5">
-      <h1 className="text-2xl font-semibold">Invites</h1>
+      <h1 className="text-2xl font-semibold">Customer Invitations</h1>
 
       <FilterTabs tabs={TAB_OPTIONS} queryKey="invites" />
 
       <div className="flex gap-4 items-center">
         <SearchBar />
-        <CustomerInviteDialog />
+        <CustomerInviteDialog type="invitation" />
       </div>
       {/* content */}
       <PageClient />

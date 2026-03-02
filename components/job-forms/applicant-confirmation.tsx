@@ -8,7 +8,7 @@ import {
   FieldTitle,
 } from "../ui/field";
 import { withForm } from "@/hooks/form-context";
-import { Input } from "../ui/input";
+
 import { Checkbox } from "../ui/checkbox";
 import { applicantConfirmation } from "@/lib/constants/job";
 
@@ -17,174 +17,52 @@ export const ApplicantConfirmation = withForm({
   render: function Render({ form }) {
     return (
       <FieldGroup className="grid grid-cols-1 @2xl:grid-cols-2">
-        <form.Field
+        <div className="@2xl:col-span-2 bg-amber-600/10 text-amber-600 font-medium p-4 border border-amber-600/10 rounded-2xl">
+          All uploaded files must be in PDF, JPG, or PNG format and must not
+          exceed 5 MB per file.
+        </div>
+        <form.AppField
           name="drivingLicenseFront"
-          children={(field) => {
-            const isInvalid =
-              field.state.meta.isTouched && !field.state.meta.isValid;
-            return (
-              <Field className="">
-                <FieldLabel htmlFor={field.name}>
-                  Driver’s License (Front)
-                </FieldLabel>
-                <Input
-                  type="file"
-                  id={field.name}
-                  onChange={(e) =>
-                    field.handleChange(e.target.files?.[0] as File)
-                  }
-                  className="py-[0.6rem]"
-                  accept="image/jpeg, image/png, application/pdf"
-                />
-                <FieldDescription>
-                  Accepted formats: PDF, JPG, PNG. Max 10 MB.
-                </FieldDescription>
-                {isInvalid && <FieldError errors={field.state.meta.errors} />}
-              </Field>
-            );
-          }}
+          children={(field) => (
+            <field.FileField label="ID Card/Driver’s License (Front)" />
+          )}
         />
-        <form.Field
+        <form.AppField
           name="drivingLicenseBack"
-          children={(field) => {
-            const isInvalid =
-              field.state.meta.isTouched && !field.state.meta.isValid;
-            return (
-              <Field className="">
-                <FieldLabel htmlFor={field.name}>
-                  Driver’s License (Back)
-                </FieldLabel>
-                <Input
-                  type="file"
-                  id={field.name}
-                  onChange={(e) =>
-                    field.handleChange(e.target.files?.[0] as File)
-                  }
-                  className="py-[0.6rem]"
-                  accept="image/jpeg, image/png, application/pdf"
-                />
-                <FieldDescription>
-                  Accepted formats: PDF, JPG, PNG. Max 10 MB.
-                </FieldDescription>
-                {isInvalid && <FieldError errors={field.state.meta.errors} />}
-              </Field>
-            );
-          }}
+          children={(field) => (
+            <field.FileField label="ID Card/Driver’s License (Back)" />
+          )}
         />
-        <form.Field
+        <form.AppField
           name="socialSecurityFront"
-          children={(field) => {
-            const isInvalid =
-              field.state.meta.isTouched && !field.state.meta.isValid;
-            return (
-              <Field className="">
-                <FieldLabel htmlFor={field.name}>
-                  Social Security Card (Front)
-                </FieldLabel>
-                <Input
-                  type="file"
-                  id={field.name}
-                  onChange={(e) =>
-                    field.handleChange(e.target.files?.[0] as File)
-                  }
-                  className="py-[0.6rem]"
-                  accept="image/jpeg, image/png, application/pdf"
-                />
-                <FieldDescription>
-                  Accepted formats: PDF, JPG, PNG. Max 10 MB.
-                </FieldDescription>
-                {isInvalid && <FieldError errors={field.state.meta.errors} />}
-              </Field>
-            );
-          }}
+          children={(field) => (
+            <field.FileField label="  Social Security Card (Front)" />
+          )}
         />
-        <form.Field
+        <form.AppField
           name="socialSecurityBack"
-          children={(field) => {
-            const isInvalid =
-              field.state.meta.isTouched && !field.state.meta.isValid;
-            return (
-              <Field className="">
-                <FieldLabel htmlFor={field.name}>
-                  Social Security Card (Back)
-                </FieldLabel>
-                <Input
-                  type="file"
-                  id={field.name}
-                  onChange={(e) =>
-                    field.handleChange(e.target.files?.[0] as File)
-                  }
-                  className="py-[0.6rem]"
-                  accept="image/jpeg, image/png, application/pdf"
-                />
-                <FieldDescription>
-                  Accepted formats: PDF, JPG, PNG. Max 10 MB.
-                </FieldDescription>
-                {isInvalid && <FieldError errors={field.state.meta.errors} />}
-              </Field>
-            );
-          }}
+          children={(field) => (
+            <field.FileField label="  Social Security Card (Back)" />
+          )}
         />
-        <form.Field
+        <form.AppField
           name="dotFront"
-          children={(field) => {
-            const isInvalid =
-              field.state.meta.isTouched && !field.state.meta.isValid;
-            return (
-              <Field className="">
-                <FieldLabel htmlFor={field.name}>
-                  DOT Medical Certificate (Front)
-                </FieldLabel>
-                <Input
-                  type="file"
-                  id={field.name}
-                  onChange={(e) =>
-                    field.handleChange(e.target.files?.[0] as File)
-                  }
-                  className="py-[0.6rem]"
-                  accept="image/jpeg, image/png, application/pdf"
-                />
-                <FieldDescription>
-                  Accepted formats: PDF, JPG, PNG. Max 10 MB.
-                </FieldDescription>
-                {isInvalid && <FieldError errors={field.state.meta.errors} />}
-              </Field>
-            );
-          }}
+          children={(field) => (
+            <field.FileField label="DOT Medical Certificate (Front)" />
+          )}
         />
-        <form.Field
+        <form.AppField
           name="dotBack"
-          children={(field) => {
-            const isInvalid =
-              field.state.meta.isTouched && !field.state.meta.isValid;
-            return (
-              <Field className="">
-                <FieldLabel htmlFor={field.name}>
-                  DOT Medical Certificate (Back)
-                </FieldLabel>
-                <Input
-                  type="file"
-                  id={field.name}
-                  onChange={(e) =>
-                    field.handleChange(e.target.files?.[0] as File)
-                  }
-                  className="py-[0.6rem]"
-                  accept="image/jpeg, image/png, application/pdf"
-                />
-                <FieldDescription>
-                  Accepted formats: PDF, JPG, PNG. Max 10 MB.
-                </FieldDescription>
-                {isInvalid && <FieldError errors={field.state.meta.errors} />}
-              </Field>
-            );
-          }}
+          children={(field) => (
+            <field.FileField label="DOT Medical Certificate (Back)" />
+          )}
         />
 
         <form.AppField
           name="applicantName"
           children={(field) => (
             <field.TextField
-              label="Applicant Name (printed)"
+              label="Applicant Name (Printed)"
               className="@2xl:col-span-2"
             />
           )}

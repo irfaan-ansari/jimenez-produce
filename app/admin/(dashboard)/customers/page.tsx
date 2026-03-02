@@ -18,7 +18,7 @@ const CustomersPage = async () => {
       <FilterTabs tabs={TAB_OPTIONS} queryKey="customers" />
       <div className="flex gap-4 items-center">
         <SearchBar />
-        <CustomerInviteDialog />
+        <CustomerInviteDialog type="invitation" />
       </div>
       {/* content */}
       <PageClient />

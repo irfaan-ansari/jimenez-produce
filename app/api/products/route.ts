@@ -1,5 +1,10 @@
 import { db } from "@/lib/db";
-import { customer, product, ProductSelectType } from "@/lib/db/schema";
+import {
+  customer,
+  customerInvite,
+  product,
+  ProductSelectType,
+} from "@/lib/db/schema";
 import { getSession } from "@/server/auth";
 import { eq, or, and, ilike, desc } from "drizzle-orm";
 import { cookies } from "next/headers";
@@ -14,14 +19,25 @@ export async function GET(req: NextRequest) {
     const cookieStore = await cookies();
     const email: string = cookieStore.get("customer-email") as any;
 
-    const customerResponse = await db.query.customer.findFirst({
-      where: and(
-        or(eq(customer.companyEmail, email), eq(customer.officerEmail, email)),
-        eq(customer.status, "approved")
-      ),
-    });
+    const [customerRes, inviteRes] = await Promise.all([
+      db.query.customer.findFirst({
+        where: and(
+          or(
+            eq(customer.companyEmail, email),
+            eq(customer.officerEmail, email)
+          ),
+          eq(customer.status, "approved")
+        ),
+      }),
+      db.query.customerInvite.findFirst({
+        where: and(
+          eq(customerInvite.email, email),
+          eq(customerInvite.status, "approved")
+        ),
+      }),
+    ]);
 
-    const isPublicUser = !session && !customerResponse;
+    const isPublicUser = !session && !customerRes && !inviteRes;
 
     const searchParams = req.nextUrl.searchParams;
     const query = Object.fromEntries(searchParams.entries());
@@ -59,9 +75,16 @@ export async function GET(req: NextRequest) {
       ? products.map(({ price, offerPrice, ...rest }) => rest)
       : products;
 
+    const access = session
+      ? "full"
+      : customerRes || inviteRes
+      ? "partial"
+      : "no_access";
+
     return NextResponse.json(
       {
         data,
+        access,
         pagination: {
           page,
           limit,

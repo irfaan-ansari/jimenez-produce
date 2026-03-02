@@ -14,12 +14,13 @@ export async function GET(req: NextRequest) {
     const searchParams = req.nextUrl.searchParams;
     const query = Object.fromEntries(searchParams.entries());
 
-    const { page = 1, limit = 10, status, q } = query;
+    const { page = 1, limit = 10, status, q, type } = query;
 
     const offset = ((page as number) - 1) * Number(limit);
 
     const filters = and(
       status ? eq(customerInvite.status, status) : undefined,
+      type ? eq(customerInvite.type, type) : undefined,
       q
         ? or(
             ilike(customerInvite.companyName, `%${q}%`),

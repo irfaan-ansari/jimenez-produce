@@ -358,7 +358,10 @@ const CategorySelector = ({ field }: { field: AnyFieldApi }) => {
   const [value, setValue] = useState("");
   const [open, setOpen] = useState(false);
   const { data } = useCategories();
-  const filtered = data?.data?.filter((i) => i.includes(value)) ?? [];
+  const filtered =
+    data?.data?.filter((i) =>
+      i?.toLowerCase().includes(value?.toLowerCase())
+    ) ?? [];
 
   return (
     <div className="relative">
@@ -377,7 +380,7 @@ const CategorySelector = ({ field }: { field: AnyFieldApi }) => {
         }}
       />
       <div
-        className={`absolute max-h-36 z-5 **:rounded-xl shadow-xl h-auto **:justify-between no-scrolllbar p-2 flex-col gap-0.5 top-[calc(100%+2px)] inset-x-0 border rounded-2xl bg-white ${
+        className={`absolute overflow-auto max-h-36 z-5 **:rounded-xl shadow-xl h-auto **:justify-between no-scrolllbar p-2 flex-col gap-0.5 top-[calc(100%+2px)] inset-x-0 border rounded-2xl bg-white ${
           open ? "flex" : "hidden"
         }`}
       >

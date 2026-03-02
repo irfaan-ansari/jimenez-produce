@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   description:
     "Get in touch with our team for reliable foodservice delivery, product inquiries, or account support across the Gulf Coast.",
 };
-const ContactPage = () => {
+const ContactPage = async () => {
   return (
     <>
       {/* page title*/}

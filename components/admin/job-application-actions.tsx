@@ -4,16 +4,11 @@ import { toast } from "sonner";
 import { useState } from "react";
 import { Button } from "../ui/button";
 import { useConfirm } from "@/hooks/use-confirm";
-
 import { PopoverXDrawer } from "../popover-x-drawer";
 import { Eye, MoreVertical, Trash2 } from "lucide-react";
-
-import {
-  useDeleteJobApplication,
-  useUpdateJobApplication,
-} from "@/hooks/use-job-application";
-import { JobApplicationStatusDialog } from "./job-application-status-dialog";
 import { jobApplicationStatusMap } from "@/lib/constants/job";
+import { deleteJobApplication, updateJobApplication } from "@/server/job";
+import { JobApplicationStatusDialog } from "./job-application-status-dialog";
 
 type Status = keyof typeof jobApplicationStatusMap;
 
@@ -30,8 +25,6 @@ export const JobApplicationAction = ({
   const [open, setOpen] = useState(false);
   const confirm = useConfirm();
 
-  const { mutate: accept } = useUpdateJobApplication();
-  const { mutate: remove } = useDeleteJobApplication();
   const [statusVariant, setStatusVariant] = useState("reject");
   const [showRejectDialog, setShowRejectDialog] = useState(false);
 
@@ -54,18 +47,15 @@ export const JobApplicationAction = ({
             "This will send the agreement to the applicant for review and signature.",
           actionLabel: "Yes, Send",
           cancelLabel: "Cancel",
-          action: () =>
-            new Promise((res) =>
-              accept(
-                { id, status: "pending" },
-                {
-                  onError: (e) => toast.error(e.message),
-                  onSuccess: (res) =>
-                    toast.success("Agreement sent successfully."),
-                  onSettled: () => res(),
-                }
-              )
-            ),
+          action: async () => {
+            const { success, error } = await updateJobApplication(id, {
+              status: "pending",
+            });
+
+            success
+              ? toast.success("Agreement sent successfully.")
+              : toast.error(error.message);
+          },
         });
         break;
       case "hired":
@@ -75,18 +65,15 @@ export const JobApplicationAction = ({
             "This will update the applicant's status to Hired and send a welcome onboarding email.",
           actionLabel: "Yes, Send",
           cancelLabel: "Cancel",
-          action: () =>
-            new Promise((res) =>
-              accept(
-                { id, status: "hired" },
-                {
-                  onError: (e) => toast.error(e.message),
-                  onSuccess: (res) =>
-                    toast.success("Applicant marked as hired."),
-                  onSettled: () => res(),
-                }
-              )
-            ),
+          action: async () => {
+            const { success, error } = await updateJobApplication(id, {
+              status: "hired",
+            });
+
+            success
+              ? toast.success("Agreement sent successfully.")
+              : toast.error(error.message);
+          },
         });
         break;
       case "delete":
@@ -95,15 +82,12 @@ export const JobApplicationAction = ({
           description:
             "This action will permanently remove the application and this cannot be undone.",
           actionLabel: "Yes, Delete",
-          action: () =>
-            new Promise((res) =>
-              remove(id, {
-                onError: (e) => toast.error(e.message),
-                onSuccess: (res) =>
-                  toast.success("Application has been deleted."),
-                onSettled: () => res(),
-              })
-            ),
+          action: async () => {
+            const { success, error } = await deleteJobApplication(id);
+            success
+              ? toast.success("Application has been deleted.")
+              : toast.error(error.message);
+          },
           cancelLabel: "Cancel",
         });
         break;

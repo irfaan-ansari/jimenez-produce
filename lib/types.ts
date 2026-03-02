@@ -1,5 +1,6 @@
 import { inviteStatusMap, statusMap } from "./constants/customer";
 import { jobApplicationStatusMap } from "./constants/job";
+import { ProductSelectType } from "./db/schema";
 
 export type JobApplicationStatus = keyof typeof jobApplicationStatusMap;
 
@@ -29,3 +30,13 @@ type ActionError = {
 };
 
 export type ActionResult<T> = ActionSuccess<T> | ActionError;
+
+export type ProductResponse = {
+  data: ProductSelectType[];
+  pagination: {
+    total: number;
+    page: number;
+    totalPages: number;
+    limit: number;
+  };
+};

@@ -4,16 +4,11 @@ import { toast } from "sonner";
 import { useState } from "react";
 import { Button } from "../ui/button";
 import { useConfirm } from "@/hooks/use-confirm";
-import { inviteStatusMap, statusMap } from "@/lib/constants/customer";
-import { PopoverXDrawer } from "../popover-x-drawer";
 import { MoreVertical, Trash2 } from "lucide-react";
-
-import {
-  useUpdateCustomer,
-  useDeleteCustomer,
-  useUpdateInvite,
-  useDeleteInvite,
-} from "@/hooks/use-customer";
+import { PopoverXDrawer } from "../popover-x-drawer";
+import { inviteStatusMap } from "@/lib/constants/customer";
+import { deleteInvite, updateInvite } from "@/server/customer";
+import { CustomerInviteStatusDialog } from "./customer-invite-status-dialog";
 
 type Status = keyof typeof inviteStatusMap;
 
@@ -22,98 +17,80 @@ interface Props {
   id: number;
 }
 export const CustomerInviteAction = ({ id, status }: Props) => {
-  const [open, setOpen] = useState(false);
   const confirm = useConfirm();
-  const { mutate: accept } = useUpdateInvite();
-  const { mutate: remove } = useDeleteInvite();
+  const [open, setOpen] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false);
+
+  const [variant, setVariant] = useState("revoked");
 
   const availableActions =
     inviteStatusMap[status as keyof typeof inviteStatusMap].actions;
 
   const handleAction = (action: string) => {
     switch (action) {
-      case "invited":
+      case "revoked":
+      case "rejected":
+        setVariant(action);
+        setOpenDialog(true);
+        break;
+      // approve
+      case "approved":
         confirm.info({
-          title: "Send Account Setup Invitation?",
+          title: "Are you sure?",
           description:
-            "This will mark the application as invited and send an account setup email to the applicant.",
-          actionLabel: "Send Invitation",
+            "This action will approve the request and update its status.",
+          actionLabel: "Yes, Approve",
           cancelLabel: "Cancel",
-          action: () =>
-            new Promise((res) =>
-              accept(
-                { id, status: "invited" },
-                {
-                  onError: (e) => toast.error(e.message),
-                  onSuccess: () =>
-                    toast.success("Invitation email sent successfully."),
-                  onSettled: () => res(),
-                }
-              )
-            ),
+          action: async () => {
+            const { success, error } = await updateInvite(id, {
+              status: "approved",
+            });
+            if (success) {
+              toast.success("Request approved successfully.");
+            } else {
+              toast.error(error.message);
+            }
+          },
         });
         break;
 
-      case "rejected":
-        confirm.warning({
-          title: "Reject Application?",
+      // move to new
+      case "new":
+        confirm.info({
+          title: "Move to New?",
           description:
-            "This will reject the application and send a notification email to the applicant.",
-          actionLabel: "Yes, Reject",
+            "This will move the application back to the review stage and update its status to 'New'.",
+          actionLabel: "Yes, Move",
           cancelLabel: "Cancel",
-          action: () =>
-            new Promise((res) =>
-              accept(
-                { id, status: "rejected" },
-                {
-                  onError: (e) => toast.error(e.message),
-                  onSuccess: () =>
-                    toast.success("Application rejected successfully."),
-                  onSettled: () => res(),
-                }
-              )
-            ),
-        });
-        break;
-      case "converted":
-        confirm.warning({
-          title: "Convert to Customer?",
-          description: "This will update the application status to converted.",
-          actionLabel: "Mark as Converted",
-          cancelLabel: "Cancel",
-          action: () =>
-            new Promise((res) =>
-              accept(
-                { id, status: "converted" },
-                {
-                  onError: (e) => toast.error(e.message),
-                  onSuccess: () =>
-                    toast.success("Application converted successfully."),
-                  onSettled: () => res(),
-                }
-              )
-            ),
+          action: async () => {
+            const { success, error } = await updateInvite(id, {
+              status: "new",
+            });
+            if (success) {
+              toast.success("Request moved to new successfully");
+            } else {
+              toast.error(error.message);
+            }
+          },
         });
         break;
 
       case "delete":
         confirm.delete({
-          title: "Permanently Delete This Application?",
+          title: "Delete Application",
           description:
             "This action will permanently remove the application and this cannot be undone.",
           actionLabel: "Yes, Delete",
-          action: () =>
-            new Promise((res) =>
-              remove(id, {
-                onError: (e) => toast.error(e.message),
-                onSuccess: (res) =>
-                  toast.success("Application deleted successfully."),
-                onSettled: () => res(),
-              })
-            ),
           cancelLabel: "Cancel",
+          action: async () => {
+            const { success, error } = await deleteInvite(id);
+            if (success) {
+              toast.success("Application deleted successfully");
+            } else {
+              toast.error(error.message);
+            }
+          },
         });
-        break;
     }
   };
 
@@ -149,6 +126,13 @@ export const CustomerInviteAction = ({ id, status }: Props) => {
       >
         <Trash2 /> Delete
       </Button>
+
+      <CustomerInviteStatusDialog
+        id={id}
+        variant={variant as any}
+        showDialog={openDialog}
+        setShowDialog={setOpenDialog}
+      />
     </PopoverXDrawer>
   );
 };

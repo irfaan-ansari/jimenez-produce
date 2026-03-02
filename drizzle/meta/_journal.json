@@ -36,6 +36,20 @@
       "when": 1772185863708,
       "tag": "0004_loose_monster_badoon",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1772220553308,
+      "tag": "0005_unique_giant_girl",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1772220793104,
+      "tag": "0006_optimal_felicia_hardy",
+      "breakpoints": true
     }
   ]
 }

@@ -1,27 +1,20 @@
 import React from "react";
 import { Resend } from "resend";
-
-// Customer Templates
+import JobApplied from "@/components/email/job-applied";
 import CustomerNew from "@/components/email/customer-new";
-import CustomerHold from "@/components/email/customer-hold";
-import CustomerInvite from "@/components/email/customer-invite";
-import CustomerDeclined from "@/components/email/customer-declined";
-import CustomerApproved from "@/components/email/customer-approved";
-
-// Job Templates
+import JobRejected from "@/components/email/job-rejected";
 import JobInterview from "@/components/email/job-interview";
 import JobAgreement from "@/components/email/job-agreement";
-import JobRejected from "@/components/email/job-rejected";
-
-import CustomerNewAdmin from "@/components/email/customer-new-admin";
-import CustomerApprovedAdmin from "@/components/email/customer-approved-admin";
-import CustomerHoldAdmin from "@/components/email/customer-hold-admin";
-import CustomerDeclinedAdmin from "@/components/email/customer-declined-admin";
-import JobApplied from "@/components/email/job-applied";
+import CustomerHold from "@/components/email/customer-hold";
+import CustomerAdmin from "@/components/email/customer-admin";
+import CustomerApproved from "@/components/email/customer-approved";
+import CustomerDeclined from "@/components/email/customer-declined";
+import { CustomerSelectType, JobApplicationSelectType } from "../db/schema";
 
 export const resend = new Resend(process.env.RESEND_API_KEY);
-const FROM_EMAIL = "Jimenez Produce <info@jimenezproduce.com>";
-const ADMIN_EMAILS = [
+const FROM_EMAIL = "Jimenez Produce <no-reply@jimenezproduce.com>";
+
+export const ADMIN_EMAILS = [
   "jorge@jimenezproduce.com",
   "elizabeth@jimenezproduce.com",
 ];
@@ -51,177 +44,143 @@ export async function sendEmail({
   return result;
 }
 
-const CUSTOMER_EMAIL_TEMPLATES = {
-  new: {
-    template: CustomerNew,
-    subject: " Application Received – Jimenez Produce",
-    adminTemplate: CustomerNewAdmin,
-    adminSubject: "New Customer Application Submitted – Jimenez Produce",
-  },
-  active: {
-    template: CustomerApproved,
-    subject: " Application Approved – Welcome to Jimenez Produce",
-    adminTemplate: CustomerApprovedAdmin,
-    adminSubject: "Customer Application Approved – Jimenez Produce",
-  },
-  on_hold: {
-    template: CustomerHold,
-    subject: "Additional Information Required – Account Application",
-    adminTemplate: CustomerHoldAdmin,
-    adminSubject: "Customer Application On Hold - Jimenez Produce",
-  },
-  rejected: {
-    template: CustomerDeclined,
-    subject: "Application Status Update – Jimenez Produce",
-    adminTemplate: CustomerDeclinedAdmin,
-    adminSubject: "Application Status Update – Jimenez Produce",
-  },
-  applied: {
-    template: CustomerNew,
-    subject: " Application Received – Jimenez Produce",
-    adminTemplate: CustomerNewAdmin,
-    adminSubject: "New Catalog Application Submitted – Jimenez Produce",
-  },
-};
-
-export async function sendCustomerEmail({
-  status,
-  emails,
-  name,
+export async function sendApplicationStatusEmails({
+  officerFirst,
+  officerEmail,
+  officerMobile,
   companyName,
-  reason,
-  detailedReason,
+  companyPhone,
+  companyEmail,
+  companyStreet,
+  companyState,
+  companyCity,
+  companyZip,
+  status,
+  statusReason,
+  statusDetails,
   internalNotes,
-}: Record<string, any>) {
-  if (!status) return;
-  const config =
-    CUSTOMER_EMAIL_TEMPLATES[status as keyof typeof CUSTOMER_EMAIL_TEMPLATES];
+}: CustomerSelectType) {
+  const baseCustomerVars = {
+    name: officerFirst,
+    company: companyName,
+  };
 
-  if (!config) return;
+  const statusConfig = {
+    new: {
+      subject: "Application Submitted",
+      template: CustomerNew,
+      extraVars: {},
+    },
+    approved: {
+      subject: "Application Approved",
+      template: CustomerApproved,
+      extraVars: {},
+    },
+    rejected: {
+      subject: "Application Declined",
+      template: CustomerDeclined,
+      extraVars: {
+        reason: statusReason,
+        reasonDetails: statusDetails,
+      },
+    },
+    on_hold: {
+      subject: "Application On Hold",
+      template: CustomerHold,
+      extraVars: {
+        reason: statusReason,
+        reasonDetails: statusDetails,
+      },
+    },
+  };
 
-  return await Promise.all([
-    sendEmail({
-      to: emails,
+  const config = statusConfig[status as keyof typeof statusConfig];
+
+  if (config) {
+    await sendEmail({
+      to: [companyEmail, officerEmail],
       subject: config.subject,
       template: config.template,
       variables: {
-        name,
-        companyName,
-        reason,
-        detailedReason,
-        internalNotes,
+        ...baseCustomerVars,
+        ...config.extraVars,
       },
-    }),
-    sendEmail({
-      to: ADMIN_EMAILS,
-      subject: config.adminSubject,
-      template: config.adminTemplate,
-      variables: {
-        name,
-        companyName,
-        reason,
-        detailedReason,
-        internalNotes,
-      },
-    }),
-  ]);
-}
+    });
+  }
+  // Send admin email
 
-/**
- * send customer invite email
- */
-export const sendInviteEmail = async ({
-  emails,
-  name,
-  message,
-}: {
-  emails: string[];
-  name: string;
-  message: string;
-}) => {
   await sendEmail({
-    to: emails,
-    subject: "Invitation to Apply – Jimenez Produce Food Distribution Account",
-    template: CustomerInvite,
+    to: ADMIN_EMAILS,
+    subject: "Application Status Updated",
+    template: CustomerAdmin,
     variables: {
-      name,
-      message,
+      name: companyName,
+      phone: companyPhone,
+      email: companyEmail,
+      address: [companyStreet, companyCity, companyState, companyZip].join(" "),
+      primaryContact: officerFirst,
+      primaryEmail: officerEmail,
+      primaryPhone: officerMobile,
+      status: status,
+      ...(!["new", "approved"].includes(status) && {
+        statusDetails: statusDetails,
+        statusReason: statusReason,
+        internalNotes: internalNotes,
+      }),
     },
   });
-};
+}
 
-const JOB_EMAIL_TEMPLATES = {
-  interview: {
-    template: JobInterview,
-    subject: "Interview Schedule – Employment Application",
-  },
-  pending: {
-    template: JobAgreement,
-    subject: " Next Steps – Employment Application",
-  },
-  rejected: {
-    template: JobRejected,
-    subject: "Application Status – Jimenez Produce",
-  },
-  new: {
-    template: JobApplied,
-    subject: "Application Received – Jimenez Produce",
-  },
-};
-
-export const sendJobEmail = async ({
-  emails,
-  name,
+export const sendJobStatusEmail = async ({
+  firstName,
+  position,
+  email,
   status,
-  message,
-}: {
-  emails: string[];
-  name: string;
-  status: string;
-  message: string;
-}) => {
-  if (!status) return;
+  statusReason,
+  statusDetails,
+}: JobApplicationSelectType) => {
+  const baseVariables = { name: firstName, email, position };
+
+  const jobApplicationEmailMap = {
+    new: {
+      subject: "Application Received – Jimenez Produce",
+      template: JobApplied,
+      extraVars: {},
+    },
+
+    interview: {
+      subject: "Interview Invitation – Jimenez Produce",
+      template: JobInterview,
+      extraVars: { details: statusDetails },
+    },
+
+    pending: {
+      subject: "Next Steps – Employment Application",
+      template: JobAgreement,
+      extraVars: {},
+    },
+
+    rejected: {
+      subject: "Application Status Update – Jimenez Produce",
+      template: JobRejected,
+      extraVars: {
+        reason: statusReason,
+        detailedReason: statusDetails,
+      },
+    },
+  };
   const config =
-    JOB_EMAIL_TEMPLATES[status as keyof typeof JOB_EMAIL_TEMPLATES];
+    jobApplicationEmailMap[status as keyof typeof jobApplicationEmailMap];
 
   if (!config) return;
 
-  await sendEmail({
-    to: emails,
+  sendEmail({
+    to: [email],
     subject: config.subject,
-    template: CustomerInvite,
+    template: config.template,
     variables: {
-      name,
-      message,
-    },
-  });
-};
-
-export const sendOnboardingCompleteAdmin = async ({
-  emails,
-  name,
-  position,
-  phone,
-  email,
-  dateAvailable,
-}: {
-  emails: string[];
-  name: string;
-  position: string;
-  phone: string;
-  email: string;
-  dateAvailable: string;
-}) => {
-  await sendEmail({
-    to: emails,
-    subject: "Onboarding Completed - Employment Application",
-    template: CustomerInvite,
-    variables: {
-      name,
-      position,
-      phone,
-      email,
-      dateAvailable,
+      ...baseVariables,
+      ...config.extraVars,
     },
   });
 };

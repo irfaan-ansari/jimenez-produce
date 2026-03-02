@@ -3,7 +3,7 @@ import { Button } from "../ui/button";
 import { Plus, Trash2 } from "lucide-react";
 import { FieldGroup } from "../ui/field";
 import { withForm } from "@/hooks/form-context";
-import { applicantAddress } from "@/lib/constants/job";
+import { applicantAddress, US_STATES } from "@/lib/constants/job";
 
 export const ApplicantAddress = withForm({
   defaultValues: applicantAddress,
@@ -29,7 +29,13 @@ export const ApplicantAddress = withForm({
 
         <form.AppField
           name="currentAddress.state"
-          children={(field) => <field.TextField label="State" />}
+          children={(field) => (
+            <field.SelectField
+              label="State"
+              placeholder="Select"
+              options={US_STATES}
+            />
+          )}
         />
         <form.AppField
           name="currentAddress.zip"
@@ -40,7 +46,7 @@ export const ApplicantAddress = withForm({
           children={(field) => <field.TextField label="Years at Address" />}
         />
         <div className="p-4 border-l-4 border-blue-500 bg-secondary font-medium text-base @2xl:col-span-2">
-          Mailing Address
+          Previous Address
         </div>
         <form.AppField
           name="mailingAddress.street"
@@ -58,7 +64,13 @@ export const ApplicantAddress = withForm({
 
         <form.AppField
           name="mailingAddress.state"
-          children={(field) => <field.TextField label="State" />}
+          children={(field) => (
+            <field.SelectField
+              label="State"
+              placeholder="Select"
+              options={US_STATES}
+            />
+          )}
         />
         <form.AppField
           name="mailingAddress.zip"
@@ -79,11 +91,11 @@ export const ApplicantAddress = withForm({
                   return (
                     <React.Fragment key={i}>
                       <div className="p-4 border-l-4 border-blue-500 bg-secondary font-medium text-base @2xl:col-span-2 flex justify-between items-center">
-                        Address {i + 1}
                         <Button
                           variant="outline"
                           size="icon"
                           type="button"
+                          className="ml-auto"
                           onClick={() => field.removeValue(i)}
                         >
                           <Trash2 />
@@ -104,8 +116,15 @@ export const ApplicantAddress = withForm({
                       />
                       <form.AppField
                         name={`addresses[${i}].state`}
-                        children={(field) => <field.TextField label="State" />}
+                        children={(field) => (
+                          <field.SelectField
+                            label="State"
+                            placeholder="Select"
+                            options={US_STATES}
+                          />
+                        )}
                       />
+
                       <form.AppField
                         name={`addresses[${i}].zip`}
                         children={(field) => <field.TextField label="Zip" />}

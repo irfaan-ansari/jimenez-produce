@@ -5,7 +5,7 @@ import Link from "next/link";
 import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, User } from "lucide-react";
+import { ChevronLeft, MapPin } from "lucide-react";
 import {
   EmptyComponent,
   LoadingSkeleton,
@@ -68,17 +68,17 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
         {/* applicant details */}
         <Card className="rounded-2xl text-base">
           <CardHeader className="flex gap-4 flex-row items-start border-b">
-            <Badge
-              variant="secondary"
-              className="size-12 rounded-xl [&>svg]:size-5!"
-            >
-              <User />
-            </Badge>
             <div className="space-y-0.5">
               <CardTitle className="text-xl font-semibold">
                 {data.firstName + " " + data.lastName}
               </CardTitle>
               <div className="text-muted-foreground">{data.position}</div>
+              {data.location && (
+                <div className="flex gap-2 items-center text-muted-foreground">
+                  <MapPin className="size-3.5" />
+                  {data.location}
+                </div>
+              )}
             </div>
             <Badge
               variant="outline"
@@ -109,7 +109,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
             </div>
             <div className="flex gap-4 items-start justify-between">
               <div className="text-muted-foreground">Social Security #</div>
-              <div className="capitalize">{data.availableStartDate}</div>
+              <div className="capitalize">{data.socialSecurity}</div>
             </div>
             <div className="flex gap-4 items-start justify-between">
               <div className="text-muted-foreground">
@@ -403,9 +403,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
         {/* license */}
         <Card className="rounded-2xl text-base">
           <CardHeader className="border-b">
-            <CardTitle className="text-xl font-semibold">
-              Current License
-            </CardTitle>
+            <CardTitle className="text-xl font-semibold">License</CardTitle>
           </CardHeader>
           <CardContent className="grid grid-cols-2 gap-6 not-last:pb-6 not-last:border-b">
             <div className="space-y-1">
