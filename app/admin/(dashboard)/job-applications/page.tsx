@@ -3,6 +3,7 @@ import { FilterTabs } from "@/components/admin/filter-tabs";
 import { SearchBar } from "@/components/admin/search-filters";
 
 import { PageClient } from "./page-client";
+import { InviteCandidate } from "@/components/admin/invite-candidate";
 
 const TAB_OPTIONS =
   SIDEBAR_MENU.find((i) => i.href === "/admin/job-applications")?.items ||
@@ -20,7 +21,7 @@ const JobApplicationPage = async () => {
 
       <div className="flex gap-4 items-center">
         <SearchBar />
-        Invite candidate
+        <InviteCandidate />
       </div>
       {/* content */}
       <PageClient />

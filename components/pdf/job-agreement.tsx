@@ -5,7 +5,7 @@ export const JobAgreementPDF = ({ name }: { name: string }) => {
   const tw = createTw({
     theme: {
       fontFamily: {
-        sans: "Helvetica",
+        sans: "Arial",
       },
     },
   });

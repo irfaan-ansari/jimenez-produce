@@ -14,7 +14,7 @@ export const auth = betterAuth({
     enabled: true,
     sendResetPassword: async ({ user, url, token }) => {
       sendEmail({
-        to: user.email,
+        to: [user.email],
         subject: "Reset your password",
         template: PasswordResetTemplate,
         variables: {

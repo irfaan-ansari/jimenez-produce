@@ -7,8 +7,8 @@ import { useConfirm } from "@/hooks/use-confirm";
 import { statusMap } from "@/lib/constants/customer";
 import { PopoverXDrawer } from "../popover-x-drawer";
 import { useQueryClient } from "@tanstack/react-query";
-import { Eye, FileText, MoreVertical, Trash2 } from "lucide-react";
 import { CustomerStatusDialog } from "./customer-status-dialog";
+import { Eye, FileText, MoreVertical, Trash2 } from "lucide-react";
 import { deleteCustomer, updateCustomer } from "@/server/customer";
 
 type Status = keyof typeof statusMap;
@@ -54,7 +54,7 @@ export const CustomerAction = ({ id, status, showView = true }: Props) => {
         confirm.info({
           title: "Move to Review?",
           description:
-            "This will move the application back to the review stage and update its status to 'Under Review'.",
+            "This will move the application to review stage and update its status to 'Under Review'.",
           actionLabel: "Yes, Move",
           cancelLabel: "Cancel",
           action: async () => {

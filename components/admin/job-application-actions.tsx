@@ -5,7 +5,7 @@ import { useState } from "react";
 import { Button } from "../ui/button";
 import { useConfirm } from "@/hooks/use-confirm";
 import { PopoverXDrawer } from "../popover-x-drawer";
-import { Eye, MoreVertical, Trash2 } from "lucide-react";
+import { Eye, FileText, MoreVertical, Trash2 } from "lucide-react";
 import { jobApplicationStatusMap } from "@/lib/constants/job";
 import { deleteJobApplication, updateJobApplication } from "@/server/job";
 import { JobApplicationStatusDialog } from "./job-application-status-dialog";
@@ -131,6 +131,11 @@ export const JobApplicationAction = ({
           {action.label}
         </Button>
       ))}
+      <Button variant="ghost" asChild>
+        <a href={`/api/job-applications/${id}/pdf`} target="_blank">
+          <FileText /> Download PDF
+        </a>
+      </Button>
 
       <Button
         variant="ghost"

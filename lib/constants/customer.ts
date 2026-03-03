@@ -7,6 +7,7 @@ import {
   Clock,
   FileEdit,
   FileText,
+  Pause,
   Send,
 } from "lucide-react";
 
@@ -142,7 +143,7 @@ export const statusMap = {
       {
         label: "Review",
         action: "under_review",
-        icon: CheckCircle,
+        icon: Clock,
       },
       {
         label: "Approve",
@@ -150,9 +151,9 @@ export const statusMap = {
         icon: CheckCircle,
       },
       {
-        label: "Put On Hold",
+        label: "Hold",
         action: "on_hold",
-        icon: AlarmClock,
+        icon: Pause,
       },
       {
         label: "Reject",
@@ -172,9 +173,9 @@ export const statusMap = {
         icon: CheckCircle,
       },
       {
-        label: "Put On Hold",
+        label: "Hold",
         action: "on_hold",
-        icon: AlarmClock,
+        icon: Pause,
       },
       {
         label: "Reject",
@@ -195,9 +196,9 @@ export const statusMap = {
     icon: CircleOff,
     actions: [
       {
-        label: "Move to Review",
+        label: "Review",
         action: "under_review",
-        icon: CheckCircle,
+        icon: Clock,
       },
     ],
   },

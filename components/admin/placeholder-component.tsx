@@ -8,8 +8,8 @@ import {
 } from "../ui/empty";
 
 export const EmptyComponent = ({
-  title = "No Applications Found",
-  description = "We couldn’t find any applications matching your search or filters.",
+  title = "No Data Available",
+  description = "There’s currently nothing to display here.",
   variant = "empty",
 }: {
   title?: string;

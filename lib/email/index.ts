@@ -20,7 +20,7 @@ export const ADMIN_EMAILS = [
 ];
 
 interface EmailConfig {
-  to: string | string[];
+  to: string[];
   subject: string;
   template: React.FC<any>;
   variables: Record<string, any>;
@@ -34,9 +34,13 @@ export async function sendEmail({
 }: EmailConfig) {
   const element = React.createElement(template, variables);
 
+  const uniqueTo = Array.from(
+    new Map(to.map((email) => [email.toLowerCase(), email])).values()
+  );
+
   const result = await resend.emails.send({
     from: FROM_EMAIL,
-    to: to,
+    to: uniqueTo,
     subject,
     react: element,
   });

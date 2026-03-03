@@ -52,7 +52,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
             </Link>
           </Button>
           <h1 className="text-xl font-semibold flex-1 truncate">
-            {data.companyName}
+            {data.companyDBA}
           </h1>
           <CustomerAction
             id={data.id}
@@ -61,24 +61,16 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
           />
         </div>
         <Card className="rounded-2xl">
-          <CardHeader className="flex flex-row gap-4">
+          <CardHeader className="flex flex-row gap-4 ">
             <Avatar className="shrink-0 after:hidden size-12 ring-2 rounded-xl **:rounded-xl ring-offset-1 ring-(--color)/30 relative">
               <AvatarImage src={data.thumbnail!} />
               <AvatarFallback>A</AvatarFallback>
             </Avatar>
             <div className="space-y-1">
               <CardTitle className="text-xl font-semibold">
-                {data.companyName}
+                {data.companyDBA}
               </CardTitle>
-              <span className="h-4 w-0.5 bg-border self-center"></span>
-
-              <div className="flex gap-2 items-start">
-                <span>{data.companyDBA}</span>
-                <span className="h-4 w-0.5 bg-border self-center"></span>
-                <span>{data.companyType}</span>
-                <span className="h-4 w-0.5 bg-border self-center"></span>
-                <span>{data.companyEin}</span>
-              </div>
+              <span className="text-muted-foreground">{data.companyType}</span>
             </div>
             <Badge
               variant="outline"
@@ -92,7 +84,25 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
             <span className="border-b block"></span>
           </div>
           <CardContent className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="space-y-4">
+            <div className="space-y-2">
+              <p className="text-muted-foreground uppercase font-medium">
+                Company Legal Name
+              </p>
+              <p className="text-base">{data.companyName}</p>
+            </div>
+            <div className="space-y-2">
+              <p className="text-muted-foreground uppercase font-medium">
+                Doing business as (DBA)
+              </p>
+              <p className="text-base">{data.companyDBA}</p>
+            </div>
+            <div className="space-y-2">
+              <p className="text-muted-foreground uppercase font-medium">
+                EIN / TAX ID
+              </p>
+              <p className="text-base">{data.companyEin}</p>
+            </div>
+            <div className="space-y-2">
               <p className="text-muted-foreground uppercase font-medium">
                 Address
               </p>
@@ -101,15 +111,16 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
                 {data.companyZip}
               </p>
             </div>
-            <div className="space-y-4">
+            <div className="space-y-2">
               <p className="text-muted-foreground uppercase font-medium">
-                Contact
+                Contact Details
               </p>
-              <div className="space-y-3">
+              <div className="flex text-base items-center gap-3">
                 <div className="flex gap-2 items-center flex-wrap">
                   <Phone className="size-4 shrink-0" />
                   <span>{data.companyPhone}</span>
                 </div>
+                <span className="h-4 w-0.5 bg-foreground/20"></span>
                 <div className="flex gap-2 items-center flex-wrap">
                   <MailCheck className="size-4 shrink-0" />
                   <span>{data.companyEmail}</span>
@@ -120,28 +131,40 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
         </Card>
         {/* delivery prefrences  */}
         <Card className="rounded-2xl pb-2">
-          <CardHeader>
+          <CardHeader className="space-y-2 text-base">
             <CardTitle className="text-xl font-semibold">
               Delivery Prefrences
             </CardTitle>
-            <div className="text-muted-foreground">
-              Lock box permission: {data.lockboxPermission}
+            <div className="text-muted-foreground font-medium uppercase">
+              Lockbox: {data.lockboxPermission}
             </div>
           </CardHeader>
 
-          <CardContent className="space-y-4 text-base divide-y">
+          <CardContent className="space-y-2 divide-y">
+            <div className="flex items-start font-medium">
+              <span className="bg-secondary border-b px-4 py-2 w-1/4">
+                Day/Window
+              </span>
+              <span className="bg-secondary border-b px-4 py-2 w-1/4">
+                Receiver
+              </span>
+              <span className="bg-secondary border-b px-4 py-2 flex-1">
+                Instructions
+              </span>
+            </div>
             {data.deliverySchedule.map((sch, i) => {
               return (
-                <div className="py-4 space-y-4" key={sch.day + i}>
-                  <div className="mb-2 flex gap-2 items-center">
-                    <span>{sch.day}</span>
-                    <span>{sch.window}</span>
+                <div className="flex items-start text-base" key={sch.day + i}>
+                  <div className="flex gap-2 items-center w-1/4 px-4 py-2">
+                    <span>
+                      {sch.day} ({sch.window})
+                    </span>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 w-1/4 px-4 py-2">
                     <div>{sch.receivingName}</div>
                     <div>{sch.receivingPhone}</div>
                   </div>
-                  <p className="text-muted-foreground whitespace-pre">
+                  <p className="text-muted-foreground whitespace-pre flex-1 px-4 py-2">
                     {sch.instructions}
                   </p>
                 </div>
@@ -150,31 +173,44 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
           </CardContent>
         </Card>
         {/* contact details */}
-        <Card className="rounded-2xl text-base">
+        <Card className="rounded-2xl">
           <CardHeader className="flex flex-row gap-4">
-            <CardTitle>Primary Contact</CardTitle>
+            <CardTitle className="text-xl font-semibold">
+              Authorized Officer
+            </CardTitle>
           </CardHeader>
           <CardContent className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="space-y-4">
-              <div className="space-y-1">
-                <CardTitle className="text-xl font-semibold">
-                  {data.officerFirst} {data.officerLast}
-                </CardTitle>
-                <div className="text-muted-foreground">{data.officerRole}</div>
-              </div>
-
-              <div className="space-y-3">
-                <div className="flex gap-2 items-center">
+            <div className="space-y-2">
+              <p className="text-muted-foreground uppercase font-medium">
+                Officer Name
+              </p>
+              <p className="text-base">
+                {data.officerFirst + " " + data.officerLast}
+              </p>
+            </div>
+            <div className="space-y-2">
+              <p className="text-muted-foreground uppercase font-medium">
+                Contact Details
+              </p>
+              <div className="flex text-base items-center gap-3">
+                <div className="flex gap-2 items-center flex-wrap">
                   <Phone className="size-4 shrink-0" />
                   <span>{data.officerMobile}</span>
                 </div>
-                <div className="flex gap-2 items-center">
+                <span className="h-4 w-0.5 bg-foreground/20"></span>
+                <div className="flex gap-2 items-center flex-wrap">
                   <MailCheck className="size-4 shrink-0" />
                   <span>{data.officerEmail}</span>
                 </div>
               </div>
             </div>
-            <div className="space-y-4">
+            <div className="space-y-2">
+              <p className="text-muted-foreground uppercase font-medium">
+                Officer title
+              </p>
+              <p className="text-base">{data.officerRole}</p>
+            </div>
+            <div className="space-y-2">
               <p className="text-muted-foreground uppercase font-medium">
                 Address
               </p>
@@ -184,40 +220,42 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
               </p>
             </div>
           </CardContent>
-          <div className="px-6">
-            <span className="border-b block"></span>
-          </div>
+        </Card>
+        <Card className="rounded-2xl">
+          <CardHeader className="flex flex-row gap-4">
+            <CardTitle className="text-xl font-semibold">
+              Operations & Billing
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <p className="text-muted-foreground uppercase font-medium">
+                Guarantor
+              </p>
+              <p className="text-base">
+                {data.guarantorName}{" "}
+                <span className="text-muted-foreground">
+                  ({data.guarantorRole})
+                </span>
+              </p>
+            </div>
 
-          <CardContent className="grid grid-cols-2">
-            <div className="space-y-6 pr-6 pb-6 border-b border-r">
-              <CardTitle className="text-muted-foreground">
-                Guarantor details
-              </CardTitle>
-              <div className="space-y-2 text-base">
-                <div>{data.guarantorName}</div>
-                <div>Role: {data.guarantorRole}</div>
-              </div>
+            <div className="space-y-2">
+              <p className="text-muted-foreground uppercase font-medium">
+                Ordering Contact
+              </p>
+              <p className="text-base">
+                {data.orderingName}{" "}
+                <span className="text-muted-foreground">
+                  ({data.orderingPhone})
+                </span>
+              </p>
             </div>
-            <div className="space-y-6 pl-6 pb-6 border-b">
-              <CardTitle className="text-muted-foreground">
-                Ordering Details
-              </CardTitle>
-              <div className="space-y-2 text-base">
-                <div>{data.orderingName}</div>
-                <div>{data.orderingPhone}</div>
-              </div>
-            </div>
-            <div className="space-y-6 pr-6 pt-6 border-r">
-              <CardTitle className="text-muted-foreground">
-                Account Payable
-              </CardTitle>
-              <div className="text-base">{data.accountPayableEmail}</div>
-            </div>
-            <div className="space-y-6 pl-6 py-6">
-              <CardTitle className="text-muted-foreground">
-                Authorized Signatory
-              </CardTitle>
-              <div className="text-base">{data.signatureName}</div>
+            <div className="space-y-2">
+              <p className="text-muted-foreground uppercase font-medium">
+                Account Payble
+              </p>
+              <p className="text-base">{data.accountPayableEmail}</p>
             </div>
           </CardContent>
         </Card>
@@ -227,30 +265,30 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
               Additional details
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2">
-            <div>
-              <span className="mr-1 inline-block text-muted-foreground">
-                Created at:
-              </span>
-              {format(data.createdAt!, "dd-mm-yyyy hh:mm:ss a")}
+          <CardContent className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <p className="text-muted-foreground uppercase font-medium">
+                Created At
+              </p>
+              <p className="text-base">
+                {format(data.createdAt!, "dd-mm-yyyy hh:mm:ss a")}
+              </p>
             </div>
-            <div>
-              <span className="mr-1 inline-block text-muted-foreground">
-                Updated at:
-              </span>
-              {format(data.updatedAt!, "dd-mm-yyyy hh:mm:ss a")}
+            <div className="space-y-2">
+              <p className="text-muted-foreground uppercase font-medium">
+                updated at
+              </p>
+              <p className="text-base">
+                {format(data.updatedAt!, "dd-mm-yyyy hh:mm:ss a")}
+              </p>
             </div>
-            <div>
-              <span className="mr-1 inline-block text-muted-foreground">
-                IP Address:
-              </span>
-              {data.ipAddress}
-            </div>
-            <div>
-              <span className="mr-1 inline-block text-muted-foreground">
-                User Agent:
-              </span>
-              {data.userAgent}
+
+            <div className="space-y-2">
+              <p className="text-muted-foreground uppercase font-medium">
+                ip address
+              </p>
+              <p className="text-base"> {data.ipAddress}</p>
+              <p> {data.userAgent}</p>
             </div>
           </CardContent>
         </Card>

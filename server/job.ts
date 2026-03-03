@@ -104,3 +104,10 @@ export const deleteJobApplication = handleAction(async (id: number) => {
   revalidatePath("/admin/job-applications");
   return result;
 });
+
+export const inviteCandidate = handleAction(async () => {
+  const session = await getSession();
+  if (!session) throw new Error("Authentication required.");
+
+  return true;
+});

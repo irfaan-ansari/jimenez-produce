@@ -61,7 +61,7 @@ export const CustomerInviteAction = ({ id, status }: Props) => {
         confirm.info({
           title: "Move to New?",
           description:
-            "This will move the application back to the review stage and update its status to 'New'.",
+            "This will move the application to review stage and update its status to 'New'.",
           actionLabel: "Yes, Move",
           cancelLabel: "Cancel",
           action: async () => {

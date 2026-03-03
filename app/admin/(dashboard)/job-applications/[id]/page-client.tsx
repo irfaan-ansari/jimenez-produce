@@ -5,7 +5,7 @@ import Link from "next/link";
 import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, MapPin } from "lucide-react";
+import { ChevronLeft, MailCheck, MapPin, Phone } from "lucide-react";
 import {
   EmptyComponent,
   LoadingSkeleton,
@@ -14,8 +14,15 @@ import { JobApplicationStatus } from "@/lib/types";
 import { Attachment } from "@/components/admin/Attachment";
 import { jobApplicationStatusMap } from "@/lib/constants/job";
 import { useJobApplication } from "@/hooks/use-job-application";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { JobApplicationAction } from "@/components/admin/job-application-actions";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
   const param = use(params);
@@ -38,6 +45,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
 
   const status = jobApplicationStatusMap[data?.status as JobApplicationStatus];
 
+  const thumbnail = `https://api.dicebear.com/9.x/initials/svg?seed=${data.firstName}`;
   return (
     <div
       className="grid grid-cols-6 gap-8"
@@ -66,114 +74,158 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
           />
         </div>
         {/* applicant details */}
-        <Card className="rounded-2xl text-base">
-          <CardHeader className="flex gap-4 flex-row items-start border-b">
-            <div className="space-y-0.5">
+        <Card className="rounded-2xl">
+          <CardHeader className="flex flex-row gap-4">
+            <Avatar className="shrink-0 after:hidden size-12 ring-2 rounded-xl **:rounded-xl ring-offset-1 ring-(--color)/30 relative">
+              <AvatarImage src={thumbnail!} />
+              <AvatarFallback>A</AvatarFallback>
+            </Avatar>
+            <div className="space-y-1">
               <CardTitle className="text-xl font-semibold">
-                {data.firstName + " " + data.lastName}
+                {data.firstName} {data.lastName}
               </CardTitle>
-              <div className="text-muted-foreground">{data.position}</div>
-              {data.location && (
-                <div className="flex gap-2 items-center text-muted-foreground">
-                  <MapPin className="size-3.5" />
-                  {data.location}
-                </div>
-              )}
+              <span className="text-muted-foreground">{data.position}</span>
             </div>
             <Badge
               variant="outline"
-              style={{ "--color": status.color } as React.CSSProperties}
               className="ml-auto h-7 rounded-xl pl-1.5 pr-2.5 gap-1.5 [&>svg]:size-3.5! bg-(--color)/10 border-(--color)/10 text-sm"
             >
               <status.icon className="text-(--color)" />
-
               {status.label}
             </Badge>
           </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="flex gap-4 items-start justify-between">
-              <div className="text-muted-foreground">Phone</div>
-              <div>{data.phone}</div>
+          <div className="px-6">
+            <span className="border-b block"></span>
+          </div>
+          <CardContent className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <p className="text-muted-foreground uppercase font-medium">
+                Applicant Name
+              </p>
+              <p className="text-base">
+                {data.firstName} {data.lastName}
+              </p>
             </div>
-            <div className="flex gap-4 items-start justify-between">
-              <div className="text-muted-foreground">Email</div>
-              <div>{data.email}</div>
+            <div className="space-y-2">
+              <p className="text-muted-foreground uppercase font-medium">DOB</p>
+              <p className="text-base">{data.dob}</p>
             </div>
-            <div className="flex gap-4 items-start justify-between">
-              <div className="text-muted-foreground">Date of Birth</div>
-              <div>{data.dob}</div>
+            <div className="space-y-2">
+              <p className="text-muted-foreground uppercase font-medium">
+                Available Date
+              </p>
+              <p className="text-base">{data.availableStartDate}</p>
             </div>
-            <div className="flex gap-4 items-start justify-between">
-              <div className="text-muted-foreground">Availability</div>
-              <div>{data.availableStartDate}</div>
+            <div className="space-y-2">
+              <p className="text-muted-foreground uppercase font-medium">
+                Social Security #
+              </p>
+              <p className="text-base">{data.socialSecurity}</p>
             </div>
-            <div className="flex gap-4 items-start justify-between">
-              <div className="text-muted-foreground">Social Security #</div>
-              <div className="capitalize">{data.socialSecurity}</div>
+            <div className="space-y-2">
+              <p className="text-muted-foreground uppercase font-medium">
+                Work Authorization
+              </p>
+              <p className="text-base capitalize">{data.hasLegalRights}</p>
             </div>
-            <div className="flex gap-4 items-start justify-between">
-              <div className="text-muted-foreground">
-                Eligible to Work in the U.S.
+            <div className="space-y-2">
+              <p className="text-muted-foreground uppercase font-medium">
+                Contact Details
+              </p>
+              <div className="flex text-base items-center gap-3">
+                <div className="flex gap-2 items-center flex-wrap">
+                  <Phone className="size-4 shrink-0" />
+                  <span>{data.phone}</span>
+                </div>
+                <span className="h-4 w-0.5 bg-foreground/20"></span>
+                <div className="flex gap-2 items-center flex-wrap">
+                  <MailCheck className="size-4 shrink-0" />
+                  <span>{data.email}</span>
+                </div>
               </div>
-              <div className="capitalize">{data.hasLegalRights}</div>
+            </div>
+            <div className="space-y-2">
+              <p className="text-muted-foreground uppercase font-medium">
+                Current Address
+              </p>
+              <p className="text-base">
+                {data.currentAddress.street} {data.currentAddress.city}{" "}
+                {data.currentAddress.state} {data.currentAddress.zip}
+              </p>
+            </div>
+            <div className="space-y-2">
+              <p className="text-muted-foreground uppercase font-medium">
+                Previous Address
+              </p>
+              <p className="text-base">
+                {data.mailingAddress.street} {data.mailingAddress.city}{" "}
+                {data.mailingAddress.state} {data.mailingAddress.zip}
+              </p>
             </div>
           </CardContent>
         </Card>
 
         {/* education details */}
-        <Card className="rounded-2xl text-base">
+        <Card className="rounded-2xl">
           <CardHeader className="border-b">
-            <CardTitle className="text-xl font-semibold">Collage</CardTitle>
+            <CardTitle className="text-xl font-semibold">Education</CardTitle>
           </CardHeader>
-          <CardContent className="grid grid-cols-2 gap-6">
-            <div className="space-y-1">
-              <div className="text-muted-foreground textsm">
+
+          <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <div className="text-muted-foreground uppercase font-medium">
                 Institution Name
               </div>
-              <div>{data.collage?.institutionName}</div>
+              <div className="text-base">{data.collage?.institutionName}</div>
             </div>
             <div className="space-y-1">
               <div className="text-muted-foreground textsm">Field of Study</div>
-              <div>{data.collage?.fieldOfStudy}</div>
+              <div className="text-base">{data.collage?.fieldOfStudy}</div>
             </div>
             <div className="space-y-1">
               <div className="text-muted-foreground textsm">Location</div>
-              <div>{data.collage?.location}</div>
+              <div className="text-base">{data.collage?.location}</div>
             </div>
             <div className="space-y-1">
               <div className="text-muted-foreground textsm">Year Completed</div>
-              <div>{data.collage?.yearCompleted}</div>
+              <div className="text-base">{data.collage?.yearCompleted}</div>
             </div>
             <div className="space-y-1 col-span-2">
               <div className="text-muted-foreground textsm">Details</div>
-              <div>{data.collage?.details}</div>
+              <div className="text-base">{data.collage?.details}</div>
             </div>
           </CardContent>
-          <CardHeader className="border-y py-6">
-            <CardTitle className="text-xl font-semibold">High School</CardTitle>
-          </CardHeader>
-          <CardContent className="grid grid-cols-2 gap-6">
-            <div className="space-y-1">
-              <div className="text-muted-foreground textsm">
+
+          <CardContent className="grid grid-cols-2 gap-6 border-t pt-6">
+            <div className="space-y-2">
+              <div className="text-muted-foreground uppercase font-medium">
                 Institution Name
               </div>
-              <div>{data.highSchool?.institutionName}</div>
+              <div className="text-base">{data.collage?.institutionName}</div>
             </div>
             <div className="space-y-1">
-              <div className="text-muted-foreground textsm">Field of Study</div>
-              <div>{data.highSchool?.fieldOfStudy}</div>
+              <div className="text-muted-foreground uppercase font-medium">
+                Field of Study
+              </div>
+              <div className="text-base">{data.collage?.fieldOfStudy}</div>
             </div>
             <div className="space-y-1">
-              <div className="text-muted-foreground textsm">Location</div>
-              <div>{data.highSchool?.location}</div>
+              <div className="text-muted-foreground uppercase font-medium">
+                Location
+              </div>
+              <div className="text-base">{data.collage?.location}</div>
             </div>
             <div className="space-y-1">
-              <div className="text-muted-foreground textsm">Year Completed</div>
-              <div>{data.highSchool?.yearCompleted}</div>
+              <div className="text-muted-foreground uppercase font-medium">
+                Year Completed
+              </div>
+              <div className="text-base">{data.collage?.yearCompleted}</div>
             </div>
             <div className="space-y-1 col-span-2">
-              <div className="text-muted-foreground textsm">Details</div>
-              <div>{data.highSchool?.details}</div>
+              <div className="text-muted-foreground uppercase font-medium">
+                Details
+              </div>
+              <div className="text-base">{data.collage?.details}</div>
             </div>
           </CardContent>
           {/* other education */}
@@ -189,34 +241,34 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
                     key={i}
                   >
                     <div className="space-y-1">
-                      <div className="text-muted-foreground textsm">
+                      <div className="text-muted-foreground uppercase font-medium">
                         Institution Name
                       </div>
-                      <div>{edu?.institutionName}</div>
+                      <div className="text-base">{edu?.institutionName}</div>
                     </div>
                     <div className="space-y-1">
-                      <div className="text-muted-foreground textsm">
+                      <div className="text-muted-foreground uppercase font-medium">
                         Field of Study
                       </div>
-                      <div>{edu?.fieldOfStudy}</div>
+                      <div className="text-base">{edu?.fieldOfStudy}</div>
                     </div>
                     <div className="space-y-1">
-                      <div className="text-muted-foreground textsm">
+                      <div className="text-muted-foreground uppercase font-medium">
                         Location
                       </div>
-                      <div>{edu?.location}</div>
+                      <div className="text-base">{edu?.location}</div>
                     </div>
                     <div className="space-y-1">
-                      <div className="text-muted-foreground textsm">
+                      <div className="text-muted-foreground uppercase font-medium">
                         Year Completed
                       </div>
-                      <div>{edu?.yearCompleted}</div>
+                      <div className="text-base">{edu?.yearCompleted}</div>
                     </div>
                     <div className="space-y-1 col-span-2">
-                      <div className="text-muted-foreground textsm">
+                      <div className="text-muted-foreground uppercase font-medium">
                         Details
                       </div>
-                      <div>{edu?.details}</div>
+                      <div className="text-base">{edu?.details}</div>
                     </div>
                   </CardContent>
                 ))}
@@ -226,7 +278,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
 
         {/* employement details */}
         {Array.isArray(data.experience) && data.experience.length > 0 && (
-          <Card className="rounded-2xl text-base">
+          <Card className="rounded-2xl">
             <CardHeader className="border-b">
               <CardTitle className="text-xl font-semibold">
                 Employement History
@@ -238,58 +290,66 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
                 className="grid grid-cols-2 gap-6 not-last:pb-6 not-last:border-b"
               >
                 <div className="space-y-1">
-                  <div className="text-muted-foreground textsm">
+                  <div className="text-muted-foreground uppercase font-medium">
                     Employer Name
                   </div>
-                  <div>{emp.employerName}</div>
+                  <div className="text-base">{emp.employerName}</div>
                 </div>
                 <div className="space-y-1">
-                  <div className="text-muted-foreground textsm">
+                  <div className="text-muted-foreground uppercase font-medium">
                     Employer Phone
                   </div>
-                  <div>{emp.phone}</div>
+                  <div className="text-base">{emp.phone}</div>
                 </div>
                 <div className="space-y-1">
-                  <div className="text-muted-foreground textsm">
+                  <div className="text-muted-foreground uppercase font-medium">
                     Employer Address
                   </div>
-                  <div>{emp.address}</div>
+                  <div className="text-base">{emp.address}</div>
                 </div>
                 <div className="space-y-1">
-                  <div className="text-muted-foreground textsm">Position</div>
-                  <div>{emp.position}</div>
+                  <div className="text-muted-foreground uppercase font-medium">
+                    Position
+                  </div>
+                  <div className="text-base">{emp.position}</div>
                 </div>
                 <div className="space-y-1">
-                  <div className="text-muted-foreground textsm">Duration</div>
-                  <div>{emp.fromDate + " - " + emp.toDate}</div>
+                  <div className="text-muted-foreground uppercase font-medium">
+                    Duration
+                  </div>
+                  <div className="text-base">
+                    {emp.fromDate + " - " + emp.toDate}
+                  </div>
                 </div>
                 <div className="space-y-1">
-                  <div className="text-muted-foreground textsm">Salary</div>
-                  <div>{emp.salary}</div>
+                  <div className="text-muted-foreground uppercase font-medium">
+                    Salary
+                  </div>
+                  <div className="text-base">{emp.salary}</div>
                 </div>
                 <div className="space-y-1">
-                  <div className="text-muted-foreground textsm">
+                  <div className="text-muted-foreground uppercase font-medium">
                     FMCSR Applied
                   </div>
                   <div className="capitalize">{emp.safetySensitive}</div>
                 </div>
                 <div className="space-y-1">
-                  <div className="text-muted-foreground textsm">
+                  <div className="text-muted-foreground uppercase font-medium">
                     Safety-Sensitive (DOT)
                   </div>
                   <div className="capitalize">{emp.subjectToFmcsa}</div>
                 </div>
                 <div className="space-y-1">
-                  <div className="text-muted-foreground textsm">
+                  <div className="text-muted-foreground uppercase font-medium">
                     Reason for Leaving
                   </div>
-                  <div>{emp.reasonForLeaving}</div>
+                  <div className="text-base">{emp.reasonForLeaving}</div>
                 </div>
                 <div className="space-y-1">
-                  <div className="text-muted-foreground textsm">
+                  <div className="text-muted-foreground uppercase font-medium">
                     Explain eny Gaps
                   </div>
-                  <div>{emp.gap}</div>
+                  <div className="text-base">{emp.gap}</div>
                 </div>
               </CardContent>
             ))}

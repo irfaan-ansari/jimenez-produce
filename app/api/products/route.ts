@@ -41,7 +41,7 @@ export async function GET(req: NextRequest) {
 
     const searchParams = req.nextUrl.searchParams;
     const query = Object.fromEntries(searchParams.entries());
-    const { page = 1, limit = 10, status, q } = query;
+    const { page = 1, limit = 24, status, q } = query;
     const offset = ((page as number) - 1) * Number(limit);
 
     const statusFilter = isPublicUser

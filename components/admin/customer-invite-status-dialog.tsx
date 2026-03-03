@@ -20,7 +20,7 @@ import { useQueryClient } from "@tanstack/react-query";
 
 const schema = z.object({
   statusReason: z.string().min(1, "Select reason"),
-  statusDetails: z.string().min(1, "Enter detailed reason"),
+  statusDetails: z.string(),
   internalNotes: z.string(),
   status: z.string(),
 });

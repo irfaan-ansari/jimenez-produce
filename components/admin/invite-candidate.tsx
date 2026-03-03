@@ -34,30 +34,9 @@ const schema = z.object({
   message: z.string(),
 });
 
-const CONFIG = {
-  invitation: {
-    button: "Invite Customer",
-    title: "Customer Invitations",
-    description: "Invite a business to become a customer.",
-    success: "Customer invited successfully",
-  },
-  request: {
-    button: "Assign Access",
-    title: "Catalog Access",
-    description:
-      "Assign catalog access to a customer, allowing them to view your product catalog.",
-    success: "Catalog access granted.",
-  },
-};
-
-export const CustomerInviteDialog = ({
-  type,
-}: {
-  type: "invitation" | "request";
-}) => {
+export const InviteCandidate = () => {
   const [open, setOpen] = useState(false);
   const queryClient = useQueryClient();
-  const config = CONFIG[type];
 
   const form = useAppForm({
     defaultValues: {
@@ -66,7 +45,6 @@ export const CustomerInviteDialog = ({
       phone: "",
       email: "",
       message: "",
-      type: type as string,
     },
     validators: {
       onSubmit: schema,
@@ -80,7 +58,7 @@ export const CustomerInviteDialog = ({
         lastName,
       });
       if (success) {
-        toast.success(config.success);
+        toast.success("Invited successfully");
         queryClient.invalidateQueries({ queryKey: ["invites"] });
         queryClient.invalidateQueries({ queryKey: ["customers"] });
         setOpen(false);
@@ -95,16 +73,17 @@ export const CustomerInviteDialog = ({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button size="xl" className="rounded-xl ml-auto min-w-32 px-8">
-          <PlusCircle /> {config.button}
+          <PlusCircle /> Invite Candidate
         </Button>
       </DialogTrigger>
       <DialogContent className="ring-ring/10 rounded-2xl sm:max-w-lg py-8">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold">
-            {config.title}
+            Invite Candidate
           </DialogTitle>
           <DialogDescription className="text-base">
-            {config.description}
+            Invite candidate to apply for a open position business to become a
+            customer.
           </DialogDescription>
         </DialogHeader>
         <form
@@ -209,7 +188,7 @@ export const CustomerInviteDialog = ({
                   {isSubmitting ? (
                     <Loader className="animate-spin" />
                   ) : (
-                    config.button
+                    "Invite Cndidate"
                   )}
                 </Button>
               )}
