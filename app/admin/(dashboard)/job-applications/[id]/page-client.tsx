@@ -64,14 +64,14 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
             </Link>
           </Button>
           <h1 className="text-xl font-semibold flex-1 truncate">
-            {data.firstName}
+            {data.applicantName}
           </h1>
           {/* action button */}
           <JobApplicationAction
             id={data.id}
             status={data.status as JobApplicationStatus}
             showView={false}
-            agreementUrl={data.agreementUrl as any}
+            agreementUrl={data.agreementUrl as string}
           />
         </div>
         {/* applicant details */}
@@ -133,13 +133,13 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
               <p className="text-muted-foreground uppercase font-medium">
                 Contact Details
               </p>
-              <div className="flex text-base items-center gap-3">
-                <div className="flex gap-2 items-center flex-wrap">
+              <div className="space-y-1">
+                <div className="flex gap-2 items-center flex-nowrap">
                   <Phone className="size-4 shrink-0" />
                   <span>{data.phone}</span>
                 </div>
                 <span className="h-4 w-0.5 bg-foreground/20"></span>
-                <div className="flex gap-2 items-center flex-wrap">
+                <div className="flex gap-2 items-center flex-nowrap">
                   <MailCheck className="size-4 shrink-0" />
                   <span>{data.email}</span>
                 </div>

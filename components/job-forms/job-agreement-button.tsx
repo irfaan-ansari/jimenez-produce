@@ -5,16 +5,19 @@ import { useState } from "react";
 import { Button } from "../ui/button";
 import { Loader } from "lucide-react";
 import { submitAgreement } from "@/server/job";
+import { useRouter } from "next/navigation";
 
 export const JobAgreementButton = ({ token }: { token: string }) => {
   const [loading, setLoading] = useState(false);
-
+  const router = useRouter();
   const handleSubmit = async () => {
     setLoading(true);
 
     const { success, error } = await submitAgreement(token);
-    if (success) toast.success("Agreement Submitted Successfully");
-    else toast.error(error.message || "Failded to submit agreement");
+    if (success) {
+      toast.success("Agreement Submitted Successfully");
+      router.replace("/");
+    } else toast.error(error.message || "Failded to submit agreement");
     setLoading(false);
   };
 
@@ -25,7 +28,7 @@ export const JobAgreementButton = ({ token }: { token: string }) => {
       onClick={handleSubmit}
       disabled={loading}
     >
-      {loading ? <Loader /> : "Agree and Continue"}
+      {loading ? <Loader className="animate-spin" /> : "Agree and Continue"}
     </Button>
   );
 };

@@ -58,7 +58,7 @@ export const ApplicantEducation = withForm({
         </div>
         <form.AppField
           name={`collage.institutionName`}
-          children={(field) => <field.TextField label="Name" />}
+          children={(field) => <field.TextField label="Institution Name" />}
         />
         <form.AppField
           name={`collage.fieldOfStudy`}

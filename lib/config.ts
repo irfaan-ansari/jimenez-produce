@@ -146,7 +146,7 @@ export const SIDEBAR_MENU = [
         query: { status: "interview" },
       },
       {
-        label: "Pending",
+        label: "Agreement",
         href: "/admin/job-applications",
         color: "#3B82F6",
         query: { status: "pending" },

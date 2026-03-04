@@ -41,7 +41,13 @@ export const submitAgreement = handleAction(async (token: string) => {
 
   if (!res) throw new Error("Resource not found");
 
-  const buffer = await renderToBuffer(JobAgreementPDF({ data: res }));
+  const agreementDate = new Date().toISOString().split("T")[0];
+
+  const buffer = await renderToBuffer(
+    JobAgreementPDF({
+      data: { ...res, agreementDate },
+    })
+  );
 
   const blob = await put(`job-application/agreement.pdf`, buffer, {
     access: "public",
@@ -52,7 +58,7 @@ export const submitAgreement = handleAction(async (token: string) => {
     .update(jobApplications)
     .set({
       agreementUrl: blob.url,
-      agreementDate: new Date().toISOString().split("T")[0],
+      agreementDate,
       token: null,
     })
     .where(eq(jobApplications.id, res.id))
@@ -128,6 +134,8 @@ export const updateJobApplication = handleAction(
 
     if (data.status === "pending") {
       data.token = randomBytes(32).toString("hex");
+      data.statusReason = "";
+      data.statusDetails = "";
     }
 
     const [result] = await db

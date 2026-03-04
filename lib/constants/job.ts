@@ -2,9 +2,7 @@ import {
   CheckCircle,
   Circle,
   Clock,
-  Eye,
   MessageCircle,
-  Send,
   XCircle,
 } from "lucide-react";
 import {
@@ -246,11 +244,6 @@ export const jobApplicationStatusMap = {
     icon: MessageCircle,
     actions: [
       {
-        label: "Send Agreement",
-        action: "pending",
-        icon: Send,
-      },
-      {
         label: "Move to Hired",
         action: "hired",
         icon: CheckCircle,
@@ -273,11 +266,6 @@ export const jobApplicationStatusMap = {
         icon: CheckCircle,
       },
       {
-        label: "Resend Agreement",
-        action: "pending",
-        icon: Send,
-      },
-      {
         label: "Reject",
         action: "rejected",
         icon: XCircle,
@@ -288,13 +276,7 @@ export const jobApplicationStatusMap = {
     label: "Hired",
     color: "#22C55E",
     icon: CheckCircle,
-    actions: [
-      {
-        label: "View Agreement",
-        action: "view_agreement",
-        icon: Eye,
-      },
-    ],
+    actions: [],
   },
   rejected: {
     label: "Rejected",

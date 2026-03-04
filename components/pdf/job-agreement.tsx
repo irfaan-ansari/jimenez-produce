@@ -1,4 +1,3 @@
-import { CONTACT_SECTIONS } from "@/lib/constants/web";
 import {
   Document,
   Page,
@@ -230,15 +229,15 @@ export const JobAgreementPDF = ({ data }: { data: any }) => {
 
           <View style={{ marginTop: 10 }}>
             <Text style={styles.label}>Employee Full Legal Name</Text>
-            <Text style={styles.value}>Trevor Schexnayder</Text>
+            <Text style={styles.value}>{data.applicantName}</Text>
           </View>
           <View style={{ marginTop: 10 }}>
             <Text style={styles.label}>Position</Text>
-            <Text style={styles.value}>Warehouse Associate</Text>
+            <Text style={styles.value}>{data.position}</Text>
           </View>
           <View style={{ marginTop: 10 }}>
             <Text style={styles.label}>Facility</Text>
-            <Text style={styles.value}>Louisiana</Text>
+            <Text style={styles.value}>{data.location}</Text>
           </View>
 
           <View style={{ marginTop: 10 }}>

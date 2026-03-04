@@ -1,12 +1,13 @@
 "use client";
+
 import Link from "next/link";
 import { toast } from "sonner";
 import { useState } from "react";
 import { Button } from "../ui/button";
 import { useConfirm } from "@/hooks/use-confirm";
 import { PopoverXDrawer } from "../popover-x-drawer";
-import { Eye, FileText, MoreVertical, Trash2 } from "lucide-react";
 import { jobApplicationStatusMap } from "@/lib/constants/job";
+import { Eye, FileText, MoreVertical, Send, Trash2 } from "lucide-react";
 import { deleteJobApplication, updateJobApplication } from "@/server/job";
 import { JobApplicationStatusDialog } from "./job-application-status-dialog";
 
@@ -34,13 +35,6 @@ export const JobApplicationAction = ({
 
   const handleAction = (action: string) => {
     switch (action) {
-      case "view_agreement":
-        if (agreementUrl) {
-          window.open(agreementUrl, "_blank");
-        } else {
-          toast.error("Link not found.");
-        }
-        break;
       case "rejected":
         setStatusVariant("reject");
         setShowRejectDialog(true);
@@ -140,6 +134,22 @@ export const JobApplicationAction = ({
           {action.label}
         </Button>
       ))}
+
+      {(status === "new" || status === "interview" || "pending") &&
+        !agreementUrl && (
+          <Button variant="ghost" onClick={() => handleAction("pending")}>
+            <Send /> Send Agreement
+          </Button>
+        )}
+
+      {agreementUrl && (
+        <Button variant="ghost" asChild>
+          <a href={agreementUrl} target="_blank">
+            <Eye /> View Agreement
+          </a>
+        </Button>
+      )}
+
       <Button variant="ghost" asChild>
         <a href={`/api/job-applications/${id}/pdf`} target="_blank">
           <FileText /> Download PDF
