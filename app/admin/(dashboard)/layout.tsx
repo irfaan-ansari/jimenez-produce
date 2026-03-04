@@ -9,7 +9,7 @@ import { SITE_CONFIG } from "@/lib/config";
 export const metadata = {
   metadataBase: new URL(SITE_CONFIG.url),
   title: {
-    default: `${SITE_CONFIG.name}"`,
+    default: `${SITE_CONFIG.name}`,
     template: `%s | ${SITE_CONFIG.name}`,
   },
   description:

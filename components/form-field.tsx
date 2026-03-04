@@ -112,6 +112,7 @@ const DateField = ({
         <PopoverContent className="w-auto p-0" align="start">
           <Calendar
             mode="single"
+            captionLayout="dropdown"
             onSelect={(date) => {
               const dateStr = format(date as Date, "yyyy-MM-dd");
               field.handleChange(dateStr);
