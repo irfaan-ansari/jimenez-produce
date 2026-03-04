@@ -2,15 +2,80 @@
 
 import { db } from "@/lib/db";
 import { eq } from "drizzle-orm";
+import { put } from "@vercel/blob";
 import { getSession } from "./auth";
 import { headers } from "next/headers";
+import { randomBytes } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { waitUntil } from "@vercel/functions";
+import { sendEmail, sendJobStatusEmail } from "@/lib/email";
 import { JobApplicationStatus } from "@/lib/types";
-import { jobApplications, JobApplicationInsertType } from "@/lib/db/schema";
-import { sendJobStatusEmail } from "@/lib/email";
+import { renderToBuffer } from "@react-pdf/renderer";
 import { handleAction } from "@/lib/helper/error-handler";
+import { JobAgreementPDF } from "@/components/pdf/job-agreement";
+import { jobApplications, JobApplicationInsertType } from "@/lib/db/schema";
+import InternalAgreementNotification from "@/components/email/job-agreement-submit";
 
+export const getJobApplication = handleAction(async (token: string) => {
+  if (!token) throw new Error("Invalid token");
+  const res = await db.query.jobApplications.findFirst({
+    where: eq(jobApplications.token, token),
+  });
+
+  if (!res) throw new Error("Invalid token");
+
+  return {
+    name: `${res.firstName} ${res.lastName}`,
+    position: res.position,
+    facility: res.location,
+    signatureUrl: res.signatureUrl,
+  };
+});
+
+export const submitAgreement = handleAction(async (token: string) => {
+  if (!token) throw new Error("Invalid request");
+
+  const res = await db.query.jobApplications.findFirst({
+    where: eq(jobApplications.token, token),
+  });
+
+  if (!res) throw new Error("Resource not found");
+
+  const buffer = await renderToBuffer(JobAgreementPDF({ data: res }));
+
+  const blob = await put(`job-application/agreement.pdf`, buffer, {
+    access: "public",
+    addRandomSuffix: true,
+  });
+
+  const [result] = await db
+    .update(jobApplications)
+    .set({
+      agreementUrl: blob.url,
+      agreementDate: new Date().toISOString().split("T")[0],
+      token: null,
+    })
+    .where(eq(jobApplications.id, res.id))
+    .returning();
+
+  waitUntil(
+    sendEmail({
+      to: ["info@jimenezproduce.com"],
+      subject: "New Employment Agreement Submitted",
+      template: InternalAgreementNotification,
+      variables: {
+        name: `${result.firstName} ${result.lastName}`,
+        email: result.email,
+        position: result.position,
+        facility: result.location,
+        submittedAt: result.agreementDate,
+        agreementUrl: result.agreementUrl,
+      },
+    })
+  );
+
+  return result;
+});
 /**
  * Create job application
  * @param data
@@ -60,6 +125,10 @@ export const updateJobApplication = handleAction(
     if (!existing) throw new Error("Resource not found.");
 
     const nextStatus: JobApplicationStatus = data.status as any;
+
+    if (data.status === "pending") {
+      data.token = randomBytes(32).toString("hex");
+    }
 
     const [result] = await db
       .update(jobApplications)

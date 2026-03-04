@@ -115,39 +115,19 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0.5,
     borderBottomColor: "#f1f5f9",
   },
-  // --- FIXED SIGNATURE AREA ---
-  signatureSection: {
-    marginTop: "auto",
-  },
-  signatureContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-end",
-    marginTop: 10,
-  },
+
   signatureBlock: {
-    width: "45%",
+    width: "50%",
     borderBottomWidth: 1,
     borderBottomColor: COLORS.divider,
     paddingBottom: 5,
   },
   signatureImage: {
-    width: 120,
-    height: 40,
-    marginBottom: 5,
-  },
-  footer: {
-    position: "absolute",
-    bottom: 20,
-    left: 40,
-    right: 40,
-    borderTopWidth: 1,
-    borderTopColor: COLORS.divider,
-    paddingTop: 8,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    fontSize: 7,
-    color: "#94a3b8",
+    width: 200,
+    height: 80,
+    marginBottom: 16,
+    objectFit: "contain",
+    objectPosition: "left",
   },
 });
 
@@ -166,7 +146,7 @@ export const CustomerPDF = ({ data }: { data: CustomerSelectType }) => {
             />
             <View>
               <Text style={[styles.docTitle, { marginBottom: 16 }]}>
-                Jiminez Produce
+                Jimenez Produce
               </Text>
               <Text style={styles.tagline}>Customer application</Text>
             </View>
@@ -262,6 +242,20 @@ export const CustomerPDF = ({ data }: { data: CustomerSelectType }) => {
         <Text style={styles.sectionTitle}>Operations & Billing</Text>
         <View style={styles.row}>
           <View style={styles.fieldGroup}>
+            <Text style={styles.label}>Guarantor</Text>
+            <Text style={styles.value}>
+              {data.guarantorName || "Not Provided"}
+            </Text>
+          </View>
+          <View style={styles.fieldGroup}>
+            <Text style={styles.label}>Guarantor Title</Text>
+            <Text style={styles.value}>
+              {data.guarantorRole || "Not Provided"}
+            </Text>
+          </View>
+        </View>
+        <View style={styles.row}>
+          <View style={styles.fieldGroup}>
             <Text style={styles.label}>Accounts Payable Email</Text>
             <Text style={styles.value}>
               {data.accountPayableEmail || "Not Provided"}
@@ -332,9 +326,7 @@ export const CustomerPDF = ({ data }: { data: CustomerSelectType }) => {
             </Text>
           </View>
         ))}
-
-        {/* 5. SIGNATURE SECTION (ANCHORED TO BOTTOM) */}
-        <View style={styles.signatureSection}>
+        <View wrap={false}>
           <Text style={styles.sectionTitle}>Acknowledgement</Text>
           <Text
             style={{
@@ -344,11 +336,12 @@ export const CustomerPDF = ({ data }: { data: CustomerSelectType }) => {
               fontStyle: "italic",
             }}
           >
-            I, {data.signatureName}, hereby certify that the information
-            provided is accurate and authorize account establishment.
+            I, {data.signatureName}, acknowledge that I have read, understand,
+            and agree to the Personal Guarantee Agreement above. I agree that
+            this electronic submission serves as my legally binding signature.
           </Text>
 
-          <View style={styles.signatureContainer}>
+          <View style={[styles.row, { marginTop: 50 }]}>
             <View style={styles.signatureBlock}>
               {data.signatureUrl && (
                 <Image src={data.signatureUrl} style={styles.signatureImage} />

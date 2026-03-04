@@ -2,7 +2,9 @@ import {
   CheckCircle,
   Circle,
   Clock,
+  Eye,
   MessageCircle,
+  Send,
   XCircle,
 } from "lucide-react";
 import {
@@ -14,6 +16,7 @@ import {
   ApplicantEducationType,
   ApplicantEmployementType,
   ApplicantLicenseType,
+  ApplicantTrafficConvictionsType,
 } from "../form-schema/job-schema";
 
 export const applicantDetail: ApplicantDetailsType = {
@@ -123,30 +126,11 @@ export const applicantDrivingExperience: ApplicantDrivingExperienceType = {
 };
 
 export const applicantAccidentHistory: ApplicantAccidentHistoryType = {
-  accidentHistory: [
-    {
-      accidentDate: "",
-      accidentNature: "",
-      injuriesCount: "",
-      fatalitiesCount: "",
-      chemicalSpill: "",
-    },
-  ],
+  accidentHistory: [],
 };
 
-export const applicantTrafficConvictions = {
-  trafficConvictions: [
-    {
-      dateConvicted: "",
-      violation: "",
-      state: "",
-      penalty: "",
-      licenseDenied: "",
-      licenseDeniedReason: "",
-      licenseSuspended: "",
-      licenseSuspendedReason: "",
-    },
-  ],
+export const applicantTrafficConvictions: ApplicantTrafficConvictionsType = {
+  trafficConvictions: [],
 };
 
 export const US_STATES = [
@@ -264,7 +248,7 @@ export const jobApplicationStatusMap = {
       {
         label: "Send Agreement",
         action: "pending",
-        icon: Clock,
+        icon: Send,
       },
       {
         label: "Move to Hired",
@@ -289,6 +273,11 @@ export const jobApplicationStatusMap = {
         icon: CheckCircle,
       },
       {
+        label: "Resend Agreement",
+        action: "pending",
+        icon: Send,
+      },
+      {
         label: "Reject",
         action: "rejected",
         icon: XCircle,
@@ -299,7 +288,13 @@ export const jobApplicationStatusMap = {
     label: "Hired",
     color: "#22C55E",
     icon: CheckCircle,
-    actions: [],
+    actions: [
+      {
+        label: "View Agreement",
+        action: "view_agreement",
+        icon: Eye,
+      },
+    ],
   },
   rejected: {
     label: "Rejected",

@@ -20,7 +20,7 @@ export const ApplicantAccidentHistory = withForm({
                   return (
                     <React.Fragment key={i}>
                       <div className="p-4 border-l-4 border-blue-500 bg-secondary font-medium text-base @2xl:col-span-2 flex justify-between items-center">
-                        Accident History {i + 1}
+                        Accident
                         <Button
                           variant="outline"
                           size="icon"
@@ -90,7 +90,7 @@ export const ApplicantAccidentHistory = withForm({
                   }
                 >
                   <Plus />
-                  Add Another
+                  Add Accident
                 </Button>
               </>
             );

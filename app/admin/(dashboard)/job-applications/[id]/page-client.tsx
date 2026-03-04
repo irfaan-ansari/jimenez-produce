@@ -71,6 +71,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
             id={data.id}
             status={data.status as JobApplicationStatus}
             showView={false}
+            agreementUrl={data.agreementUrl as any}
           />
         </div>
         {/* applicant details */}
@@ -174,12 +175,12 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
           <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <div className="text-muted-foreground uppercase font-medium">
-                Institution Name
+                Name
               </div>
               <div className="text-base">{data.collage?.institutionName}</div>
             </div>
             <div className="space-y-1">
-              <div className="text-muted-foreground textsm">Field of Study</div>
+              <div className="text-muted-foreground textsm">School</div>
               <div className="text-base">{data.collage?.fieldOfStudy}</div>
             </div>
             <div className="space-y-1">
@@ -357,134 +358,94 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
         )}
 
         {/* address */}
-        <Card className="rounded-2xl text-base">
-          {/* current address */}
-          <CardHeader className="border-b">
-            <CardTitle className="text-xl font-semibold">
-              Current Address
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="grid grid-cols-2 gap-6 border-b pb-6">
-            <div className="space-y-1">
-              <div className="text-muted-foreground text-sm">Street</div>
-              <div>{data.currentAddress.street}</div>
-            </div>
-            <div className="space-y-1">
-              <div className="text-muted-foreground text-sm">City</div>
-              <div>{data.currentAddress.city}</div>
-            </div>
-            <div className="space-y-1">
-              <div className="text-muted-foreground text-sm">State</div>
-              <div>{data.currentAddress.state}</div>
-            </div>
-            <div className="space-y-1">
-              <div className="text-muted-foreground text-sm">Zip</div>
-              <div>{data.currentAddress.zip}</div>
-            </div>
-            <div className="space-y-1">
-              <div className="text-muted-foreground text-sm">
-                Years at Address
-              </div>
-              <div>{data.currentAddress.yearsAtAddress}</div>
-            </div>
-          </CardContent>
-          {/* mailing address */}
-          <CardHeader className="border-b">
-            <CardTitle className="text-xl font-semibold">
-              Mailing Address
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="grid grid-cols-2 gap-6 not-last:border-b not-last:pb-6">
-            <div className="space-y-1">
-              <div className="text-muted-foreground text-sm">Street</div>
-              <div>{data.mailingAddress.street}</div>
-            </div>
-            <div className="space-y-1">
-              <div className="text-muted-foreground text-sm">City</div>
-              <div>{data.mailingAddress.city}</div>
-            </div>
-            <div className="space-y-1">
-              <div className="text-muted-foreground text-sm">State</div>
-              <div>{data.mailingAddress.state}</div>
-            </div>
-            <div className="space-y-1">
-              <div className="text-muted-foreground text-sm">Zip</div>
-              <div>{data.mailingAddress.zip}</div>
-            </div>
-            <div className="space-y-1">
-              <div className="text-muted-foreground text-sm">
-                Years at Address
-              </div>
-              <div>{data.mailingAddress.yearsAtAddress}</div>
-            </div>
-          </CardContent>
-          {/* addresses */}
-          {Array.isArray(data.addresses) && data.addresses.length > 0 && (
-            <>
-              <CardHeader className="border-b">
-                <CardTitle className="text-xl font-semibold">
-                  Addresses
-                </CardTitle>
-              </CardHeader>
+        {Array.isArray(data.addresses) && data.addresses.length ? (
+          <Card className="rounded-2xl text-base">
+            {/* addresses */}
+            <CardHeader className="border-b">
+              <CardTitle className="text-xl font-semibold">Addresses</CardTitle>
+            </CardHeader>
 
-              {data.addresses.map((add, i) => (
-                <CardContent
-                  key={i}
-                  className="grid grid-cols-2 gap-6 not-last:pb-6 not-last:boredr-b"
-                >
-                  <div className="space-y-1">
-                    <div className="text-muted-foreground text-sm">Street</div>
-                    <div>{add.street}</div>
+            {data.addresses.map((add, i) => (
+              <CardContent
+                key={i}
+                className="grid grid-cols-2 gap-6 not-last:pb-6 not-last:boredr-b"
+              >
+                <div className="space-y-1">
+                  <div className="text-muted-foreground uppercase font-medium">
+                    Street
                   </div>
-                  <div className="space-y-1">
-                    <div className="text-muted-foreground text-sm">City</div>
-                    <div>{add.city}</div>
+                  <div className="text-base">{add.street}</div>
+                </div>
+                <div className="space-y-1">
+                  <div className="text-muted-foreground uppercase font-medium">
+                    City
                   </div>
-                  <div className="space-y-1">
-                    <div className="text-muted-foreground text-sm">State</div>
-                    <div>{add.state}</div>
+                  <div className="text-base">{add.city}</div>
+                </div>
+                <div className="space-y-1">
+                  <div className="text-muted-foreground uppercase font-medium">
+                    State
                   </div>
-                  <div className="space-y-1">
-                    <div className="text-muted-foreground text-sm">Zip</div>
-                    <div>{add.zip}</div>
+                  <div className="text-base">{add.state}</div>
+                </div>
+                <div className="space-y-1">
+                  <div className="text-muted-foreground uppercase font-medium">
+                    Zip
                   </div>
-                  <div className="space-y-1">
-                    <div className="text-muted-foreground text-sm">
-                      Years at Address
-                    </div>
-                    <div>{add.yearsAtAddress}</div>
+                  <div className="text-base">{add.zip}</div>
+                </div>
+                <div className="space-y-1">
+                  <div className="text-muted-foreground uppercase font-medium">
+                    Years at Address
                   </div>
-                </CardContent>
-              ))}
-            </>
-          )}
-        </Card>
+                  <div className="text-base">{add.yearsAtAddress}</div>
+                </div>
+              </CardContent>
+            ))}
+          </Card>
+        ) : null}
 
         {/* license */}
-        <Card className="rounded-2xl text-base">
+        <Card className="rounded-2xl">
           <CardHeader className="border-b">
             <CardTitle className="text-xl font-semibold">License</CardTitle>
           </CardHeader>
           <CardContent className="grid grid-cols-2 gap-6 not-last:pb-6 not-last:border-b">
             <div className="space-y-1">
-              <div className="text-muted-foreground text-sm">License #</div>
-              <div>{data.currentLicense?.licenseNumber}</div>
+              <div className="text-muted-foreground uppercase font-medium">
+                License #
+              </div>
+              <div className="text-base">
+                {data.currentLicense?.licenseNumber}
+              </div>
             </div>
             <div className="space-y-1">
-              <div className="text-muted-foreground text-sm">Type/Class</div>
-              <div>{data.currentLicense?.licenseType}</div>
+              <div className="text-muted-foreground uppercase font-medium">
+                Type/Class
+              </div>
+              <div className="text-base">
+                {data.currentLicense?.licenseType}
+              </div>
             </div>
             <div className="space-y-1">
-              <div className="text-muted-foreground text-sm">Expiry Date</div>
-              <div>{data.currentLicense?.expiryDate}</div>
+              <div className="text-muted-foreground uppercase font-medium">
+                Expiry Date
+              </div>
+              <div className="text-base">{data.currentLicense?.expiryDate}</div>
             </div>
             <div className="space-y-1">
-              <div className="text-muted-foreground text-sm">Endorsements</div>
-              <div>{data.currentLicense?.endorsements}</div>
+              <div className="text-muted-foreground uppercase font-medium">
+                Endorsements
+              </div>
+              <div className="text-base">
+                {data.currentLicense?.endorsements}
+              </div>
             </div>
             <div className="space-y-1">
-              <div className="text-muted-foreground text-sm">Issuing State</div>
-              <div>{data.currentLicense?.state}</div>
+              <div className="text-muted-foreground uppercase font-medium">
+                Issuing State
+              </div>
+              <div className="text-base">{data.currentLicense?.state}</div>
             </div>
           </CardContent>
           {/* licenses */}
@@ -501,34 +462,34 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
                   className="grid grid-cols-2 gap-6 not-last:pb-6 not-last:border-b"
                 >
                   <div className="space-y-1">
-                    <div className="text-muted-foreground text-sm">
+                    <div className="text-muted-foreground uppercase font-medium">
                       License #
                     </div>
-                    <div>{lic.licenseNumber}</div>
+                    <div className="text-base">{lic.licenseNumber}</div>
                   </div>
                   <div className="space-y-1">
-                    <div className="text-muted-foreground text-sm">
+                    <div className="text-muted-foreground uppercase font-medium">
                       Type/Class
                     </div>
-                    <div>{lic.licenseType}</div>
+                    <div className="text-base">{lic.licenseType}</div>
                   </div>
                   <div className="space-y-1">
-                    <div className="text-muted-foreground text-sm">
+                    <div className="text-muted-foreground uppercase font-medium">
                       Expiry Date
                     </div>
-                    <div>{lic.expiryDate}</div>
+                    <div className="text-base"> {lic.expiryDate}</div>
                   </div>
                   <div className="space-y-1">
-                    <div className="text-muted-foreground text-sm">
+                    <div className="text-muted-foreground uppercase font-medium">
                       Endorsements
                     </div>
                     <div>{lic.endorsements}</div>
                   </div>
                   <div className="space-y-1">
-                    <div className="text-muted-foreground text-sm">
+                    <div className="text-muted-foreground uppercase font-medium">
                       Issuing State
                     </div>
-                    <div>{lic.state}</div>
+                    <div className="text-base">{lic.state}</div>
                   </div>
                 </CardContent>
               ))}
@@ -539,97 +500,99 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
         {/* driving experience */}
         {Array.isArray(data.drivingExperiences) &&
           data.drivingExperiences.length > 0 && (
-            <>
-              <Card className="rounded-2xl text-base">
-                <CardHeader className="border-b">
-                  <CardTitle className="text-xl font-semibold">
-                    Driving Experience
-                  </CardTitle>
-                </CardHeader>
-                {data.drivingExperiences.map((exp, i) => (
-                  <CardContent
-                    key={i}
-                    className="grid grid-cols-2 gap-6 not-last:pb-6 not-last:border-b"
-                  >
-                    <div className="space-y-1">
-                      <div className="text-muted-foreground text-sm">
-                        Category
-                      </div>
-                      <div>{exp.category}</div>
+            <Card className="rounded-2xl">
+              <CardHeader className="border-b">
+                <CardTitle className="text-xl font-semibold">
+                  Driving Experience
+                </CardTitle>
+              </CardHeader>
+              {data.drivingExperiences.map((exp, i) => (
+                <CardContent
+                  key={i}
+                  className="grid grid-cols-2 gap-6 not-last:pb-6 not-last:border-b"
+                >
+                  <div className="space-y-1">
+                    <div className="text-muted-foreground uppercase font-medium">
+                      Category
                     </div>
-                    <div className="space-y-1">
-                      <div className="text-muted-foreground text-sm">Type</div>
-                      <div>{exp.type}</div>
+                    <div className="text-base">{exp.category}</div>
+                  </div>
+                  <div className="space-y-1">
+                    <div className="text-muted-foreground uppercase font-medium">
+                      Type
                     </div>
-                    <div className="space-y-1">
-                      <div className="text-muted-foreground text-sm">
-                        Duration
-                      </div>
-                      <div>{exp.fromDate + "-" + exp.toDate}</div>
+                    <div className="text-base">{exp.type}</div>
+                  </div>
+                  <div className="space-y-1">
+                    <div className="text-muted-foreground uppercase font-medium">
+                      Duration
                     </div>
-                    <div className="space-y-1">
-                      <div className="text-muted-foreground text-sm">
-                        Approx Miles Total
-                      </div>
-                      <div>{exp.approxMilesTotal}</div>
+                    <div className="text-base">
+                      {exp.fromDate + "-" + exp.toDate}
                     </div>
-                  </CardContent>
-                ))}
-              </Card>
-            </>
+                  </div>
+                  <div className="space-y-1">
+                    <div className="text-muted-foreground uppercase font-medium">
+                      Approx Miles Total
+                    </div>
+                    <div className="text-base">{exp.approxMilesTotal}</div>
+                  </div>
+                </CardContent>
+              ))}
+            </Card>
           )}
 
         {/* accident history */}
         {Array.isArray(data.accidentHistory) &&
           data.accidentHistory.length > 0 && (
-            <>
-              <Card className="rounded-2xl text-base">
-                <CardHeader className="border-b">
-                  <CardTitle className="text-xl font-semibold">
-                    Accident History
-                  </CardTitle>
-                </CardHeader>
-                {data.accidentHistory.map((acc, i) => (
-                  <CardContent className="grid grid-cols-2 gap-6 not-last:pb-6 not-last:border-b">
-                    <div className="space-y-1">
-                      <div className="text-muted-foreground text-sm">Date</div>
-                      <div>{acc.accidentDate}</div>
+            <Card className="rounded-2xl">
+              <CardHeader className="border-b">
+                <CardTitle className="text-xl font-semibold">
+                  Accident History
+                </CardTitle>
+              </CardHeader>
+              {data.accidentHistory.map((acc, i) => (
+                <CardContent className="grid grid-cols-2 gap-6 not-last:pb-6 not-last:border-b">
+                  <div className="space-y-1">
+                    <div className="text-muted-foreground uppercase font-medium">
+                      Date
                     </div>
-                    <div className="space-y-1">
-                      <div className="text-muted-foreground text-sm">
-                        Nature
-                      </div>
-                      <div>{acc.accidentNature}</div>
+                    <div className="text-base">{acc.accidentDate}</div>
+                  </div>
+                  <div className="space-y-1">
+                    <div className="text-muted-foreground uppercase font-medium">
+                      Nature
                     </div>
-                    <div className="space-y-1">
-                      <div className="text-muted-foreground text-sm">
-                        Injuries Count
-                      </div>
-                      <div>{acc.injuriesCount}</div>
+                    <div className="text-base">{acc.accidentNature}</div>
+                  </div>
+                  <div className="space-y-1">
+                    <div className="text-muted-foreground uppercase font-medium">
+                      Injuries Count
                     </div>
-                    <div className="space-y-1">
-                      <div className="text-muted-foreground text-sm">
-                        Fetalities Count
-                      </div>
-                      <div>{acc.fatalitiesCount}</div>
+                    <div className="text-base">{acc.injuriesCount}</div>
+                  </div>
+                  <div className="space-y-1">
+                    <div className="text-muted-foreground uppercase font-medium">
+                      Fetalities Count
                     </div>
-                    <div className="space-y-1">
-                      <div className="text-muted-foreground text-sm">
-                        Chemical Spill
-                      </div>
-                      <div>{acc.chemicalSpill}</div>
+                    <div className="text-base">{acc.fatalitiesCount}</div>
+                  </div>
+                  <div className="space-y-1">
+                    <div className="text-muted-foreground uppercase font-medium">
+                      Chemical Spill
                     </div>
-                  </CardContent>
-                ))}
-              </Card>
-            </>
+                    <div className="text-base">{acc.chemicalSpill}</div>
+                  </div>
+                </CardContent>
+              ))}
+            </Card>
           )}
 
         {/* traffic convictions*/}
         {Array.isArray(data.trafficConvictions) &&
           data.trafficConvictions.length > 0 && (
             <>
-              <Card className="rounded-2xl text-base">
+              <Card className="rounded-2xl">
                 <CardHeader className="border-b">
                   <CardTitle className="text-xl font-semibold">
                     Accident History
@@ -638,50 +601,54 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
                 {data.trafficConvictions.map((tc, i) => (
                   <CardContent className="grid grid-cols-2 gap-6 not-last:pb-6 not-last:border-b">
                     <div className="space-y-1">
-                      <div className="text-muted-foreground text-sm">Date</div>
-                      <div>{tc.dateConvicted}</div>
+                      <div className="text-muted-foreground uppercase font-medium">
+                        Date
+                      </div>
+                      <div className="text-base"> {tc.dateConvicted}</div>
                     </div>
                     <div className="space-y-1">
-                      <div className="text-muted-foreground text-sm">
+                      <div className="text-muted-foreground uppercase font-medium">
                         Violation
                       </div>
-                      <div>{tc.violation}</div>
+                      <div className="text-base">{tc.violation}</div>
                     </div>
                     <div className="space-y-1">
-                      <div className="text-muted-foreground text-sm">
+                      <div className="text-muted-foreground uppercase font-medium">
                         Location
                       </div>
-                      <div>{tc.state}</div>
+                      <div className="text-base">{tc.state}</div>
                     </div>
                     <div className="space-y-1">
-                      <div className="text-muted-foreground text-sm">
+                      <div className="text-muted-foreground uppercase font-medium">
                         Penalty
                       </div>
-                      <div>{tc.penalty}</div>
+                      <div className="text-base">{tc.penalty}</div>
                     </div>
                     <div className="space-y-1">
-                      <div className="text-muted-foreground text-sm">
+                      <div className="text-muted-foreground uppercase font-medium">
                         License Ever Denied
                       </div>
-                      <div>{tc.licenseDenied}</div>
+                      <div className="text-base">{tc.licenseDenied}</div>
                     </div>
                     <div className="space-y-1">
-                      <div className="text-muted-foreground text-sm">
+                      <div className="text-muted-foreground uppercase font-medium">
                         Reason for License Denial
                       </div>
-                      <div>{tc.licenseDeniedReason}</div>
+                      <div className="text-base">{tc.licenseDeniedReason}</div>
                     </div>
                     <div className="space-y-1">
-                      <div className="text-muted-foreground text-sm">
+                      <div className="text-muted-foreground uppercase font-medium">
                         License Ever Suspended
                       </div>
-                      <div>{tc.licenseSuspended}</div>
+                      <div className="text-base">{tc.licenseSuspended}</div>
                     </div>
                     <div className="space-y-1">
-                      <div className="text-muted-foreground text-sm">
+                      <div className="text-muted-foreground uppercase font-medium">
                         Reason for Suspension
                       </div>
-                      <div>{tc.licenseSuspendedReason}</div>
+                      <div className="text-base">
+                        {tc.licenseSuspendedReason}
+                      </div>
                     </div>
                   </CardContent>
                 ))}
@@ -696,38 +663,31 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
               Additional details
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2">
-            {data.reviewedAt && (
-              <div>
-                <span className="mr-1 inline-block text-muted-foreground">
-                  Reviewed At:
-                </span>
-                {format(data.reviewedAt!, "dd-mm-yyyy hh:mm:ss a")}
-              </div>
-            )}
-            <div>
-              <span className="mr-1 inline-block text-muted-foreground">
+          <CardContent className="grid grid-cols-2 gap-6">
+            <div className="space-y-1">
+              <div className="text-muted-foreground uppercase font-medium">
                 Created At:
+              </div>
+              <span className="text-base">
+                {format(data.createdAt!, "yyyy-dd-mm hh:mm:ss a")}
               </span>
-              {format(data.createdAt!, "dd-mm-yyyy hh:mm:ss a")}
             </div>
             <div>
-              <span className="mr-1 inline-block text-muted-foreground">
+              <div className="text-muted-foreground uppercase font-medium">
                 Updated At:
+              </div>
+              <span className="text-base">
+                {format(data.updatedAt!, "yyyy-dd-mm hh:mm:ss a")}
               </span>
-              {format(data.updatedAt!, "dd-mm-yyyy hh:mm:ss a")}
             </div>
             <div>
-              <span className="mr-1 inline-block text-muted-foreground">
+              <div className="text-muted-foreground uppercase font-medium">
                 IP Address:
-              </span>
-              {data?.ipAddress}
-            </div>
-            <div>
-              <span className="mr-1 inline-block text-muted-foreground">
-                User Agent:
-              </span>
-              {data?.userAgent}
+              </div>
+              <div className="grid gap-1 text-base">
+                {data?.ipAddress}
+                {data?.userAgent}
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -776,11 +736,9 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
               label="Social Security (Back)"
             />
             <Attachment url={data.signatureUrl as string} label="Signature" />
-            <Attachment url={data.agreementUrl as string} label="Agreement" />
-            <Attachment
-              url={data.agreementSignatureUrl as string}
-              label="Agreement Signature"
-            />
+            {data.agreementUrl && (
+              <Attachment url={data.agreementUrl as string} label="Agreement" />
+            )}
           </CardContent>
         </Card>
       </div>

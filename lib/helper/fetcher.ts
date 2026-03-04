@@ -1,6 +1,6 @@
 export async function fetcher<T>(url: string): Promise<T> {
   try {
-    const res = await fetch(url, {});
+    const res = await fetch(url);
 
     const data = await res.json().catch(() => null);
 

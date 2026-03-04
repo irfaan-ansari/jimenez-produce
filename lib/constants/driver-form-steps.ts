@@ -65,7 +65,7 @@ export const steps: StepsType = [
     schema: accidentHistorySchema,
   },
   {
-    title: "Traffic Convictions & Forfeitures",
+    title: "Traffic Convictions",
     description:
       "Disclose any traffic violations, convictions, or bond forfeitures from the past three years.",
     component: ApplicantTrafficConvictions,

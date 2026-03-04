@@ -1,0 +1,1 @@
+ALTER TABLE "job_applications" RENAME COLUMN "agreement_date" TO "agreement_dat";

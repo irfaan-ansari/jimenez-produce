@@ -15,7 +15,7 @@ type PublicProduct = Omit<ProductSelectType, "price" | "offerPrice">;
 export async function GET(req: NextRequest) {
   try {
     const session = await getSession();
-
+    console.log("session::", session);
     const cookieStore = await cookies();
     const email: string = cookieStore.get("customer-email") as any;
 

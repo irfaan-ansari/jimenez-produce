@@ -16,10 +16,12 @@ interface Props {
   status: Status;
   id: number;
   showView: boolean;
+  agreementUrl: undefined | string;
 }
 export const JobApplicationAction = ({
   id,
   status,
+  agreementUrl,
   showView = true,
 }: Props) => {
   const [open, setOpen] = useState(false);
@@ -32,6 +34,13 @@ export const JobApplicationAction = ({
 
   const handleAction = (action: string) => {
     switch (action) {
+      case "view_agreement":
+        if (agreementUrl) {
+          window.open(agreementUrl, "_blank");
+        } else {
+          toast.error("Link not found.");
+        }
+        break;
       case "rejected":
         setStatusVariant("reject");
         setShowRejectDialog(true);

@@ -3,11 +3,15 @@ import { Section, Text, Button } from "@react-email/components";
 
 interface JobAgreementProps {
   name: string;
-  email: string;
+  agreementUrl: string;
   position: string;
 }
 
-export const JobAgreement = ({ name, email, position }: JobAgreementProps) => {
+export const JobAgreement = ({
+  name,
+  agreementUrl,
+  position,
+}: JobAgreementProps) => {
   return (
     <EmailTemplate
       template="customer"
@@ -47,7 +51,7 @@ export const JobAgreement = ({ name, email, position }: JobAgreementProps) => {
           </Text>
 
           <Button
-            href={`https://jimenezproduce.com/onboarding?applicant=${email}`}
+            href={agreementUrl}
             target="_blank"
             className="bg-[#80b83a] p-4 text-white uppercase text-sm font-semibold text-center justify-center flex items-center mt-6"
           >

@@ -1,73 +1,155 @@
-import { createTw } from "react-pdf-tailwind";
-import { Document, Page, Text, View } from "@react-pdf/renderer";
+import { CONTACT_SECTIONS } from "@/lib/constants/web";
+import {
+  Document,
+  Page,
+  Text,
+  View,
+  StyleSheet,
+  Image,
+} from "@react-pdf/renderer";
 
-export const JobAgreementPDF = ({ name }: { name: string }) => {
-  const tw = createTw({
-    theme: {
-      fontFamily: {
-        sans: "Arial",
-      },
-    },
-  });
+const COLORS = {
+  primary: "#80b83a",
+  main: "#141414",
+  secondary: "#64748b",
+  divider: "#e2e8f0",
+  bgSubtle: "#f8fafc",
+};
 
+const styles = StyleSheet.create({
+  page: {
+    padding: 40,
+    fontFamily: "Helvetica",
+    fontSize: 12,
+    color: COLORS.main,
+    lineHeight: 1.2,
+  },
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  logo: {
+    width: 80,
+    height: "auto",
+  },
+  headerLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 15,
+  },
+  docTitle: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: COLORS.primary,
+  },
+  tagline: {
+    fontSize: 10,
+    color: COLORS.secondary,
+    fontWeight: "bold",
+    textTransform: "uppercase",
+  },
+
+  sectionTitle: {
+    fontSize: 10,
+    lineHeight: 1,
+    fontWeight: "bold",
+    backgroundColor: "#f1f5f9",
+    padding: 10,
+    marginTop: 15,
+    marginBottom: 5,
+    color: COLORS.main,
+    textTransform: "uppercase",
+  },
+
+  contentText: {
+    fontSize: 10,
+    color: "#334155",
+    textAlign: "justify",
+    marginBottom: 8,
+    marginTop: 10,
+  },
+
+  signatureImage: {
+    width: 150,
+    height: 50,
+    marginBottom: 5,
+    objectFit: "contain",
+    objectPosition: "left",
+  },
+  label: {
+    fontSize: 8,
+    color: COLORS.secondary,
+    fontWeight: "bold",
+    textTransform: "uppercase",
+  },
+  value: { fontSize: 10, fontWeight: "bold" },
+  signature: {
+    position: "absolute",
+    right: "0",
+    bottom: 0,
+  },
+});
+
+export const JobAgreementPDF = ({ data }: { data: any }) => {
   return (
-    <Document
-      title="Employee Onboarding Packet"
-      author="Jimenez Produce LLC"
-      creator="Jimenez Produce LLC"
-      producer="Jimenez Produce LLC"
-    >
-      <Page size="A4" style={tw("p-10 text-[11px] font-sans leading-relaxed")}>
-        {/* Header */}
-        <View style={tw("mb-6 text-center")}>
-          <Text style={tw("text-xl font-bold")}>JIMENEZ PRODUCE LLC</Text>
-          <Text style={tw("text-base font-semibold mt-1")}>
-            Employee Onboarding & Policy Acknowledgment Packet
-          </Text>
+    <Document title={`Employment Agreement - ${data.name}`}>
+      <Page size="A4" style={styles.page}>
+        {/* header */}
+        <View style={[styles.header]}>
+          <View style={styles.headerLeft}>
+            <Image
+              src={process.env.BETTER_AUTH_URL + "/logo.png"}
+              style={styles.logo}
+            />
+            <View>
+              <Text style={[styles.docTitle, { marginBottom: 16 }]}>
+                Jimenez Produce LLC
+              </Text>
+              <Text style={styles.tagline}>
+                Employment Agreement & Policy Acknowledgment
+              </Text>
+            </View>
+          </View>
         </View>
 
-        <Text style={tw("mb-4")}>
+        {/* 2. MAIN CONTENT CARD (Will flow across 4-5 pages) */}
+
+        <Text style={styles.sectionTitle}>
+          Employee Onboarding & Policy Acknowledgment Packet
+        </Text>
+        <Text style={styles.contentText}>
           This document outlines employment terms, safety requirements,
           compliance obligations, equipment accountability standards, and
           workplace expectations for all employees of Jimenez Produce LLC.
         </Text>
-
-        {/* SECTION 1 */}
-        <Text style={tw("font-bold mt-4 mb-2")}>
-          SECTION 1 – Employment Relationship
-        </Text>
-        <Text style={tw("mb-3")}>
+        <Text style={styles.sectionTitle}>1. Employment Relationship</Text>
+        <Text style={styles.contentText}>
           Employment with Jimenez Produce LLC is at-will. Either the employee or
           the company may terminate employment at any time, with or without
           cause or notice, subject to applicable law. Nothing in this document
-          creates a contract of employment.
-        </Text>
-        <Text style={tw("mb-3")}>
-          All employees are subject to a 90-day introductory period during which
-          performance, reliability, and adherence to company policies will be
-          evaluated.
+          creates a contract of employment. All employees are subject to a
+          90-day introductory period during which performance, reliability, and
+          adherence to company policies will be evaluated.
         </Text>
 
-        {/* SECTION 2 */}
-        <Text style={tw("font-bold mt-4 mb-2")}>
-          SECTION 2 – Drug, Alcohol & Screening Authorization
+        <Text style={styles.sectionTitle}>
+          2. Drug, Alcohol & Screening Authorization
         </Text>
-        <Text style={tw("mb-3")}>
+        <Text style={styles.contentText}>
           Employees consent to pre-employment, post-accident, reasonable
-          suspicion, and when applicable, random drug and alcohol testing.
-        </Text>
-        <Text style={tw("mb-3")}>
-          By signing this document, you authorize Jimenez Produce LLC to conduct
+          suspicion, and when applicable, random drug and alcohol testing. By
+          signing this document, you authorize Jimenez Produce LLC to conduct
           criminal background checks, obtain Motor Vehicle Reports (MVR), verify
           employment history, conduct drug testing, and perform FMCSA Drug &
           Alcohol Clearinghouse queries as required by law.
         </Text>
 
-        {/* SECTION 3 */}
-        <Text style={tw("font-bold mt-4 mb-2")}>
-          SECTION 3 – FMCSA Clearinghouse (CDL Drivers)
+        <Text style={styles.sectionTitle}>
+          3. FMCSA Clearinghouse (CDL Drivers)
         </Text>
-        <Text style={tw("mb-3")}>
+        <Text style={styles.contentText}>
           CDL drivers authorize annual limited queries of the FMCSA Drug &
           Alcohol Clearinghouse. If a record exists, the driver must provide
           electronic consent for a full query within 24 hours in accordance with
@@ -75,105 +157,100 @@ export const JobAgreementPDF = ({ name }: { name: string }) => {
           safety-sensitive duties.
         </Text>
 
-        {/* SECTION 4 */}
-        <Text style={tw("font-bold mt-4 mb-2")}>
-          SECTION 4 – Equipment Responsibility & Big Joe Policy
-        </Text>
-        <Text style={tw("mb-3")}>
-          Employees are responsible for the proper care and protection of all
-          assigned company equipment, including but not limited to pallet jacks,
-          ramps, hand trucks, trucks, liftgates, and accessories.
-        </Text>
-        <Text style={tw("mb-3")}>
-          Big Joe electric pallet jacks are restricted to truck use only and may
-          not be used inside the warehouse. Drivers must charge and secure
-          equipment daily. Warehouse personnel must ensure units remain plugged
-          in when closing the facility.
-        </Text>
-        <Text style={tw("mb-3")}>
-          Any payroll deductions related to equipment damage will comply with
-          federal and state wage laws and require proper written authorization.
-        </Text>
+        <View wrap={false}>
+          <Text style={styles.sectionTitle}>
+            4. Equipment Responsibility & Big Joe Policy
+          </Text>
+          <Text style={styles.contentText}>
+            Employees are responsible for the proper care and protection of all
+            assigned company equipment, including but not limited to pallet
+            jacks, ramps, hand trucks, trucks, liftgates, and accessories. Big
+            Joe electric pallet jacks are restricted to truck use only and may
+            not be used inside the warehouse. Drivers must charge and secure
+            equipment daily. Warehouse personnel must ensure units remain
+            plugged in when closing the facility. Any payroll deductions related
+            to equipment damage will comply with federal and state wage laws and
+            require proper written authorization.
+          </Text>
+        </View>
+        <View wrap={false}>
+          <Text style={styles.sectionTitle}>
+            5. GPS & Vehicle Monitoring Consent
+          </Text>
+          <Text style={styles.contentText}>
+            All company vehicles are subject to GPS tracking, telematics
+            systems, safety monitoring, and route oversight. Employees
+            acknowledge there is no expectation of privacy while operating
+            company vehicles.
+          </Text>
+        </View>
 
-        {/* SECTION 5 */}
-        <Text style={tw("font-bold mt-4 mb-2")}>
-          SECTION 5 – GPS & Vehicle Monitoring Consent
-        </Text>
-        <Text style={tw("mb-3")}>
-          All company vehicles are subject to GPS tracking, telematics systems,
-          safety monitoring, and route oversight. Employees acknowledge there is
-          no expectation of privacy while operating company vehicles.
-        </Text>
+        <View wrap={false}>
+          <Text style={styles.sectionTitle}>6. Safety & Cell Phone Policy</Text>
+          <Text style={styles.contentText}>
+            Cell phone use is strictly prohibited while operating a company
+            vehicle. This includes calls, texting, social media, or any handheld
+            device usage. Cell phone use is not permitted while working inside
+            the warehouse except during designated break periods.
+          </Text>
+        </View>
+        <View wrap={false}>
+          <Text style={styles.sectionTitle}>
+            7. Training & Uniform Repayment Agreement
+          </Text>
+          <Text style={styles.contentText}>
+            If Jimenez Produce pays for CDL training, CDL testing fees, or DOT
+            Medical Card costs, the employee agrees to remain employed for at
+            least one (1) year from the date the CDL is obtained and training is
+            completed. If employment ends before one year, the full amount paid
+            may be deducted from the final paycheck, as permitted by law. If
+            uniforms are provided at no cost, the employee agrees to remain
+            employed for at least six (6) months from the employee’s start date.
+            If employment ends before six months, the cost of uniforms may be
+            deducted from the final paycheck, as permitted by law.
+          </Text>
+        </View>
+        <View wrap={false}>
+          <Text style={styles.sectionTitle}>
+            8. Confidentiality & Non-Solicitation
+          </Text>
+          <Text style={styles.contentText}>
+            Employees may not disclose pricing information, customer lists,
+            internal systems, alarm codes, lockbox codes, or other confidential
+            company information. Sales employees agree not to solicit company
+            customers or employees for twelve (12) months following separation
+            from employment.
+          </Text>
+        </View>
 
-        {/* SECTION 6 */}
-        <Text style={tw("font-bold mt-4 mb-2")}>
-          SECTION 6 – Safety & Cell Phone Policy
-        </Text>
-        <Text style={tw("mb-3")}>
-          Cell phone use is strictly prohibited while operating a company
-          vehicle. This includes calls, texting, social media, or any handheld
-          device usage.
-        </Text>
-        <Text style={tw("mb-3")}>
-          Cell phone use is not permitted while working inside the warehouse
-          except during designated break periods.
-        </Text>
+        <View wrap={false}>
+          <Text style={[styles.sectionTitle, { color: COLORS.main }]}>
+            EMPLOYEE ACKNOWLEDGMENT & CONSENT
+          </Text>
 
-        {/* SECTION 7 */}
-        <Text style={tw("font-bold mt-4 mb-2")}>
-          SECTION 7 – Training & Uniform Repayment Agreement
-        </Text>
-        <Text style={tw("mb-3")}>
-          If Jimenez Produce pays for CDL training, CDL testing fees, or DOT
-          Medical Card costs, the employee agrees to remain employed for at
-          least one (1) year from the date the CDL is obtained and training is
-          completed. If employment ends before one year, the full amount paid
-          may be deducted from the final paycheck, as permitted by law.
-        </Text>
-        <Text style={tw("mb-3")}>
-          If uniforms are provided at no cost, the employee agrees to remain
-          employed for at least six (6) months from the employee’s start date.
-          If employment ends before six months, the cost of uniforms may be
-          deducted from the final paycheck, as permitted by law.
-        </Text>
+          <View style={{ marginTop: 10 }}>
+            <Text style={styles.label}>Employee Full Legal Name</Text>
+            <Text style={styles.value}>Trevor Schexnayder</Text>
+          </View>
+          <View style={{ marginTop: 10 }}>
+            <Text style={styles.label}>Position</Text>
+            <Text style={styles.value}>Warehouse Associate</Text>
+          </View>
+          <View style={{ marginTop: 10 }}>
+            <Text style={styles.label}>Facility</Text>
+            <Text style={styles.value}>Louisiana</Text>
+          </View>
 
-        {/* SECTION 8 */}
-        <Text style={tw("font-bold mt-4 mb-2")}>
-          SECTION 8 – Confidentiality & Non-Solicitation
-        </Text>
-        <Text style={tw("mb-6")}>
-          Employees may not disclose pricing information, customer lists,
-          internal systems, alarm codes, lockbox codes, or other confidential
-          company information. Sales employees agree not to solicit company
-          customers or employees for twelve (12) months following separation
-          from employment.
-        </Text>
-
-        {/* Acknowledgment */}
-        <Text style={tw("font-bold mt-6 mb-4 text-center")}>
-          EMPLOYEE ACKNOWLEDGMENT & CONSENT
-        </Text>
-
-        <Text style={tw("mb-4")}>
-          Employee Full Legal Name: {name}
-          __________________________________________
-        </Text>
-
-        <Text style={tw("mb-4")}>
-          Position: ___________________________________________________________
-        </Text>
-
-        <Text style={tw("mb-4")}>
-          Facility (circle one): Robertsdale, AL / Lafayette, LA
-        </Text>
-
-        <Text style={tw("mb-4")}>
-          Signature: __________________________________________________________
-        </Text>
-
-        <Text>
-          Date: ______________________________________________________________
-        </Text>
+          <View style={{ marginTop: 10 }}>
+            <Text style={styles.label}>Date Signed</Text>
+            <Text style={styles.value}>{data.agreementDate}</Text>
+          </View>
+          <View style={styles.signature}>
+            {data.signatureUrl && (
+              <Image src={data.signatureUrl} style={styles.signatureImage} />
+            )}
+          </View>
+        </View>
       </Page>
     </Document>
   );

@@ -1,10 +1,9 @@
 import { db } from "@/lib/db";
 import { eq } from "drizzle-orm";
+import { getSession } from "@/server/auth";
 import { jobApplications } from "@/lib/db/schema";
 import { renderToStream } from "@react-pdf/renderer";
 import { NextRequest, NextResponse } from "next/server";
-
-import { getSession } from "@/server/auth";
 import { JobApplicationPDF } from "@/components/pdf/job-application";
 
 export async function GET(

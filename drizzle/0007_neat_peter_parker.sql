@@ -1,0 +1,1 @@
+ALTER TABLE "job_applications" RENAME COLUMN "agreement_signature_url" TO "token";

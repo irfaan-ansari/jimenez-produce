@@ -358,7 +358,7 @@
       "guarantorSignatureError": "La firma del garante es obligatoria.",
 
       "guaranteeAck": "Acuerdo de garantía personal",
-      "guaranteeAckDesc": " I acknowledge that I have read, understand, and agree to the Personal Guarantee Agreement above. I agree that this electronic submission serves as my legally binding signature.",
+      "guaranteeAckDesc": "Reconozco que he leído, entiendo y acepto el Acuerdo de Garantía Personal anterior. Acepto que esta presentación electrónica constituye mi firma legalmente vinculante.",
       "guaranteeAckError": "Debe aceptar el acuerdo de garantía personal."
     }
   }

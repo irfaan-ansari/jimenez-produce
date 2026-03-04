@@ -442,7 +442,7 @@ export const jobApplications = pgTable(
     cvUrl: text("cv_url").notNull(),
     agreementUrl: text("agreement_url"),
     agreementDate: text("agreement_date"),
-    agreementSignatureUrl: text("agreement_signature_url"),
+    token: text("token"),
     ipAddress: text("ip_address"),
     userAgent: text("user_agent"),
     statusReason: text("status_reason"),

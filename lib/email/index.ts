@@ -140,6 +140,7 @@ export const sendJobStatusEmail = async ({
   position,
   email,
   status,
+  token,
   statusReason,
   statusDetails,
 }: JobApplicationSelectType) => {
@@ -157,13 +158,13 @@ export const sendJobStatusEmail = async ({
       template: JobInterview,
       extraVars: { details: statusDetails },
     },
-
     pending: {
       subject: "Next Steps – Employment Application",
       template: JobAgreement,
-      extraVars: {},
+      extraVars: {
+        agreementUrl: `https://jimenezproduce.com/careers/agreement?token=${token}`,
+      },
     },
-
     rejected: {
       subject: "Application Status Update – Jimenez Produce",
       template: JobRejected,

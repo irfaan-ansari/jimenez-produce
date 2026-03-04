@@ -145,6 +145,7 @@ const columns: ColumnDef<JobApplicationSelectType>[] = [
         id={row.original.id}
         status={row.original.status as any}
         showView={true}
+        agreementUrl={row.original.agreementUrl as any}
       />
     ),
   },

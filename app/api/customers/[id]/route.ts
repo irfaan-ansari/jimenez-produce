@@ -18,6 +18,13 @@ export const GET = async (
 
     const data = await db.query.customer.findFirst({
       where: eq(customer.id, Number(id)),
+      with: {
+        user: {
+          columns: {
+            name: true,
+          },
+        },
+      },
     });
 
     if (!data)

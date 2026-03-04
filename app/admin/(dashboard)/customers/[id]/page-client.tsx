@@ -232,12 +232,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
               <p className="text-muted-foreground uppercase font-medium">
                 Guarantor
               </p>
-              <p className="text-base">
-                {data.guarantorName}{" "}
-                <span className="text-muted-foreground">
-                  ({data.guarantorRole})
-                </span>
-              </p>
+              <p className="text-base">{data.guarantorName}</p>
             </div>
 
             <div className="space-y-2">
@@ -250,6 +245,12 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
                   ({data.orderingPhone})
                 </span>
               </p>
+            </div>
+            <div className="space-y-2">
+              <p className="text-muted-foreground uppercase font-medium">
+                Guarantor Title
+              </p>
+              <p className="text-base">{data.guarantorRole}</p>
             </div>
             <div className="space-y-2">
               <p className="text-muted-foreground uppercase font-medium">
@@ -307,7 +308,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
           {data.status === "on_hold" && (
             <CardHeader>
               <CardTitle className="text-xl font-semibold">
-                Hold reason
+                Hold Reason
               </CardTitle>
             </CardHeader>
           )}
@@ -315,16 +316,32 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
           {data.status === "rejected" && (
             <CardHeader>
               <CardTitle className="text-xl font-semibold">
-                Reject reason
+                Reject Reason
               </CardTitle>
             </CardHeader>
           )}
 
           {(data.status === "on_hold" || data.status === "rejected") && (
-            <CardContent className="min-h-32 border-b">
-              {data.statusReason}
-              <br />
-              {data.statusDetails}
+            <CardContent className="min-h-32 border-b text-base space-y-6 pb-6">
+              <div className="flex flex-col gap-2">
+                <span className="font-semibold uppercase">
+                  {data.statusReason}
+                </span>
+                <span>{data.statusDetails}</span>
+              </div>
+              <div className="flex flex-col gap-2">
+                <span className="uppercase text-muted-foreground font-semibold text-sm">
+                  reviewed by
+                </span>
+                {/* @ts-expect-error */}
+                <span>{data?.user?.name ?? "NA"}</span>
+              </div>
+              <div className="flex flex-col gap-2">
+                <span className="uppercase text-muted-foreground font-semibold text-sm">
+                  reviewed at
+                </span>
+                <span>{format(data.createdAt!, "dd-mm-yyyy hh:mm:ss a")}</span>
+              </div>
             </CardContent>
           )}
 

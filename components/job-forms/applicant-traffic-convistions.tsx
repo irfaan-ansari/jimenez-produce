@@ -17,11 +17,11 @@ export const ApplicantTrafficConvictions = withForm({
           children={(field) => {
             return (
               <>
-                {field.state.value.map((subField, i) => {
+                {field.state.value?.map((subField, i) => {
                   return (
                     <React.Fragment key={i}>
                       <div className="p-4 border-l-4 border-blue-500 bg-secondary font-medium text-base @2xl:col-span-2 flex justify-between items-center">
-                        Accident History {i + 1}
+                        Traffic Conviction
                         <Button
                           variant="outline"
                           size="icon"
@@ -165,7 +165,7 @@ export const ApplicantTrafficConvictions = withForm({
                   }
                 >
                   <Plus />
-                  Add Another
+                  Add Conviction
                 </Button>
               </>
             );
