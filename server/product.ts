@@ -2,8 +2,8 @@
 
 import { db } from "@/lib/db";
 import { getSession } from "./auth";
-import { eq, sql } from "drizzle-orm";
 import { product, ProductInsertType } from "@/lib/db/schema";
+import { eq, sql } from "drizzle-orm";
 
 /**
  * Create a product

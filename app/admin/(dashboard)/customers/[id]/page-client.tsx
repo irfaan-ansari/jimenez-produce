@@ -115,13 +115,13 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
               <p className="text-muted-foreground uppercase font-medium">
                 Contact Details
               </p>
-              <div className="flex text-base items-center gap-3">
-                <div className="flex gap-2 items-center flex-wrap">
+              <div className="space-y-1">
+                <div className="flex gap-2 items-center flex-nowrap">
                   <Phone className="size-4 shrink-0" />
                   <span>{data.companyPhone}</span>
                 </div>
                 <span className="h-4 w-0.5 bg-foreground/20"></span>
-                <div className="flex gap-2 items-center flex-wrap">
+                <div className="flex gap-2 items-center flex-nowrap">
                   <MailCheck className="size-4 shrink-0" />
                   <span>{data.companyEmail}</span>
                 </div>
@@ -192,13 +192,13 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
               <p className="text-muted-foreground uppercase font-medium">
                 Contact Details
               </p>
-              <div className="flex text-base items-center gap-3">
-                <div className="flex gap-2 items-center flex-wrap">
+              <div className="space-y-1">
+                <div className="flex gap-2 items-center flex-nowrap">
                   <Phone className="size-4 shrink-0" />
                   <span>{data.officerMobile}</span>
                 </div>
                 <span className="h-4 w-0.5 bg-foreground/20"></span>
-                <div className="flex gap-2 items-center flex-wrap">
+                <div className="flex gap-2 items-center flex-nowrap">
                   <MailCheck className="size-4 shrink-0" />
                   <span>{data.officerEmail}</span>
                 </div>
@@ -272,7 +272,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
                 Created At
               </p>
               <p className="text-base">
-                {format(data.createdAt!, "dd-mm-yyyy hh:mm:ss a")}
+                {format(data.createdAt!, "MMMM dd, yyyy hh:mm:ss a")}
               </p>
             </div>
             <div className="space-y-2">
@@ -280,7 +280,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
                 updated at
               </p>
               <p className="text-base">
-                {format(data.updatedAt!, "dd-mm-yyyy hh:mm:ss a")}
+                {format(data.updatedAt!, "MMMM dd, yyyy hh:mm:ss a")}
               </p>
             </div>
 
@@ -340,7 +340,9 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
                 <span className="uppercase text-muted-foreground font-semibold text-sm">
                   reviewed at
                 </span>
-                <span>{format(data.createdAt!, "dd-mm-yyyy hh:mm:ss a")}</span>
+                <span>
+                  {format(data.createdAt!, "MMMM dd, yyyy hh:mm:ss a")}
+                </span>
               </div>
             </CardContent>
           )}

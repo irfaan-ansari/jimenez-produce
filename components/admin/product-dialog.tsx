@@ -357,7 +357,7 @@ const CategorySelector = ({ field }: { field: AnyFieldApi }) => {
   const ref = useRef<HTMLDivElement>(null);
   const [value, setValue] = useState("");
   const [open, setOpen] = useState(false);
-  const { data } = useCategories();
+  const { data, isPending } = useCategories();
 
   const filtered =
     data?.data?.filter((i) =>
@@ -400,23 +400,42 @@ const CategorySelector = ({ field }: { field: AnyFieldApi }) => {
           open ? "flex" : "hidden"
         }`}
       >
-        {filtered.map((cat) => (
+        {isPending ? (
+          <Loader className="animate-spin mx-auto size-4" />
+        ) : filtered.length > 0 ? (
+          filtered.map((cat) => (
+            <Button
+              key={cat}
+              type="button"
+              size="sm"
+              variant="ghost"
+              onClick={(e) => {
+                e.preventDefault();
+                const exists = field.state.value.includes(cat);
+
+                if (!exists) field.pushValue(cat);
+              }}
+            >
+              {cat}
+              {field.state.value.includes(cat) && <Check />}
+            </Button>
+          ))
+        ) : (
           <Button
-            key={cat}
             type="button"
             size="sm"
             variant="ghost"
             onClick={(e) => {
               e.preventDefault();
-              const exists = field.state.value.includes(cat);
-
-              if (!exists) field.pushValue(cat);
+              const exists = field.state.value.includes(value);
+              if (!exists) field.pushValue(value);
+              setOpen(false);
+              setValue("");
             }}
           >
-            {cat}
-            {field.state.value.includes(cat) && <Check />}
+            Create "{value}"
           </Button>
-        ))}
+        )}
       </div>
     </div>
   );

@@ -87,7 +87,7 @@ const columns: ColumnDef<JobApplicationSelectType>[] = [
         <div className="space-y-1">
           <div>
             {availableStartDate
-              ? format(new Date(availableStartDate), "dd MMM yyyy")
+              ? format(new Date(availableStartDate), "MMMM dd, yyyy")
               : "—"}
           </div>
 

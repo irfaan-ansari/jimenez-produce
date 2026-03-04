@@ -104,7 +104,7 @@ export const PageClient = () => {
                       </TableCell>
                       <TableCell className="p-4">
                         <span>
-                          {format(new Date(row.createdAt), "dd-MM-yyyy")}
+                          {format(new Date(row.createdAt), "MMMM dd, yyyy")}
                         </span>
                       </TableCell>
                       <TableCell className="p-4">

@@ -15,6 +15,7 @@ export const resend = new Resend(process.env.RESEND_API_KEY);
 const FROM_EMAIL = "Jimenez Produce <no-reply@jimenezproduce.com>";
 
 export const ADMIN_EMAILS = [
+  "info@jimenezproduce.com",
   "jorge@jimenezproduce.com",
   "elizabeth@jimenezproduce.com",
 ];

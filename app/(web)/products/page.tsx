@@ -1,13 +1,11 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Metadata } from "next";
-
+import { headers } from "next/headers";
+import { PageClient } from "./page-client";
+import { ProductResponse } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/container";
-
-import { fetcher } from "@/lib/helper/fetcher";
-import { ProductResponse } from "@/lib/types";
-import { Pagination } from "@/components/admin/pagination";
 
 export const metadata: Metadata = {
   title: "Catalog",
@@ -22,16 +20,38 @@ const CatalogPage = async ({
 }) => {
   const query = (await searchParams) || {};
 
-  const response = await fetcher<ProductResponse & { access: string }>(
-    `${process.env.BETTER_AUTH_URL}/api/products`
+  const params = new URLSearchParams(
+    Object.entries(query).map(([key, value]) => [key, String(value)])
   );
 
-  const { data, access, pagination } = response;
+  const res = await fetch(
+    `${process.env.BETTER_AUTH_URL}/api/products?${params.toString()}`,
+    {
+      headers: await headers(),
+    }
+  );
 
+  if (!res.ok) {
+    const error = await res.json().catch(() => null);
+
+    return (
+      <section className="my-16">
+        <Container className="space-y-6">
+          <p className="text-xl font-heading">
+            {error?.message || "Request failed"}
+          </p>
+        </Container>
+      </section>
+    );
+  }
+
+  const json: ProductResponse & { access: string } = await res.json();
+
+  const { data, access, pagination } = json;
   return (
     <section className="my-16">
-      <Container>
-        <div className="flex gap-6 justify-between items-center mb-6">
+      <Container className="space-y-6">
+        <div className="flex gap-6 justify-between items-center">
           <span className="font-medium font-heading uppercase">
             Products {pagination.total}
           </span>
@@ -54,8 +74,8 @@ const CatalogPage = async ({
                   />
                 )}
               </div>
-              <div className="p-4 mt-auto">
-                <h3 className="font-medium text-sm lg:text-base">
+              <div className="p-4 mt-auto space-y-1">
+                <h3 className="font-heading font-medium text-base">
                   {product.title}
                 </h3>
               </div>
@@ -89,13 +109,7 @@ const CatalogPage = async ({
             </div>
           </div>
         ) : (
-          <Pagination
-            page={pagination.page}
-            limit={pagination.limit}
-            total={pagination.total}
-            totalPages={pagination.totalPages}
-            onPageChange={(e) => console.log(e)}
-          />
+          <PageClient pagination={pagination} />
         )}
       </Container>
     </section>

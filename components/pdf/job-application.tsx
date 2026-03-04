@@ -1,138 +1,8 @@
 import { CONTACT_SECTIONS } from "@/lib/constants/web";
 import { JobApplicationSelectType } from "@/lib/db/schema";
-import {
-  Document,
-  Page,
-  Text,
-  View,
-  StyleSheet,
-  Image,
-} from "@react-pdf/renderer";
+import { Document, Page, Text, View, Image } from "@react-pdf/renderer";
 import { format } from "date-fns";
-
-const COLORS = {
-  primary: "#80b83a",
-  main: "#141414",
-  secondary: "#64748b",
-};
-
-const styles = StyleSheet.create({
-  page: {
-    padding: 40,
-    fontFamily: "Helvetica",
-    fontSize: 12,
-    color: COLORS.main,
-    lineHeight: 1.2,
-  },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 10,
-  },
-  logo: {
-    width: 80,
-    height: "auto",
-  },
-  headerLeft: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 15,
-  },
-  docTitle: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: COLORS.primary,
-  },
-  tagline: {
-    fontSize: 10,
-    color: COLORS.secondary,
-    fontWeight: "bold",
-    textTransform: "uppercase",
-  },
-  headerRight: {
-    textAlign: "right",
-    width: "40%",
-  },
-  headerContactText: {
-    fontSize: 8,
-    color: COLORS.secondary,
-    lineHeight: 1.3,
-  },
-  sectionTitle: {
-    fontSize: 10,
-    lineHeight: 1,
-    fontWeight: "bold",
-    backgroundColor: "#f1f5f9",
-    padding: 10,
-    marginTop: 15,
-    marginBottom: 5,
-    color: COLORS.main,
-    textTransform: "uppercase",
-  },
-  row: {
-    flexDirection: "row",
-    marginBottom: 6,
-  },
-  fieldGroup: {
-    flex: 1,
-    marginTop: 10,
-  },
-  label: {
-    fontSize: 10,
-    color: "#64748b",
-    fontWeight: "bold",
-    textTransform: "uppercase",
-    marginBottom: 1,
-  },
-  value: {
-    fontSize: 12,
-    color: "#0f172a",
-  },
-  tableHeader: {
-    flexDirection: "row",
-    borderBottomWidth: 1,
-    borderBottomColor: "#cbd5e1",
-    paddingBottom: 4,
-    marginTop: 5,
-  },
-  tableHeaderText: {
-    fontSize: 7,
-    fontWeight: "bold",
-    color: "#64748b",
-    textTransform: "uppercase",
-  },
-  tableRow: {
-    flexDirection: "row",
-    paddingVertical: 4,
-    borderBottomWidth: 0.5,
-    borderBottomColor: "#f1f5f9",
-  },
-  signatureBlock: {
-    marginTop: 30,
-    flexDirection: "row",
-    gap: 40,
-  },
-  signatureImage: {
-    width: 150,
-    height: 50,
-    borderBottomWidth: 1,
-    borderBottomColor: "#94a3b8",
-  },
-  footer: {
-    position: "absolute",
-    bottom: 30,
-    left: 40,
-    right: 40,
-    borderTopWidth: 1,
-    borderTopColor: "#e2e8f0",
-    paddingTop: 10,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    fontSize: 7,
-    color: "#94a3b8",
-  },
-});
+import { COLORS, styles } from "./styles";
 
 export const JobApplicationPDF = ({
   data,
@@ -176,233 +46,384 @@ export const JobApplicationPDF = ({
       <View style={styles.row}>
         <View style={styles.fieldGroup}>
           <Text style={styles.label}>Full Name</Text>
+          <Text style={styles.value}>{data.applicantName}</Text>
+        </View>
+        <View style={styles.fieldGroup}>
+          <Text style={styles.label}>DOB</Text>
+          <Text style={styles.value}>{format(data.dob, "MMMM dd, yyyy")}</Text>
+        </View>
+      </View>
+      <View style={styles.row}>
+        <View style={styles.fieldGroup}>
+          <Text style={styles.label}>Available Date</Text>
           <Text style={styles.value}>
-            {data.firstName + " " + data.lastName}
+            {format(data.availableStartDate, "MMMM dd, yyyy")}
+          </Text>
+        </View>
+        <View style={styles.fieldGroup}>
+          <Text style={styles.label}>Social Security #</Text>
+          <Text style={styles.value}>{data.socialSecurity}</Text>
+        </View>
+      </View>
+      <View style={styles.row}>
+        <View style={styles.fieldGroup}>
+          <Text style={styles.label}>Work authorization</Text>
+          <Text style={[styles.value, { textTransform: "capitalize" }]}>
+            {data.hasLegalRights}
           </Text>
         </View>
         <View style={styles.fieldGroup}>
           <Text style={styles.label}>Contact Details</Text>
-          <Text style={styles.value}>{data.phone + " | " + data.email}</Text>
-        </View>
-      </View>
-      <View style={styles.row}>
-        <View style={styles.fieldGroup}>
-          <Text style={styles.label}>DOB</Text>
-          <Text style={styles.value}>{data.dob}</Text>
-        </View>
-
-        <View style={styles.fieldGroup}>
-          <Text style={styles.label}>Availability</Text>
-          <Text style={styles.value}>{data.availableStartDate}</Text>
-        </View>
-      </View>
-      <View style={styles.row}>
-        <View style={styles.fieldGroup}>
-          <Text style={styles.label}>SSN</Text>
-          <Text style={styles.value}>{data.socialSecurity}</Text>
-        </View>
-        <View style={styles.fieldGroup}>
-          <Text style={styles.label}>Eligible to Work in the U.S.</Text>
-          <Text style={[styles.value, { textTransform: "uppercase" }]}>
-            {data.hasLegalRights}
-          </Text>
+          <Text style={styles.value}>{data.phone}</Text>
+          <Text style={styles.value}>{data.email}</Text>
         </View>
       </View>
 
-      <Text style={styles.sectionTitle}>Address History</Text>
       <View style={styles.row}>
         <View style={styles.fieldGroup}>
-          <Text style={styles.label}>
-            Current Address ({data.currentAddress.yearsAtAddress} yrs)
-          </Text>
+          <Text style={styles.label}>Current Address</Text>
           <Text style={styles.value}>
-            {data.currentAddress.street}, {data.currentAddress.city},{" "}
-            {data.currentAddress.state} {data.currentAddress.zip}
+            {data.currentAddress?.street +
+              " " +
+              data.currentAddress?.city +
+              " " +
+              data.currentAddress?.state +
+              " " +
+              data.currentAddress?.zip}
+          </Text>
+        </View>
+        <View style={styles.fieldGroup}>
+          <Text style={styles.label}>Previous Address</Text>
+          <Text style={styles.value}>
+            {data.mailingAddress?.street +
+              " " +
+              data.mailingAddress?.city +
+              " " +
+              data.mailingAddress?.state +
+              " " +
+              data.mailingAddress?.zip}
           </Text>
         </View>
       </View>
-      {data.addresses?.map((addr, i) => (
-        <View key={i} style={styles.row}>
-          <View style={styles.fieldGroup}>
-            <Text style={styles.label}>
-              Prev Address ({addr.yearsAtAddress} yrs)
-            </Text>
-            <Text style={styles.value}>
-              {addr.street}, {addr.city}, {addr.state} {addr.zip}
-            </Text>
-          </View>
-        </View>
-      ))}
 
-      <Text style={styles.sectionTitle}>License & Driving Experience</Text>
+      {/* education */}
+      <Text style={styles.sectionTitle}>Education - School</Text>
       <View style={styles.row}>
         <View style={styles.fieldGroup}>
-          <Text style={styles.label}>License Number</Text>
-          <Text style={styles.value}>{data.currentLicense?.licenseNumber}</Text>
+          <Text style={styles.label}>Name</Text>
+          <Text style={styles.value}>{data.highSchool?.institutionName}</Text>
         </View>
         <View style={styles.fieldGroup}>
-          <Text style={styles.label}>Type</Text>
-          <Text style={styles.value}>{data.currentLicense?.licenseType}</Text>
+          <Text style={styles.label}>School</Text>
+          <Text style={styles.value}>{data.highSchool?.fieldOfStudy}</Text>
+        </View>
+      </View>
+      <View style={styles.row}>
+        <View style={styles.fieldGroup}>
+          <Text style={styles.label}>Location</Text>
+          <Text style={styles.value}>{data.highSchool?.location}</Text>
         </View>
         <View style={styles.fieldGroup}>
-          <Text style={styles.label}>Expiry</Text>
-          <Text style={styles.value}>{data.currentLicense?.expiryDate}</Text>
+          <Text style={styles.label}>Year Completed</Text>
+          <Text style={styles.value}>{data.highSchool?.yearCompleted}</Text>
         </View>
       </View>
-
-      <View style={styles.tableHeader}>
-        <Text style={{ width: "25%", ...styles.tableHeaderText }}>
-          Category
-        </Text>
-        <Text style={{ width: "25%", ...styles.tableHeaderText }}>Type</Text>
-        <Text style={{ width: "30%", ...styles.tableHeaderText }}>Dates</Text>
-        <Text style={{ width: "20%", ...styles.tableHeaderText }}>Miles</Text>
-      </View>
-      {data.drivingExperiences &&
-        data.drivingExperiences.map((exp, i) => (
-          <View key={i} style={styles.tableRow}>
-            <Text style={{ width: "25%", ...styles.value, fontSize: 9 }}>
-              {exp.category}
-            </Text>
-            <Text style={{ width: "25%", ...styles.value, fontSize: 9 }}>
-              {exp.type}
-            </Text>
-            <Text style={{ width: "30%", ...styles.value, fontSize: 9 }}>
-              {exp.fromDate} - {exp.toDate}
-            </Text>
-            <Text style={{ width: "20%", ...styles.value, fontSize: 9 }}>
-              {exp.approxMilesTotal}
-            </Text>
+      {data.highSchool?.details && (
+        <View style={styles.row}>
+          <View style={styles.fieldGroup}>
+            <Text style={styles.label}>Details</Text>
+            <Text style={styles.value}>{data.highSchool?.details}</Text>
           </View>
-        ))}
+        </View>
+      )}
 
-      <View fixed style={styles.footer}>
-        <Text>
-          IP: {data.ipAddress} | {data.applicantName}
-        </Text>
-        <Text>Page 1</Text>
+      <Text style={styles.sectionTitle}>Education - College</Text>
+      <View style={styles.row}>
+        <View style={styles.fieldGroup}>
+          <Text style={styles.label}>Institution Name</Text>
+          <Text style={styles.value}>{data.collage?.institutionName}</Text>
+        </View>
+        <View style={styles.fieldGroup}>
+          <Text style={styles.label}>Field of Study</Text>
+          <Text style={styles.value}>{data.collage?.fieldOfStudy}</Text>
+        </View>
       </View>
-    </Page>
-
-    {/* PAGE 2: Safety & Employment */}
-    <Page size="A4" style={styles.page}>
-      <Text style={styles.sectionTitle}>Accident & Violation History</Text>
-      <View style={styles.tableHeader}>
-        <Text style={{ width: "20%", ...styles.tableHeaderText }}>Date</Text>
-        <Text style={{ width: "50%", ...styles.tableHeaderText }}>
-          Nature/Violation
-        </Text>
-        <Text style={{ width: "15%", ...styles.tableHeaderText }}>
-          Fatalities
-        </Text>
-        <Text style={{ width: "15%", ...styles.tableHeaderText }}>Hazmat</Text>
+      <View style={styles.row}>
+        <View style={styles.fieldGroup}>
+          <Text style={styles.label}>Location</Text>
+          <Text style={styles.value}>{data.collage?.location}</Text>
+        </View>
+        <View style={styles.fieldGroup}>
+          <Text style={styles.label}>Year Completed</Text>
+          <Text style={styles.value}>{data.collage?.yearCompleted}</Text>
+        </View>
       </View>
-      {data.accidentHistory &&
-        data.accidentHistory.map((acc, i) => (
-          <View key={i} style={styles.tableRow}>
-            <Text style={{ width: "20%", ...styles.value, fontSize: 9 }}>
-              {acc.accidentDate}
-            </Text>
-            <Text style={{ width: "50%", ...styles.value, fontSize: 9 }}>
-              {acc.accidentNature}
-            </Text>
-            <Text style={{ width: "15%", ...styles.value, fontSize: 9 }}>
-              {acc.fatalitiesCount}
-            </Text>
-            <Text style={{ width: "15%", ...styles.value, fontSize: 9 }}>
-              {acc.chemicalSpill}
-            </Text>
+      {data.collage?.details && (
+        <View style={styles.row}>
+          <View style={styles.fieldGroup}>
+            <Text style={styles.label}>Details</Text>
+            <Text style={styles.value}>{data.collage?.details}</Text>
           </View>
-        ))}
+        </View>
+      )}
+      {data.otherEducations && data.otherEducations?.length > 0 && (
+        <>
+          <Text style={styles.sectionTitle}>Education - Other</Text>
 
-      <Text style={styles.sectionTitle}>Employment History</Text>
+          {data.otherEducations.map((edu, i) => (
+            <View key={i}>
+              <View style={styles.row}>
+                <View style={styles.fieldGroup}>
+                  <Text style={styles.label}>Institution Name</Text>
+                  <Text style={styles.value}>{edu.institutionName}</Text>
+                </View>
+                <View style={styles.fieldGroup}>
+                  <Text style={styles.label}>Field of Study</Text>
+                  <Text style={styles.value}>{edu.fieldOfStudy}</Text>
+                </View>
+              </View>
+              <View style={styles.row}>
+                <View style={styles.fieldGroup}>
+                  <Text style={styles.label}>Location</Text>
+                  <Text style={styles.value}>{edu.location}</Text>
+                </View>
+                <View style={styles.fieldGroup}>
+                  <Text style={styles.label}>Year Completed</Text>
+                  <Text style={styles.value}>{edu.yearCompleted}</Text>
+                </View>
+              </View>
+              {edu.details && (
+                <View style={styles.row}>
+                  <View style={styles.fieldGroup}>
+                    <Text style={styles.label}>Details</Text>
+                    <Text style={styles.value}>{edu.details}</Text>
+                  </View>
+                </View>
+              )}
+            </View>
+          ))}
+        </>
+      )}
+
+      {/* employeement */}
+      <Text style={styles.sectionTitle}>Employement History</Text>
+
       {data.experience &&
-        data.experience.map((job, i) => (
-          <View
-            key={i}
-            style={{
-              marginBottom: 10,
-              borderBottomWidth: 0.5,
-              borderBottomColor: "#f1f5f9",
-              paddingBottom: 5,
-            }}
-          >
+        data.experience.length > 0 &&
+        data.experience.map((exp, i) => (
+          <View key={i}>
             <View style={styles.row}>
               <View style={styles.fieldGroup}>
-                <Text style={styles.label}>Employer</Text>
-                <Text style={styles.value}>{job.employerName}</Text>
+                <Text style={styles.label}>Employer Name</Text>
+                <Text style={styles.value}>{exp.employerName}</Text>
               </View>
               <View style={styles.fieldGroup}>
-                <Text style={styles.label}>Dates</Text>
+                <Text style={styles.label}>Employer Phone</Text>
+                <Text style={styles.value}>{exp.phone}</Text>
+              </View>
+            </View>
+            <View style={styles.row}>
+              <View style={styles.fieldGroup}>
+                <Text style={styles.label}>Employer Address</Text>
+                <Text style={styles.value}>{exp.address}</Text>
+              </View>
+              <View style={styles.fieldGroup}>
+                <Text style={styles.label}>Position</Text>
+                <Text style={styles.value}>{exp.position}</Text>
+              </View>
+            </View>
+            <View style={styles.row}>
+              <View style={styles.fieldGroup}>
+                <Text style={styles.label}>Duration</Text>
                 <Text style={styles.value}>
-                  {job.fromDate} - {job.toDate}
+                  {format(exp.fromDate, "MMMM dd, yyyy") +
+                    " " +
+                    format(exp.toDate, "MMMM dd, yyyy")}
+                </Text>
+              </View>
+              <View style={styles.fieldGroup}>
+                <Text style={styles.label}>Salary</Text>
+                <Text style={styles.value}>{exp.salary}</Text>
+              </View>
+            </View>
+            <View style={styles.row}>
+              <View style={styles.fieldGroup}>
+                <Text style={styles.label}>FMCSR Applied</Text>
+                <Text style={[styles.value, { textTransform: "capitalize" }]}>
+                  {exp.subjectToFmcsa}
+                </Text>
+              </View>
+              <View style={styles.fieldGroup}>
+                <Text style={styles.label}>Safety-Sensitive (DOT)</Text>
+                <Text style={[styles.value, { textTransform: "capitalize" }]}>
+                  {exp.safetySensitive}
                 </Text>
               </View>
             </View>
             <View style={styles.row}>
               <View style={styles.fieldGroup}>
-                <Text style={styles.label}>FMCSR Subject</Text>
-                <Text style={styles.value}>{job.subjectToFmcsa}</Text>
+                <Text style={styles.label}>Reason for Leaving</Text>
+                <Text style={styles.value}>{exp.reasonForLeaving}</Text>
               </View>
               <View style={styles.fieldGroup}>
-                <Text style={styles.label}>Gap Explanation</Text>
-                <Text style={styles.value}>{job.gap || "None"}</Text>
+                <Text style={styles.label}>Explain eny Gaps</Text>
+                <Text style={styles.value}>{exp.gap}</Text>
               </View>
             </View>
           </View>
         ))}
 
-      <Text style={styles.sectionTitle}>Education</Text>
+      {/* license */}
+      <Text style={styles.sectionTitle}>License</Text>
       <View style={styles.row}>
         <View style={styles.fieldGroup}>
-          <Text style={styles.label}>High School</Text>
+          <Text style={styles.label}>License #</Text>
+          <Text style={styles.value}>{data.currentLicense?.licenseNumber}</Text>
+        </View>
+        <View style={styles.fieldGroup}>
+          <Text style={styles.label}>Type/Class</Text>
+          <Text style={styles.value}>{data.currentLicense?.licenseType}</Text>
+        </View>
+      </View>
+      <View style={styles.row}>
+        <View style={styles.fieldGroup}>
+          <Text style={styles.label}>Expiry Date</Text>
           <Text style={styles.value}>
-            {data.highSchool?.institutionName} ({data.highSchool?.yearCompleted}
-            )
+            {format(data.currentLicense?.expiryDate!, "MMMM dd, yyyy")}
           </Text>
         </View>
         <View style={styles.fieldGroup}>
-          <Text style={styles.label}>College</Text>
-          <Text style={styles.value}>
-            {data.collage?.institutionName || "N/A"}
-          </Text>
+          <Text style={styles.label}>Endorsements</Text>
+          <Text style={styles.value}>{data.currentLicense?.endorsements}</Text>
+        </View>
+      </View>
+      <View style={styles.row}>
+        <View style={styles.fieldGroup}>
+          <Text style={styles.label}>Issuing State</Text>
+          <Text style={styles.value}>{data.currentLicense?.state}</Text>
         </View>
       </View>
 
-      <View wrap={false}>
-        <Text style={styles.sectionTitle}>Declaration & Signature</Text>
-        <Text style={{ fontSize: 8, color: "#64748b", marginBottom: 10 }}>
-          I certify that this application was completed by me, and that all
-          entries on it are true and complete...
+      {/* Driving Experience */}
+      <Text style={styles.sectionTitle}>Driving Experience</Text>
+      {data.drivingExperiences &&
+        data.drivingExperiences.map((exp, i) => (
+          <View key={i}>
+            <View style={styles.row}>
+              <View style={styles.fieldGroup}>
+                <Text style={styles.label}>Category</Text>
+                <Text style={styles.value}>{exp.category}</Text>
+              </View>
+              <View style={styles.fieldGroup}>
+                <Text style={styles.label}>Type</Text>
+                <Text style={styles.value}>{exp.type}</Text>
+              </View>
+            </View>
+            <View style={styles.row}>
+              <View style={styles.fieldGroup}>
+                <Text style={styles.label}>Duration</Text>
+                <Text style={styles.value}>
+                  {format(exp.fromDate, "MMMM dd, yyyy") +
+                    " - " +
+                    format(exp.toDate, "MMMM dd, yyyy")}
+                </Text>
+              </View>
+              <View style={styles.fieldGroup}>
+                <Text style={styles.label}>Approx Miles Total</Text>
+                <Text style={styles.value}>{exp.approxMilesTotal}</Text>
+              </View>
+            </View>
+          </View>
+        ))}
+
+      <Text style={styles.sectionTitle}>Address History</Text>
+
+      <Text style={styles.sectionTitle}>Acknowledgement </Text>
+      <Text
+        style={{
+          fontSize: 8,
+          color: COLORS.secondary,
+          marginBottom: 10,
+          fontStyle: "italic",
+        }}
+      >
+        <Text style={{ marginBottom: 8 }}>
+          I, {data.applicantName},authorize you to make investigations
+          (including contacting current and prior employers) into my personal,
+          employment, financial, medical history, and other related matters as
+          may be necessary in arriving at an employment decision. I hereby
+          release employers, schools, health care providers, and other persons
+          from all liability in responding to inquiries and releasing
+          information in connection with my application.
         </Text>
-        <View style={styles.signatureBlock}>
-          <View>
-            <Text style={styles.label}>Applicant Signature</Text>
-            {data.signatureUrl ? (
-              <Image src={data.signatureUrl} style={styles.signatureImage} />
-            ) : (
-              <View
-                style={[styles.signatureImage, { backgroundColor: "#f8fafc" }]}
-              />
-            )}
-            <Text style={[styles.value, { marginTop: 5 }]}>
-              {data.applicantName}
-            </Text>
-          </View>
-          <View>
-            <Text style={styles.label}>Date Signed</Text>
-            <Text style={[styles.value, { marginTop: 40 }]}>
-              {data.agreementDate || format(new Date(), "PPP")}
-            </Text>
-          </View>
-        </View>
-      </View>
-
-      <View fixed style={styles.footer}>
+        <Text style={{ marginBottom: 8 }}>
+          In the event of employment, I understand that false or misleading
+          information given in my application or interview(s) may result in
+          discharge. I also understand that I am required to abide by all rules
+          and regulations of the Company.
+        </Text>
+        <Text style={{ marginBottom: 8 }}>
+          I understand that the information I provide regarding my current
+          and/or prior employers may be used, and those employer(s) will be
+          contacted for the purpose of investigating my safety performance
+          history as required by 49 CFR 391.23. I understand that I have the
+          right to review information, have errors corrected, and attach a
+          rebuttal statement where applicable.
+        </Text>
         <Text>
-          System ID: {data.id} | Generated: {format(new Date(), "PPpp")}
+          This certifies that I completed this application, and that all entries
+          on it and information in it are true and complete to the best of my
+          knowledge. Note: A motor carrier may require an applicant to provide
+          more information than that required by the Federal Motor Carrier
+          Safety Regulations.
         </Text>
-        <Text>Page 2</Text>
+      </Text>
+      <View wrap={false}>
+        <Text style={styles.sectionTitle}>Declaration</Text>
+        <Text
+          style={{
+            fontSize: 8,
+            color: COLORS.secondary,
+            marginBottom: 10,
+            fontStyle: "italic",
+          }}
+        >
+          I {data.applicantName} confirm the information provided is accurate
+          and the documents uploaded belong to me and are clear, complete, and
+          unedited.
+        </Text>
+
+        <View style={[styles.row, { marginTop: 50 }]}>
+          <View style={styles.signatureBlock}>
+            {data.signatureUrl && (
+              <Image src={data.signatureUrl} style={styles.signatureImage} />
+            )}
+            <Text style={styles.label}>Authorized Signature</Text>
+            <Text style={styles.value}>{data.applicantName}</Text>
+          </View>
+
+          <View
+            style={[
+              styles.signatureBlock,
+              { borderBottomWidth: 1, borderBottomColor: COLORS.divider },
+            ]}
+          >
+            <View
+              style={{
+                height: 40,
+                justifyContent: "flex-end",
+                marginBottom: 5,
+              }}
+            >
+              <Text style={styles.value}>
+                {data.createdAt
+                  ? format(new Date(data.createdAt), "MMMM dd, yyyy")
+                  : "N/A"}
+              </Text>
+            </View>
+            <Text style={styles.label}>Date Signed</Text>
+          </View>
+        </View>
       </View>
     </Page>
   </Document>

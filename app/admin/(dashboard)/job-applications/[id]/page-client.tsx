@@ -109,13 +109,15 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
             </div>
             <div className="space-y-2">
               <p className="text-muted-foreground uppercase font-medium">DOB</p>
-              <p className="text-base">{data.dob}</p>
+              <p className="text-base">{format(data.dob, "MMMM dd, yyyy")}</p>
             </div>
             <div className="space-y-2">
               <p className="text-muted-foreground uppercase font-medium">
                 Available Date
               </p>
-              <p className="text-base">{data.availableStartDate}</p>
+              <p className="text-base">
+                {format(data.availableStartDate, "MMMM dd, yyyy")}
+              </p>
             </div>
             <div className="space-y-2">
               <p className="text-muted-foreground uppercase font-medium">
@@ -319,7 +321,9 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
                     Duration
                   </div>
                   <div className="text-base">
-                    {emp.fromDate + " - " + emp.toDate}
+                    {format(emp.fromDate, "MMMM dd, yyyy") +
+                      " - " +
+                      format(emp.toDate, "MMMM dd, yyyy")}
                   </div>
                 </div>
                 <div className="space-y-1">
@@ -431,7 +435,11 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
               <div className="text-muted-foreground uppercase font-medium">
                 Expiry Date
               </div>
-              <div className="text-base">{data.currentLicense?.expiryDate}</div>
+              <div className="text-base">
+                {data.currentLicense?.expiryDate
+                  ? format(data.currentLicense?.expiryDate, "MMMM dd, yyyy")
+                  : ""}
+              </div>
             </div>
             <div className="space-y-1">
               <div className="text-muted-foreground uppercase font-medium">
@@ -669,7 +677,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
                 Created At:
               </div>
               <span className="text-base">
-                {format(data.createdAt!, "yyyy-dd-mm hh:mm:ss a")}
+                {format(data.createdAt!, "MMMM dd, yyyy hh:mm:ss a")}
               </span>
             </div>
             <div>
@@ -677,7 +685,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
                 Updated At:
               </div>
               <span className="text-base">
-                {format(data.updatedAt!, "yyyy-dd-mm hh:mm:ss a")}
+                {format(data.updatedAt!, "MMMM dd, yyyy hh:mm:ss a")}
               </span>
             </div>
             <div>

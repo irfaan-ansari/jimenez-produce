@@ -3,6 +3,7 @@ import { getJobApplication } from "@/server/job";
 import { Container } from "@/components/container";
 import { Card, CardContent } from "@/components/ui/card";
 import { JobAgreementButton } from "@/components/job-forms/job-agreement-button";
+import { format } from "date-fns";
 
 const Agreement = async ({
   searchParams,
@@ -137,7 +138,7 @@ const Agreement = async ({
                 <p>Position: {position}</p>
                 <p>Facility: {facility}</p>
 
-                <p>Date: {new Date().toISOString().split("T")[0]}</p>
+                <p>Date: {format(new Date(), "MMMM DD, yyyy")}</p>
 
                 <p>Signature:</p>
                 <Image

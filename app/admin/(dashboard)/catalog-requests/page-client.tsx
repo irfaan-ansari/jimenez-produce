@@ -59,7 +59,7 @@ const columns: ColumnDef<CustomerInviteSelectType>[] = [
             {firstName} {lastName}
           </span>
           <span className="text-sm text-muted-foreground">
-            {format(createdAt!, "dd-MM-yyyy")}
+            {format(createdAt!, "MMMM dd, yyyy")}
           </span>
         </div>
       );

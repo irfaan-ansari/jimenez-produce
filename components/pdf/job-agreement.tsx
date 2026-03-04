@@ -6,90 +6,8 @@ import {
   StyleSheet,
   Image,
 } from "@react-pdf/renderer";
-
-const COLORS = {
-  primary: "#80b83a",
-  main: "#141414",
-  secondary: "#64748b",
-  divider: "#e2e8f0",
-  bgSubtle: "#f8fafc",
-};
-
-const styles = StyleSheet.create({
-  page: {
-    padding: 40,
-    fontFamily: "Helvetica",
-    fontSize: 12,
-    color: COLORS.main,
-    lineHeight: 1.2,
-  },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 10,
-  },
-  logo: {
-    width: 80,
-    height: "auto",
-  },
-  headerLeft: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 15,
-  },
-  docTitle: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: COLORS.primary,
-  },
-  tagline: {
-    fontSize: 10,
-    color: COLORS.secondary,
-    fontWeight: "bold",
-    textTransform: "uppercase",
-  },
-
-  sectionTitle: {
-    fontSize: 10,
-    lineHeight: 1,
-    fontWeight: "bold",
-    backgroundColor: "#f1f5f9",
-    padding: 10,
-    marginTop: 15,
-    marginBottom: 5,
-    color: COLORS.main,
-    textTransform: "uppercase",
-  },
-
-  contentText: {
-    fontSize: 10,
-    color: "#334155",
-    textAlign: "justify",
-    marginBottom: 8,
-    marginTop: 10,
-  },
-
-  signatureImage: {
-    width: 150,
-    height: 50,
-    marginBottom: 5,
-    objectFit: "contain",
-    objectPosition: "left",
-  },
-  label: {
-    fontSize: 8,
-    color: COLORS.secondary,
-    fontWeight: "bold",
-    textTransform: "uppercase",
-  },
-  value: { fontSize: 10, fontWeight: "bold" },
-  signature: {
-    position: "absolute",
-    right: "0",
-    bottom: 0,
-  },
-});
+import { format } from "date-fns";
+import { COLORS, styles } from "./styles";
 
 export const JobAgreementPDF = ({ data }: { data: any }) => {
   return (
@@ -242,9 +160,11 @@ export const JobAgreementPDF = ({ data }: { data: any }) => {
 
           <View style={{ marginTop: 10 }}>
             <Text style={styles.label}>Date Signed</Text>
-            <Text style={styles.value}>{data.agreementDate}</Text>
+            <Text style={styles.value}>
+              {format(data.agreementDate, "MMMM dd, yyyy")}
+            </Text>
           </View>
-          <View style={styles.signature}>
+          <View>
             {data.signatureUrl && (
               <Image src={data.signatureUrl} style={styles.signatureImage} />
             )}
