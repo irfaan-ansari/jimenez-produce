@@ -55,13 +55,3 @@ export const FilterTabs = ({ tabs, queryKey }: FilterProps) => {
     </div>
   );
 };
-
-const FilterTabsFallback = () => {
-  return (
-    <div className="pb-3 border-b-2 flex gap-4">
-      {[...Array(4)].map((_, i) => (
-        <Skeleton key={i} className="h-6 w-14 rounded-xl" />
-      ))}
-    </div>
-  );
-};

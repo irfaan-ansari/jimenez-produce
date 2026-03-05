@@ -473,3 +473,40 @@ export const applicantRelations = relations(jobApplications, ({ one }) => ({
 
 export type JobApplicationInsertType = InferInsertModel<typeof jobApplications>;
 export type JobApplicationSelectType = InferSelectModel<typeof jobApplications>;
+
+export const jobInvite = pgTable(
+  "job_invite",
+  {
+    id: serial("id").primaryKey(),
+    firstName: text("first_name").notNull(),
+    lastName: text("last_name").notNull(),
+    position: text("position").notNull(),
+    positionSlug: text("position_slug").notNull(),
+    phone: text("phone"),
+    email: text("email").notNull().unique(),
+    status: text("status").notNull().default("invited"),
+    message: text("message"),
+    applicationId: integer("application_id").references(
+      () => jobApplications.id,
+      {
+        onDelete: "set null",
+      }
+    ),
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at")
+      .defaultNow()
+      .$onUpdate(() => /* @__PURE__ */ new Date())
+      .notNull(),
+  },
+  (table) => [index("job_invite_status_idx").on(table.status)]
+);
+
+export const jobInviteRelations = relations(jobInvite, ({ one }) => ({
+  user: one(jobApplications, {
+    fields: [jobInvite.applicationId],
+    references: [jobApplications.id],
+  }),
+}));
+
+export type JobInviteInsertType = InferInsertModel<typeof jobInvite>;
+export type JobInviteSelectType = InferSelectModel<typeof jobInvite>;

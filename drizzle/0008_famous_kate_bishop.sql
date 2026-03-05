@@ -1,1 +1,0 @@
-ALTER TABLE "job_applications" ALTER COLUMN "agreement_date" SET DATA TYPE timestamp;

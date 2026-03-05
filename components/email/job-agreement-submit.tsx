@@ -19,10 +19,7 @@ export const InternalAgreementNotification = ({
   agreementUrl,
 }: InternalAgreementNotificationProps) => {
   return (
-    <EmailTemplate
-      template="admin"
-      heading="New Employment Agreement Submitted"
-    >
+    <EmailTemplate template="admin" heading="Agreement Submitted">
       <Section className="p-6">
         <Text className="text-xl text-black font-semibold mb-2">
           Attention HR / Management,
@@ -34,8 +31,8 @@ export const InternalAgreementNotification = ({
         </Text>
 
         {/* SUMMARY CARD */}
-        <Section className="border border-[#e2e8f0] bg-[#f8fafc] p-6 mt-6 rounded-lg">
-          <Text className="text-xs uppercase font-bold text-[#80b83a] mb-4">
+        <Section className="border border-[#f4f5f6] p-6 mt-6">
+          <Text className="uppercase font-bold text-[#80b83a] mb-4">
             Submission Details
           </Text>
 
@@ -67,7 +64,7 @@ export const InternalAgreementNotification = ({
         <Button
           href={agreementUrl}
           target="_blank"
-          className="bg-[#80b83a] p-4 text-white uppercase text-sm font-semibold text-center"
+          className="bg-[#80b83a] mt-6 p-4 text-white uppercase text-sm font-semibold text-center"
         >
           View Agreement
         </Button>

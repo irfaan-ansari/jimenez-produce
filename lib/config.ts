@@ -1,4 +1,5 @@
 import {
+  ClipboardClock,
   ClipboardList,
   LayoutDashboard,
   MailPlus,
@@ -163,6 +164,31 @@ export const SIDEBAR_MENU = [
         href: "/admin/job-applications",
         color: "#EF4444",
         query: { status: "rejected" },
+      },
+    ],
+  },
+  {
+    label: "Invited Candidates",
+    icon: ClipboardClock,
+    href: "/admin/invited-candidates",
+    items: [
+      {
+        label: "All",
+        href: "/admin/invited-candidates",
+        color: "#71717A",
+        query: { status: "" },
+      },
+      {
+        label: "Invited",
+        href: "/admin/invited-candidates",
+        color: "#F59E0B",
+        query: { status: "invited" },
+      },
+      {
+        label: "Applied",
+        href: "/admin/invited-candidates",
+        color: "#3B82F6",
+        query: { status: "applied" },
       },
     ],
   },

@@ -8,13 +8,19 @@ import { headers } from "next/headers";
 import { randomBytes } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { waitUntil } from "@vercel/functions";
-import { sendEmail, sendJobStatusEmail } from "@/lib/email";
 import { JobApplicationStatus } from "@/lib/types";
 import { renderToBuffer } from "@react-pdf/renderer";
 import { handleAction } from "@/lib/helper/error-handler";
+import { sendEmail, sendJobStatusEmail } from "@/lib/email";
 import { JobAgreementPDF } from "@/components/pdf/job-agreement";
-import { jobApplications, JobApplicationInsertType } from "@/lib/db/schema";
+import {
+  jobApplications,
+  JobApplicationInsertType,
+  jobInvite,
+  JobInviteInsertType,
+} from "@/lib/db/schema";
 import InternalAgreementNotification from "@/components/email/job-agreement-submit";
+import JobInvitation from "@/components/email/job-invite";
 
 export const getJobApplication = handleAction(async (token: string) => {
   if (!token) throw new Error("Invalid token");
@@ -182,9 +188,28 @@ export const deleteJobApplication = handleAction(async (id: number) => {
   return result;
 });
 
-export const inviteCandidate = handleAction(async () => {
-  const session = await getSession();
-  if (!session) throw new Error("Authentication required.");
+export const inviteCandidate = handleAction(
+  async (data: JobInviteInsertType) => {
+    const session = await getSession();
+    if (!session) throw new Error("Authentication required.");
 
-  return true;
-});
+    const [res] = await db
+      .insert(jobInvite)
+      .values({ ...data, status: "invited" })
+      .returning();
+
+    waitUntil(
+      sendEmail({
+        to: [res.email],
+        subject: "",
+        template: JobInvitation,
+        variables: {
+          name: res.firstName,
+          position: res.position,
+          positionSlug: res.positionSlug,
+        },
+      })
+    );
+    return res;
+  }
+);

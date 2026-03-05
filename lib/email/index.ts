@@ -10,6 +10,7 @@ import CustomerAdmin from "@/components/email/customer-admin";
 import CustomerApproved from "@/components/email/customer-approved";
 import CustomerDeclined from "@/components/email/customer-declined";
 import { CustomerSelectType, JobApplicationSelectType } from "../db/schema";
+import JobApplicationAdmin from "@/components/email/job-notifications";
 
 export const resend = new Resend(process.env.RESEND_API_KEY);
 const FROM_EMAIL = "Jimenez Produce <no-reply@jimenezproduce.com>";
@@ -137,13 +138,16 @@ export async function sendApplicationStatusEmails({
 }
 
 export const sendJobStatusEmail = async ({
+  applicantName,
   firstName,
   position,
+  phone,
   email,
   status,
   token,
   statusReason,
   statusDetails,
+  internalNotes,
 }: JobApplicationSelectType) => {
   const baseVariables = { name: firstName, email, position };
 
@@ -180,6 +184,7 @@ export const sendJobStatusEmail = async ({
 
   if (!config) return;
 
+  // applicant emails
   sendEmail({
     to: [email],
     subject: config.subject,
@@ -187,6 +192,24 @@ export const sendJobStatusEmail = async ({
     variables: {
       ...baseVariables,
       ...config.extraVars,
+    },
+  });
+
+  // send admin email
+  sendEmail({
+    to: ["info@jimenezproduce.com"],
+    subject: "Job Application Update",
+    template: JobApplicationAdmin,
+    variables: {
+      name: applicantName,
+      position,
+      location,
+      email,
+      phone,
+      status,
+      statusReason,
+      statusDetails,
+      internalNotes,
     },
   });
 };
