@@ -20,19 +20,25 @@ import {
   FieldGroup,
   FieldLabel,
 } from "../ui/field";
-import { Textarea } from "../ui/textarea";
 import { toast } from "sonner";
+import { Textarea } from "../ui/textarea";
 import { createInvite } from "@/server/customer";
 import { useQueryClient } from "@tanstack/react-query";
+import { OPEN_POSITIONS } from "@/lib/constants/web";
+import { inviteCandidate } from "@/server/job";
 
 const schema = z.object({
   name: z.string().min(1, "Enter name"),
-  companyName: z.string().min(1, "Enter company name"),
   phone: z.string().min(1, "Enter phone"),
   email: z.email("Enter valid email"),
-  type: z.string().min(1, "Enter message"),
+  position: z.string().min(1, "Select position"),
   message: z.string(),
 });
+
+const POSOTIONS = OPEN_POSITIONS.map((p) => ({
+  value: p.href,
+  label: p.title,
+}));
 
 export const InviteCandidate = () => {
   const [open, setOpen] = useState(false);
@@ -41,26 +47,29 @@ export const InviteCandidate = () => {
   const form = useAppForm({
     defaultValues: {
       name: "",
-      companyName: "",
       phone: "",
       email: "",
+      position: "",
       message: "",
     },
     validators: {
       onSubmit: schema,
     },
     onSubmit: async ({ value }) => {
-      const [firstName, lastName] = value.name.split(" ");
+      const [firstName = "", lastName = ""] = value.name.split(" ");
 
-      const { success, error } = await createInvite({
+      const selected = POSOTIONS.find((p) => p.value === value.position);
+
+      const { success, error } = await inviteCandidate({
         ...value,
         firstName,
         lastName,
+        positionSlug: selected?.value || "",
       });
+
       if (success) {
         toast.success("Invited successfully");
-        queryClient.invalidateQueries({ queryKey: ["invites"] });
-        queryClient.invalidateQueries({ queryKey: ["customers"] });
+        queryClient.invalidateQueries({ queryKey: ["job-invites"] });
         setOpen(false);
         form.reset();
       } else {
@@ -82,8 +91,7 @@ export const InviteCandidate = () => {
             Invite Candidate
           </DialogTitle>
           <DialogDescription className="text-base">
-            Invite candidate to apply for a open position business to become a
-            customer.
+            Invite candidate to apply for a open position
           </DialogDescription>
         </DialogHeader>
         <form
@@ -103,17 +111,6 @@ export const InviteCandidate = () => {
                   />
                 )}
               />
-
-              <form.AppField
-                name="companyName"
-                children={(field) => (
-                  <field.TextField
-                    label="Company Name"
-                    className="**:data-[slot=input]:rounded-xl col-span-2"
-                  />
-                )}
-              />
-
               <form.AppField
                 name="phone"
                 children={(field) => (
@@ -129,6 +126,16 @@ export const InviteCandidate = () => {
                   <field.TextField
                     label="Email"
                     className="**:data-[slot=input]:rounded-xl"
+                  />
+                )}
+              />
+              <form.AppField
+                name="position"
+                children={(field) => (
+                  <field.SelectField
+                    label="Position"
+                    className="**:data-[slot=input]:rounded-xl col-span-2"
+                    options={POSOTIONS.map((l) => l.label)}
                   />
                 )}
               />
@@ -188,7 +195,7 @@ export const InviteCandidate = () => {
                   {isSubmitting ? (
                     <Loader className="animate-spin" />
                   ) : (
-                    "Invite Cndidate"
+                    "Invite"
                   )}
                 </Button>
               )}

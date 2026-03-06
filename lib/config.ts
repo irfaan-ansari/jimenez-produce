@@ -168,6 +168,43 @@ export const SIDEBAR_MENU = [
     ],
   },
   {
+    label: "Catalog Requests",
+    icon: Shield,
+    href: "/admin/catalog-requests",
+    items: [
+      {
+        label: "All",
+        href: "/admin/catalog-requests",
+        color: "#A1A1AA",
+        query: { status: "" },
+      },
+      {
+        label: "New",
+        href: "/admin/invites",
+        color: "#F59E0B",
+        query: { status: "new" },
+      },
+      {
+        label: "Approved",
+        href: "/admin/catalog-requests",
+        color: "#22C55E",
+        query: { status: "approved" },
+      },
+      {
+        label: "Rejected",
+        href: "/admin/catalog-requests",
+        color: "#EF4444",
+        query: { status: "rejected" },
+      },
+      {
+        label: "Revoked",
+        href: "/admin/catalog-requests",
+        color: "#71717A",
+        query: { status: "revoked" },
+      },
+    ],
+  },
+  {
     label: "Candidate Invitations",
     icon: ClipboardClock,
     href: "/admin/job-invites",
@@ -223,43 +260,7 @@ export const SIDEBAR_MENU = [
       },
     ],
   },
-  {
-    label: "Catalog Requests",
-    icon: Shield,
-    href: "/admin/catalog-requests",
-    items: [
-      {
-        label: "All",
-        href: "/admin/catalog-requests",
-        color: "#A1A1AA",
-        query: { status: "" },
-      },
-      {
-        label: "New",
-        href: "/admin/invites",
-        color: "#F59E0B",
-        query: { status: "new" },
-      },
-      {
-        label: "Approved",
-        href: "/admin/catalog-requests",
-        color: "#22C55E",
-        query: { status: "approved" },
-      },
-      {
-        label: "Rejected",
-        href: "/admin/catalog-requests",
-        color: "#EF4444",
-        query: { status: "rejected" },
-      },
-      {
-        label: "Revoked",
-        href: "/admin/catalog-requests",
-        color: "#71717A",
-        query: { status: "revoked" },
-      },
-    ],
-  },
+
   {
     label: "Users",
     icon: Users,

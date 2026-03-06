@@ -192,10 +192,18 @@ export const deleteJobApplication = handleAction(async (id: number) => {
   return result;
 });
 
+/**
+ * Invite candidate
+ */
 export const inviteCandidate = handleAction(
   async (data: JobInviteInsertType) => {
     const session = await getSession();
     if (!session) throw new Error("Authentication required.");
+
+    const existing = await db.query.jobInvite.findFirst({
+      where: eq(jobInvite.email, data.email?.toUpperCase()),
+    });
+    if (existing) throw new Error("Duplicate request for this email.");
 
     const [res] = await db
       .insert(jobInvite)

@@ -178,7 +178,7 @@ export const createInvite = handleAction(
     const session = await getSession();
 
     const existing = await db.query.customerInvite.findFirst({
-      where: eq(customerInvite.email, data.email!),
+      where: eq(customerInvite.email, data.email?.toLowerCase()!),
     });
 
     if (existing) throw new Error("Duplicate request for this email.");

@@ -12,7 +12,7 @@ import {
 import { ColumnDef } from "@tanstack/react-table";
 import { useRouterStuff } from "@/hooks/use-router-stuff";
 import { DataTable } from "@/components/admin/data-table";
-import { CustomerInviteSelectType, JobInviteSelectType } from "@/lib/db/schema";
+import { JobInviteSelectType } from "@/lib/db/schema";
 import { inviteStatusMap } from "@/lib/constants/customer";
 import { CustomerInviteAction } from "@/components/admin/customer-invite-actions";
 import {
@@ -25,9 +25,7 @@ import { useJobInvites } from "@/hooks/use-job-application";
 export const PageClient = () => {
   const { getQueryString } = useRouterStuff();
 
-  const { data, isPending, isError, error } = useJobInvites(
-    getQueryString({ type: "invitation" })
-  );
+  const { data, isPending, isError, error } = useJobInvites(getQueryString());
 
   // loading
   if (isPending) return <LoadingSkeleton />;
