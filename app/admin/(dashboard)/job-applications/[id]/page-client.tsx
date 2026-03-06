@@ -334,7 +334,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
                 </div>
                 <div className="space-y-1">
                   <div className="text-muted-foreground uppercase font-medium">
-                    FMCSR Applied
+                    FMCSA Applied
                   </div>
                   <div className="capitalize">{emp.safetySensitive}</div>
                 </div>
@@ -581,7 +581,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
                   </div>
                   <div className="space-y-1">
                     <div className="text-muted-foreground uppercase font-medium">
-                      Fetalities Count
+                      Fatalities Count
                     </div>
                     <div className="text-base">{acc.fatalitiesCount}</div>
                   </div>

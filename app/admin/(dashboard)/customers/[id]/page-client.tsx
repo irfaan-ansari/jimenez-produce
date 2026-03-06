@@ -142,10 +142,10 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
 
           <CardContent className="space-y-2 divide-y">
             <div className="flex items-start font-medium">
-              <span className="bg-secondary border-b px-4 py-2 w-1/4">
+              <span className="bg-secondary border-b px-4 py-2 w-2/5">
                 Day/Window
               </span>
-              <span className="bg-secondary border-b px-4 py-2 w-1/4">
+              <span className="bg-secondary border-b px-4 py-2 w-2/5">
                 Receiver
               </span>
               <span className="bg-secondary border-b px-4 py-2 flex-1">
@@ -155,12 +155,11 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
             {data.deliverySchedule.map((sch, i) => {
               return (
                 <div className="flex items-start text-base" key={sch.day + i}>
-                  <div className="flex gap-2 items-center w-1/4 px-4 py-2">
-                    <span>
-                      {sch.day} ({sch.window})
-                    </span>
+                  <div className="flex gap-2 items-center w-2/5 px-4 py-2">
+                    {sch.day}
+                    <br />({sch.window})
                   </div>
-                  <div className="flex gap-2 w-1/4 px-4 py-2">
+                  <div className="flex gap-2 w-2/5 px-4 py-2">
                     <div>{sch.receivingName}</div>
                     <div>{sch.receivingPhone}</div>
                   </div>

@@ -22,7 +22,7 @@ export const CustomerDeclined = ({ name, reason, reasonDetails }: Props) => {
           Produce.
           <br />
           After reviewing your application, we regret to inform you that we are
-          unable to approve the account at this time.
+          unable to approve your account at this time.
         </Text>
 
         <Section className="border border-[#f4f5f6] p-6">

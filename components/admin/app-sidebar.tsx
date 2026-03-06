@@ -179,7 +179,7 @@ const Profile = () => {
           >
             <SidebarMenuButton className="rounded-xl">
               <User />
-              Porfile
+              Profile
             </SidebarMenuButton>
           </ProfileDialog>
           <ChangePasswordDialog>

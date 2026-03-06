@@ -168,25 +168,25 @@ export const SIDEBAR_MENU = [
     ],
   },
   {
-    label: "Invited Candidates",
+    label: "Candidate Invitations",
     icon: ClipboardClock,
-    href: "/admin/invited-candidates",
+    href: "/admin/job-invites",
     items: [
       {
         label: "All",
-        href: "/admin/invited-candidates",
+        href: "/admin/job-invites",
         color: "#71717A",
         query: { status: "" },
       },
       {
         label: "Invited",
-        href: "/admin/invited-candidates",
+        href: "/admin/job-invites",
         color: "#F59E0B",
         query: { status: "invited" },
       },
       {
         label: "Applied",
-        href: "/admin/invited-candidates",
+        href: "/admin/job-invites",
         color: "#3B82F6",
         query: { status: "applied" },
       },

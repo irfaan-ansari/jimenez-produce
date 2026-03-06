@@ -210,9 +210,55 @@ export const CustomerPDF = ({ data }: { data: CustomerSelectType }) => {
               fontStyle: "italic",
             }}
           >
-            I, {data.signatureName}, acknowledge that I have read, understand,
-            and agree to the Personal Guarantee Agreement above. I agree that
-            this electronic submission serves as my legally binding signature.
+            <Text style={{ marginBottom: 8 }}>
+              By submitting this application, I certify that I am the individual
+              personally responsible for all payments to Jimenez Produce LLC
+              (“the Company”). I understand that no credit will be extended to
+              my company unless I personally guarantee all amounts owed. I
+              hereby unconditionally and irrevocably guarantee the full and
+              prompt payment of any and all amounts due to Jimenez Produce LLC,
+              including invoices, service charges, interest, fees, and any other
+              obligations incurred by my company, whether existing now or
+              arising in the future.
+            </Text>
+
+            <Text style={{ marginBottom: 8 }}>
+              This personal guarantee is a continuing guarantee and remains in
+              full force and effect until all balances are paid in full. I
+              understand that I may terminate this guarantee only by providing
+              written notice via certified mail, return receipt requested, to:
+              Jimenez Produce LLC, 23141 Rubens Ln, Robertsdale, AL 36567.
+              Termination will apply only to new transactions occurring after
+              Jimenez Produce LLC receives and acknowledges my notice, and does
+              not release me from responsibility for any amounts incurred prior
+              to termination.
+            </Text>
+
+            <Text style={{ marginBottom: 8 }}>
+              In the event of nonpayment or default, I agree to be personally
+              liable for all outstanding balances, accrued interest, returned
+              check fees, service charges, and all reasonable costs of
+              collection, including attorney’s fees, court costs, and
+              third-party collection fees. Jimenez Produce LLC may enforce this
+              agreement in any jurisdiction where I or my assets are located,
+              including but not limited to Alabama, Louisiana, Mississippi,
+              Florida, and Georgia.
+            </Text>
+
+            <Text style={{ marginBottom: 8 }}>
+              I waive any requirement that Jimenez Produce LLC first pursue my
+              company or any other party before enforcing this guarantee, and I
+              waive any right to receive notice of default, nonpayment,
+              extensions of credit, or any other notices relating to the
+              guaranteed debt.
+            </Text>
+
+            <Text style={{ marginBottom: 8 }}>
+              By submitting this application, I affirm that I have read,
+              understand, and agree to this Personal Guarantee Agreement, and
+              that my electronic submission serves as my voluntary and legally
+              binding signature under applicable state and federal law.
+            </Text>
           </Text>
 
           <View style={[styles.row, { marginTop: 50 }]}>

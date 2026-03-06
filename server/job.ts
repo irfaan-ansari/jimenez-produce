@@ -21,6 +21,7 @@ import {
 } from "@/lib/db/schema";
 import InternalAgreementNotification from "@/components/email/job-agreement-submit";
 import JobInvitation from "@/components/email/job-invite";
+import { capitalizeWords } from "@/lib/utils";
 
 export const getJobApplication = handleAction(async (token: string) => {
   if (!token) throw new Error("Invalid token");
@@ -103,6 +104,9 @@ export const createJobApplication = handleAction(
 
     const values = {
       ...data,
+      firstName: capitalizeWords(data.firstName),
+      lastName: capitalizeWords(data.lastName),
+      email: data.email.toLowerCase(),
       ipAddress: ip,
       status: "new",
       userAgent: headersList.get("user-agent"),

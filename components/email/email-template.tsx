@@ -9,7 +9,10 @@ import {
   Section,
   Tailwind,
   Img,
+  Row,
+  Column,
 } from "@react-email/components";
+import { Phone } from "lucide-react";
 import React from "react";
 
 export const EmailTemplate = ({
@@ -56,17 +59,36 @@ export const EmailTemplate = ({
               </Section>
             ) : (
               <Section className="bg-[#f9f9f9] p-6">
-                <Text className="text-4xl font-bold  text-[#626262]">
+                <Text className="text-2xl font-bold  text-[#626262]">
                   Jimenez Produce
                 </Text>
-                <Text className="text-[#626262]">
-                  info@jimenezproduce.com
-                  <br />
-                  +1 (251) 262-2607 • +1 (337) 806-9008
-                  <br />
-                  23141 Rubens Ln, Robertsdale, AL 36567 • 23141 Rubens Ln,
-                  Robertsdale, AL 36567
-                </Text>
+
+                <Row>
+                  <Column>
+                    <Text className="text-sm uppercase font-semibold text-[#626262]">
+                      Robertsdale
+                    </Text>
+                    <Text className="text-[#626262]">
+                      +1 (251) 262-2607
+                      <br />
+                      info@jimenezproduce.com
+                      <br />
+                      23141 Rubens Ln, Robertsdale, AL 36567
+                    </Text>
+                  </Column>
+                  <Column>
+                    <Text className="text-sm uppercase font-semibold text-[#626262]">
+                      Lafayette
+                    </Text>
+                    <Text className="text-[#626262]">
+                      +1 (337) 806-9008
+                      <br />
+                      info@jimenezproduce.com
+                      <br />
+                      100 Goldenrod Dr, Lafayette, LA 70507
+                    </Text>
+                  </Column>
+                </Row>
               </Section>
             )}
           </Container>

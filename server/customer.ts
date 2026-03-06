@@ -2,7 +2,7 @@
 
 import { db } from "@/lib/db";
 import { getSession } from "./auth";
-import { eq, or } from "drizzle-orm";
+import { and, eq, ne, or } from "drizzle-orm";
 import { headers } from "next/headers";
 import {
   customer,
@@ -17,6 +17,8 @@ import CustomerInvite from "@/components/email/customer-invite";
 import { sendApplicationStatusEmails, sendEmail } from "@/lib/email";
 import CatalogRequestNew from "@/components/email/catalog-request-new";
 import CatalogRequestUpdate from "@/components/email/catalog-request-update";
+import { AnimatedCircularProgressBar } from "@/components/ui/animated-circular-progress-bar";
+import { capitalizeWords } from "@/lib/utils";
 
 /**
  * create a customer - public
@@ -32,6 +34,10 @@ export const createCustomer = handleAction(async (data: CustomerInsertType) => {
 
   const values = {
     ...data,
+    officerFirst: capitalizeWords(data.officerFirst),
+    officerLast: capitalizeWords(data.officerLast),
+    companyEmail: data.companyEmail.toLowerCase(),
+    officerEmail: data.officerEmail.toLowerCase(),
     ipAddress: ip,
     userAgent: headersList.get("user-agent"),
     thumbnail: `https://api.dicebear.com/9.x/initials/svg?seed=${data.companyName}&scale=80`,
@@ -65,10 +71,13 @@ const linkCustomerInvite = async ({
   status,
 }: Record<string, string>) => {
   const invite = await db.query.customerInvite.findFirst({
-    where: or(
-      eq(customerInvite.email, email),
-      eq(customerInvite.email, accountPayableEmail),
-      eq(customerInvite.email, officerEmail)
+    where: and(
+      or(
+        eq(customerInvite.email, email),
+        eq(customerInvite.email, accountPayableEmail),
+        eq(customerInvite.email, officerEmail),
+        ne(customerInvite.status, status)
+      )
     ),
   });
 
@@ -121,7 +130,7 @@ export const updateCustomer = handleAction(
             ? "approved"
             : result.status === "rejected"
             ? "rejected"
-            : "",
+            : "applied",
       })
     );
 

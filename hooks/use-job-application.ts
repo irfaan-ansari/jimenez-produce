@@ -1,6 +1,6 @@
 import { fetcher } from "@/lib/helper/fetcher";
 import { useQuery } from "@tanstack/react-query";
-import { JobApplicationSelectType } from "@/lib/db/schema";
+import { JobApplicationSelectType, JobInviteSelectType } from "@/lib/db/schema";
 
 type Pagination = {
   total: number;
@@ -11,6 +11,10 @@ type Pagination = {
 
 type JobApplicationResponse = {
   data: JobApplicationSelectType[];
+  pagination: Pagination;
+};
+type JobInviteResponse = {
+  data: JobInviteSelectType[];
   pagination: Pagination;
 };
 
@@ -32,6 +36,15 @@ export const useJobApplication = (id: number) => {
         `/api/job-applications/${id}`
       ),
     enabled: !!id,
+    staleTime: 1000 * 60 * 5,
+  });
+};
+
+export const useJobInvites = (query: string) => {
+  return useQuery({
+    queryKey: ["job-invites", query],
+    queryFn: () => fetcher<JobInviteResponse>(`/api/job-invites?${query}`),
+
     staleTime: 1000 * 60 * 5,
   });
 };

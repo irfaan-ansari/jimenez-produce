@@ -17,7 +17,7 @@ export const CustomerApproved = ({ name, company }: CustomerApprovedProps) => {
         <Text className="text-lg">
           We are pleased to inform you that your account application for{" "}
           <span className="font-semibold inline-block uppercase">
-            {company}
+            {company || "Company"}
           </span>{" "}
           has been approved.
         </Text>

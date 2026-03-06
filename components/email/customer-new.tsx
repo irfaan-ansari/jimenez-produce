@@ -17,7 +17,7 @@ export const CustomerNew = ({ name, company }: Props) => {
 
         <Text className="text-lg">
           Thank you for submitting your account application with{" "}
-          <strong>Jimenez Produce</strong>, your trusted fresh produce
+          <strong>Jimenez Produce</strong>, your trusted food service
           distributor.
         </Text>
 
@@ -34,8 +34,7 @@ export const CustomerNew = ({ name, company }: Props) => {
           <Text className="text-base font-semibold mb-0">
             • Our team reviews your submitted documentation. <br />
             • Once approved, you will receive a confirmation email. <br />•
-            After approval, you can start placing orders for fresh produce,
-            dairy, beverages, dry goods, and specialty foodservice items.
+            After approval, you can start placing orders.
           </Text>
         </Section>
         <Section className="border border-[#f4f5f6] p-6 mt-6">

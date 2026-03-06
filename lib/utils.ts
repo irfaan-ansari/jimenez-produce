@@ -25,6 +25,7 @@ export function getAvatarFallback(value?: string | null): string {
   // If single word → take first 2 letters
   return parts[0].slice(0, 2).toUpperCase();
 }
+
 export function getFileType(url: string): "image" | "unknown" {
   try {
     const pathname = new URL(url).pathname;
@@ -49,4 +50,12 @@ export function getFileType(url: string): "image" | "unknown" {
   } catch {
     return "unknown";
   }
+}
+
+export function capitalizeWords(str: string) {
+  if (!str) return "";
+  return str
+    .split(" ")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
 }

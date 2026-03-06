@@ -15,7 +15,7 @@ const CatalogRequestUpdate = ({
   reason,
   message,
   company,
-  status = "approved",
+  status = "revoked",
   link,
 }: CustomerApprovedProps) => {
   return (
@@ -42,10 +42,6 @@ const CatalogRequestUpdate = ({
             <br />
             After reviewing your application, we are unable to approve your
             catalog access request at this time.
-            <br />
-            <br />
-            This decision may be based on internal credit review, incomplete
-            documentation, or service area limitations.
           </Text>
         )}
         {status === "revoked" && (
@@ -80,7 +76,7 @@ const CatalogRequestUpdate = ({
           </Section>
         )}
 
-        <Section className="p-6 mt-4 border-[#f4f5f6]">
+        <Section className="p-6 mt-4 border border-[#f4f5f6]">
           <Text className="text-lg uppercase font-semibold text-[#80b83a]">
             Need Assistance?
           </Text>

@@ -8,15 +8,14 @@ interface CustomerApprovedProps {
 
 export const CustomerInvite = ({ name, message }: CustomerApprovedProps) => {
   return (
-    <EmailTemplate template="customer" heading="Invitation to Apply">
+    <EmailTemplate template="customer" heading="Become a Customer">
       <Section className="p-6">
         <Text className="text-xl text-black font-semibold mb-2">
           Hello {name || "Name"},
         </Text>
 
         <Text className="text-lg">
-          You have been invited to apply for a commercial food distribution
-          account with Jimenez Produce.
+          You have been invited to apply for a account with Jimenez Produce.
         </Text>
         <Text className="text-lg">{message || "Message"}</Text>
 
@@ -25,7 +24,7 @@ export const CustomerInvite = ({ name, message }: CustomerApprovedProps) => {
           target="_blank"
           className="bg-[#80b83a] p-4 text-white uppercase text-sm font-semibold text-center mb-4"
         >
-          complete the application form
+          Become a Customer
         </Button>
 
         <Section className="border-[#f4f5f6] border p-6 mt-6">

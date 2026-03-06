@@ -10,10 +10,9 @@ import {
   LoadingSkeleton,
 } from "@/components/admin/placeholder-component";
 import { ColumnDef } from "@tanstack/react-table";
-import { useInvites } from "@/hooks/use-customer";
 import { useRouterStuff } from "@/hooks/use-router-stuff";
 import { DataTable } from "@/components/admin/data-table";
-import { CustomerInviteSelectType } from "@/lib/db/schema";
+import { CustomerInviteSelectType, JobInviteSelectType } from "@/lib/db/schema";
 import { inviteStatusMap } from "@/lib/constants/customer";
 import { CustomerInviteAction } from "@/components/admin/customer-invite-actions";
 import {
@@ -21,11 +20,12 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
+import { useJobInvites } from "@/hooks/use-job-application";
 
 export const PageClient = () => {
   const { getQueryString } = useRouterStuff();
 
-  const { data, isPending, isError, error } = useInvites(
+  const { data, isPending, isError, error } = useJobInvites(
     getQueryString({ type: "invitation" })
   );
 
@@ -46,7 +46,7 @@ export const PageClient = () => {
   );
 };
 
-export const columns: ColumnDef<CustomerInviteSelectType>[] = [
+export const columns: ColumnDef<JobInviteSelectType>[] = [
   {
     id: "fullName",
     header: "Name",
@@ -79,18 +79,15 @@ export const columns: ColumnDef<CustomerInviteSelectType>[] = [
     },
   },
   {
-    id: "company",
-    header: "Company",
-    accessorFn: (row) => row.companyName ?? "",
+    accessorKey: "position",
+    header: "Position",
     cell: ({ row }) => {
-      const { companyName, companyType } = row.original;
+      const { position, positionSlug } = row.original;
 
       return (
         <div className="flex flex-col">
-          <span className="font-medium">{companyName}</span>
-          {companyType && (
-            <span className="text-sm text-muted-foreground">{companyType}</span>
-          )}
+          <span className="font-medium">{position}</span>
+          <span className="text-sm text-muted-foreground">{positionSlug}</span>
         </div>
       );
     },
@@ -119,7 +116,7 @@ export const columns: ColumnDef<CustomerInviteSelectType>[] = [
     accessorKey: "status",
     header: "Status",
     cell: ({ row }) => {
-      const { status, customerId } = row.original;
+      const { status, applicationId } = row.original;
 
       const map = inviteStatusMap[status as keyof typeof inviteStatusMap];
 
@@ -133,9 +130,9 @@ export const columns: ColumnDef<CustomerInviteSelectType>[] = [
 
           {map.label}
 
-          {customerId && (
+          {applicationId && (
             <Link
-              href={`/admin/customers/${customerId}`}
+              href={`/admin/job-applications/${applicationId}`}
               className="text-xs text-primary underline"
             >
               View

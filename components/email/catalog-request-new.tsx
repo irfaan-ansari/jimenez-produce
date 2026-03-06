@@ -20,11 +20,12 @@ const CatalogRequestNew = ({
         </Text>
 
         <Text className="text-lg">
-          We have received catalog access request for {company || "Company"}.
-          Our team is currently reviewing your submission.
+          We have received catalog access request for{" "}
+          <strong>{company || "Company"}</strong>. Our team is currently
+          reviewing your submission.
         </Text>
 
-        <Text className="text-lg">{message || "Message"}</Text>
+        <Text className="text-lg italic">"{message || "Message"}"</Text>
 
         <Section className="shadow-sm p-6 mt-4">
           <Text className="text-lg uppercase font-semibold text-[#80b83a]">

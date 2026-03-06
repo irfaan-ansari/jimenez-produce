@@ -3,7 +3,11 @@ import { redirect } from "next/navigation";
 import { getSession } from "@/server/auth";
 import { Container } from "@/components/container";
 import { AppSidebar } from "@/components/admin/app-sidebar";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
 import { SITE_CONFIG } from "@/lib/config";
 
 export const metadata = {
@@ -31,7 +35,8 @@ const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
     >
       <AppSidebar />
       <SidebarInset className="min-w-0">
-        <Container className="mx-0 py-5 md:py-8 h-full max-w-full">
+        <Container className="mx-0 pb-5 md:pb-8 pt-2 h-full max-w-full">
+          <SidebarTrigger className="-ml-1 rounded-xl" size="icon" />
           {children}
         </Container>
       </SidebarInset>

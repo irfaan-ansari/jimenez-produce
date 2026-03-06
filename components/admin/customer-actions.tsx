@@ -8,8 +8,9 @@ import { statusMap } from "@/lib/constants/customer";
 import { PopoverXDrawer } from "../popover-x-drawer";
 import { useQueryClient } from "@tanstack/react-query";
 import { CustomerStatusDialog } from "./customer-status-dialog";
-import { Eye, FileText, MoreVertical, Trash2 } from "lucide-react";
+import { Eye, FileText, MoreVertical, SquarePen, Trash2 } from "lucide-react";
 import { deleteCustomer, updateCustomer } from "@/server/customer";
+import { CustomerDialog } from "./customer-dialog";
 
 type Status = keyof typeof statusMap;
 
@@ -119,7 +120,16 @@ export const CustomerAction = ({ id, status, showView = true }: Props) => {
           </Link>
         </Button>
       )}
-
+      {/* <CustomerDialog>
+        <Button
+          type="button"
+          variant="ghost"
+          className="flex items-center justify-start gap-2"
+        >
+          <SquarePen />
+          Edit
+        </Button>
+      </CustomerDialog> */}
       {availableActions.map((action) => (
         <Button
           type="button"

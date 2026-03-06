@@ -13,10 +13,7 @@ export const JobAgreement = ({
   position,
 }: JobAgreementProps) => {
   return (
-    <EmailTemplate
-      template="customer"
-      heading="Next Steps – Employment Application"
-    >
+    <EmailTemplate template="customer" heading="Next Steps – Onboarding">
       <Section className="p-6">
         <Text className="text-xl text-black font-semibold mb-2">
           Hello {name || "Applicant"},
@@ -45,8 +42,6 @@ export const JobAgreement = ({
             <br />
             <strong>*</strong> Review and sign company agreements (PDF required)
             <br />
-            <strong>*</strong> Submit identification documents
-            <br />
             <strong>*</strong> Provide consent for background screening
           </Text>
 
@@ -67,6 +62,7 @@ export const JobAgreement = ({
           <Text className="text-lg mt-2">
             Employment is contingent upon successful completion of:
             <br />
+            <br />
             <strong>*</strong> Background check
             <br />
             <strong>*</strong> Verification of eligibility to work
@@ -76,7 +72,7 @@ export const JobAgreement = ({
         </Section>
 
         <Text className="font-semibold text-lg mt-6">
-          We look forward to welcoming you to the team.
+          We look forward to having you a part of the Jimenez Produce team!
         </Text>
       </Section>
     </EmailTemplate>
