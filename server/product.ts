@@ -1,9 +1,80 @@
 "use server";
 
+import {
+  customer,
+  customerInvite,
+  product,
+  ProductInsertType,
+} from "@/lib/db/schema";
 import { db } from "@/lib/db";
 import { getSession } from "./auth";
-import { product, ProductInsertType } from "@/lib/db/schema";
-import { eq, sql } from "drizzle-orm";
+import { cookies } from "next/headers";
+import { handleAction } from "@/lib/helper/error-handler";
+import { and, eq, ilike, or, sql, desc } from "drizzle-orm";
+
+export const getProducts = handleAction(
+  async (query: Record<string, string>) => {
+    const session = await getSession();
+
+    const cookieStore = await cookies();
+    const email: string = cookieStore.get("customer-email") as any;
+
+    const [customerRes, inviteRes] = await Promise.all([
+      db.query.customer.findFirst({
+        where: and(
+          or(
+            eq(customer.companyEmail, email),
+            eq(customer.officerEmail, email)
+          ),
+          eq(customer.status, "approved")
+        ),
+      }),
+      db.query.customerInvite.findFirst({
+        where: and(
+          eq(customerInvite.email, email),
+          eq(customerInvite.status, "approved")
+        ),
+      }),
+    ]);
+
+    const isPublicUser = !session && !customerRes && !inviteRes;
+
+    const { page = 1, limit = 24, status, q } = query;
+    const offset = ((page as number) - 1) * Number(limit);
+
+    const statusFilter = isPublicUser
+      ? eq(product.status, "active")
+      : status
+      ? eq(product.status, status)
+      : undefined;
+
+    const filters = and(
+      statusFilter,
+      q ? ilike(product.title, `%${q}%`) : undefined
+    );
+
+    const products = await db
+      .select()
+      .from(product)
+      .where(filters)
+      .limit(Number(limit))
+      .offset(offset)
+      .orderBy(desc(product.createdAt));
+
+    const total = await db.$count(product);
+
+    return {
+      data: products,
+      access: !isPublicUser,
+      pagination: {
+        page,
+        limit,
+        total: total,
+        totalPages: Math.ceil(total / (limit as number)),
+      },
+    };
+  }
+);
 
 /**
  * Create a product
@@ -14,8 +85,8 @@ export const createProduct = async (data: ProductInsertType) => {
   const session = await getSession();
   if (!session) throw new Error("Authentication required.");
 
-  if (!data.image)
-    data.image = `https://api.dicebear.com/9.x/initials/svg?seed=${data.title}&scale=80`;
+  // if (!data.image)
+  //   data.image = `https://api.dicebear.com/9.x/initials/svg?seed=${data.title}&scale=80`;
 
   const [result] = await db
     .insert(product)

@@ -1,57 +1,24 @@
 import { db } from "@/lib/db";
-import {
-  customer,
-  customerInvite,
-  product,
-  ProductSelectType,
-} from "@/lib/db/schema";
-import { cookies } from "next/headers";
+import { product } from "@/lib/db/schema";
 import { getSession } from "@/server/auth";
 import { eq, or, and, ilike, desc } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
-
-type PublicProduct = Omit<ProductSelectType, "price" | "offerPrice">;
 
 export async function GET(req: NextRequest) {
   try {
     const session = await getSession();
 
-    const cookieStore = await cookies();
-    const email: string = cookieStore.get("customer-email") as any;
-
-    const [customerRes, inviteRes] = await Promise.all([
-      db.query.customer.findFirst({
-        where: and(
-          or(
-            eq(customer.companyEmail, email),
-            eq(customer.officerEmail, email)
-          ),
-          eq(customer.status, "approved")
-        ),
-      }),
-      db.query.customerInvite.findFirst({
-        where: and(
-          eq(customerInvite.email, email),
-          eq(customerInvite.status, "approved")
-        ),
-      }),
-    ]);
-
-    const isPublicUser = !session && !customerRes && !inviteRes;
+    if (!session) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
 
     const searchParams = req.nextUrl.searchParams;
     const query = Object.fromEntries(searchParams.entries());
     const { page = 1, limit = 24, status, q } = query;
     const offset = ((page as number) - 1) * Number(limit);
 
-    const statusFilter = isPublicUser
-      ? eq(product.status, "active")
-      : status
-      ? eq(product.status, status)
-      : undefined;
-
     const filters = and(
-      statusFilter,
+      eq(product.status, status),
       q
         ? or(
             ilike(product.title, `%${q}%`),
@@ -71,20 +38,10 @@ export async function GET(req: NextRequest) {
 
     const total = await db.$count(product, filters);
 
-    const data: ProductSelectType[] | PublicProduct[] = !session
-      ? products.map(({ price, offerPrice, ...rest }) => rest)
-      : products;
-
-    const access = session
-      ? "full"
-      : customerRes || inviteRes
-      ? "partial"
-      : "no_access";
-
     return NextResponse.json(
       {
-        data,
-        access,
+        data: products,
+
         pagination: {
           page,
           limit,

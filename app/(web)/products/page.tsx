@@ -6,6 +6,7 @@ import { PageClient } from "./page-client";
 import { ProductResponse } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/container";
+import { getProducts } from "@/server/product";
 
 export const metadata: Metadata = {
   title: "Catalog",
@@ -20,20 +21,9 @@ const CatalogPage = async ({
 }) => {
   const query = (await searchParams) || {};
 
-  const params = new URLSearchParams(
-    Object.entries(query).map(([key, value]) => [key, String(value)])
-  );
+  const { success, data: response, error } = await getProducts(query);
 
-  const res = await fetch(
-    `${process.env.BETTER_AUTH_URL}/api/products?${params.toString()}`,
-    {
-      headers: await headers(),
-    }
-  );
-
-  if (!res.ok) {
-    const error = await res.json().catch(() => null);
-
+  if (!success) {
     return (
       <section className="my-16">
         <Container className="space-y-6">
@@ -44,10 +34,8 @@ const CatalogPage = async ({
       </section>
     );
   }
+  const { data, pagination, access } = response;
 
-  const json: ProductResponse & { access: string } = await res.json();
-
-  const { data, access, pagination } = json;
   return (
     <section className="my-16">
       <Container className="space-y-6">
@@ -84,7 +72,7 @@ const CatalogPage = async ({
         </div>
 
         {/* pagination */}
-        {access === "no_access" ? (
+        {!access ? (
           <div className="mt-16 py-16 px-6 lg:px-16 bg-primary">
             <div className="space-y-8">
               <div className="space-y-4 text-center max-w-2xl mx-auto text-background">
