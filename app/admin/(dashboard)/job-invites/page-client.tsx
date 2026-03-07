@@ -3,6 +3,12 @@
 import Link from "next/link";
 import React from "react";
 import { format } from "date-fns";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
+import { ExternalLink } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,17 +16,12 @@ import {
   LoadingSkeleton,
 } from "@/components/admin/placeholder-component";
 import { ColumnDef } from "@tanstack/react-table";
+import { JobInviteSelectType } from "@/lib/db/schema";
+import { jobInviteStatusMap } from "@/lib/constants/job";
 import { useRouterStuff } from "@/hooks/use-router-stuff";
 import { DataTable } from "@/components/admin/data-table";
-import { JobInviteSelectType } from "@/lib/db/schema";
-import { inviteStatusMap } from "@/lib/constants/customer";
-import { CustomerInviteAction } from "@/components/admin/customer-invite-actions";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
 import { useJobInvites } from "@/hooks/use-job-application";
+import { JobInviteActions } from "@/components/admin/job-invite-actions";
 
 export const PageClient = () => {
   const { getQueryString } = useRouterStuff();
@@ -83,10 +84,14 @@ export const columns: ColumnDef<JobInviteSelectType>[] = [
       const { position, positionSlug } = row.original;
 
       return (
-        <div className="flex flex-col">
-          <span className="font-medium">{position}</span>
-          <span className="text-sm text-muted-foreground">{positionSlug}</span>
-        </div>
+        <a
+          target="_blank"
+          className="flex gap-2 items-center hover:underline"
+          href={`https://jimenezproduce.com/careers/${positionSlug}`}
+        >
+          {position}
+          <ExternalLink className="size-4" />
+        </a>
       );
     },
   },
@@ -116,7 +121,7 @@ export const columns: ColumnDef<JobInviteSelectType>[] = [
     cell: ({ row }) => {
       const { status, applicationId } = row.original;
 
-      const map = inviteStatusMap[status as keyof typeof inviteStatusMap];
+      const map = jobInviteStatusMap[status as keyof typeof jobInviteStatusMap];
 
       return (
         <Badge
@@ -130,6 +135,7 @@ export const columns: ColumnDef<JobInviteSelectType>[] = [
 
           {applicationId && (
             <Link
+              target="_blank"
               href={`/admin/job-applications/${applicationId}`}
               className="text-xs text-primary underline"
             >
@@ -147,8 +153,8 @@ export const columns: ColumnDef<JobInviteSelectType>[] = [
     enableSorting: false,
     enableHiding: false,
     cell: ({ row }) => (
-      <CustomerInviteAction
-        status={row.original.status as keyof typeof inviteStatusMap}
+      <JobInviteActions
+        status={row.original.status as keyof typeof jobInviteStatusMap}
         id={row.original.id}
       />
     ),

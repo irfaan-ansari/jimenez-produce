@@ -100,19 +100,17 @@ export const ProductDialog = ({
           }
         );
       } else {
-        for (let i = 0; i < 50; i++) {
-          create(
-            { ...rest, status, title: rest.title + i },
-            {
-              onSuccess: () => {
-                toast.success("Product has been saved!");
-                setOpen(false);
-                form.reset();
-              },
-              onError: (err) => toast.error(err.message),
-            }
-          );
-        }
+        create(
+          { ...rest, status },
+          {
+            onSuccess: () => {
+              toast.success("Product has been saved!");
+              setOpen(false);
+              form.reset();
+            },
+            onError: (err) => toast.error(err.message),
+          }
+        );
       }
     },
   });

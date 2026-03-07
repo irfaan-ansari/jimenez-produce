@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { eq } from "drizzle-orm";
+import { and, eq, ne } from "drizzle-orm";
 import { put } from "@vercel/blob";
 import { getSession } from "./auth";
 import { headers } from "next/headers";
@@ -89,6 +89,7 @@ export const submitAgreement = handleAction(async (token: string) => {
 
   return result;
 });
+
 /**
  * Create job application
  * @param data
@@ -112,13 +113,27 @@ export const createJobApplication = handleAction(
       userAgent: headersList.get("user-agent"),
     };
 
+    // create record
     const [result] = await db
       .insert(jobApplications)
       .values(values)
       .returning();
-    revalidatePath("/admin/job-applications");
+
+    //  find invite
+    const invite = await db.query.jobInvite.findFirst({
+      where: eq(jobInvite.email, values.email),
+    });
+
+    // update invite
+    if (invite)
+      await db
+        .update(jobInvite)
+        .set({ status: "applied" })
+        .where(eq(jobInvite.id, invite.id));
+
     // send email
     waitUntil(sendJobStatusEmail(result));
+
     return result;
   }
 );
@@ -158,10 +173,24 @@ export const updateJobApplication = handleAction(
       .where(eq(jobApplications.id, id))
       .returning();
 
-    revalidatePath("/admin/job-applications");
-
     // send email
     if (nextStatus && nextStatus !== existing.status) {
+      if (nextStatus === "hired") {
+        //  find invite
+        const invite = await db.query.jobInvite.findFirst({
+          where: and(
+            eq(jobInvite.email, result.email),
+            ne(jobInvite.status, "hired")
+          ),
+        });
+
+        // update invite
+        if (invite)
+          await db
+            .update(jobInvite)
+            .set({ status: "hired", applicationId: result.id })
+            .where(eq(jobInvite.id, invite.id));
+      }
       waitUntil(sendJobStatusEmail(result));
     }
 
@@ -201,8 +230,9 @@ export const inviteCandidate = handleAction(
     if (!session) throw new Error("Authentication required.");
 
     const existing = await db.query.jobInvite.findFirst({
-      where: eq(jobInvite.email, data.email?.toUpperCase()),
+      where: eq(jobInvite.email, data.email?.toLowerCase()),
     });
+
     if (existing) throw new Error("Duplicate request for this email.");
 
     const [res] = await db
@@ -213,7 +243,7 @@ export const inviteCandidate = handleAction(
     waitUntil(
       sendEmail({
         to: [res.email],
-        subject: "",
+        subject: "Invitation to Apply for an Open Position",
         template: JobInvitation,
         variables: {
           name: res.firstName,
@@ -225,3 +255,42 @@ export const inviteCandidate = handleAction(
     return res;
   }
 );
+
+export const updateInvite = handleAction(
+  async (id: number, data: Partial<JobInviteInsertType>) => {
+    const session = await getSession();
+    if (!session) throw new Error("Authentication required.");
+
+    const existing = await db.query.jobInvite.findFirst({
+      where: eq(jobInvite.id, id),
+    });
+
+    if (!existing) throw new Error("Resource not found.");
+
+    const [result] = await db
+      .update(jobInvite)
+      .set(data)
+      .where(eq(jobInvite.id, id))
+      .returning();
+
+    return result;
+  }
+);
+
+export const deleteInvite = handleAction(async (id: number) => {
+  const session = await getSession();
+  if (!session) throw new Error("Authentication required.");
+
+  const existing = await db.query.jobInvite.findFirst({
+    where: eq(jobInvite.id, id),
+  });
+
+  if (!existing) throw new Error("Resource not found.");
+
+  const [result] = await db
+    .delete(jobInvite)
+    .where(eq(jobInvite.id, id))
+    .returning();
+
+  return result;
+});

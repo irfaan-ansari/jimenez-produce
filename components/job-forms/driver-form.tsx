@@ -13,16 +13,16 @@ import {
   applicantTrafficConvictions,
 } from "@/lib/constants/job";
 import { Button } from "../ui/button";
-import { steps } from "@/lib/constants/driver-form-steps";
-import { useAppForm } from "@/hooks/form-context";
-import { driverFormSchema, DriverFormType } from "@/lib/form-schema/job-schema";
+import { useRouter } from "next/navigation";
+import { upload } from "@vercel/blob/client";
 import { useStore } from "@tanstack/react-form";
+import { useConfirm } from "@/hooks/use-confirm";
+import { useAppForm } from "@/hooks/form-context";
+import { createJobApplication } from "@/server/job";
+import { steps } from "@/lib/constants/driver-form-steps";
 import { ArrowLeft, ArrowRight, Loader } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
-import { useConfirm } from "@/hooks/use-confirm";
-import { upload } from "@vercel/blob/client";
-import { useRouter } from "next/navigation";
-import { createJobApplication } from "@/server/job";
+import { driverFormSchema, DriverFormType } from "@/lib/form-schema/job-schema";
 
 const defaultValues: DriverFormType = {
   ...applicantAccidentHistory,

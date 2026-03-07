@@ -2,7 +2,7 @@
 
 import { use } from "react";
 import Link from "next/link";
-import { format } from "date-fns";
+import { differenceInMonths, format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, MailCheck, MapPin, Phone } from "lucide-react";
@@ -321,6 +321,9 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
                     Duration
                   </div>
                   <div className="text-base">
+                    {differenceInMonths(emp.toDate, emp.fromDate)} Months
+                  </div>
+                  <div className="text-base text-muted-foreground">
                     {format(emp.fromDate, "MMMM dd, yyyy") +
                       " - " +
                       format(emp.toDate, "MMMM dd, yyyy")}
@@ -536,7 +539,12 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
                       Duration
                     </div>
                     <div className="text-base">
-                      {exp.fromDate + "-" + exp.toDate}
+                      {differenceInMonths(exp.toDate, exp.fromDate)} Months
+                    </div>
+                    <div className="text-base text-muted-foreground">
+                      {format(exp.fromDate, "MMMM dd, yyyy") +
+                        " - " +
+                        format(exp.toDate, "MMMM dd, yyyy")}
                     </div>
                   </div>
                   <div className="space-y-1">

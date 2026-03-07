@@ -58,7 +58,7 @@ export const InviteCandidate = () => {
     onSubmit: async ({ value }) => {
       const [firstName = "", lastName = ""] = value.name.split(" ");
 
-      const selected = POSOTIONS.find((p) => p.value === value.position);
+      const selected = POSOTIONS.find((p) => p.label === value.position);
 
       const { success, error } = await inviteCandidate({
         ...value,

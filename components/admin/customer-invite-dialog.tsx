@@ -72,7 +72,7 @@ export const CustomerInviteDialog = ({
       onSubmit: schema,
     },
     onSubmit: async ({ value }) => {
-      const [firstName, lastName] = value.name.split(" ");
+      const [firstName = "", lastName = ""] = value.name.split(" ");
 
       const { success, error } = await createInvite({
         ...value,

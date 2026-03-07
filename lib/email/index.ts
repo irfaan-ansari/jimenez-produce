@@ -46,7 +46,7 @@ export async function sendEmail({
     subject,
     react: element,
   });
-  console.log("res");
+
   return result;
 }
 

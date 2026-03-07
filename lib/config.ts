@@ -227,6 +227,12 @@ export const SIDEBAR_MENU = [
         color: "#3B82F6",
         query: { status: "applied" },
       },
+      {
+        label: "Hired",
+        href: "/admin/job-invites",
+        color: "#22C55E",
+        query: { status: "hired" },
+      },
     ],
   },
   {

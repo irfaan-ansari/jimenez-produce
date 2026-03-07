@@ -2,7 +2,9 @@ import {
   CheckCircle,
   Circle,
   Clock,
+  FileText,
   MessageCircle,
+  Send,
   XCircle,
 } from "lucide-react";
 import {
@@ -289,6 +291,39 @@ export const jobApplicationStatusMap = {
         icon: CheckCircle,
       },
     ],
+  },
+} as const;
+
+export const jobInviteStatusMap = {
+  invited: {
+    label: "Invited",
+    color: "#F59E0B",
+    icon: Send,
+    actions: [
+      {
+        label: "Mark as Approved",
+        action: "approved",
+        icon: CheckCircle,
+      },
+    ],
+  },
+  applied: {
+    label: "Applied",
+    color: "#3B82F6",
+    icon: FileText,
+    actions: [
+      {
+        label: "Mark as Approved",
+        action: "approved",
+        icon: CheckCircle,
+      },
+    ],
+  },
+  hired: {
+    label: "Hired",
+    color: "#22C55E",
+    icon: CheckCircle,
+    actions: [],
   },
 } as const;
 
