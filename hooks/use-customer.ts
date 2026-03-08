@@ -2,13 +2,8 @@ import {
   type CustomerSelectType,
   CustomerInviteSelectType,
 } from "@/lib/db/schema";
-import { createCustomer, deleteCustomer } from "@/server/customer";
 import { fetcher } from "@/lib/helper/fetcher";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-
-type CustomerMutateResponse = {
-  id: number;
-};
+import { useQuery } from "@tanstack/react-query";
 
 type Pagination = {
   total: number;

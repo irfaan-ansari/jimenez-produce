@@ -18,8 +18,8 @@ export const Authorization = withForm({
   render: function Render({ form }) {
     const { t } = useTranslation(translations as Translations, "en");
     return (
-      <FieldGroup className="grid grid-cols-2">
-        <div className="col-span-2 bg-amber-600/10 text-amber-600 font-medium p-4 border border-amber-600/10 rounded-2xl">
+      <FieldGroup className="grid @2xl:grid-cols-2">
+        <div className="@2xl:col-span-2 bg-amber-600/10 text-amber-600 font-medium p-4 border border-amber-600/10 rounded-2xl">
           All uploaded files must be in PDF, JPG, or PNG format and must not
           exceed 5 MB per file.
         </div>
@@ -65,7 +65,7 @@ export const Authorization = withForm({
               field.state.meta.isTouched && !field.state.meta.isValid;
 
             return (
-              <Field className="gap-2 col-span-2" data-invalid={isInvalid}>
+              <Field className="gap-2 @2xl:col-span-2" data-invalid={isInvalid}>
                 <FieldLabel className="col-span-2">
                   <Field orientation="horizontal">
                     <Checkbox

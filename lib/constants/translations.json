@@ -12,7 +12,6 @@
       "desc3": "Let us know who to contact for payments and ordering.",
       "desc4": "Help us understand the best way to safely deliver to your business.",
       "desc5": "Please upload the documents and sign the agreement",
-
       "companyName": "Company Name",
       "companyNamePlaceholder": "e.g. Fresh Valley Produce LLC",
       "companyNameError": "Please enter your legal business name.",
@@ -46,7 +45,7 @@
       "companyZipError": "Please enter a valid ZIP Code.",
 
       "companyPhone": "Phone",
-      "companyPhonePlaceholder": "(555) 123-4567",
+      "companyPhonePlaceholder": "email@email.com",
       "companyPhoneError": "Please enter a valid phone number.",
 
       "companyEmail": "Email",
@@ -177,10 +176,10 @@
       "desc3": "Indíquenos a quién debemos contactar para pagos y pedidos.",
       "desc4": "Ayúdenos a entender la mejor manera de realizar entregas seguras en su negocio.",
       "desc5": "Por favor cargue los documentos requeridos y firme el acuerdo.",
-      "companyLegalName": "Nombre legal del negocio",
-      "companyLegalNamePlaceholder": "Ej. Fresh Valley Produce LLC",
-      "companyLegalNameDesc": "Ingrese el nombre registrado del negocio tal como aparece en documentos fiscales y bancarios.",
-      "companyLegalNameError": "Ingrese el nombre legal del negocio.",
+      "companyName": "Nombre legal del negocio",
+      "companyNamePlaceholder": "Ej. Fresh Valley Produce LLC",
+      "companyNameDesc": "Ingrese el nombre registrado del negocio tal como aparece en documentos fiscales y bancarios.",
+      "companyNameError": "Ingrese el nombre legal del negocio.",
 
       "companyType": "Tipo de negocio",
       "companyTypePlaceholder": "Seleccione el tipo de negocio",
@@ -192,10 +191,10 @@
       "companyDBADesc": "Solo requerido si su negocio opera bajo un nombre diferente.",
       "companyDBAError": "Ingrese un nombre comercial válido.",
 
-      "ein": "Número de Identificación del Empleador (EIN)",
-      "einPlaceholder": "12-3456789",
-      "einDesc": "Número fiscal federal utilizado para facturación y configuración de la cuenta.",
-      "einError": "Ingrese un EIN válido.",
+      "companyEin": "Número de Identificación del Empleador (EIN)",
+      "companyEinPlaceholder": "12-3456789",
+      "companyEinDesc": "Número fiscal federal utilizado para facturación y configuración de la cuenta.",
+      "companyEinError": "Ingrese un EIN válido.",
 
       "companyStreet": "Dirección del negocio",
       "companyStreetPlaceholder": "123 Main Street",
@@ -221,6 +220,10 @@
       "companyPhonePlaceholder": "(555) 123-4567",
       "companyPhoneDesc": "Utilizado para contacto sobre pedidos o entregas.",
       "companyPhoneError": "Ingrese un número de teléfono válido.",
+
+      "companyEmail": "Correo electrónico",
+      "companyEmailPlaceholder": "nombre@empresa.com",
+      "companyEmailError": "Por favor, introduce una dirección de correo electrónico válida.",
 
       "officerFirst": "Nombre",
       "officerFirstPlaceholder": "Juan",

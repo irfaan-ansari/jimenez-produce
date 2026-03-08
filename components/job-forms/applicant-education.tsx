@@ -95,7 +95,7 @@ export const ApplicantEducation = withForm({
           }}
         />
         <form.AppField
-          name="educations"
+          name="otherEducations"
           mode="array"
           children={(field) => {
             return (
@@ -116,29 +116,29 @@ export const ApplicantEducation = withForm({
                       </div>
 
                       <form.AppField
-                        name={`educations[${i}].institutionName`}
+                        name={`otherEducations[${i}].institutionName`}
                         children={(field) => <field.TextField label="Name" />}
                       />
                       <form.AppField
-                        name={`educations[${i}].fieldOfStudy`}
+                        name={`otherEducations[${i}].fieldOfStudy`}
                         children={(field) => (
                           <field.TextField label="Course of Study" />
                         )}
                       />
                       <form.AppField
-                        name={`educations[${i}].location`}
+                        name={`otherEducations[${i}].location`}
                         children={(field) => (
                           <field.TextField label="Location" />
                         )}
                       />
                       <form.AppField
-                        name={`educations[${i}].yearCompleted`}
+                        name={`otherEducations[${i}].yearCompleted`}
                         children={(field) => (
                           <field.TextField label="Years Completed" />
                         )}
                       />
                       <form.Field
-                        name={`educations[${i}].details`}
+                        name={`otherEducations[${i}].details`}
                         children={(field) => {
                           const isInvalid =
                             field.state.meta.isTouched &&

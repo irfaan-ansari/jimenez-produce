@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
     const offset = ((page as number) - 1) * Number(limit);
 
     const filters = and(
-      eq(product.status, status),
+      status ? eq(product.status, status) : undefined,
       q
         ? or(
             ilike(product.title, `%${q}%`),

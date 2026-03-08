@@ -162,11 +162,11 @@ export const updateJobApplication = handleAction(
       data.statusReason = "";
       data.statusDetails = "";
     }
-
+    const { createdAt, updatedAt, reviewedAt, reviewedBy, ...rest } = data;
     const [result] = await db
       .update(jobApplications)
       .set({
-        ...data,
+        ...rest,
         reviewedBy: session.user.id,
         reviewedAt: new Date(),
       })

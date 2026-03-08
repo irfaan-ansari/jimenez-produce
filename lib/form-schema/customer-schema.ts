@@ -1,5 +1,13 @@
 import { z } from "zod";
-const MAX_UPLOAD_SIZE = 5 * 1024 * 1024; // 5MB
+export const MAX_UPLOAD_SIZE = 5 * 1024 * 1024; // 5MB
+
+export const fileSchema = z
+  .file()
+  .max(MAX_UPLOAD_SIZE, "Upload file less than 5MB")
+  .mime(
+    ["image/png", "image/jpeg", "application/pdf"],
+    "File type is not allowed"
+  );
 
 export const step1Schema = z.object({
   companyName: z.string().min(2, "Company name is required"),
@@ -90,20 +98,8 @@ export const step5Schema = z.object({
       ["image/png", "image/jpeg", "application/pdf"],
       "File type is not allowed"
     ),
-  dlFront: z
-    .file("Driver's licence is required")
-    .max(MAX_UPLOAD_SIZE, "Upload file less tant 5MB")
-    .mime(
-      ["image/png", "image/jpeg", "application/pdf"],
-      "File type is not allowed"
-    ),
-  dlBack: z
-    .file("Driver's licence is required")
-    .max(MAX_UPLOAD_SIZE, "Upload file less tant 5MB")
-    .mime(
-      ["image/png", "image/jpeg", "application/pdf"],
-      "File type is not allowed"
-    ),
+  dlFront: fileSchema,
+  dlBack: fileSchema,
   signature: z
     .file("Signature is required")
     .mime(["image/png"], "File type is not allowed"),

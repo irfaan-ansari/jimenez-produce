@@ -54,11 +54,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
           <h1 className="text-xl font-semibold flex-1 truncate">
             {data.companyDBA}
           </h1>
-          <CustomerAction
-            id={data.id}
-            status={data.status as StatusIndex}
-            showView={false}
-          />
+          <CustomerAction initialValues={data} showView={false} />
         </div>
         <Card className="rounded-2xl">
           <CardHeader className="flex flex-row gap-4 ">

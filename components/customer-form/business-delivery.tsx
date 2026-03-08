@@ -42,9 +42,8 @@ export const BusinessDelivery = withForm({
                     <React.Fragment key={i}>
                       <div className="col-span-2 flex">
                         <h4 className="text-xl font-semibold mb-1 flex-1 ">
-                          Delivery Prefrences {i + 1}
+                          Delivery Prefrence
                         </h4>
-
                         <Button
                           variant="outline"
                           size="icon"
@@ -122,7 +121,7 @@ export const BusinessDelivery = withForm({
                   type="button"
                   variant="outline"
                   size="xl"
-                  className="w-full @2xl:col-span-2 border-dashed bg-primary/10"
+                  className="w-full col-span-2 border-dashed bg-primary/10"
                   onClick={() =>
                     field.pushValue({
                       day: "",

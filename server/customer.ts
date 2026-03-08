@@ -107,34 +107,36 @@ export const updateCustomer = handleAction(
 
     if (!existing) throw new Error("Resource not found.");
 
-    const nextStatus = data.status;
+    const { createdAt, updatedAt, reviewedAt, reviewedBy, ...rest } = data;
+
+    const nextStatus = rest.status;
 
     const [result] = await db
       .update(customer)
       .set({
-        ...data,
+        ...rest,
         reviewedBy: session.user.id,
         reviewedAt: new Date(),
       })
       .where(eq(customer.id, id))
       .returning();
 
-    waitUntil(
-      linkCustomerInvite({
-        id: `${result.id}`,
-        companyEmail: data.companyEmail!,
-        accountPayableEmail: data.accountPayableEmail!,
-        officerEmail: data.officerEmail!,
-        status:
-          result.status === "active"
-            ? "approved"
-            : result.status === "rejected"
-            ? "rejected"
-            : "applied",
-      })
-    );
-
     if (nextStatus && nextStatus !== existing.status) {
+      waitUntil(
+        linkCustomerInvite({
+          id: `${result.id}`,
+          companyEmail: rest.companyEmail!,
+          accountPayableEmail: rest.accountPayableEmail!,
+          officerEmail: rest.officerEmail!,
+          status:
+            result.status === "active"
+              ? "approved"
+              : result.status === "rejected"
+              ? "rejected"
+              : "applied",
+        })
+      );
+
       waitUntil(sendApplicationStatusEmails(result));
     }
 

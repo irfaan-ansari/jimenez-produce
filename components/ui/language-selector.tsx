@@ -65,7 +65,7 @@ export function useTranslation<T extends Record<string, string>>(
   const language = context?.language ?? localLanguage;
 
   const setLanguage = context?.setLanguage ?? setLocalLanguage;
-  console.log(language);
+
   const { dir, locale, values: t } = translations[language];
 
   return { language, setLanguage, dir, locale, t };

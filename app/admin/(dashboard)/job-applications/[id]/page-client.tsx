@@ -5,7 +5,7 @@ import Link from "next/link";
 import { differenceInMonths, format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, MailCheck, MapPin, Phone } from "lucide-react";
+import { ChevronLeft, MailCheck, Phone } from "lucide-react";
 import {
   EmptyComponent,
   LoadingSkeleton,
@@ -14,13 +14,7 @@ import { JobApplicationStatus } from "@/lib/types";
 import { Attachment } from "@/components/admin/Attachment";
 import { jobApplicationStatusMap } from "@/lib/constants/job";
 import { useJobApplication } from "@/hooks/use-job-application";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { JobApplicationAction } from "@/components/admin/job-application-actions";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
@@ -67,12 +61,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
             {data.applicantName}
           </h1>
           {/* action button */}
-          <JobApplicationAction
-            id={data.id}
-            status={data.status as JobApplicationStatus}
-            showView={false}
-            agreementUrl={data.agreementUrl as string}
-          />
+          <JobApplicationAction showView={false} initialValues={data} />
         </div>
         {/* applicant details */}
         <Card className="rounded-2xl">

@@ -28,7 +28,7 @@ export const BusinessAdditionalContact = withForm({
           name="accountPayableEmail"
           children={(field) => <field.TextField label={t[field.name]} />}
         />
-        <div className="col-span-2 ">
+        <div className="col-span-2">
           <h4 className="text-xl font-semibold mb-1">Personal Guarantor</h4>
           <p className="text-muted-foreground">
             Enter the details of the individual who will personally guarantee

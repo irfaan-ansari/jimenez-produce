@@ -27,6 +27,7 @@ import {
   JOB_STATUS_DIALOG_CONFIG,
 } from "@/lib/constants/job";
 import { updateJobApplication } from "@/server/job";
+import { useQueryClient } from "@tanstack/react-query";
 
 const schema = z.object({
   statusReason: z.string().min(1, "Select reason"),
@@ -50,7 +51,7 @@ export const JobApplicationStatusDialog = ({
   variant: StatusVariant;
 }) => {
   const config = JOB_STATUS_DIALOG_CONFIG[variant];
-
+  const queryClient = useQueryClient();
   const form = useAppForm({
     defaultValues: {
       statusReason: variant === "interview" ? "Interview" : "",
@@ -67,6 +68,8 @@ export const JobApplicationStatusDialog = ({
       if (success) {
         form.reset();
         setShowDialog(false);
+        queryClient.invalidateQueries({ queryKey: ["job-applications"] });
+
         toast.success(config.successMessage);
       } else {
         toast.error(error.message);

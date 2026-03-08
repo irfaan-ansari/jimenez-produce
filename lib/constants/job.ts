@@ -90,7 +90,7 @@ export const applicantEducation: ApplicantEducationType = {
     yearCompleted: "",
     details: "",
   },
-  educations: [
+  otherEducations: [
     {
       institutionName: "",
       fieldOfStudy: "",

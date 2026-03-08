@@ -1,7 +1,7 @@
-import { businessDetails } from "@/lib/constants/customer";
 import { FieldGroup } from "../ui/field";
 import { withForm } from "@/hooks/form-context";
 import { BUSINESS_TYPES } from "@/lib/constants/customer";
+import { businessDetails } from "@/lib/constants/customer";
 import translations from "@/lib/constants/translations.json";
 import { type Translations, useTranslation } from "../ui/language-selector";
 
@@ -10,7 +10,7 @@ export const BusinessDetails = withForm({
   render: function Render({ form }) {
     const { t } = useTranslation(translations as Translations, "en");
     return (
-      <FieldGroup className="grid grid-cols-1 md:grid-cols-2">
+      <FieldGroup className="grid grid-cols-1 @2xl:grid-cols-2">
         <form.AppField
           name="companyName"
           children={(field) => <field.TextField label={t[field.name]} />}

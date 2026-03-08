@@ -150,12 +150,7 @@ export const columns: ColumnDef<CustomerSelectType>[] = [
     id: "action",
     header: "Action",
     cell: ({ row }) => {
-      return (
-        <CustomerAction
-          status={row.original.status as keyof typeof statusMap}
-          id={row.original.id}
-        />
-      );
+      return <CustomerAction initialValues={row.original} />;
     },
   },
 ];

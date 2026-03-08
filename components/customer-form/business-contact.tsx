@@ -10,7 +10,7 @@ export const BusinessContact = withForm({
   render: function Render({ form }) {
     const { t } = useTranslation(translations as Translations, "en");
     return (
-      <FieldGroup className="grid grid-cols-1 md:grid-cols-2">
+      <FieldGroup className="grid grid-cols-1 @2xl:grid-cols-2">
         <form.AppField
           name="officerFirst"
           children={(field) => <field.TextField label={t[field.name]} />}
@@ -27,7 +27,7 @@ export const BusinessContact = withForm({
               label={t[field.name]}
               placeholder={t[`${field.name}Placeholder`]}
               options={ROLES}
-              className="md:col-span-2"
+              className="@2xl:col-span-2"
             />
           )}
         />

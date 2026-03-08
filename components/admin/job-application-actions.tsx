@@ -7,24 +7,50 @@ import { Button } from "../ui/button";
 import { useConfirm } from "@/hooks/use-confirm";
 import { PopoverXDrawer } from "../popover-x-drawer";
 import { jobApplicationStatusMap } from "@/lib/constants/job";
-import { Eye, FileText, MoreVertical, Send, Trash2 } from "lucide-react";
+import {
+  Eye,
+  FileText,
+  Loader,
+  MoreVertical,
+  Send,
+  SquarePen,
+  Trash2,
+} from "lucide-react";
 import { deleteJobApplication, updateJobApplication } from "@/server/job";
 import { JobApplicationStatusDialog } from "./job-application-status-dialog";
-
+import { JobApplicationSelectType } from "@/lib/db/schema";
+import { useAppForm } from "@/hooks/form-context";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../ui/dialog";
+import { steps } from "@/lib/constants/driver-form-steps";
+import { Field } from "../ui/field";
+import { useQueryClient } from "@tanstack/react-query";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
+import { fileSchema } from "@/lib/form-schema/customer-schema";
+import z from "zod";
+import { upload } from "@vercel/blob/client";
 type Status = keyof typeof jobApplicationStatusMap;
 
 interface Props {
-  status: Status;
-  id: number;
+  initialValues: JobApplicationSelectType;
   showView: boolean;
-  agreementUrl: undefined | string;
 }
 export const JobApplicationAction = ({
-  id,
-  status,
-  agreementUrl,
+  initialValues,
   showView = true,
 }: Props) => {
+  const queryClient = useQueryClient();
+  const { status, agreementUrl, id } = initialValues as {
+    status: Status;
+    agreementUrl: string | undefined;
+    id: number;
+  };
+
   const [open, setOpen] = useState(false);
   const confirm = useConfirm();
 
@@ -55,9 +81,10 @@ export const JobApplicationAction = ({
               status: "pending",
             });
 
-            success
-              ? toast.success("Agreement sent successfully.")
-              : toast.error(error.message);
+            if (success) {
+              toast.success("Agreement sent successfully.");
+              queryClient.invalidateQueries({ queryKey: ["job-applications"] });
+            } else toast.error(error.message);
           },
         });
         break;
@@ -73,9 +100,10 @@ export const JobApplicationAction = ({
               status: "hired",
             });
 
-            success
-              ? toast.success("Agreement sent successfully.")
-              : toast.error(error.message);
+            if (success) {
+              toast.success("Marked as hired successfully.");
+              queryClient.invalidateQueries({ queryKey: ["job-applications"] });
+            } else toast.error(error.message);
           },
         });
         break;
@@ -87,9 +115,10 @@ export const JobApplicationAction = ({
           actionLabel: "Yes, Delete",
           action: async () => {
             const { success, error } = await deleteJobApplication(id);
-            success
-              ? toast.success("Application has been deleted.")
-              : toast.error(error.message);
+            if (success) {
+              toast.success("Applicationdeleted successfully.");
+              queryClient.invalidateQueries({ queryKey: ["job-applications"] });
+            } else toast.error(error.message);
           },
           cancelLabel: "Cancel",
         });
@@ -120,6 +149,16 @@ export const JobApplicationAction = ({
           </Link>
         </Button>
       )}
+      <JobEditDialog initialValues={initialValues}>
+        <Button
+          type="button"
+          variant="ghost"
+          className="flex items-center gap-2 justify-start"
+        >
+          <SquarePen />
+          Edit
+        </Button>
+      </JobEditDialog>
       {availableActions.map((action) => (
         <Button
           type="button"
@@ -172,5 +211,206 @@ export const JobApplicationAction = ({
         id={id}
       />
     </PopoverXDrawer>
+  );
+};
+
+const STEPS = steps.slice(0, -1);
+
+const baseSchema = z
+  .object(Object.assign({}, ...STEPS.map((step) => step.schema.shape)))
+  .extend({
+    drivingLicenseFront: fileSchema.optional().or(z.null()),
+    drivingLicenseBack: fileSchema.optional().or(z.null()),
+    socialSecurityFront: fileSchema.optional().or(z.null()),
+    socialSecurityBack: fileSchema.optional().or(z.null()),
+    dotFront: fileSchema.optional().or(z.null()),
+    dotBack: fileSchema.optional().or(z.null()),
+  });
+
+export const JobEditDialog = ({
+  children,
+  initialValues,
+}: {
+  children: React.ReactNode;
+  initialValues: JobApplicationSelectType;
+}) => {
+  const [open, setOpen] = useState(false);
+  const queryClient = useQueryClient();
+  const form = useAppForm({
+    defaultValues: {
+      ...initialValues,
+      drivingLicenseFront: undefined as any,
+      drivingLicenseBack: undefined as any,
+      socialSecurityFront: undefined as any,
+      socialSecurityBack: undefined as any,
+      dotFront: undefined as any,
+      dotBack: undefined as any,
+    },
+    validators: {
+      onSubmit: ({ formApi }) => {
+        const error = formApi.parseValuesWithSchema(baseSchema as any);
+        if (error) {
+          return error;
+        }
+
+        return null;
+      },
+    },
+    onSubmit: async ({ value }) => {
+      const {
+        drivingLicenseFront,
+        drivingLicenseBack,
+        socialSecurityFront,
+        socialSecurityBack,
+        dotFront,
+        dotBack,
+        ...rest
+      } = value;
+
+      const files = {
+        drivingLicenseFront,
+        drivingLicenseBack,
+        socialSecurityFront,
+        socialSecurityBack,
+        dotFront,
+        dotBack,
+      };
+
+      // upload files and send the files url to
+      const uploads = await Promise.all(
+        Object.entries(files).map(async ([key, file]) => {
+          if (!file || !(file instanceof File)) return {};
+
+          const result = await upload(`job-application/${file.name}`, file, {
+            access: "public",
+            handleUploadUrl: "/api/upload",
+          });
+
+          return { [`${key}Url`]: result.url };
+        })
+      );
+      const uploadedFiles = Object.assign({}, ...uploads);
+
+      const { success, error } = await updateJobApplication(value.id, {
+        ...rest,
+        ...uploadedFiles,
+      });
+
+      if (success) {
+        toast.error("Application updated successfully");
+        queryClient.invalidateQueries({ queryKey: ["job-applications"] });
+        form.reset();
+        setOpen(false);
+      } else {
+        toast.error(error.message);
+      }
+    },
+  });
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogContent className="ring-ring/10 rounded-2xl sm:max-w-lg">
+        <DialogHeader>
+          <DialogTitle className="text-2xl font-semibold">
+            Edit Application
+          </DialogTitle>
+        </DialogHeader>
+
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            form.handleSubmit();
+          }}
+        >
+          <Tabs>
+            <TabsList className="w-full rounded-xl mb-4">
+              <TabsTrigger value="details" className="rounded-xl">
+                Details
+              </TabsTrigger>
+              <TabsTrigger value="documents" className="rounded-xl">
+                Documents
+              </TabsTrigger>
+            </TabsList>
+            <div className="no-scrollbar @container -mx-4 max-h-[min(400px,60vh)] -my-1 py-1  overflow-y-auto px-4">
+              <TabsContent value="details" className="space-y-10">
+                {STEPS.map((step, i) => (
+                  <step.component
+                    // @ts-ignore
+                    form={form}
+                    key={i}
+                  />
+                ))}
+              </TabsContent>
+              <TabsContent value="documents" className="space-y-8">
+                <form.AppField
+                  name="drivingLicenseFront"
+                  children={(field) => (
+                    <field.FileField label="ID Card/Driver’s License (Front)" />
+                  )}
+                />
+                <form.AppField
+                  name="drivingLicenseBack"
+                  children={(field) => (
+                    <field.FileField label="ID Card/Driver’s License (Back)" />
+                  )}
+                />
+                <form.AppField
+                  name="socialSecurityFront"
+                  children={(field) => (
+                    <field.FileField label="  Social Security Card (Front)" />
+                  )}
+                />
+                <form.AppField
+                  name="socialSecurityBack"
+                  children={(field) => (
+                    <field.FileField label="  Social Security Card (Back)" />
+                  )}
+                />
+                <form.AppField
+                  name="dotFront"
+                  children={(field) => (
+                    <field.FileField label="DOT Medical Certificate (Front)" />
+                  )}
+                />
+                <form.AppField
+                  name="dotBack"
+                  children={(field) => (
+                    <field.FileField label="DOT Medical Certificate (Back)" />
+                  )}
+                />
+              </TabsContent>
+            </div>
+          </Tabs>
+
+          {/* submit button */}
+          <Field className="mt-6 flex flex-col-reverse gap-4 sm:flex-row sm:[&>button]:flex-1">
+            <Button
+              variant="outline"
+              size="xl"
+              type="button"
+              className="rounded-xl"
+              onClick={() => setOpen(false)}
+            >
+              Cancel
+            </Button>
+
+            <form.Subscribe
+              children={({ isSubmitting }) => (
+                <Button
+                  size="xl"
+                  className="min-w-32 rounded-xl"
+                  type="submit"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting && <Loader className="animate-spin" />}
+                  Save
+                </Button>
+              )}
+            />
+          </Field>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 };

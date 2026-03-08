@@ -1,10 +1,18 @@
 import { z } from "zod";
+import { fileSchema } from "./customer-schema";
 const MAX_UPLOAD_SIZE = 5 * 1024 * 1024; // 10MB
 
 const applicantSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
   lastName: z.string().min(1, "Last name is required"),
-  phone: z.string().min(1, "Phone is required"),
+  phone: z
+    .string()
+    .min(1, "Phone is required")
+    .trim()
+    .regex(
+      /^(\+1\s?)?(\(?\d{3}\)?[\s.-]?)\d{3}[\s.-]?\d{4}$/,
+      "Invalid phone number"
+    ),
   email: z.email("Email is required"),
   dob: z.string().min(1, "DOB is required"),
   socialSecurity: z.string().min(1, "Social security is required"),
@@ -117,52 +125,16 @@ const education = z.object({
 const educationSchema = z.object({
   highSchool: education,
   collage: education,
-  educations: z.array(education),
+  otherEducations: z.array(education),
 });
 
 const authorizationSchema = z.object({
-  drivingLicenseFront: z
-    .file("License is required")
-    .max(MAX_UPLOAD_SIZE, "Upload file less tant 5MB")
-    .mime(
-      ["image/png", "image/jpeg", "application/pdf"],
-      "File type is not allowed"
-    ),
-  drivingLicenseBack: z
-    .file("License is required")
-    .max(MAX_UPLOAD_SIZE, "Upload file less tant 5MB")
-    .mime(
-      ["image/png", "image/jpeg", "application/pdf"],
-      "File type is not allowed"
-    ),
-  socialSecurityFront: z
-    .file("Security card is required")
-    .max(MAX_UPLOAD_SIZE, "Upload file less tant 5MB")
-    .mime(
-      ["image/png", "image/jpeg", "application/pdf"],
-      "File type is not allowed"
-    ),
-  socialSecurityBack: z
-    .file("Security card is required")
-    .max(MAX_UPLOAD_SIZE, "Upload file less tant 5MB")
-    .mime(
-      ["image/png", "image/jpeg", "application/pdf"],
-      "File type is not allowed"
-    ),
-  dotFront: z
-    .file("DOT is required")
-    .max(MAX_UPLOAD_SIZE, "Upload file less tant 5MB")
-    .mime(
-      ["image/png", "image/jpeg", "application/pdf"],
-      "File type is not allowed"
-    ),
-  dotBack: z
-    .file("DOT is required")
-    .max(MAX_UPLOAD_SIZE, "Upload file less tant 5MB")
-    .mime(
-      ["image/png", "image/jpeg", "application/pdf"],
-      "File type is not allowed"
-    ),
+  drivingLicenseFront: fileSchema,
+  drivingLicenseBack: fileSchema,
+  socialSecurityFront: fileSchema,
+  socialSecurityBack: fileSchema,
+  dotFront: fileSchema,
+  dotBack: fileSchema,
   signature: z
     .file("Signature is required")
     .mime(

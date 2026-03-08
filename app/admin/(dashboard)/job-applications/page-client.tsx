@@ -141,12 +141,7 @@ const columns: ColumnDef<JobApplicationSelectType>[] = [
     id: "action",
     header: "Action",
     cell: ({ row }) => (
-      <JobApplicationAction
-        id={row.original.id}
-        status={row.original.status as any}
-        showView={true}
-        agreementUrl={row.original.agreementUrl as any}
-      />
+      <JobApplicationAction showView={true} initialValues={row.original} />
     ),
   },
 ];

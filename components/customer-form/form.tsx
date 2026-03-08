@@ -122,6 +122,7 @@ export const CustomerForm = () => {
         ))}
       </TabsList>
       <form
+        className="@container"
         onSubmit={(e) => {
           e.preventDefault();
           form.handleSubmit();
