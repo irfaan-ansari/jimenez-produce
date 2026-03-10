@@ -179,12 +179,6 @@ export const createInvite = handleAction(
   async (data: Partial<CustomerInviteInsertType>) => {
     const session = await getSession();
 
-    const existing = await db.query.customerInvite.findFirst({
-      where: eq(customerInvite.email, data.email?.toLowerCase()!),
-    });
-
-    if (existing) throw new Error("Duplicate request for this email.");
-
     const headersList = await headers();
     const realIp = headersList.get("x-real-ip");
     const forwardedFor = headersList.get("x-forwarded-for");

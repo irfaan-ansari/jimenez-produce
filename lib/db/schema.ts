@@ -247,7 +247,7 @@ export const customerInvite = pgTable(
     firstName: text("first_name").notNull(),
     lastName: text("last_name").notNull(),
     phone: text("phone"),
-    email: text("email").notNull().unique(),
+    email: text("email").notNull(),
     companyName: text("company_name"),
     type: text("type"), // Invitation / Request
     companyType: text("company_type"),
