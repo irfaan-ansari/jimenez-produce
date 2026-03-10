@@ -76,7 +76,7 @@ const linkCustomerInvite = async ({
         eq(customerInvite.email, email),
         eq(customerInvite.email, accountPayableEmail),
         eq(customerInvite.email, officerEmail),
-        ne(customerInvite.status, status)
+        ne(customerInvite.status, "approved")
       )
     ),
   });
