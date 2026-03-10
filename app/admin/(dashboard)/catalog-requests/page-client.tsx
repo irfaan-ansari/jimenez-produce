@@ -101,12 +101,12 @@ const columns: ColumnDef<CustomerInviteSelectType>[] = [
         <HoverCardTrigger asChild>
           <Button
             variant="link"
-            className="max-w-[10ch] truncate text-foreground justify-start"
+            className="w-[10ch] min-w-0 truncate text-foreground justify-start px-0"
           >
-            {row.original.message}
+            <span className="block truncate">{row.original.message}</span>
           </Button>
         </HoverCardTrigger>
-        <HoverCardContent className="whitespace-pre-line">
+        <HoverCardContent className="whitespace-pre-line max-h-60 no-scrollbar overflow-auto bg-background w-xs rounded-2xl">
           {row.original.message}
         </HoverCardContent>
       </HoverCard>
