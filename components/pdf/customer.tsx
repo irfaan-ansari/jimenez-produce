@@ -191,7 +191,8 @@ export const CustomerPDF = ({ data }: { data: CustomerSelectType }) => {
               {sch.day} ({sch.window})
             </Text>
             <Text style={{ width: "30%", fontSize: 8 }}>
-              {sch.receivingName}
+              <Text>{sch.receivingName}</Text>
+              <Text>{sch.receivingPhone}</Text>
             </Text>
             <Text
               style={{ width: "45%", fontSize: 8, color: COLORS.secondary }}

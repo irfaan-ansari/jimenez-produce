@@ -348,7 +348,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
           <CardContent className="border-b divide-y">
             <Attachment
               url={data.certificateUrl as string}
-              label="Resale Cirtificate"
+              label="Resale Certificate"
             />
             <Attachment
               url={data.dlFrontUrl as string}
