@@ -31,9 +31,9 @@ import z from "zod";
 
 import { useStore } from "@tanstack/react-form";
 import { Alert, AlertAction, AlertDescription, AlertTitle } from "../ui/alert";
-import { useSignin } from "@/hooks/use-auth";
+
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+
 import { authClient } from "@/lib/auth/client";
 
 const schema = z.object({
@@ -47,8 +47,6 @@ export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  const { mutate, isPending } = useSignin();
-  const router = useRouter();
   const form = useAppForm({
     defaultValues: {
       email: "",
@@ -60,14 +58,18 @@ export function LoginForm({
       onChange: schema,
     },
     onSubmit: async ({ value }) => {
-      mutate(value, {
-        onError: (err) =>
-          form.setFieldValue("error", err.message ?? "Login failed!"),
-        onSuccess: () => {
-          toast.success("Login successfull, redirecting...");
-          router.replace("/admin/overview");
-        },
+      const { error } = await authClient.signIn.email({
+        ...value,
+        callbackURL: "/admin/overview",
       });
+
+      if (error) {
+        form.setFieldValue("error", error.message ?? "Login failed!");
+        toast.error(error.message ?? "Login failed!");
+        return;
+      }
+
+      toast.success("Login successfull, redirecting...");
     },
   });
 
@@ -185,7 +187,7 @@ export function LoginForm({
                     className="rounded-xl"
                     disabled={isSubmitting || !canSubmit}
                   >
-                    {isSubmitting || isPending ? (
+                    {isSubmitting ? (
                       <Loader className="animate-spin" />
                     ) : (
                       "Login"

@@ -2,11 +2,6 @@
 import { getSession, getUsers, signIn, signOut, signUp } from "@/server/auth";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-export const useSignin = () => {
-  return useMutation({
-    mutationFn: signIn,
-  });
-};
 export const useSignup = () => {
   return useMutation({
     mutationFn: signUp,

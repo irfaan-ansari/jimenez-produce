@@ -40,15 +40,6 @@ export const signUp = async (data: SignupProps) => {
 };
 
 /**
- * signin
- */
-export const signIn = async (data: LoginProps) => {
-  return await auth.api.signInEmail({
-    body: { ...data },
-  });
-};
-
-/**
  * signout
  * @returns
  */
