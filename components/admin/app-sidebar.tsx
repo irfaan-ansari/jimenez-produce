@@ -156,7 +156,7 @@ const Profile = () => {
       fetchOptions: {
         onSuccess: () => {
           queryClient.clear();
-          router.push("/admin/login");
+          router.push("/admin/signin");
         },
         onRequest: () => setLoading(true),
         onResponse: () => setLoading(false),
