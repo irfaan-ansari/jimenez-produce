@@ -58,18 +58,20 @@ export function LoginForm({
       onChange: schema,
     },
     onSubmit: async ({ value }) => {
-      const { error } = await authClient.signIn.email({
+      await authClient.signIn.email({
         ...value,
         callbackURL: "/admin/overview",
+        fetchOptions: {
+          onError: ({ error }) => {
+            console.log(error);
+            form.setFieldValue("error", error.message ?? "Login failed!");
+            toast.error(error.message ?? "Login failed!");
+          },
+          onSuccess: () => {
+            toast.success("Login successfull, redirecting...");
+          },
+        },
       });
-
-      if (error) {
-        form.setFieldValue("error", error.message ?? "Login failed!");
-        toast.error(error.message ?? "Login failed!");
-        return;
-      }
-
-      toast.success("Login successfull, redirecting...");
     },
   });
 

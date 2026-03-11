@@ -5,11 +5,6 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { UserInsertType } from "@/lib/db/schema";
 
-type LoginProps = {
-  email: string;
-  password: string;
-};
-
 type SignupProps = {
   name: string;
   email: string;
@@ -36,16 +31,6 @@ export const signUp = async (data: SignupProps) => {
         image: `https://api.dicebear.com/9.x/identicon/svg?seed=${data.name}`,
       },
     },
-  });
-};
-
-/**
- * signout
- * @returns
- */
-export const signOut = async () => {
-  return await auth.api.signOut({
-    headers: await headers(),
   });
 };
 

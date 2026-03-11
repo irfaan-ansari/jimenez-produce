@@ -1,5 +1,5 @@
 "use client";
-import { getSession, getUsers, signIn, signOut, signUp } from "@/server/auth";
+import { getSession, getUsers, signUp } from "@/server/auth";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export const useSignup = () => {
@@ -12,14 +12,6 @@ export const useSession = () => {
   return useQuery({
     queryKey: ["session"],
     queryFn: getSession,
-  });
-};
-
-export const useSignout = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: signOut,
-    onSuccess: () => queryClient.clear(),
   });
 };
 

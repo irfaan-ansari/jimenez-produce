@@ -1,54 +1,54 @@
 "use client";
 
+import z from "zod";
+import React from "react";
+import Link from "next/link";
 import {
   Card,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import React from "react";
-import Link from "next/link";
 import Image from "next/image";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { SITE_CONFIG } from "@/lib/config";
+import { authClient } from "@/lib/auth/client";
+import { useStore } from "@tanstack/react-form";
 import { Button } from "@/components/ui/button";
 import { useAppForm } from "@/hooks/form-context";
 import { CardContent } from "@/components/ui/card";
 import { AlertCircleIcon, Loader, X } from "lucide-react";
 import { Field, FieldGroup } from "@/components/ui/field";
-import z from "zod";
-
-import { useStore } from "@tanstack/react-form";
-import { Alert, AlertAction, AlertDescription, AlertTitle } from "../ui/alert";
-
-import { toast } from "sonner";
-import { useRouter } from "next/navigation";
-import { authClient } from "@/lib/auth/client";
+import { Alert, AlertAction, AlertDescription } from "../ui/alert";
 
 const schema = z.object({
   email: z.email("Enter valid email"),
   error: z.string(),
+  success: z.boolean(),
 });
 
 export function ForgotPasswordForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  const router = useRouter();
   const form = useAppForm({
     defaultValues: {
       email: "",
       error: "",
+      success: false,
     },
     validators: {
       onChange: schema,
     },
     onSubmit: async ({ value }) => {
+      form.setFieldValue("error", "");
+      form.setFieldValue("success", false);
       await authClient.requestPasswordReset(
         {
           email: value.email,
-          redirectTo: (process.env.NEXT_PUBLIC_SITE_URL =
-            "/admin/reset-password"),
+          redirectTo:
+            process.env.NEXT_PUBLIC_SITE_URL + "/admin/reset-password",
         },
         {
           onError: (error) => {
@@ -58,15 +58,16 @@ export function ForgotPasswordForm({
             );
           },
           onSuccess: () => {
-            toast.success("Password Reset Email Sent!");
-            router.replace("/admin/reset-password");
+            form.setFieldValue("success", true);
+            toast.success("Password reset email sent!");
           },
         }
       );
     },
   });
 
-  const loginError = useStore(form.store, (state) => state.values.error);
+  const error = useStore(form.store, (state) => state.values.error);
+  const success = useStore(form.store, (state) => state.values.success);
 
   return (
     <Card className={cn("rounded-2xl relative", className)} {...props}>
@@ -105,21 +106,36 @@ export function ForgotPasswordForm({
               )}
             />
 
+            {/* success */}
+            {success && (
+              <Alert
+                variant="default"
+                className="rounded-xl bg-green-500/5 border-green-500/5 text-green-500 has-data-[slot=alert-action]:pr-8"
+              >
+                <AlertCircleIcon />
+                <AlertDescription className="text-green-500">
+                  Password reset instructions have been sent to your email. If
+                  not received, please try again.
+                </AlertDescription>
+              </Alert>
+            )}
             {/* alert */}
-            {loginError && (
+            {error && (
               <Alert
                 variant="destructive"
                 className="rounded-xl bg-destructive/5 border-destructive/5 has-data-[slot=alert-action]:pr-8"
               >
                 <AlertCircleIcon />
-                <AlertDescription>{loginError}</AlertDescription>
+                <AlertDescription>{error}</AlertDescription>
                 <AlertAction>
                   <Button
                     type="button"
                     size="icon-xs"
                     variant="outline"
                     className="rounded-xl"
-                    onClick={() => form.setFieldValue("error", "")}
+                    onClick={() => {
+                      form.setFieldValue("error", "");
+                    }}
                   >
                     <X />
                   </Button>

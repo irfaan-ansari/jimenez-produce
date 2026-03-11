@@ -22,14 +22,17 @@ import {
 } from "../ui/collapsible";
 import { SITE_CONFIG } from "@/lib/config";
 import { SIDEBAR_MENU } from "@/lib/config";
-import { useSession, useSignout } from "@/hooks/use-auth";
+import { useSession } from "@/hooks/use-auth";
 import { ProfileDialog } from "../profile-dialog";
 import { useTabRouter } from "@/hooks/use-tab-router";
-import { ChevronRight, Lock, LogOut, User } from "lucide-react";
+import { ChevronRight, Loader, Lock, LogOut, User } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { useRouter } from "next/navigation";
 import { ChangePasswordDialog } from "../change-password";
 import { getAvatarFallback } from "@/lib/utils";
+import { authClient } from "@/lib/auth/client";
+import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 
 export function AppSidebar() {
   const { pathname, buildPath, isActive: subItemActive } = useTabRouter();
@@ -145,8 +148,21 @@ export function AppSidebar() {
 
 const Profile = () => {
   const { data } = useSession();
-  const { mutate } = useSignout();
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const queryClient = useQueryClient();
+  const handleLogout = async () => {
+    await authClient.signOut({
+      fetchOptions: {
+        onSuccess: () => {
+          queryClient.clear();
+          router.push("/admin/login");
+        },
+        onRequest: () => setLoading(true),
+        onResponse: () => setLoading(false),
+      },
+    });
+  };
   return (
     <SidebarFooter>
       <SidebarMenu className="rounded-2xl gap-0 border">
@@ -191,15 +207,20 @@ const Profile = () => {
         </SidebarMenuItem>
         <SidebarMenuItem className="border-t p-1">
           <SidebarMenuButton
-            onClick={() =>
-              mutate(undefined, {
-                onSuccess: () => router.replace("/admin/signin"),
-              })
-            }
+            onClick={handleLogout}
             className="hover:bg-destructive/10 hover:text-destructive rounded-xl"
           >
-            <LogOut />
-            Logout
+            {loading ? (
+              <>
+                <Loader className="animate-spin" />
+                Please wait...
+              </>
+            ) : (
+              <>
+                <LogOut />
+                Logout
+              </>
+            )}
           </SidebarMenuButton>
         </SidebarMenuItem>
       </SidebarMenu>
