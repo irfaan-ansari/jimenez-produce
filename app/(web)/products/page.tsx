@@ -47,7 +47,7 @@ const CatalogPage = async ({
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 md:gap-8">
           {data.map((product) => (
             <div
-              key={product.identifier}
+              key={product.id}
               className="rounded-[0.5rem] hover:[&_img]:scale-110 bg-linear-to-br from-secondary via-background to-secondary  relative shadow-sm"
             >
               <div className="rounded-[0.5rem] overflow-hidden relative aspect-square">

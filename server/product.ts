@@ -17,7 +17,7 @@ export const getProducts = handleAction(
     const session = await getSession();
 
     const cookieStore = await cookies();
-    const email: string = cookieStore.get("customer-email") as any;
+    const email: string = cookieStore.get("customer-email")?.value as any;
 
     const [customerRes, inviteRes] = await Promise.all([
       db.query.customer.findFirst({
@@ -40,7 +40,7 @@ export const getProducts = handleAction(
     const isPublicUser = !session && !customerRes && !inviteRes;
 
     const { page = 1, limit = 24, status, q } = query;
-    const offset = ((page as number) - 1) * Number(limit);
+    const offset = (Number(page) - 1) * Number(limit);
 
     const statusFilter = isPublicUser
       ? eq(product.status, "active")
