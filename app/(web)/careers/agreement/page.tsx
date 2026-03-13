@@ -1,9 +1,10 @@
 import Image from "next/image";
+import { format } from "date-fns";
 import { getJobApplication } from "@/server/job";
 import { Container } from "@/components/container";
 import { Card, CardContent } from "@/components/ui/card";
 import { JobAgreementButton } from "@/components/job-forms/job-agreement-button";
-import { format } from "date-fns";
+import { redirect } from "next/navigation";
 
 const Agreement = async ({
   searchParams,
@@ -11,8 +12,9 @@ const Agreement = async ({
   searchParams: Promise<{ token: string }>;
 }) => {
   const { token } = await searchParams;
-  const { data, success, error } = await getJobApplication(token);
-  if (!success) throw new Error(error.message);
+  const { data, success } = await getJobApplication(token);
+
+  if (!success) redirect("/careers");
   const { name, position, facility, signatureUrl } = data;
   return (
     <>
