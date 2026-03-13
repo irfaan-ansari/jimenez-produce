@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { fileSchema } from "./customer-schema";
-const MAX_UPLOAD_SIZE = 5 * 1024 * 1024; // 10MB
 
 const applicantSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
