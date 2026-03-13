@@ -138,7 +138,7 @@ const Agreement = async ({
                 <p>Position: {position}</p>
                 <p>Facility: {facility}</p>
 
-                <p>Date: {format(new Date(), "MMMM DD, yyyy")}</p>
+                <p>Date: {format(new Date(), "MMMM dd, yyyy")}</p>
 
                 <p>Signature:</p>
                 <Image
