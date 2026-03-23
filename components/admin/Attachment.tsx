@@ -6,6 +6,7 @@ import { Button } from "../ui/button";
 export const Attachment = ({ url, label }: { url: string; label: string }) => {
   const type = getFileType(url);
 
+  if (!url) return;
   return (
     <div className="flex gap-4 items-center py-4 first:pt-0 last:pb-6">
       {type === "image" ? (

@@ -49,6 +49,7 @@ export const CustomerDialog = ({
     if (id) {
       return await updateCustomer(id, payload);
     }
+
     return await createCustomer(payload, false);
   };
 
@@ -100,7 +101,6 @@ export const CustomerDialog = ({
       const uploadedFiles = Object.assign({}, ...uploads);
 
       // submit form
-
       const { success, error } = await handleSubmit({
         ...rest,
         ...uploadedFiles,
@@ -112,7 +112,7 @@ export const CustomerDialog = ({
             ? "Application updated successfully"
             : "Customer created successfully"
         );
-        queryClient.invalidateQueries({ queryKey: ["customers"] });
+        queryClient.invalidateQueries({ queryKey: ["customer", "customers"] });
         setOpen(false);
         form.reset();
       } else {

@@ -27,7 +27,7 @@ import CatalogRequestUpdate from "@/components/email/catalog-request-update";
 export const createCustomer = handleAction(
   async (data: CustomerInsertType, notify: boolean = true) => {
     const headersList = await headers();
-    console.log(data, notify);
+
     const realIp = headersList.get("x-real-ip");
     const forwardedFor = headersList.get("x-forwarded-for");
     const ip = forwardedFor?.split(",")[0] || realIp || "unknown";
@@ -46,16 +46,6 @@ export const createCustomer = handleAction(
     const [result] = await db.insert(customer).values(values).returning();
 
     if (notify) waitUntil(sendApplicationStatusEmails(result));
-
-    waitUntil(
-      linkCustomerInvite({
-        id: `${result.id}`,
-        companyEmail: data.companyEmail,
-        accountPayableEmail: data.accountPayableEmail!,
-        officerEmail: data.officerEmail,
-        status: "applied",
-      })
-    );
 
     return result;
   }
@@ -124,21 +114,6 @@ export const updateCustomer = handleAction(
       .returning();
 
     if (nextStatus && nextStatus !== existing.status) {
-      waitUntil(
-        linkCustomerInvite({
-          id: `${result.id}`,
-          companyEmail: rest.companyEmail!,
-          accountPayableEmail: rest.accountPayableEmail!,
-          officerEmail: rest.officerEmail!,
-          status:
-            result.status === "active"
-              ? "approved"
-              : result.status === "rejected"
-              ? "rejected"
-              : "applied",
-        })
-      );
-
       waitUntil(sendApplicationStatusEmails(result));
     }
 

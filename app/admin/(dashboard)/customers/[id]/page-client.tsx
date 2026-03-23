@@ -5,6 +5,10 @@ import { format } from "date-fns";
 import React, { use } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  EmptyComponent,
+  LoadingSkeleton,
+} from "@/components/admin/placeholder-component";
 import { useCustomer } from "@/hooks/use-customer";
 import { statusMap } from "@/lib/constants/customer";
 import { Attachment } from "@/components/admin/Attachment";
@@ -12,10 +16,6 @@ import { ChevronLeft, MailCheck, Phone } from "lucide-react";
 import { CustomerAction } from "@/components/admin/customer-actions";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  EmptyComponent,
-  LoadingSkeleton,
-} from "@/components/admin/placeholder-component";
 
 type StatusIndex = keyof typeof statusMap;
 export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
@@ -54,7 +54,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
           <h1 className="text-xl font-semibold flex-1 truncate">
             {data.companyDBA}
           </h1>
-          <CustomerAction initialValues={data} showView={false} />
+          <CustomerAction data={data} showView={false} />
         </div>
         <Card className="rounded-2xl">
           <CardHeader className="flex flex-row gap-4 ">
@@ -345,7 +345,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
           <CardHeader>
             <CardTitle className="text-xl font-semibold">Documents</CardTitle>
           </CardHeader>
-          <CardContent className="border-b divide-y">
+          <CardContent className="divide-y">
             <Attachment
               url={data.certificateUrl as string}
               label="Resale Certificate"

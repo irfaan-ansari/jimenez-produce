@@ -12,7 +12,6 @@ import {
   Row,
   Column,
 } from "@react-email/components";
-import { Phone } from "lucide-react";
 import React from "react";
 
 export const EmailTemplate = ({

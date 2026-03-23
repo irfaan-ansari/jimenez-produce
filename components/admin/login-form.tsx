@@ -63,7 +63,6 @@ export function LoginForm({
         callbackURL: "/admin/overview",
         fetchOptions: {
           onError: ({ error }) => {
-            console.log(error);
             form.setFieldValue("error", error.message ?? "Login failed!");
             toast.error(error.message ?? "Login failed!");
           },

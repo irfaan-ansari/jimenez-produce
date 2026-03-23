@@ -16,11 +16,11 @@ import { Eye, FileText, MoreVertical, SquarePen, Trash2 } from "lucide-react";
 type Status = keyof typeof statusMap;
 
 interface Props {
-  initialValues: CustomerSelectType;
+  data: CustomerSelectType;
   showView?: boolean;
 }
-export const CustomerAction = ({ initialValues, showView = true }: Props) => {
-  const { status, id } = initialValues as { status: Status; id: number };
+export const CustomerAction = ({ data, showView = true }: Props) => {
+  const { status, id } = data as { status: Status; id: number };
   const [open, setOpen] = useState(false);
   const confirm = useConfirm();
   const queryClient = useQueryClient();
@@ -121,7 +121,7 @@ export const CustomerAction = ({ initialValues, showView = true }: Props) => {
           </Link>
         </Button>
       )}
-      <CustomerDialog initialValues={initialValues}>
+      <CustomerDialog initialValues={data} id={id}>
         <Button
           type="button"
           variant="ghost"

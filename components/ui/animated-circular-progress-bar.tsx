@@ -21,7 +21,7 @@ export function AnimatedCircularProgressBar({
   const circumference = 2 * Math.PI * 45;
   const percentPx = circumference / 100;
   const currentPercent = Math.round(((value - min) / (max - min)) * 100);
-  console.log(currentPercent);
+
   return (
     <div
       className={cn("relative size-40 text-2xl font-semibold", className)}

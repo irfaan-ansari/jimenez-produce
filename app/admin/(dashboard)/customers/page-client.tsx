@@ -44,22 +44,6 @@ export const PageClient = () => {
 
 export const columns: ColumnDef<CustomerSelectType>[] = [
   {
-    accessorKey: "createdAt",
-    header: "Created At",
-    cell: ({ row }) => {
-      return (
-        <div className="flex flex-col">
-          <span className="font-medium">
-            {format(row.original.createdAt!, "MMMM dd, yyyy")}
-          </span>
-          <span className="text-muted-foreground">
-            {format(row.original.createdAt!, "hh:mm:ss a")}
-          </span>
-        </div>
-      );
-    },
-  },
-  {
     accessorKey: "companyName",
     header: "Company",
     cell: ({ row }) => {
@@ -145,7 +129,22 @@ export const columns: ColumnDef<CustomerSelectType>[] = [
       );
     },
   },
-
+  {
+    accessorKey: "createdAt",
+    header: "Created At",
+    cell: ({ row }) => {
+      return (
+        <div className="flex flex-col">
+          <span className="font-medium">
+            {format(row.original.createdAt!, "MMMM dd, yyyy")}
+          </span>
+          <span className="text-muted-foreground">
+            {format(row.original.createdAt!, "hh:mm:ss a")}
+          </span>
+        </div>
+      );
+    },
+  },
   {
     accessorKey: "status",
     header: "Status",
@@ -169,7 +168,7 @@ export const columns: ColumnDef<CustomerSelectType>[] = [
     id: "action",
     header: "Action",
     cell: ({ row }) => {
-      return <CustomerAction initialValues={row.original} />;
+      return <CustomerAction data={row.original} />;
     },
   },
 ];
