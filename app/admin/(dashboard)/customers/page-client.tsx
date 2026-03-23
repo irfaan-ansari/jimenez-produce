@@ -1,21 +1,21 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
+import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
+import {
+  EmptyComponent,
+  LoadingSkeleton,
+} from "@/components/admin/placeholder-component";
 import { ColumnDef } from "@tanstack/react-table";
 import { useCustomers } from "@/hooks/use-customer";
 import { statusMap } from "@/lib/constants/customer";
 import { CustomerSelectType } from "@/lib/db/schema";
 import { useRouterStuff } from "@/hooks/use-router-stuff";
 import { DataTable } from "@/components/admin/data-table";
-
 import { CustomerAction } from "@/components/admin/customer-actions";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  EmptyComponent,
-  LoadingSkeleton,
-} from "@/components/admin/placeholder-component";
-import Link from "next/link";
 
 export const PageClient = () => {
   const { searchParams } = useRouterStuff();
@@ -43,6 +43,22 @@ export const PageClient = () => {
 };
 
 export const columns: ColumnDef<CustomerSelectType>[] = [
+  {
+    accessorKey: "createdAt",
+    header: "Created At",
+    cell: ({ row }) => {
+      return (
+        <div className="flex flex-col">
+          <span className="font-medium">
+            {format(row.original.createdAt!, "MMMM dd, yyyy")}
+          </span>
+          <span className="text-muted-foreground">
+            {format(row.original.createdAt!, "hh:mm:ss a")}
+          </span>
+        </div>
+      );
+    },
+  },
   {
     accessorKey: "companyName",
     header: "Company",
@@ -105,18 +121,21 @@ export const columns: ColumnDef<CustomerSelectType>[] = [
       const { deliverySchedule } = row.original;
       return (
         <div className="flex gap-2 items-start">
-          <div className="space-y-1">
-            <h4 className="font-medium text-[15px]">
-              {deliverySchedule[0].day}
-            </h4>
-            <div className="flex flex-col text-muted-foreground">
-              <span className="text-sm">{deliverySchedule[0].window}</span>
-              <span className="text-sm">
-                {deliverySchedule[0].receivingName}
-              </span>
+          {deliverySchedule.length > 0 ? (
+            <div className="space-y-1">
+              <h4 className="font-medium text-[15px]">
+                {deliverySchedule?.[0]?.day}
+              </h4>
+              <div className="flex flex-col text-muted-foreground">
+                <span className="text-sm">{deliverySchedule?.[0]?.window}</span>
+                <span className="text-sm">
+                  {deliverySchedule?.[0]?.receivingName}
+                </span>
+              </div>
             </div>
-          </div>
-
+          ) : (
+            "Not specified"
+          )}
           {deliverySchedule.length > 1 && (
             <Badge className="size-7 rounded-full" variant="secondary">
               +{deliverySchedule.length - 1}

@@ -124,24 +124,21 @@ export const columns: ColumnDef<CustomerInviteSelectType>[] = [
       const map = inviteStatusMap[status as keyof typeof inviteStatusMap];
 
       return (
-        <Badge
-          variant="outline"
-          style={{ "--color": map.color } as React.CSSProperties}
-          className="h-7 rounded-xl pl-1.5 pr-2.5 gap-1.5 [&>svg]:size-3.5! bg-(--color)/10 border-(--color)/10 text-sm"
+        <Link
+          href={`/admin/customers/${customerId}`}
+          onClick={(e) => !customerId && e.preventDefault()}
+          className={!customerId ? "cursor-default" : ""}
         >
-          <map.icon className="text-(--color)" />
+          <Badge
+            variant="outline"
+            style={{ "--color": map.color } as React.CSSProperties}
+            className="h-7 rounded-xl pl-1.5 pr-2.5 gap-1.5 [&>svg]:size-3.5! bg-(--color)/10 border-(--color)/10 text-sm"
+          >
+            <map.icon className="text-(--color)" />
 
-          {map.label}
-
-          {customerId && (
-            <Link
-              href={`/admin/customers/${customerId}`}
-              className="text-xs text-primary underline"
-            >
-              View
-            </Link>
-          )}
-        </Badge>
+            {map.label}
+          </Badge>
+        </Link>
       );
     },
   },

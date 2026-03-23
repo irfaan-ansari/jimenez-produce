@@ -1,6 +1,6 @@
 "use client";
 import { getSession, getUsers, signUp } from "@/server/auth";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 export const useSignup = () => {
   return useMutation({
@@ -17,7 +17,7 @@ export const useSession = () => {
 
 export const useListUsers = (query?: string) => {
   return useQuery({
-    queryKey: ["users"],
+    queryKey: ["users", query],
     queryFn: () => getUsers(query),
   });
 };

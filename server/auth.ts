@@ -40,7 +40,11 @@ export const signUp = async (data: SignupProps) => {
  */
 export const getUsers = async (query?: string) => {
   return await auth.api.listUsers({
-    query: {},
+    query: {
+      searchValue: query,
+      searchField: "email",
+      searchOperator: "contains",
+    },
     headers: await headers(),
   });
 };

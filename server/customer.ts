@@ -2,7 +2,6 @@
 
 import { db } from "@/lib/db";
 import { getSession } from "./auth";
-import { and, eq, ne, or } from "drizzle-orm";
 import { headers } from "next/headers";
 import {
   customer,
@@ -11,53 +10,56 @@ import {
   type CustomerInsertType,
 } from "@/lib/db/schema";
 import { revalidatePath } from "next/cache";
+import { capitalizeWords } from "@/lib/utils";
+import { and, eq, ne, or } from "drizzle-orm";
 import { waitUntil } from "@vercel/functions";
 import { handleAction } from "@/lib/helper/error-handler";
 import CustomerInvite from "@/components/email/customer-invite";
 import { sendApplicationStatusEmails, sendEmail } from "@/lib/email";
 import CatalogRequestNew from "@/components/email/catalog-request-new";
 import CatalogRequestUpdate from "@/components/email/catalog-request-update";
-import { AnimatedCircularProgressBar } from "@/components/ui/animated-circular-progress-bar";
-import { capitalizeWords } from "@/lib/utils";
 
 /**
  * create a customer - public
  * @param data - customer data to be created
  * @returns the ID of the created customer
  */
-export const createCustomer = handleAction(async (data: CustomerInsertType) => {
-  const headersList = await headers();
+export const createCustomer = handleAction(
+  async (data: CustomerInsertType, notify: boolean = true) => {
+    const headersList = await headers();
+    console.log(data, notify);
+    const realIp = headersList.get("x-real-ip");
+    const forwardedFor = headersList.get("x-forwarded-for");
+    const ip = forwardedFor?.split(",")[0] || realIp || "unknown";
 
-  const realIp = headersList.get("x-real-ip");
-  const forwardedFor = headersList.get("x-forwarded-for");
-  const ip = forwardedFor?.split(",")[0] || realIp || "unknown";
+    const values = {
+      ...data,
+      officerFirst: capitalizeWords(data.officerFirst),
+      officerLast: capitalizeWords(data.officerLast),
+      companyEmail: data.companyEmail.toLowerCase(),
+      officerEmail: data.officerEmail.toLowerCase(),
+      ipAddress: ip,
+      userAgent: headersList.get("user-agent"),
+      thumbnail: `https://api.dicebear.com/9.x/initials/svg?seed=${data.companyName}&scale=80`,
+    };
 
-  const values = {
-    ...data,
-    officerFirst: capitalizeWords(data.officerFirst),
-    officerLast: capitalizeWords(data.officerLast),
-    companyEmail: data.companyEmail.toLowerCase(),
-    officerEmail: data.officerEmail.toLowerCase(),
-    ipAddress: ip,
-    userAgent: headersList.get("user-agent"),
-    thumbnail: `https://api.dicebear.com/9.x/initials/svg?seed=${data.companyName}&scale=80`,
-  };
+    const [result] = await db.insert(customer).values(values).returning();
 
-  const [result] = await db.insert(customer).values(values).returning();
+    if (notify) waitUntil(sendApplicationStatusEmails(result));
 
-  waitUntil(sendApplicationStatusEmails(result));
-  waitUntil(
-    linkCustomerInvite({
-      id: `${result.id}`,
-      companyEmail: data.companyEmail,
-      accountPayableEmail: data.accountPayableEmail!,
-      officerEmail: data.officerEmail,
-      status: "applied",
-    })
-  );
+    waitUntil(
+      linkCustomerInvite({
+        id: `${result.id}`,
+        companyEmail: data.companyEmail,
+        accountPayableEmail: data.accountPayableEmail!,
+        officerEmail: data.officerEmail,
+        status: "applied",
+      })
+    );
 
-  return result;
-});
+    return result;
+  }
+);
 
 /**
  * link customer account

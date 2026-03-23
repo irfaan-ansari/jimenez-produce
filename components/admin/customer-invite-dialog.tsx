@@ -9,10 +9,11 @@ import {
   DialogTrigger,
 } from "../ui/dialog";
 import z from "zod";
+import { toast } from "sonner";
 import { useState } from "react";
 import { Button } from "../ui/button";
 import { useAppForm } from "@/hooks/form-context";
-import { Loader, PlusCircle } from "lucide-react";
+import { Loader, SendHorizonal } from "lucide-react";
 import {
   Field,
   FieldDescription,
@@ -21,7 +22,6 @@ import {
   FieldLabel,
 } from "../ui/field";
 import { Textarea } from "../ui/textarea";
-import { toast } from "sonner";
 import { createInvite } from "@/server/customer";
 import { useQueryClient } from "@tanstack/react-query";
 
@@ -94,8 +94,8 @@ export const CustomerInviteDialog = ({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button size="xl" className="rounded-xl ml-auto min-w-32 px-8">
-          <PlusCircle /> {config.button}
+        <Button size="xl" className="rounded-xl min-w-32 px-8">
+          <SendHorizonal /> {config.button}
         </Button>
       </DialogTrigger>
       <DialogContent className="ring-ring/10 rounded-2xl sm:max-w-lg py-8">

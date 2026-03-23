@@ -9,27 +9,26 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { format } from "date-fns";
+import { Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
+import { authClient } from "@/lib/auth/client";
+import { roleMap } from "@/lib/constants/user";
+import { Button } from "@/components/ui/button";
+import { useConfirm } from "@/hooks/use-confirm";
 import {
   EmptyComponent,
   LoadingSkeleton,
 } from "@/components/admin/placeholder-component";
-import { roleMap } from "@/lib/constants/user";
 import { useRouterStuff } from "@/hooks/use-router-stuff";
 import { useListUsers, useSession } from "@/hooks/use-auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useConfirm } from "@/hooks/use-confirm";
-import { Trash2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { authClient } from "@/lib/auth/client";
-import { useRouter } from "next/navigation";
 
 export const PageClient = () => {
-  const { searchParams } = useRouterStuff();
+  const { searchParamsObj } = useRouterStuff();
+
   const { data: session } = useSession();
-  const { data, isPending, isError, error } = useListUsers(
-    searchParams?.toString()
-  );
+  const { data, isPending, isError, error } = useListUsers(searchParamsObj?.q);
 
   if (isPending) return <LoadingSkeleton />;
 
