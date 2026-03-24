@@ -23,6 +23,7 @@ import InternalAgreementNotification from "@/components/email/job-agreement-subm
 import JobInvitation from "@/components/email/job-invite";
 import { capitalizeWords } from "@/lib/utils";
 
+// this function is being called on agreement page
 export const getJobApplication = handleAction(async (token: string) => {
   if (!token) throw new Error("Invalid token");
   const res = await db.query.jobApplications.findFirst({
@@ -39,6 +40,7 @@ export const getJobApplication = handleAction(async (token: string) => {
   };
 });
 
+//
 export const submitAgreement = handleAction(async (token: string) => {
   if (!token) throw new Error("Invalid request");
 

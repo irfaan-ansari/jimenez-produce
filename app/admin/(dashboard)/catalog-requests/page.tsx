@@ -20,7 +20,9 @@ const JobApplicationPage = async () => {
 
       <div className="flex gap-4 items-center">
         <SearchBar />
-        <CustomerInviteDialog type="request" />
+        <div className="flex flex-1 justify-end">
+          <CustomerInviteDialog type="request" />
+        </div>
       </div>
       {/* content */}
       <PageClient />

@@ -80,7 +80,7 @@ const columns: ColumnDef<JobApplicationSelectType>[] = [
   },
   {
     id: "availability",
-    header: "Available",
+    header: "Availability",
     cell: ({ row }) => {
       const { availableStartDate, hasLegalRights } = row.original;
       return (
@@ -111,6 +111,22 @@ const columns: ColumnDef<JobApplicationSelectType>[] = [
           <div className="text-muted-foreground">
             {address.state} {address.zip}
           </div>
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "createdAt",
+    header: "Date Applied",
+    cell: ({ row }) => {
+      return (
+        <div className="flex flex-col">
+          <span className="font-medium">
+            {format(row.original.createdAt!, "MMMM dd, yyyy")}
+          </span>
+          <span className="text-muted-foreground">
+            {format(row.original.createdAt!, "hh:mm:ss a")}
+          </span>
         </div>
       );
     },

@@ -24,9 +24,13 @@ const CustomersPage = async () => {
         <SearchBar />
         <div className="flex gap-4 items-center justify-end flex-1">
           <CustomerDialog>
-            <Button size="xl" variant="outline" className="min-w-32 rounded-xl">
+            <Button
+              size="xl"
+              variant="outline"
+              className="rounded-xl size-12 md:w-auto md:px-8 md:min-w-32"
+            >
               <PlusCircle />
-              Add Customer
+              <span className="hidden md:inline">Add Customer</span>
             </Button>
           </CustomerDialog>
           <CustomerInviteDialog type="invitation" />

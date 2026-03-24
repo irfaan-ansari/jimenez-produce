@@ -94,8 +94,12 @@ export const CustomerInviteDialog = ({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button size="xl" className="rounded-xl min-w-32 px-8">
-          <SendHorizonal /> {config.button}
+        <Button
+          size="xl"
+          className="rounded-xl size-12 md:w-auto md:px-8 md:min-w-32"
+        >
+          <SendHorizonal />
+          <span className="hidden md:inline">{config.button}</span>
         </Button>
       </DialogTrigger>
       <DialogContent className="ring-ring/10 rounded-2xl sm:max-w-lg py-8">

@@ -49,39 +49,24 @@ export const PageClient = () => {
 
 const columns: ColumnDef<CustomerInviteSelectType>[] = [
   {
-    id: "name",
-    header: "Applicant",
+    id: "contact",
+    header: "Contact",
     cell: ({ row }) => {
-      const { firstName, lastName, createdAt } = row.original;
+      const { phone, email, firstName, lastName } = row.original;
       return (
         <div className="flex flex-col">
           <span className="font-medium">
             {firstName} {lastName}
           </span>
-          <span className="text-sm text-muted-foreground">
-            {format(createdAt!, "MMMM dd, yyyy")}
-          </span>
-        </div>
-      );
-    },
-  },
-
-  {
-    id: "contact",
-    header: "Contact",
-    cell: ({ row }) => {
-      const { phone, email } = row.original;
-      return (
-        <div className="space-y-1">
-          <div>{phone}</div>
-          <div>{email}</div>
+          <div className="text-sm text-muted-foreground">{phone}</div>
+          <div className="text-sm text-muted-foreground">{email}</div>
         </div>
       );
     },
   },
   {
-    id: "business",
-    header: "Business",
+    id: "company",
+    header: "Company",
     cell: ({ row }) => {
       const { companyName, companyType } = row.original;
       return (
@@ -89,6 +74,22 @@ const columns: ColumnDef<CustomerInviteSelectType>[] = [
           <div>{companyName}</div>
 
           <div className="text-muted-foreground text-sm">{companyType}</div>
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "createdAt",
+    header: "Request Date",
+    cell: ({ row }) => {
+      return (
+        <div className="flex flex-col">
+          <span className="font-medium">
+            {format(row.original.createdAt!, "MMMM dd, yyyy")}
+          </span>
+          <span className="text-muted-foreground">
+            {format(row.original.createdAt!, "hh:mm:ss a")}
+          </span>
         </div>
       );
     },

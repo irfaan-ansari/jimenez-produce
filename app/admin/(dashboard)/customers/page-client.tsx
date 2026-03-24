@@ -131,7 +131,7 @@ export const columns: ColumnDef<CustomerSelectType>[] = [
   },
   {
     accessorKey: "createdAt",
-    header: "Created At",
+    header: "Date Applied",
     cell: ({ row }) => {
       return (
         <div className="flex flex-col">
