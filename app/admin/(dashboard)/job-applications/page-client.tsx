@@ -45,19 +45,31 @@ export const PageClient = () => {
 
 const columns: ColumnDef<JobApplicationSelectType>[] = [
   {
-    id: "applicant",
-    header: "Applicant",
+    id: "name",
+    header: "Name",
     cell: ({ row }) => {
-      const { firstName, lastName, email, phone, id } = row.original;
+      const { firstName, lastName, id } = row.original;
+      return (
+        <Link
+          href={`/admin/job-applications/${id}`}
+          className="hover:underline"
+        >
+          {firstName} {lastName}
+        </Link>
+      );
+    },
+  },
+  {
+    id: "contact",
+    header: "Contact Details",
+    cell: ({ row }) => {
+      const { email, phone, id } = row.original;
 
       return (
         <Link
           href={`/admin/job-applications/${id}`}
           className="space-y-1 hover:underline"
         >
-          <div className="font-medium">
-            {firstName} {lastName}
-          </div>
           <div className="text-sm text-muted-foreground">{phone}</div>
           <div className="text-sm text-muted-foreground">{email}</div>
         </Link>
@@ -94,22 +106,6 @@ const columns: ColumnDef<JobApplicationSelectType>[] = [
           <div className="text-muted-foreground">
             Legal:{" "}
             <span className="capitalize font-medium">{hasLegalRights}</span>
-          </div>
-        </div>
-      );
-    },
-  },
-  {
-    id: "address",
-    header: "Address",
-    cell: ({ row }) => {
-      const address = row.original.currentAddress;
-      if (!address) return "—";
-      return (
-        <div className="space-y-1">
-          <div>{address.city}</div>
-          <div className="text-muted-foreground">
-            {address.state} {address.zip}
           </div>
         </div>
       );

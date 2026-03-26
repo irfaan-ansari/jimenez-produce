@@ -23,6 +23,7 @@ import { steps } from "@/lib/constants/driver-form-steps";
 import { ArrowLeft, ArrowRight, Loader } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { driverFormSchema, DriverFormType } from "@/lib/form-schema/job-schema";
+import { uploadFile } from "@/lib/utils";
 
 const defaultValues: DriverFormType = {
   ...applicantAccidentHistory,
@@ -75,17 +76,24 @@ export const DriverForm = ({
           value.signature,
         ];
 
-        // upload files and send the files url to
-        const [dlFront, dlBack, dtFront, dtBack, ssFront, ssBack, sign] =
-          await Promise.all(
-            files.map((file) =>
-              upload(`job-application/${file.name}`, file, {
-                access: "public",
-                handleUploadUrl: "/api/upload",
-              })
-            )
-          );
+        const fileMap = Object.fromEntries(
+          files
+            .filter((file): file is File => !!file)
+            .map((file) => [file.name, file])
+        );
 
+        // upload files and send the files url to
+
+        const [dlFront, dlBack, dtFront, dtBack, ssFront, ssBack, sign] =
+          await Promise.all([
+            uploadFile(fileMap.dlFront),
+            uploadFile(fileMap.dlBack),
+            uploadFile(fileMap.dtFront),
+            uploadFile(fileMap.dtBack),
+            uploadFile(fileMap.ssFront),
+            uploadFile(fileMap.ssBack),
+            uploadFile(fileMap.sign),
+          ]);
         const {
           drivingLicenseFront,
           drivingLicenseBack,
@@ -100,13 +108,13 @@ export const DriverForm = ({
         const values = {
           ...rest,
           cvUrl: "",
-          drivingLicenseFrontUrl: dlFront.url,
-          drivingLicenseBackUrl: dlBack.url,
-          dotFrontUrl: dtFront.url,
-          dotBackUrl: dtBack.url,
-          socialSecurityFrontUrl: ssFront.url,
-          socialSecurityBackUrl: ssBack.url,
-          signatureUrl: sign.url,
+          drivingLicenseFrontUrl: dlFront?.url ?? "",
+          drivingLicenseBackUrl: dlBack?.url ?? "",
+          dotFrontUrl: dtFront?.url ?? "",
+          dotBackUrl: dtBack?.url ?? "",
+          socialSecurityFrontUrl: ssFront?.url ?? "",
+          socialSecurityBackUrl: ssBack?.url ?? "",
+          signatureUrl: sign?.url ?? "",
         };
 
         const { success, error } = await createJobApplication(values);

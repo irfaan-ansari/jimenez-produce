@@ -1,5 +1,4 @@
 import {
-  AlarmClock,
   Ban,
   CheckCircle,
   Circle,
@@ -115,6 +114,8 @@ export const SALES_REPRESENTATIVE = [
   "Other",
 ];
 
+// "jorge@jimenezproduce.com",
+// "elizabeth@jimenezproduce.com",
 export const DELIVERY_DAYS = [
   "Monday",
   "Tuesday",

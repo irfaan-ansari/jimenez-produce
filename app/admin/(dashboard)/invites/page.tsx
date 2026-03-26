@@ -21,7 +21,9 @@ const InvitesPage = async () => {
 
       <div className="flex gap-4 items-center">
         <SearchBar />
-        <CustomerInviteDialog type="invitation" />
+        <div className="flex flex-1 justify-end items-center">
+          <CustomerInviteDialog type="invitation" />
+        </div>
       </div>
       {/* content */}
       <PageClient />

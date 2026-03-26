@@ -91,6 +91,22 @@ export const columns: ColumnDef<JobInviteSelectType>[] = [
     },
   },
   {
+    accessorKey: "createdAt",
+    header: "Date Invited",
+    cell: ({ row }) => {
+      return (
+        <div className="flex flex-col">
+          <span className="font-medium">
+            {format(row.original.createdAt!, "MMMM dd, yyyy")}
+          </span>
+          <span className="text-muted-foreground">
+            {format(row.original.createdAt!, "hh:mm:ss a")}
+          </span>
+        </div>
+      );
+    },
+  },
+  {
     accessorKey: "message",
     header: "Message",
     cell: ({ row }) => (
@@ -109,22 +125,7 @@ export const columns: ColumnDef<JobInviteSelectType>[] = [
       </HoverCard>
     ),
   },
-  {
-    accessorKey: "createdAt",
-    header: "Date Invited",
-    cell: ({ row }) => {
-      return (
-        <div className="flex flex-col">
-          <span className="font-medium">
-            {format(row.original.createdAt!, "MMMM dd, yyyy")}
-          </span>
-          <span className="text-muted-foreground">
-            {format(row.original.createdAt!, "hh:mm:ss a")}
-          </span>
-        </div>
-      );
-    },
-  },
+
   {
     accessorKey: "status",
     header: "Status",

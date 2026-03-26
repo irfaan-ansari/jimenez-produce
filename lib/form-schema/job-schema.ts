@@ -132,8 +132,8 @@ const authorizationSchema = z.object({
   drivingLicenseBack: fileSchema,
   socialSecurityFront: fileSchema,
   socialSecurityBack: fileSchema,
-  dotFront: fileSchema,
-  dotBack: fileSchema,
+  dotFront: fileSchema.optional(),
+  dotBack: fileSchema.optional(),
   signature: z
     .file("Signature is required")
     .mime(

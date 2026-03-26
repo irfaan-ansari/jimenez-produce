@@ -1,3 +1,4 @@
+import { upload } from "@vercel/blob/client";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -59,3 +60,10 @@ export function capitalizeWords(str: string) {
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
 }
+
+export const uploadFile = (file?: File) =>
+  file &&
+  upload(`job-application/${file.name}`, file, {
+    access: "public",
+    handleUploadUrl: "/api/upload",
+  });

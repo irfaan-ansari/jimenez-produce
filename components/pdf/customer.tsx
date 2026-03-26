@@ -74,6 +74,14 @@ export const CustomerPDF = ({ data }: { data: CustomerSelectType }) => {
             <Text style={styles.value}>{data.companyEin}</Text>
           </View>
           <View style={styles.fieldGroup}>
+            <Text style={styles.label}>Contact Details</Text>
+            <Text style={styles.value}>
+              {data.companyEmail} | {data.companyPhone}
+            </Text>
+          </View>
+        </View>
+        <View style={styles.row}>
+          <View style={styles.fieldGroup}>
             <Text style={styles.label}>Address</Text>
             <Text style={styles.value}>
               {data.companyStreet}, {data.companyCity}, {data.companyState}{" "}

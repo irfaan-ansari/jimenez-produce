@@ -1,27 +1,26 @@
 "use server";
 
-import { db } from "@/lib/db";
-import { and, eq, ne } from "drizzle-orm";
-import { put } from "@vercel/blob";
-import { getSession } from "./auth";
-import { headers } from "next/headers";
-import { randomBytes } from "node:crypto";
-import { revalidatePath } from "next/cache";
-import { waitUntil } from "@vercel/functions";
-import { JobApplicationStatus } from "@/lib/types";
-import { renderToBuffer } from "@react-pdf/renderer";
-import { handleAction } from "@/lib/helper/error-handler";
-import { sendEmail, sendJobStatusEmail } from "@/lib/email";
-import { JobAgreementPDF } from "@/components/pdf/job-agreement";
 import {
   jobApplications,
   JobApplicationInsertType,
   jobInvite,
   JobInviteInsertType,
 } from "@/lib/db/schema";
-import InternalAgreementNotification from "@/components/email/job-agreement-submit";
-import JobInvitation from "@/components/email/job-invite";
+import { db } from "@/lib/db";
+import { eq } from "drizzle-orm";
+import { put } from "@vercel/blob";
+import { getSession } from "./auth";
+import { headers } from "next/headers";
+import { randomBytes } from "node:crypto";
 import { capitalizeWords } from "@/lib/utils";
+import { waitUntil } from "@vercel/functions";
+import { JobApplicationStatus } from "@/lib/types";
+import { renderToBuffer } from "@react-pdf/renderer";
+import JobInvitation from "@/components/email/job-invite";
+import { handleAction } from "@/lib/helper/error-handler";
+import { sendEmail, sendJobStatusEmail } from "@/lib/email";
+import { JobAgreementPDF } from "@/components/pdf/job-agreement";
+import InternalAgreementNotification from "@/components/email/job-agreement-submit";
 
 // this function is being called on agreement page
 export const getJobApplication = handleAction(async (token: string) => {
@@ -40,7 +39,7 @@ export const getJobApplication = handleAction(async (token: string) => {
   };
 });
 
-//
+// generate and save agreement pdf
 export const submitAgreement = handleAction(async (token: string) => {
   if (!token) throw new Error("Invalid request");
 
@@ -121,18 +120,6 @@ export const createJobApplication = handleAction(
       .values(values)
       .returning();
 
-    //  find invite
-    const invite = await db.query.jobInvite.findFirst({
-      where: eq(jobInvite.email, values.email),
-    });
-
-    // update invite
-    if (invite)
-      await db
-        .update(jobInvite)
-        .set({ status: "applied" })
-        .where(eq(jobInvite.id, invite.id));
-
     // send email
     waitUntil(sendJobStatusEmail(result));
 
@@ -177,22 +164,6 @@ export const updateJobApplication = handleAction(
 
     // send email
     if (nextStatus && nextStatus !== existing.status) {
-      if (nextStatus === "hired") {
-        //  find invite
-        const invite = await db.query.jobInvite.findFirst({
-          where: and(
-            eq(jobInvite.email, result.email),
-            ne(jobInvite.status, "hired")
-          ),
-        });
-
-        // update invite
-        if (invite)
-          await db
-            .update(jobInvite)
-            .set({ status: "hired", applicationId: result.id })
-            .where(eq(jobInvite.id, invite.id));
-      }
       waitUntil(sendJobStatusEmail(result));
     }
 
@@ -219,7 +190,7 @@ export const deleteJobApplication = handleAction(async (id: number) => {
     .delete(jobApplications)
     .where(eq(jobApplications.id, id))
     .returning({ id: jobApplications.id });
-  revalidatePath("/admin/job-applications");
+
   return result;
 });
 

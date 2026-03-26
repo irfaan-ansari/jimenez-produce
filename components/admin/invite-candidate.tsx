@@ -12,7 +12,7 @@ import z from "zod";
 import { useState } from "react";
 import { Button } from "../ui/button";
 import { useAppForm } from "@/hooks/form-context";
-import { Loader, PlusCircle } from "lucide-react";
+import { Loader, PlusCircle, Send, SendHorizonal } from "lucide-react";
 import {
   Field,
   FieldDescription,
@@ -82,7 +82,7 @@ export const InviteCandidate = () => {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button size="xl" className="rounded-xl ml-auto min-w-32 px-8">
-          <PlusCircle /> Invite Candidate
+          <SendHorizonal /> Invite Candidate
         </Button>
       </DialogTrigger>
       <DialogContent className="ring-ring/10 rounded-2xl sm:max-w-lg py-8">

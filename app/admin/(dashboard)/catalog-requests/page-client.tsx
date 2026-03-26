@@ -49,15 +49,24 @@ export const PageClient = () => {
 
 const columns: ColumnDef<CustomerInviteSelectType>[] = [
   {
-    id: "contact",
-    header: "Contact",
+    id: "name",
+    header: "Name",
     cell: ({ row }) => {
-      const { phone, email, firstName, lastName } = row.original;
+      const { firstName, lastName } = row.original;
+      return (
+        <span className="font-medium">
+          {firstName} {lastName}
+        </span>
+      );
+    },
+  },
+  {
+    id: "contact",
+    header: "Contact Details",
+    cell: ({ row }) => {
+      const { phone, email } = row.original;
       return (
         <div className="flex flex-col">
-          <span className="font-medium">
-            {firstName} {lastName}
-          </span>
           <div className="text-sm text-muted-foreground">{phone}</div>
           <div className="text-sm text-muted-foreground">{email}</div>
         </div>
@@ -80,7 +89,7 @@ const columns: ColumnDef<CustomerInviteSelectType>[] = [
   },
   {
     accessorKey: "createdAt",
-    header: "Request Date",
+    header: "Date Requested",
     cell: ({ row }) => {
       return (
         <div className="flex flex-col">
