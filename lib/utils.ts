@@ -61,9 +61,11 @@ export function capitalizeWords(str: string) {
     .join(" ");
 }
 
-export const uploadFile = (file?: File) =>
-  file &&
-  upload(`job-application/${file.name}`, file, {
+export const uploadFile = async (file: File | undefined) => {
+  if (!file) return { url: "" };
+
+  return await upload(`job-application/${file.name}`, file, {
     access: "public",
     handleUploadUrl: "/api/upload",
   });
+};

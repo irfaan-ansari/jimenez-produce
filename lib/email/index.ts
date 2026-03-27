@@ -138,6 +138,7 @@ export const sendJobStatusEmail = async ({
   firstName,
   position,
   phone,
+  location,
   email,
   status,
   token,
@@ -192,7 +193,7 @@ export const sendJobStatusEmail = async ({
   });
 
   // send admin email
-  sendEmail({
+  const res = await sendEmail({
     to: ["info@jimenezproduce.com"],
     subject: "Job Application Update",
     template: JobApplicationAdmin,
@@ -208,4 +209,6 @@ export const sendJobStatusEmail = async ({
       internalNotes,
     },
   });
+
+  return res;
 };

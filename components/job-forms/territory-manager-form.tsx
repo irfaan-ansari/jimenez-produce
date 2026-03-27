@@ -63,32 +63,26 @@ export const TerritoryManagerForm = ({
       if (value.step < steps.length - 1)
         formApi.setFieldValue("step", value.step + 1);
       else {
-        const files = [
-          value.drivingLicenseFront,
-          value.drivingLicenseBack,
-          value.dotFront,
-          value.dotBack,
-          value.socialSecurityFront,
-          value.socialSecurityBack,
-          value.signature,
-        ];
-
-        const fileMap = Object.fromEntries(
-          files
-            .filter((file): file is File => !!file)
-            .map((file) => [file.name, file])
-        );
+        const files = Object.fromEntries([
+          ["dlFront", value.drivingLicenseFront],
+          ["dlBack", value.drivingLicenseBack],
+          ["dtFront", value.dotFront],
+          ["dtBack", value.dotBack],
+          ["ssFront", value.socialSecurityFront],
+          ["ssBack", value.socialSecurityBack],
+          ["sign", value.signature],
+        ]);
 
         // upload files
         const [dlFront, dlBack, dtFront, dtBack, ssFront, ssBack, sign] =
           await Promise.all([
-            uploadFile(fileMap.dlFront),
-            uploadFile(fileMap.dlBack),
-            uploadFile(fileMap.dtFront),
-            uploadFile(fileMap.dtBack),
-            uploadFile(fileMap.ssFront),
-            uploadFile(fileMap.ssBack),
-            uploadFile(fileMap.sign),
+            uploadFile(files.dlFront),
+            uploadFile(files.dlBack),
+            uploadFile(files.dtFront),
+            uploadFile(files.dtBack),
+            uploadFile(files.ssFront),
+            uploadFile(files.ssBack),
+            uploadFile(files.sign),
           ]);
 
         const {
@@ -105,13 +99,13 @@ export const TerritoryManagerForm = ({
         const values = {
           ...rest,
           cvUrl: "",
-          drivingLicenseFrontUrl: dlFront?.url ?? "",
-          drivingLicenseBackUrl: dlBack?.url ?? "",
-          dotFrontUrl: dtFront?.url ?? "",
-          dotBackUrl: dtBack?.url ?? "",
-          socialSecurityFrontUrl: ssFront?.url ?? "",
-          socialSecurityBackUrl: ssBack?.url ?? "",
-          signatureUrl: sign?.url ?? "",
+          drivingLicenseFrontUrl: dlFront.url,
+          drivingLicenseBackUrl: dlBack.url,
+          dotFrontUrl: dtFront.url,
+          dotBackUrl: dtBack.url,
+          socialSecurityFrontUrl: ssFront.url,
+          socialSecurityBackUrl: ssBack.url,
+          signatureUrl: sign.url,
         };
 
         const { success, error } = await createJobApplication(values);
