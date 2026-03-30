@@ -9,13 +9,13 @@ import CustomerHold from "@/components/email/customer-hold";
 import CustomerAdmin from "@/components/email/customer-admin";
 import CustomerApproved from "@/components/email/customer-approved";
 import CustomerDeclined from "@/components/email/customer-declined";
-import { CustomerSelectType, JobApplicationSelectType } from "../db/schema";
 import JobApplicationAdmin from "@/components/email/job-notifications";
+import { CustomerSelectType, JobApplicationSelectType } from "../db/schema";
 
 export const resend = new Resend(process.env.RESEND_API_KEY);
 const FROM_EMAIL = "Jimenez Produce <no-reply@jimenezproduce.com>";
 
-export const ADMIN_EMAILS = ["info@jimenezproduce.com"];
+export const ADMIN_EMAILS = ["info@jimenezproduce.net"];
 
 interface EmailConfig {
   to: string[];
