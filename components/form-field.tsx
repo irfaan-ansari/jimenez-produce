@@ -39,7 +39,7 @@ import {
 import { useRef } from "react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import SignatureCanvas from "react-signature-canvas";
-import { format } from "date-fns";
+import { addYears, format } from "date-fns";
 
 interface FieldProps {
   label?: string;
@@ -113,6 +113,7 @@ const DateField = ({
           <Calendar
             mode="single"
             captionLayout="dropdown"
+            endMonth={addYears(new Date(), 20)}
             onSelect={(date) => {
               const dateStr = format(date as Date, "yyyy-MM-dd");
               field.handleChange(dateStr);
