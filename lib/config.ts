@@ -51,6 +51,31 @@ export const SIDEBAR_MENU = [
     items: [],
   },
   {
+    label: "Orders",
+    icon: Inbox,
+    href: "/admin/orders",
+    items: [
+      {
+        label: "All",
+        href: "/admin/orders",
+        color: "#A1A1AA",
+        query: { status: "" },
+      },
+      {
+        label: "In Progress",
+        href: "/admin/orders",
+        color: "#F59E0B",
+        query: { status: "active" },
+      },
+      {
+        label: "Past Orders",
+        href: "/admin/orders",
+        color: "#22C55E",
+        query: { status: "completed" },
+      },
+    ],
+  },
+  {
     label: "Customers",
     icon: UserPlus,
     href: "/admin/customers",
@@ -305,13 +330,13 @@ export const SIDEBAR_MENU_CUSTOMER = [
         label: "In Progress",
         href: "/customer/orders",
         color: "#F59E0B",
-        query: { status: "in_progress" },
+        query: { status: "active" },
       },
       {
         label: "Past Orders",
         href: "/customer/orders",
         color: "#22C55E",
-        query: { status: "past" },
+        query: { status: "completed" },
       },
     ],
   },
