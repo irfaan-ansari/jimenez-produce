@@ -16,6 +16,7 @@ import { useQueryClient } from "@tanstack/react-query";
 export const OrderForm = ({ customer }: { customer: CustomerSelectType }) => {
   const router = useRouter();
   const confirm = useConfirm();
+  const queryClient = useQueryClient();
   const {
     deliverySchedule,
     companyStreet,
@@ -59,7 +60,6 @@ export const OrderForm = ({ customer }: { customer: CustomerSelectType }) => {
       });
 
       if (success) {
-        const queryClient = useQueryClient();
         confirm.success({
           title: "Order Confirmed!",
           description: `Thanks for your purchase! Your order is confirmed and we're getting it ready for you.`,
@@ -72,6 +72,7 @@ export const OrderForm = ({ customer }: { customer: CustomerSelectType }) => {
           queryKey: ["products"],
         });
       } else toast.error(error.message);
+      console.log(error);
     },
   });
 
