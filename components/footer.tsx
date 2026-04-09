@@ -80,7 +80,7 @@ export const Footer = () => {
                 {categories.map((cat) => (
                   <Link
                     key={cat.title}
-                    href={`/catalog?cat=${cat.title}`}
+                    href={`/products?cat=${cat.title}`}
                     className="py-1 hover:underline hover:text-primary transition ease-out"
                   >
                     {cat.title}

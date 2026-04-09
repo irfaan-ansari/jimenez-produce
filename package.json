@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "email:dev": "email dev --dir components/email",
+    "auth:generate": "pnpm dlx auth@latest generate --config ./lib/auth/index.ts",
     "lint": "eslint"
   },
   "dependencies": {
@@ -42,6 +43,7 @@
     "react-markdown": "^10.1.0",
     "react-pdf-tailwind": "^3.0.0",
     "react-signature-canvas": "1.1.0-alpha.2",
+    "recharts": "3.8.0",
     "resend": "^6.9.2",
     "shadcn": "^3.8.1",
     "sharp": "^0.34.5",

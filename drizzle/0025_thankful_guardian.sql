@@ -1,0 +1,1 @@
+ALTER TABLE "line_item" RENAME COLUMN "code" TO "identifier";

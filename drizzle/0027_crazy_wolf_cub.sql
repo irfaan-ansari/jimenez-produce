@@ -1,0 +1,1 @@
+ALTER TABLE "line_item" ADD COLUMN "image" text;

@@ -1,0 +1,1 @@
+ALTER TABLE "order" ALTER COLUMN "deliveryDate" SET DATA TYPE text;

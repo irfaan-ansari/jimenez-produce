@@ -3,6 +3,8 @@
 import {
   customer,
   customerInvite,
+  inventory,
+  InventoryInsertType,
   product,
   ProductInsertType,
 } from "@/lib/db/schema";
@@ -81,20 +83,36 @@ export const getProducts = handleAction(
  * @param data - The product to be created
  * @returns ID of the created product
  */
-export const createProduct = async (data: ProductInsertType) => {
-  const session = await getSession();
-  if (!session) throw new Error("Authentication required.");
+export const createProduct = handleAction(
+  async (
+    data: ProductInsertType & {
+      inventory: InventoryInsertType[];
+    }
+  ) => {
+    const session = await getSession();
 
-  // if (!data.image)
-  //   data.image = `https://api.dicebear.com/9.x/initials/svg?seed=${data.title}&scale=80`;
+    if (!session) throw new Error("Authentication required.");
 
-  const [result] = await db
-    .insert(product)
-    .values({ ...data, status: data.status?.toLowerCase() })
-    .returning({ id: product.id });
+    const { inventory: inventoryData = [], ...rest } = data;
 
-  return result;
-};
+    const [result] = await db
+      .insert(product)
+      .values({ ...rest, status: rest.status?.toLowerCase() })
+      .returning();
+
+    const [inv] = await db
+      .insert(inventory)
+      .values(
+        inventoryData.map((inv) => ({
+          ...inv,
+          productId: result.id,
+        }))
+      )
+      .returning();
+
+    return { ...result, inventory: inv };
+  }
+);
 
 /**
  * Upddate a product
@@ -102,30 +120,37 @@ export const createProduct = async (data: ProductInsertType) => {
  * @param data - Product data to be updated
  * @returns
  */
-export const updateProduct = async (id: number, data: ProductInsertType) => {
-  const session = await getSession();
-  if (!session) throw new Error("Authentication required.");
+export const updateProduct = handleAction(
+  async (
+    id: number,
+    data: ProductInsertType & {
+      inventory: InventoryInsertType[];
+    }
+  ) => {
+    const session = await getSession();
+    if (!session) throw new Error("Authentication required.");
 
-  const existing = await db.query.product.findFirst({
-    where: eq(product.id, id),
-  });
+    const existing = await db.query.product.findFirst({
+      where: eq(product.id, id),
+    });
 
-  if (!existing) throw new Error("Resource not found.");
+    if (!existing) throw new Error("Resource not found.");
 
-  const [result] = await db
-    .update(product)
-    .set(data)
-    .where(eq(product.id, id))
-    .returning({ id: product.id });
-  return result;
-};
+    const [result] = await db
+      .update(product)
+      .set(data)
+      .where(eq(product.id, id))
+      .returning({ id: product.id });
+    return result;
+  }
+);
 
 /**
  * delete product
  * @param id
  * @returns Id of the deleted record
  */
-export const deleteProduct = async (id: number) => {
+export const deleteProduct = handleAction(async (id: number) => {
   const session = await getSession();
   if (!session) throw new Error("Authentication required.");
 
@@ -141,7 +166,7 @@ export const deleteProduct = async (id: number) => {
     .returning({ id: product.id });
 
   return result;
-};
+});
 
 /**
  * Get categories

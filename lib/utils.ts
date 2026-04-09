@@ -69,3 +69,41 @@ export const uploadFile = async (file: File | undefined) => {
     handleUploadUrl: "/api/upload",
   });
 };
+
+export const formatUSD = (value: string | number) =>
+  new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  }).format(parseFloat(value as string));
+
+import { addDays } from "date-fns";
+
+export const getNextDayDate = (dayName: string) => {
+  const daysMap: Record<string, number> = {
+    sunday: 0,
+    monday: 1,
+    tuesday: 2,
+    wednesday: 3,
+    thursday: 4,
+    friday: 5,
+    saturday: 6,
+  };
+
+  const today = new Date();
+  const todayIndex = today.getDay();
+
+  const targetIndex = daysMap[dayName.toLowerCase()];
+
+  if (targetIndex === undefined) {
+    throw new Error("Invalid day name");
+  }
+
+  let diff = targetIndex - todayIndex;
+
+  // if same day or past → go to next week
+  if (diff <= 0) {
+    diff += 7;
+  }
+
+  return addDays(today, diff);
+};

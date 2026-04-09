@@ -4,13 +4,8 @@ import {
 } from "@/lib/db/schema";
 import { fetcher } from "@/lib/helper/fetcher";
 import { useQuery } from "@tanstack/react-query";
+import { type OrderResponse, type Pagination } from "@/lib/types";
 
-type Pagination = {
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
-};
 type CustomerResponse = {
   data: CustomerSelectType[];
   pagination: Pagination;
@@ -45,6 +40,16 @@ export const useInvites = (query?: string) => {
     queryKey: ["invites", query],
     queryFn: () => {
       return fetcher<CustomerInviteResponse>(`/api/invites${query}`);
+    },
+    staleTime: 1000 * 60 * 5,
+  });
+};
+
+export const useOrders = (query?: string) => {
+  return useQuery({
+    queryKey: ["orders", query],
+    queryFn: () => {
+      return fetcher<OrderResponse>(`/api/orders?${query}`);
     },
     staleTime: 1000 * 60 * 5,
   });

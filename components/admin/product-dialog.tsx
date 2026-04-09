@@ -15,7 +15,6 @@ import {
   DialogTrigger,
 } from "../ui/dialog";
 import z from "zod";
-import React, { useRef } from "react";
 import { toast } from "sonner";
 import Image from "next/image";
 import { useState } from "react";
@@ -23,41 +22,49 @@ import { del } from "@vercel/blob";
 import { Input } from "../ui/input";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
+import React, { useRef } from "react";
 import { Textarea } from "../ui/textarea";
 import { upload } from "@vercel/blob/client";
+import { capitalizeWords } from "@/lib/utils";
+import { useLocations } from "@/hooks/use-config";
 import { useAppForm } from "@/hooks/form-context";
 import { AnyFieldApi } from "@tanstack/react-form";
-import {
-  useCategories,
-  useCreateProduct,
-  useUpdateProduct,
-} from "@/hooks/use-product";
-import { Check, Loader, Trash2, X } from "lucide-react";
-
-import { ProductSelectType } from "@/lib/db/schema";
+import { useCategories } from "@/hooks/use-product";
+import { type AdminProductType } from "@/lib/types";
+import { createProduct, updateProduct } from "@/server/product";
+import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
+import { Check, Loader, Trash2, Warehouse, X } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 
 const schema = z.object({
   identifier: z.string(),
   title: z.string().min(1, "Enter title"),
   description: z.string(),
   categories: z.array(z.string()).min(1, "Select categories"),
-  price: z.string(),
-  offerPrice: z.string(),
   status: z.string().min(1, "Select status"),
   image: z.string(),
   imageObj: z.file().mime(["image/png", "image/jpeg"]).or(z.any()),
+  inventory: z
+    .object({
+      locationId: z.number(),
+      name: z.string(),
+      offerPrice: z.string(),
+      price: z.string(),
+      stock: z.string(),
+    })
+    .array(),
 });
 
 export const ProductDialog = ({
   trigger,
   product,
 }: {
-  product?: ProductSelectType;
+  product?: AdminProductType;
   trigger: React.ReactNode;
 }) => {
   const [open, setOpen] = useState(false);
-  const { mutate: create, isPending: createPending } = useCreateProduct();
-  const { mutate: update, isPending: updatePending } = useUpdateProduct();
+  const queryClient = useQueryClient();
+  const { data: locations } = useLocations();
 
   const form = useAppForm({
     defaultValues: {
@@ -65,20 +72,31 @@ export const ProductDialog = ({
       identifier: product?.identifier || "",
       description: product?.description || "",
       categories: product?.categories || ([] as any),
-      price: product?.price || "",
-      offerPrice: product?.offerPrice || "",
-      status: product?.status
-        ? product.status.charAt(0).toUpperCase() + product.status.slice(1)
-        : "",
+      status: product?.status ? capitalizeWords(product.status) : "",
       image: product?.image || "",
       imageObj: null as any,
+      inventory: product
+        ? product.inventory.map((inv) => ({
+            ...inv,
+            name: locations?.data?.find((loc) => loc.id === inv.locationId)
+              ?.name,
+          })) ?? []
+        : locations?.data?.map((loc) => ({
+            locationId: loc.id,
+            name: loc.name,
+            price: "",
+            offerPrice: "",
+            stock: "",
+          })),
     },
     validators: {
       onSubmit: schema,
     },
+
     onSubmit: async ({ value }) => {
       const { imageObj, ...rest } = value;
       const status = rest.status.toLowerCase();
+
       // if has new file upload it to blob
       if (imageObj instanceof File) {
         const blob = await upload(`products/${imageObj.name}`, imageObj, {
@@ -89,28 +107,29 @@ export const ProductDialog = ({
       }
 
       if (product && product.id) {
-        update(
-          { id: product.id, ...rest, status },
-          {
-            onSuccess: () => {
-              toast.success("Product has been saved!");
-              setOpen(false);
-            },
-            onError: (err) => toast.error(err.message),
-          }
-        );
+        // @ts-expect-error
+        const { success, error } = await updateProduct(product.id, {
+          ...rest,
+          status,
+        });
+        if (success) {
+          toast.success("Product has been saved!");
+          setOpen(false);
+          queryClient.invalidateQueries({ queryKey: ["products"] });
+        } else {
+          toast.error(error.message ?? "Failed to update product");
+        }
       } else {
-        create(
-          { ...rest, status },
-          {
-            onSuccess: () => {
-              toast.success("Product has been saved!");
-              setOpen(false);
-              form.reset();
-            },
-            onError: (err) => toast.error(err.message),
-          }
-        );
+        // @ts-expect-error
+        const { success, error } = await createProduct({ ...rest, status });
+        if (success) {
+          toast.success("Product has been saved!");
+          queryClient.invalidateQueries({ queryKey: ["products"] });
+          setOpen(false);
+          form.reset();
+        } else {
+          toast.error(error.message ?? "Failed to updatee product");
+        }
       }
     },
   });
@@ -227,26 +246,7 @@ export const ProductDialog = ({
                     />
                   )}
                 />
-                <form.AppField
-                  name="price"
-                  children={(field) => (
-                    <field.TextField
-                      label="Price"
-                      className="**:data-[slot=input]:rounded-xl"
-                    />
-                  )}
-                />
-                <form.AppField
-                  name="offerPrice"
-                  children={(field) => (
-                    <field.TextField
-                      label="Offer Price"
-                      className="**:data-[slot=input]:rounded-xl"
-                    />
-                  )}
-                />
               </div>
-
               <form.Field
                 name="categories"
                 children={(field) => {
@@ -309,6 +309,55 @@ export const ProductDialog = ({
                   );
                 }}
               />
+
+              <form.Field name="inventory" mode="array">
+                {(field) =>
+                  Array.isArray(field?.state?.value) &&
+                  field?.state?.value.map((subField, i) => {
+                    return (
+                      <div className="grid grid-cols-1 gap-7" key={i}>
+                        <Alert className="text-amber-500 rounded-xl">
+                          <Warehouse />
+                          <AlertTitle>{subField.name}</AlertTitle>
+                          <AlertDescription>
+                            Set price and available stock for this product at{" "}
+                            {subField.name}
+                          </AlertDescription>
+                        </Alert>
+
+                        <form.AppField
+                          name={`inventory[${i}].price`}
+                          children={(field) => (
+                            <field.TextField
+                              label="Price"
+                              className="**:data-[slot=input]:rounded-xl"
+                            />
+                          )}
+                        />
+                        <form.AppField
+                          name={`inventory[${i}].offerPrice`}
+                          children={(field) => (
+                            <field.TextField
+                              label="Offer Price"
+                              className="**:data-[slot=input]:rounded-xl"
+                            />
+                          )}
+                        />
+
+                        <form.AppField
+                          name={`inventory[${i}].stock`}
+                          children={(field) => (
+                            <field.TextField
+                              label="Stock"
+                              className="**:data-[slot=input]:rounded-xl col"
+                            />
+                          )}
+                        />
+                      </div>
+                    );
+                  })
+                }
+              </form.Field>
             </FieldGroup>
           </div>
           <Field className="mt-6 flex flex-col-reverse gap-4 sm:flex-row sm:[&>button]:flex-1">
@@ -332,15 +381,9 @@ export const ProductDialog = ({
                   type="submit"
                   size="xl"
                   className="rounded-xl"
-                  disabled={
-                    isSubmitting || !canSubmit || createPending || updatePending
-                  }
+                  disabled={isSubmitting || !canSubmit}
                 >
-                  {isSubmitting || createPending || updatePending ? (
-                    <Loader className="animate-spin" />
-                  ) : (
-                    "Save"
-                  )}
+                  {isSubmitting ? <Loader className="animate-spin" /> : "Save"}
                 </Button>
               )}
             />

@@ -15,27 +15,41 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { EmptyComponent } from "@/components/admin/placeholder-component";
 import { Pagination } from "./pagination";
 import { useRouterStuff } from "@/hooks/use-router-stuff";
+import { type Pagination as PaginationMeta } from "@/lib/types";
+import { EmptyComponent } from "@/components/admin/placeholder-component";
+
+interface PaginatedResponse<T> {
+  data: T[];
+  pagination: PaginationMeta;
+}
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
-  data: TData[];
-  pagination: {
-    page: number;
-    totalPages: number;
-    total: number;
-    limit: number;
-  };
+  data?: PaginatedResponse<TData>;
+  isPending: boolean;
+  isError: boolean;
+  error: Error | null;
 }
 
 export function DataTable<TData, TValue>({
   columns,
-  data,
-  pagination,
+  isPending,
+  isError,
+  error,
+  data: tableData,
 }: DataTableProps<TData, TValue>) {
   const { queryParams } = useRouterStuff();
+  const {
+    pagination = {
+      page: 1,
+      limit: 10,
+      total: 0,
+      totalPages: 1,
+    },
+    data = [],
+  } = tableData || {};
 
   const paginationState: PaginationState = {
     pageIndex: pagination.page - 1,
@@ -61,7 +75,10 @@ export function DataTable<TData, TValue>({
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id} className="bg-sidebar">
                 {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id} className="py-4 px-4 font-medium">
+                  <TableHead
+                    key={header.id}
+                    className="py-4 px-4 font-medium text-sm uppercase text-muted-foreground"
+                  >
                     {header.isPlaceholder
                       ? null
                       : flexRender(
@@ -90,11 +107,14 @@ export function DataTable<TData, TValue>({
               ))
             ) : (
               <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  <EmptyComponent variant="empty" />
+                <TableCell colSpan={columns.length} className="p-0 text-center">
+                  {isPending ? (
+                    <div className="h-1 bg-primary mb-36 animate-pulse rounded-full"></div>
+                  ) : isError ? (
+                    <EmptyComponent variant="error" title={error?.message} />
+                  ) : (
+                    <EmptyComponent variant="empty" />
+                  )}
                 </TableCell>
               </TableRow>
             )}
@@ -102,13 +122,17 @@ export function DataTable<TData, TValue>({
         </Table>
       </div>
 
-      <Pagination
-        page={pagination.page}
-        total={pagination.total}
-        totalPages={pagination.totalPages}
-        limit={pagination.limit}
-        onPageChange={(page) => queryParams({ set: { page: page.toString() } })}
-      />
+      {!isPending && !isError && (
+        <Pagination
+          page={pagination.page}
+          total={pagination.total}
+          totalPages={pagination.totalPages}
+          limit={pagination.limit}
+          onPageChange={(page) =>
+            queryParams({ set: { page: page.toString() } })
+          }
+        />
+      )}
     </div>
   );
 }

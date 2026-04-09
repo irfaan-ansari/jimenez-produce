@@ -3,17 +3,16 @@
 import { toast } from "sonner";
 import { useState } from "react";
 import { Button } from "../ui/button";
-import { useConfirm } from "@/hooks/use-confirm";
+import { deleteProduct } from "@/server/product";
 import { ProductDialog } from "./product-dialog";
-import { ProductSelectType } from "@/lib/db/schema";
+import { useConfirm } from "@/hooks/use-confirm";
+import { type AdminProductType } from "@/lib/types";
 import { PopoverXDrawer } from "../popover-x-drawer";
-import { useDeleteProduct } from "@/hooks/use-product";
 import { MoreVertical, SquarePen, Trash2 } from "lucide-react";
 
-export const ProductAction = ({ product }: { product: ProductSelectType }) => {
+export const ProductAction = ({ product }: { product: AdminProductType }) => {
   const confirm = useConfirm();
   const [open, setOpen] = useState(false);
-  const { mutate } = useDeleteProduct();
 
   const handleAction = () => {
     confirm.delete({
@@ -21,19 +20,15 @@ export const ProductAction = ({ product }: { product: ProductSelectType }) => {
       description:
         "This action will permanently delete the selected product and this cannot be undone.",
       actionLabel: "Yes, Delete",
-      action: async () =>
-        await new Promise((res) => {
-          mutate(product.id, {
-            onError: (err) => {
-              toast.error(err.message);
-            },
-            onSuccess: () => {
-              toast.success("Product has been deleted!");
-              setOpen(false);
-            },
-            onSettled: () => res(),
-          });
-        }),
+      action: async () => {
+        const { success, error } = await deleteProduct(product.id);
+        if (success) {
+          toast.success("Product has been deleted!");
+          setOpen(false);
+        } else {
+          toast.error(error.message);
+        }
+      },
       cancelLabel: "Cancel",
     });
   };

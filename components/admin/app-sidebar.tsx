@@ -1,6 +1,12 @@
 "use client";
-import Link from "next/link";
 
+import Link from "next/link";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "../ui/collapsible";
+import Image from "next/image";
 import {
   Sidebar,
   SidebarMenu,
@@ -14,28 +20,23 @@ import {
   SidebarMenuSubItem,
   SidebarMenuSubButton,
 } from "@/components/ui/sidebar";
-import Image from "next/image";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "../ui/collapsible";
-import { SITE_CONFIG } from "@/lib/config";
+import { useState } from "react";
+import { SIDEBAR_MENU_CUSTOMER, SITE_CONFIG } from "@/lib/config";
+import { useRouter } from "next/navigation";
 import { SIDEBAR_MENU } from "@/lib/config";
 import { useSession } from "@/hooks/use-auth";
+import { authClient } from "@/lib/auth/client";
+import { getAvatarFallback } from "@/lib/utils";
 import { ProfileDialog } from "../profile-dialog";
 import { useTabRouter } from "@/hooks/use-tab-router";
-import { ChevronRight, Loader, Lock, LogOut, User } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { useRouter } from "next/navigation";
-import { ChangePasswordDialog } from "../change-password";
-import { getAvatarFallback } from "@/lib/utils";
-import { authClient } from "@/lib/auth/client";
-import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { ChangePasswordDialog } from "../change-password";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { ChevronRight, Loader, Lock, LogOut, User } from "lucide-react";
 
-export function AppSidebar() {
+export function AppSidebar({ variant }: { variant: "admin" | "customer" }) {
   const { pathname, buildPath, isActive: subItemActive } = useTabRouter();
+  const MENU = variant === "customer" ? SIDEBAR_MENU_CUSTOMER : SIDEBAR_MENU;
 
   const isActive = (href: string) => {
     return pathname === href || (pathname.includes(href) && pathname !== "/");
@@ -43,29 +44,11 @@ export function AppSidebar() {
 
   return (
     <Sidebar>
-      <SidebarHeader className="mb-4">
-        <SidebarMenuItem className="px-2.5 py-2 inline-flex gap-4 items-center  bg-sidebar-accent rounded-xl">
-          <Avatar className="rounded-xl **:rounded-xl after:hidden size-9 ring-2 ring-offset-1 ring-green-600/20">
-            <AvatarImage src={SITE_CONFIG.logo} alt="profile image" asChild>
-              <Image
-                src={SITE_CONFIG.logo}
-                alt="Logo"
-                width={100}
-                height={100}
-              />
-            </AvatarImage>
-            <AvatarFallback className="bg-primary/40 font-medium text-xs">
-              {getAvatarFallback(SITE_CONFIG.name)}
-            </AvatarFallback>
-          </Avatar>
-
-          <span className="font-semibold text-base">{SITE_CONFIG.name}</span>
-        </SidebarMenuItem>
-      </SidebarHeader>
+      <SidebarLogo />
       <SidebarContent>
         <SidebarGroup>
           <SidebarMenu>
-            {SIDEBAR_MENU.map((item) => {
+            {MENU.map((item) => {
               if (item.items.length <= 0) {
                 return (
                   <SidebarMenuItem key={item.label}>
@@ -145,6 +128,24 @@ export function AppSidebar() {
     </Sidebar>
   );
 }
+export const SidebarLogo = () => {
+  return (
+    <SidebarHeader className="mb-4">
+      <SidebarMenuItem className="px-2.5 py-2 inline-flex gap-4 items-center  bg-sidebar-accent rounded-xl">
+        <Avatar className="rounded-xl **:rounded-xl after:hidden size-9 ring-2 ring-offset-1 ring-green-600/20">
+          <AvatarImage src={SITE_CONFIG.logo} alt="profile image" asChild>
+            <Image src={SITE_CONFIG.logo} alt="Logo" width={100} height={100} />
+          </AvatarImage>
+          <AvatarFallback className="bg-primary/40 font-medium text-xs">
+            {getAvatarFallback(SITE_CONFIG.name)}
+          </AvatarFallback>
+        </Avatar>
+
+        <span className="font-semibold text-base">{SITE_CONFIG.name}</span>
+      </SidebarMenuItem>
+    </SidebarHeader>
+  );
+};
 
 const Profile = () => {
   const { data } = useSession();
@@ -156,7 +157,7 @@ const Profile = () => {
       fetchOptions: {
         onSuccess: () => {
           queryClient.clear();
-          router.push("/admin/signin");
+          router.push("/signin");
         },
         onRequest: () => setLoading(true),
         onResponse: () => setLoading(false),
@@ -210,17 +211,8 @@ const Profile = () => {
             onClick={handleLogout}
             className="hover:bg-destructive/10 hover:text-destructive rounded-xl"
           >
-            {loading ? (
-              <>
-                <Loader className="animate-spin" />
-                Please wait...
-              </>
-            ) : (
-              <>
-                <LogOut />
-                Logout
-              </>
-            )}
+            <LogOut />
+            {loading ? "Please wait..." : "Logout"}
           </SidebarMenuButton>
         </SidebarMenuItem>
       </SidebarMenu>

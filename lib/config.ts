@@ -1,8 +1,10 @@
 import {
   ClipboardClock,
   ClipboardList,
+  Inbox,
   LayoutDashboard,
   MailPlus,
+  Settings,
   Shield,
   Tag,
   UserPlus,
@@ -271,6 +273,58 @@ export const SIDEBAR_MENU = [
     label: "Users",
     icon: Users,
     href: "/admin/users",
+    items: [],
+  },
+];
+
+export const SIDEBAR_MENU_CUSTOMER = [
+  {
+    label: "Dashboard",
+    icon: LayoutDashboard,
+    href: "/customer/dashboard",
+    items: [],
+  },
+  {
+    label: "Orders",
+    icon: Inbox,
+    href: "/customer/orders",
+    items: [
+      {
+        label: "New",
+        href: "/customer/orders/new",
+        color: "#3B82F6",
+        query: { status: "" },
+      },
+      {
+        label: "All",
+        href: "/customer/orders",
+        color: "#A1A1AA",
+        query: { status: "" },
+      },
+      {
+        label: "In Progress",
+        href: "/customer/orders",
+        color: "#F59E0B",
+        query: { status: "in_progress" },
+      },
+      {
+        label: "Past Orders",
+        href: "/customer/orders",
+        color: "#22C55E",
+        query: { status: "past" },
+      },
+    ],
+  },
+  {
+    label: "Products",
+    icon: Tag,
+    href: "/customer/products",
+    items: [],
+  },
+  {
+    label: "Settings",
+    icon: Settings,
+    href: "/customer/settings",
     items: [],
   },
 ];

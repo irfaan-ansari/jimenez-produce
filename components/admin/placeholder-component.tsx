@@ -1,4 +1,4 @@
-import { AlertTriangle, Inbox, Loader } from "lucide-react";
+"use client";
 import {
   Empty,
   EmptyDescription,
@@ -6,6 +6,10 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "../ui/empty";
+import { Loader } from "../animate-ui/icons/loader";
+import { AlertTriangle, Inbox } from "lucide-react";
+import { AnimateIcon } from "../animate-ui/icons/icon";
+import { cn } from "@/lib/utils";
 
 export const EmptyComponent = ({
   title = "No Data Available",
@@ -32,16 +36,19 @@ export const EmptyComponent = ({
   );
 };
 
-export const LoadingSkeleton = () => {
+export const LoadingSkeleton = ({ className }: { className?: string }) => {
   return (
-    <Empty className="border border-dashed rounded-2xl bg-sidebar">
-      <EmptyHeader>
-        <EmptyMedia>
-          <Loader className="animate-spin" />
-        </EmptyMedia>
-
-        <EmptyDescription>Loading please wait...</EmptyDescription>
-      </EmptyHeader>
-    </Empty>
+    <div className={cn("flex flex-col items-center justify-center", className)}>
+      <Empty>
+        <EmptyHeader className="rounded-2xl p-10 shadow-xs border bg-sidebar">
+          <EmptyMedia>
+            <AnimateIcon animate persistOnAnimateEnd>
+              <Loader />
+            </AnimateIcon>
+          </EmptyMedia>
+          <EmptyDescription>Please wait...</EmptyDescription>
+        </EmptyHeader>
+      </Empty>
+    </div>
   );
 };

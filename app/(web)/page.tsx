@@ -149,7 +149,7 @@ export default function Page() {
                     className="pl-8 basis-2/3 md:basis-1/3 lg:basis-1/4"
                   >
                     <Link
-                      href={`/catalog?cat=${cat.title}`}
+                      href={`/products?cat=${cat.title}`}
                       className="block pb-0.5 pl-0.5 hover:[&_img]:scale-110"
                     >
                       <div className="rounded-[0.5rem] shadow-sm overflow-hidden bg-linear-to-br from-secondary via-background to-secondary  relative">

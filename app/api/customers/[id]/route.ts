@@ -19,7 +19,7 @@ export const GET = async (
     const data = await db.query.customer.findFirst({
       where: eq(customer.id, Number(id)),
       with: {
-        user: {
+        reviewer: {
           columns: {
             name: true,
           },

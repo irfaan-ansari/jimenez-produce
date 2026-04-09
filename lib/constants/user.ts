@@ -1,4 +1,4 @@
-import { Crown, Shield } from "lucide-react";
+import { CircleDashed, Crown, PackageCheck, Shield, User } from "lucide-react";
 
 export const roleMap = {
   user: {
@@ -10,5 +10,23 @@ export const roleMap = {
     label: "Admin",
     icon: Crown,
     color: "#6D28D9",
+  },
+  customer: {
+    label: "Customer",
+    icon: User,
+    color: "#000000",
+  },
+};
+
+export const orderMap = {
+  active: {
+    label: "In Progress",
+    icon: CircleDashed,
+    color: "#F59E0B",
+  },
+  completed: {
+    label: "Past Orders",
+    icon: PackageCheck,
+    color: "#22C55E",
   },
 };

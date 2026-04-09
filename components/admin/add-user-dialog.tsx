@@ -9,19 +9,14 @@ import {
   DialogTrigger,
 } from "../ui/dialog";
 import z from "zod";
-import { Label } from "../ui/label";
-import { Input } from "../ui/input";
-import { Loader } from "lucide-react";
-import { upload } from "@vercel/blob/client";
-import { Field, FieldGroup } from "../ui/field";
-import { useAppForm } from "@/hooks/form-context";
-import { Button, buttonVariants } from "../ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { authClient } from "@/lib/auth/client";
 import { toast } from "sonner";
 import { useState } from "react";
-import { useStore } from "@tanstack/react-form";
+import { Button } from "../ui/button";
+import { Loader } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { authClient } from "@/lib/auth/client";
+import { Field, FieldGroup } from "../ui/field";
+import { useAppForm } from "@/hooks/form-context";
 
 const schema = z
   .object({
@@ -53,9 +48,20 @@ export const AddUserDialog = ({ children }: { children: React.ReactNode }) => {
     },
     onSubmit: async ({ value }) => {
       await authClient.admin.createUser(
-        { ...value, role: value.role.toLowerCase() as any },
         {
-          onSuccess: () => {
+          ...value,
+          role: value.role.toLowerCase() as any,
+          data: {
+            image: `https://api.dicebear.com/9.x/identicon/svg?seed=${encodeURIComponent(
+              value.name
+            )}`,
+          },
+        },
+        {
+          onSuccess: ({ data }) => {
+            authClient.updateUser({
+              image: `https://api.dicebear.com/9.x/identicon/svg?seed=${data.user.name}`,
+            });
             toast.success("User account created successfully!");
             setOpen(false);
             router.refresh();
@@ -110,7 +116,7 @@ export const AddUserDialog = ({ children }: { children: React.ReactNode }) => {
                 <field.SelectField
                   label="Role"
                   className="**:rounded-xl col-span-2"
-                  options={["User", "Admin"]}
+                  options={["User", "Admin", "Customer"]}
                 />
               )}
             />

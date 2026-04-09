@@ -1,14 +1,14 @@
 "use server";
 
-import { db } from "@/lib/db";
-import { getSession } from "./auth";
-import { headers } from "next/headers";
 import {
   customer,
   customerInvite,
   CustomerInviteInsertType,
   type CustomerInsertType,
 } from "@/lib/db/schema";
+import { db } from "@/lib/db";
+import { getSession } from "./auth";
+import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { capitalizeWords } from "@/lib/utils";
 import { and, eq, ne, or } from "drizzle-orm";
@@ -18,6 +18,24 @@ import CustomerInvite from "@/components/email/customer-invite";
 import { sendApplicationStatusEmails, sendEmail } from "@/lib/email";
 import CatalogRequestNew from "@/components/email/catalog-request-new";
 import CatalogRequestUpdate from "@/components/email/catalog-request-update";
+
+export const getCustomer = handleAction(async (id?: number) => {
+  const session = await getSession();
+
+  if (!session) throw new Error("Authentication required.");
+
+  if (session?.user.role === "customer") {
+    return db.query.customer.findFirst({
+      where: eq(customer.accountId, session?.user.id!),
+    });
+  }
+
+  if (!id) throw new Error("Authentication required.");
+
+  return db.query.customer.findFirst({
+    where: eq(customer.id, id),
+  });
+});
 
 /**
  * create a customer - public

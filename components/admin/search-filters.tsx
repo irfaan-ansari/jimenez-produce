@@ -11,6 +11,7 @@ import { Button } from "../ui/button";
 import { PopoverXDrawer } from "../popover-x-drawer";
 import { useRouterStuff } from "@/hooks/use-router-stuff";
 import { Calendar, ChevronDown, Search } from "lucide-react";
+import { useDebounce } from "@/hooks/use-debounce";
 
 const options = [
   {
@@ -75,7 +76,13 @@ export const SearchBar = ({
   ...props
 }: React.ComponentProps<"div">) => {
   const { searchParamsObj, queryParams } = useRouterStuff();
-  const { q } = searchParamsObj;
+
+  const debouncedSetQuery = useDebounce((value: string) => {
+    queryParams({
+      set: { q: value },
+      del: ["page", "limit"],
+    });
+  }, 400);
 
   return (
     <InputGroup
@@ -86,10 +93,8 @@ export const SearchBar = ({
         <Search />
       </InputGroupAddon>
       <InputGroupInput
-        value={searchParamsObj[q]}
-        onChange={(e) =>
-          queryParams({ set: { q: e.target.value }, del: ["page", "limit"] })
-        }
+        value={searchParamsObj.q}
+        onChange={(e) => debouncedSetQuery(e.target.value)}
         className="rounded-xl"
         placeholder="Search..."
       />

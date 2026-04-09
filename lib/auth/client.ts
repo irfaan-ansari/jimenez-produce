@@ -1,9 +1,18 @@
 "use client";
-import { adminClient } from "better-auth/client/plugins";
-import { createAuthClient } from "better-auth/react";
 import { SITE_URL } from "../config";
+import { ac, admin, customer } from "./permissions";
+import { createAuthClient } from "better-auth/react";
+import { adminClient } from "better-auth/client/plugins";
 
 export const authClient = createAuthClient({
   baseURL: SITE_URL,
-  plugins: [adminClient()],
+  plugins: [
+    adminClient({
+      ac,
+      roles: {
+        admin,
+        customer,
+      },
+    }),
+  ],
 });

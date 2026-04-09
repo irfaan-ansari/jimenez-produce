@@ -99,6 +99,118 @@
       "when": 1773161333235,
       "tag": "0013_workable_tyrannus",
       "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1775337282079,
+      "tag": "0014_productive_dormammu",
+      "breakpoints": true
+    },
+    {
+      "idx": 15,
+      "version": "7",
+      "when": 1775337343637,
+      "tag": "0015_flaky_the_spike",
+      "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1775337406909,
+      "tag": "0016_shocking_mole_man",
+      "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1775414734951,
+      "tag": "0017_nosy_lilandra",
+      "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1775417883180,
+      "tag": "0018_spooky_the_leader",
+      "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1775419801031,
+      "tag": "0019_tricky_angel",
+      "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1775420372443,
+      "tag": "0020_youthful_tigra",
+      "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1775424148463,
+      "tag": "0021_nostalgic_franklin_storm",
+      "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1775424894165,
+      "tag": "0022_smart_killmonger",
+      "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1775680980493,
+      "tag": "0023_high_risque",
+      "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1775720488955,
+      "tag": "0024_clear_meteorite",
+      "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1775722320401,
+      "tag": "0025_thankful_guardian",
+      "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1775735913450,
+      "tag": "0026_spotty_ultron",
+      "breakpoints": true
+    },
+    {
+      "idx": 27,
+      "version": "7",
+      "when": 1775750879089,
+      "tag": "0027_crazy_wolf_cub",
+      "breakpoints": true
+    },
+    {
+      "idx": 28,
+      "version": "7",
+      "when": 1775751336407,
+      "tag": "0028_short_fenris",
+      "breakpoints": true
+    },
+    {
+      "idx": 29,
+      "version": "7",
+      "when": 1775753101127,
+      "tag": "0029_massive_domino",
+      "breakpoints": true
     }
   ]
 }

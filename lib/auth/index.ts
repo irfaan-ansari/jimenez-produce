@@ -1,7 +1,8 @@
 import { db } from "@/lib/db/index";
 import { sendEmail } from "../email";
 import { betterAuth } from "better-auth";
-import { admin } from "better-auth/plugins";
+import { admin as adminPlugin } from "better-auth/plugins";
+import { ac, admin, customer } from "./permissions";
 import { nextCookies } from "better-auth/next-js";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import PasswordResetTemplate from "@/components/email/password-reset-email";
@@ -30,5 +31,14 @@ export const auth = betterAuth({
       updateEmailWithoutVerification: true,
     },
   },
-  plugins: [admin(), nextCookies()],
+  plugins: [
+    adminPlugin({
+      ac,
+      roles: {
+        admin,
+        customer,
+      },
+    }),
+    nextCookies(),
+  ],
 });

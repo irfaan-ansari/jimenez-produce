@@ -15,6 +15,7 @@ import {
   integer,
   date,
 } from "drizzle-orm/pg-core";
+import { on } from "events";
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -118,6 +119,35 @@ export type SessionInsertType = InferInsertModel<typeof session>;
 export type SessionSelectType = InferSelectModel<typeof session>;
 
 /* -----------------------------
+   Location Table
+----------------------------- */
+export const location = pgTable("location", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  phone: text("phone").notNull(),
+  email: text("email").notNull(),
+  address: jsonb("address").$type<{
+    day: string;
+    window: string;
+    receivingName: string;
+    receivingPhone: string;
+    instructions: string;
+  }>(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at")
+    .defaultNow()
+    .$onUpdate(() => /* @__PURE__ */ new Date())
+    .notNull(),
+});
+
+export type LocationSelectType = InferSelectModel<typeof location>;
+export type LocationInsertType = InferInsertModel<typeof location>;
+
+export const locationRelations = relations(location, ({ many }) => ({
+  inventory: many(inventory),
+}));
+
+/* -----------------------------
    Customers Table
 ----------------------------- */
 export const customer = pgTable(
@@ -126,6 +156,8 @@ export const customer = pgTable(
     id: serial("id").primaryKey(),
     status: text("status").notNull().default("new"),
     thumbnail: text("thumbnail"),
+    locationId: integer("location_id"),
+    accountId: text("account_id"),
     /* ---------------- Business Info ---------------- */
     companyName: text("company_name").notNull(),
     companyDBA: text("company_dba").notNull(),
@@ -199,14 +231,26 @@ export const customer = pgTable(
 );
 
 export const customerRelations = relations(customer, ({ one }) => ({
-  user: one(user, {
+  reviewer: one(user, {
     fields: [customer.reviewedBy],
     references: [user.id],
   }),
+  account: one(user, {
+    fields: [customer.accountId],
+    references: [user.id],
+  }),
+  location: one(location, {
+    fields: [customer.locationId],
+    references: [location.id],
+  }),
 }));
+
 export type CustomerSelectType = InferSelectModel<typeof customer>;
 export type CustomerInsertType = InferInsertModel<typeof customer>;
 
+/* -----------------------------
+   Product Table
+----------------------------- */
 export const product = pgTable(
   "product",
   {
@@ -214,12 +258,11 @@ export const product = pgTable(
     title: text("title").notNull(),
     identifier: text("identifier"),
     type: text("type"),
+    pack: text("pack"),
     description: text("description"),
     categories: jsonb("categories")
       .$type<string[]>()
       .default(sql`'[]'::jsonb`),
-    price: text("price"),
-    offerPrice: text("offer_price"),
     status: text("status").default("active"),
     image: text("image"),
     images: jsonb("images")
@@ -239,6 +282,48 @@ export const product = pgTable(
 
 export type ProductInsertType = InferInsertModel<typeof product>;
 export type ProductSelectType = InferSelectModel<typeof product>;
+
+/* -----------------------------
+   Inventory Table
+----------------------------- */
+export const inventory = pgTable(
+  "inventory",
+  {
+    id: serial("id").primaryKey(),
+    locationId: integer("location_id"),
+    productId: integer("product_id"),
+    price: text("price"),
+    offerPrice: text("offer_price"),
+    stock: text("stock"),
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at")
+      .defaultNow()
+      .$onUpdate(() => /* @__PURE__ */ new Date())
+      .notNull(),
+  },
+  (table) => [
+    index("product_locationId_idx").on(table.locationId),
+    index("product_productId_idx").on(table.productId),
+  ]
+);
+
+export const productRelation = relations(product, ({ many }) => ({
+  inventory: many(inventory),
+}));
+
+export const inventoryRelations = relations(inventory, ({ one }) => ({
+  product: one(product, {
+    fields: [inventory.productId],
+    references: [product.id],
+  }),
+  location: one(location, {
+    fields: [inventory.locationId],
+    references: [location.id],
+  }),
+}));
+
+export type InventoryInsertType = InferInsertModel<typeof inventory>;
+export type InventorySelectType = InferSelectModel<typeof inventory>;
 
 export const customerInvite = pgTable(
   "customer_invite",
@@ -510,3 +595,119 @@ export const jobInviteRelations = relations(jobInvite, ({ one }) => ({
 
 export type JobInviteInsertType = InferInsertModel<typeof jobInvite>;
 export type JobInviteSelectType = InferSelectModel<typeof jobInvite>;
+
+export const order = pgTable(
+  "order",
+  {
+    id: serial("id").primaryKey(),
+    locationId: integer("location_id").references(() => location.id, {
+      onDelete: "set null",
+    }),
+    customerId: integer("customer_id").references(() => customer.id, {
+      onDelete: "set null",
+    }),
+    driverId: integer("driver_id").references(() => jobApplications.id, {
+      onDelete: "set null",
+    }),
+    shippingAddress: jsonb("shipping_address").$type<{
+      street: string;
+      city: string;
+      state: string;
+      zip: string;
+    }>(),
+    receiverName: text("receiver_name"),
+    receiverPhone: text("receiver_phone"),
+    lineItemCount: text("line_item_count"),
+    lineItemQuantity: text("line_item_quantity"),
+    lineItemTotal: text("line_item_total"),
+    subtotal: text("subtotal").notNull(),
+    discount: text("discount").default("0").notNull(),
+    tax: text("tax").default("0").notNull(),
+    total: text("total").default("0").notNull(),
+    po: text(""),
+    notes: text("notes"),
+    deliveryDate: text("delivery_date"),
+    deliveryWindow: text("delivery_window"),
+    deliveryInstruction: text("delivery_instruction"),
+    status: text("status").default("active") /* active | completed */,
+    paymentStatus: text("payment_status"),
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at")
+      .defaultNow()
+      .$onUpdate(() => /* @__PURE__ */ new Date())
+      .notNull(),
+  },
+  (table) => [
+    index("order_locationId_idx").on(table.locationId),
+    index("order_customerId_idx").on(table.customerId),
+  ]
+);
+
+export const orderRelations = relations(order, ({ one, many }) => ({
+  driver: one(jobApplications, {
+    fields: [order.driverId],
+    references: [jobApplications.id],
+  }),
+  location: one(location, {
+    fields: [order.locationId],
+    references: [location.id],
+  }),
+  customer: one(customer, {
+    fields: [order.customerId],
+    references: [customer.id],
+  }),
+  lineItems: many(lineItem),
+}));
+
+export type OrderSelectType = InferSelectModel<typeof order>;
+export type OrderInsertType = InferInsertModel<typeof order>;
+
+export const lineItem = pgTable(
+  "line_item",
+  {
+    id: serial("id").primaryKey(),
+    orderId: integer("order_id"),
+    productId: integer("product_id"),
+    locationId: integer("location_id"),
+    customerId: integer("customer_id"),
+    title: text("title"),
+    image: text("image"),
+    type: text("type"),
+    identifier: text("identifier"),
+    pack: text("pack"),
+    categories: jsonb("categories")
+      .$type<string[]>()
+      .default(sql`'[]'::jsonb`),
+    price: text("price"),
+    offerPrice: text("offer_price"),
+    quantity: text("quantity"),
+    total: text("total"),
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at")
+      .defaultNow()
+      .$onUpdate(() => /* @__PURE__ */ new Date())
+      .notNull(),
+  },
+  (table) => [
+    index("lineItem_locationId_idx").on(table.locationId),
+    index("lineItem_customerId_idx").on(table.customerId),
+  ]
+);
+
+export const lineItemRelations = relations(lineItem, ({ one }) => ({
+  order: one(order, {
+    fields: [lineItem.orderId],
+    references: [order.id],
+  }),
+  location: one(location, {
+    fields: [lineItem.locationId],
+    references: [location.id],
+  }),
+  customer: one(customer, {
+    fields: [lineItem.customerId],
+    references: [customer.id],
+  }),
+}));
+
+export type LineItemSelectType = InferSelectModel<typeof lineItem>;
+export type LineItemInsertType = InferInsertModel<typeof lineItem>;

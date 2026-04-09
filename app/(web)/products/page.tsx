@@ -1,9 +1,6 @@
 import Link from "next/link";
-import Image from "next/image";
 import { Metadata } from "next";
-import { headers } from "next/headers";
 import { PageClient } from "./page-client";
-import { ProductResponse } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/container";
 import { getProducts } from "@/server/product";
@@ -45,19 +42,19 @@ const CatalogPage = async ({
           </span>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 md:gap-8">
-          {data.map((product) => (
+          {data.map((product, i) => (
             <div
               key={product.id}
               className="rounded-[0.5rem] hover:[&_img]:scale-110 bg-linear-to-br from-secondary via-background to-secondary  relative shadow-sm"
             >
               <div className="rounded-[0.5rem] overflow-hidden relative aspect-square">
                 {product.image && (
-                  <Image
+                  <img
                     width={600}
                     height={900}
                     src={product.image}
                     alt={product.title}
-                    loading="lazy"
+                    loading={i <= 10 ? "eager" : "lazy"}
                     className="relative z-1 w-full object-contain transition ease-out aspect-square rounded-lg"
                   />
                 )}

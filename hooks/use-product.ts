@@ -1,67 +1,43 @@
-import { fetcher } from "@/lib/helper/fetcher";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
-  createProduct,
-  deleteProduct,
-  getCategories,
-  updateProduct,
-} from "@/server/product";
-import { ProductInsertType } from "@/lib/db/schema";
-import { ProductResponse } from "@/lib/types";
-
-type ProductMutateResponse = {
-  id: number;
-};
+  TopProduct,
+  type AdminProductResponse,
+  type CustomerProductResponse,
+  type ProductCategoriesResponse,
+} from "@/lib/types";
+import { fetcher } from "@/lib/helper/fetcher";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
 export const useProducts = (query: string) => {
   return useQuery({
     queryKey: ["products", query],
     queryFn: () => {
-      return fetcher<ProductResponse>(`/api/products?${query}`);
+      return fetcher<AdminProductResponse | CustomerProductResponse>(
+        `/api/products?${query}`
+      );
+    },
+    staleTime: 1000 * 60 * 5,
+    placeholderData: keepPreviousData,
+  });
+};
+
+export const useCategories = (query?: string) => {
+  return useQuery({
+    queryKey: ["product_categories", query],
+    queryFn: () => {
+      return fetcher<ProductCategoriesResponse>(
+        `/api/products/categories?${query}`
+      );
     },
     staleTime: 1000 * 60 * 5,
   });
 };
 
-export const useCreateProduct = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation<ProductMutateResponse, Error, ProductInsertType>({
-    mutationFn: createProduct,
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["products"],
-      });
-    },
-  });
-};
-
-export const useUpdateProduct = () => {
-  const queryClient = useQueryClient();
-  return useMutation<ProductMutateResponse, Error, ProductInsertType>({
-    mutationFn: (data) => updateProduct(data.id as number, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["products"],
-      });
-    },
-  });
-};
-export const useDeleteProduct = () => {
-  const queryClient = useQueryClient();
-  return useMutation<ProductMutateResponse, Error, number>({
-    mutationFn: (id) => deleteProduct(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["products"],
-      });
-    },
-  });
-};
-
-export const useCategories = () => {
+export const useTopProducts = (query?: string) => {
   return useQuery({
-    queryKey: ["categories"],
-    queryFn: getCategories,
+    queryKey: ["top-products", query],
+    queryFn: () => {
+      return fetcher<{ data: TopProduct[] }>(`/api/analytics/top-products`);
+    },
+    staleTime: 1000 * 60 * 5,
   });
 };
