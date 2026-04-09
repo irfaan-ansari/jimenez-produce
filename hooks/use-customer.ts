@@ -54,3 +54,14 @@ export const useOrders = (query?: string) => {
     staleTime: 1000 * 60 * 5,
   });
 };
+export const useOrder = (id: number) => {
+  return useQuery({
+    queryKey: ["orders", id],
+    queryFn: () => {
+      return fetcher<{ data: OrderResponse["data"][number] }>(
+        `/api/orders/${id}`
+      );
+    },
+    staleTime: 1000 * 60 * 5,
+  });
+};

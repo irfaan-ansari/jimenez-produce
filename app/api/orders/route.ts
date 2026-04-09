@@ -12,8 +12,8 @@ export async function GET(req: NextRequest) {
     if (!session)
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
 
-    const { data: customer } = await getCustomer();
     const isCustomer = session.user.role === "customer";
+    const { data: customer } = await getCustomer();
 
     const searchParams = req.nextUrl.searchParams;
     const query = Object.fromEntries(searchParams.entries());
@@ -21,11 +21,7 @@ export async function GET(req: NextRequest) {
     const offset = ((page as number) - 1) * Number(limit);
 
     const filters = and(
-      isCustomer
-        ? customer
-          ? eq(order.customerId, customer.id)
-          : undefined
-        : undefined,
+      isCustomer ? eq(order.customerId, customer?.id!) : undefined,
       status ? eq(order.status, status) : undefined,
       q
         ? or(
