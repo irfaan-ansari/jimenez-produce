@@ -25,7 +25,7 @@ export const orderMap = {
     color: "#F59E0B",
   },
   completed: {
-    label: "Past Orders",
+    label: "Completed",
     icon: PackageCheck,
     color: "#22C55E",
   },

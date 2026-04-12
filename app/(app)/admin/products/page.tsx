@@ -1,4 +1,4 @@
-import { Plus } from "lucide-react";
+import { Plus, Upload } from "lucide-react";
 import { PageClient } from "./page-client";
 import { SIDEBAR_MENU } from "@/lib/config";
 import { Button } from "@/components/ui/button";
@@ -22,9 +22,13 @@ const CatalogPage = async () => {
 
       <div className="flex gap-4 items-center">
         <SearchBar />
+
+        <Button variant="outline" size="xl" className="rounded-xl ml-auto">
+          <Upload /> Import
+        </Button>
         <ProductDialog
           trigger={
-            <Button size="xl" className="rounded-xl ml-auto min-w-32 px-8">
+            <Button size="xl" className="rounded-xl  min-w-32 px-8">
               <Plus />
               Add Product
             </Button>

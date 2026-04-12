@@ -16,7 +16,6 @@ export const useProducts = (query: string) => {
       );
     },
     staleTime: 1000 * 60 * 5,
-    placeholderData: keepPreviousData,
   });
 };
 

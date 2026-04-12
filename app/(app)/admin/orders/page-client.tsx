@@ -3,16 +3,15 @@
 import React from "react";
 import Link from "next/link";
 import { format } from "date-fns";
-import { Eye } from "lucide-react";
 import { formatUSD } from "@/lib/utils";
 import { OrderType } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { orderMap } from "@/lib/constants/user";
 import { useOrders } from "@/hooks/use-customer";
 import { ColumnDef } from "@tanstack/react-table";
 import { useRouterStuff } from "@/hooks/use-router-stuff";
 import { DataTable } from "@/components/admin/data-table";
+import { OrderActions } from "@/components/admin/order-actions";
 
 export const PageClient = () => {
   const { searchParams } = useRouterStuff();
@@ -100,16 +99,14 @@ export const columns: ColumnDef<OrderType>[] = [
   },
   {
     id: "shippingAddress",
-    header: "Ship To",
+    header: "Recipient",
     cell: ({ row }) => {
-      const { receiverName, receiverPhone, shippingAddress } = row.original;
-      const { street, city, state, zip } = shippingAddress || {};
+      const { receiverName, receiverPhone } = row.original;
+
       return (
         <div className="flex flex-col">
-          <span className="font-medium">{receiverName}</span>
-          <span>
-            {street} {city} {state}-{zip}
-          </span>
+          <span>{receiverName}</span>
+          <span>{receiverPhone}</span>
         </div>
       );
     },
@@ -143,13 +140,7 @@ export const columns: ColumnDef<OrderType>[] = [
   {
     id: "action",
     cell: ({ row }) => {
-      return (
-        <Button size="icon" asChild variant="outline" className="rounded-xl">
-          <Link href={`/customer/orders/${row.original.id}`}>
-            <Eye />
-          </Link>
-        </Button>
-      );
+      return <OrderActions id={row.original.id} />;
     },
   },
 ];

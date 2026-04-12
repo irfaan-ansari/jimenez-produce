@@ -25,6 +25,7 @@ import { withForm } from "@/hooks/form-context";
 import { formOpt } from "./order-form-options";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { DELIVERY_TIME } from "@/lib/constants/customer";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
@@ -55,46 +56,16 @@ export const CheckoutDialog = withForm({
             </DialogTitle>
           </DialogHeader>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <form.Field
+            <form.AppField
               name="deliveryDate"
-              children={(field) => {
-                return (
-                  <Field>
-                    <FieldLabel htmlFor={field.name}>Delivery Date</FieldLabel>
-                    <Input
-                      disabled
-                      className="rounded-xl"
-                      id={field.name}
-                      name={field.name}
-                      value={field.state.value!}
-                      onBlur={field.handleBlur}
-                      onChange={(e) => field.handleChange(e.target.value)}
-                    />
-                  </Field>
-                );
-              }}
+              children={(field) => <field.DateField label="Delivery Date" />}
             />
 
-            <form.Field
+            <form.AppField
               name="deliveryWindow"
-              children={(field) => {
-                return (
-                  <Field>
-                    <FieldLabel htmlFor={field.name}>
-                      Delivery Window
-                    </FieldLabel>
-                    <Input
-                      disabled
-                      className="rounded-xl"
-                      id={field.name}
-                      name={field.name}
-                      value={field.state.value!}
-                      onBlur={field.handleBlur}
-                      onChange={(e) => field.handleChange(e.target.value)}
-                    />
-                  </Field>
-                );
-              }}
+              children={(field) => (
+                <field.SelectField options={DELIVERY_TIME} />
+              )}
             />
             <form.Field
               name="po"

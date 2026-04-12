@@ -32,6 +32,7 @@ import {
   TableHeader,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { OrderActions } from "@/components/admin/order-actions";
 
 type StatusIndex = keyof typeof orderMap;
 
@@ -51,28 +52,26 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
 
   const status = orderMap[data?.status as StatusIndex];
 
-  const STEPS = React.useMemo(() => {
-    return [
-      {
-        icon: CircleCheck,
-        label: "Ordered",
-        date: data.createdAt,
-        active: true,
-      },
-      {
-        icon: ClipboardCheck,
-        label: "Processing",
-        date: data.createdAt,
-        active: true,
-      },
-      {
-        icon: Home,
-        label: data.status === "completed" ? "Delivered" : "Delivery",
-        date: data.status === "completed" ? data.updatedAt : data.deliveryDate,
-        active: data.status === "completed",
-      },
-    ];
-  }, [data]);
+  const STEPS = [
+    {
+      icon: CircleCheck,
+      label: "Ordered",
+      date: data.createdAt,
+      active: true,
+    },
+    {
+      icon: ClipboardCheck,
+      label: "Processing",
+      date: data.createdAt,
+      active: true,
+    },
+    {
+      icon: Home,
+      label: data.status === "completed" ? "Delivered" : "Delivery",
+      date: data.status === "completed" ? data.updatedAt : data.deliveryDate,
+      active: data.status === "completed",
+    },
+  ];
 
   return (
     <div
@@ -94,13 +93,16 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
             </Button>
             <h1 className="text-lg font-semibold">Order #{data.id}</h1>
           </div>
-          <Badge
-            variant="outline"
-            className="h-7 rounded-xl pl-1.5 pr-2.5 gap-1.5 [&>svg]:size-3.5! bg-(--color)/10 border-(--color)/10 text-sm"
-          >
-            <status.icon className="text-(--color)" />
-            {status.label}
-          </Badge>
+          <div className="flex gap-4 items-center">
+            <Badge
+              variant="outline"
+              className="h-7 rounded-xl pl-1.5 pr-2.5 gap-1.5 [&>svg]:size-3.5! bg-(--color)/10 border-(--color)/10 text-sm"
+            >
+              <status.icon className="text-(--color)" />
+              {status.label}
+            </Badge>
+            <OrderActions showView={false} id={data.id} />
+          </div>
         </div>
 
         {/* progress */}
@@ -213,15 +215,20 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
               <span>Total</span> <span>{formatUSD(data.total)}</span>
             </div>
           </div>
-          <Button className="rounded-xl w-full" size="xl">
-            <Download />
-            Download Invoice
+
+          <Button className="rounded-xl w-full" size="xl" asChild>
+            <a href={`/api/orders/${data.id}/pdf`}>
+              <Download />
+              Download Invoice
+            </a>
           </Button>
 
-          <Button className="rounded-xl w-full" size="xl" variant="outline">
-            <Copy />
-            Order Again
-          </Button>
+          {data.status !== "completed" && (
+            <Button className="rounded-xl w-full" size="xl" variant="outline">
+              <Copy />
+              Mark as Completed
+            </Button>
+          )}
         </CardContent>
       </Card>
     </div>

@@ -7,6 +7,7 @@ import {
   LineItemInsertType,
 } from "@/lib/db/schema";
 import { db } from "@/lib/db";
+import { eq } from "drizzle-orm";
 import { getSession } from "./auth";
 import { handleAction } from "@/lib/helper/error-handler";
 
@@ -46,3 +47,49 @@ export const createOrder = handleAction(
     return { ...orderRes, lineItems: lineItemsres };
   }
 );
+
+/**
+ * update order
+ * @param id
+ * @param data
+ * @returns
+ */
+export const updateOrder = handleAction(
+  async (id: number, data: Partial<OrderInsertType>) => {
+    const session = await getSession();
+    if (!session) throw new Error("Authentication required");
+
+    const { ...rest } = data;
+
+    const existing = await db.query.order.findFirst({
+      where: eq(order.id, id),
+    });
+    if (!existing) throw new Error("Resource not found.");
+
+    const result = await db
+      .update(order)
+      .set(rest)
+      .where(eq(order.id, id))
+      .returning();
+    return result;
+  }
+);
+
+/**
+ * delete order
+ * @param id
+ * @returns
+ */
+export const deleteOrder = handleAction(async (id: number) => {
+  const session = await getSession();
+  if (!session) throw new Error("Authentication required");
+
+  const existing = await db.query.order.findFirst({
+    where: eq(order.id, id),
+  });
+  if (!existing) throw new Error("Resource not found.");
+
+  const [res] = await db.delete(order).where(eq(order.id, id)).returning();
+
+  return res;
+});
