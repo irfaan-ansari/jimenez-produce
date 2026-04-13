@@ -6,17 +6,21 @@ import { ItemList } from "./item-list";
 import { OrderCart } from "./order-cart";
 import { useRouter } from "next/navigation";
 import { createOrder } from "@/server/order";
-import { getNextDayDate } from "@/lib/utils";
+import { formatUSD, getNextDayDate } from "@/lib/utils";
 import { formOpt } from "./order-form-options";
 import { useConfirm } from "@/hooks/use-confirm";
 import { useAppForm } from "@/hooks/form-context";
 import { CustomerSelectType } from "@/lib/db/schema";
 import { useQueryClient } from "@tanstack/react-query";
+import { Button } from "@/components/ui/button";
+import { useStore } from "@tanstack/react-form";
+import React from "react";
+import { CheckoutDialog } from "./checkout-dialog";
 
 export const OrderForm = ({ customer }: { customer: CustomerSelectType }) => {
   const router = useRouter();
   const confirm = useConfirm();
-
+  const [showSummary, setShowSummary] = React.useState(false);
   const queryClient = useQueryClient();
   const {
     deliverySchedule,
@@ -42,7 +46,7 @@ export const OrderForm = ({ customer }: { customer: CustomerSelectType }) => {
       receiverPhone: deliverySchedule[0].receivingPhone,
       deliveryDate: format(
         getNextDayDate(deliverySchedule[0].day),
-        "MM-dd-yyyy"
+        "MM-dd-yyyy",
       ),
       deliveryWindow: deliverySchedule[0].window,
       deliveryInstruction: deliverySchedule[0].instructions,
@@ -73,20 +77,53 @@ export const OrderForm = ({ customer }: { customer: CustomerSelectType }) => {
           queryKey: ["products"],
         });
       } else toast.error(error.message);
-      console.log(error);
     },
   });
 
+  const values = useStore(form.store, (state) => state.values);
+  const { lineItems } = values;
   return (
     <form
-      className="flex gap-4"
       onSubmit={(e) => {
         e.preventDefault();
         form.handleSubmit();
       }}
+      className="relative"
     >
-      <ItemList form={form} />
-      <OrderCart customer={customer} form={form} />
+      <div className="flex w-full items-start gap-4">
+        <ItemList form={form} />
+        <OrderCart customer={customer} form={form} show={showSummary} />
+      </div>
+
+      {lineItems.length > 0 && (
+        <div className="sticky bottom-6 mx-auto h-16 w-xl rounded-2xl bg-secondary px-6  py-4 shadow-lg ring-2 ring-primary/50 ring-offset-2 backdrop-blur-2xl">
+          <div className="flex h-full items-center gap-4">
+            <div className="gap-0.5e flex flex-col">
+              <span className="text-xs uppercase">2 items in cart</span>
+              <span className="text-base font-bold text-primary">
+                {formatUSD(124)}
+              </span>
+            </div>
+            <Button
+              className="ml-auto rounded-xl text-foreground"
+              size="lg"
+              variant="link"
+              type="button"
+              onClick={() => setShowSummary(!showSummary)}
+            >
+              {showSummary ? "Hide Cart" : "View Cart"}
+            </Button>
+            <CheckoutDialog
+              form={form}
+              trigger={
+                <Button className="rounded-xl px-6" size="lg" type="button">
+                  Checkout
+                </Button>
+              }
+            />
+          </div>
+        </div>
+      )}
     </form>
   );
 };

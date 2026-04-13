@@ -59,7 +59,7 @@ export function LoginForm({
             router.replace(
               data.user.role === "customer"
                 ? "/customer/dashboard"
-                : "/admin/overview"
+                : "/admin/overview",
             );
             toast.success("Login successfull, redirecting...");
           },
@@ -77,9 +77,9 @@ export function LoginForm({
         e.preventDefault();
         form.handleSubmit();
       }}
-      className="flex flex-col gap-4 items-start justify-center py-20 px-16"
+      className="flex flex-1 flex-col items-start justify-center gap-4 px-6 py-20 lg:max-w-xl lg:px-16"
     >
-      <h2 className="text-3xl font-bold font-heading">Welcome back</h2>
+      <h2 className="font-heading text-3xl font-bold">Welcome back</h2>
       <p className="mb-10">
         Use your email address or phone number to access your account.
       </p>
@@ -104,7 +104,7 @@ export function LoginForm({
 
             return (
               <Field>
-                <div className="flex justify-between items-center">
+                <div className="flex items-center justify-between">
                   <FieldLabel htmlFor={field.name}>Password</FieldLabel>
                   <Link
                     href="/forgot-password"
@@ -144,7 +144,7 @@ export function LoginForm({
         {loginError && (
           <Alert
             variant="destructive"
-            className="rounded-xl bg-destructive/5 border-destructive/5 has-data-[slot=alert-action]:pr-8"
+            className="rounded-xl border-destructive/5 bg-destructive/5 has-data-[slot=alert-action]:pr-8"
           >
             <AlertCircleIcon />
             <AlertTitle>Login Failed!</AlertTitle>
@@ -184,7 +184,7 @@ export function LoginForm({
 
         <div className="flex flex-row items-center justify-center gap-4">
           <div className="flex-[1_1_0] border-b "></div>
-          <span className="bg-background shrink-0">OR</span>
+          <span className="shrink-0 bg-background">OR</span>
           <span className="flex-[1_1_0] border-b"></span>
         </div>
 
@@ -199,14 +199,12 @@ export function LoginForm({
             Login with OTP
           </Button>
         </Field>
-        <Field className="text-center">
-          <Link
-            href="/register"
-            className="ml-auto text-sm underline-offset-4 hover:underline"
-          >
-            Don’t have an account? Register here.
+        <div className="flex flex-row items-center justify-center gap-2 ">
+          Don’t have an account?
+          <Link href="/register" className="underline-offset-4 hover:underline">
+            Register here.
           </Link>
-        </Field>
+        </div>
       </FieldGroup>
     </form>
   );

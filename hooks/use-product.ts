@@ -5,16 +5,39 @@ import {
   type ProductCategoriesResponse,
 } from "@/lib/types";
 import { fetcher } from "@/lib/helper/fetcher";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 
 export const useProducts = (query: string) => {
   return useQuery({
     queryKey: ["products", query],
     queryFn: () => {
       return fetcher<AdminProductResponse | CustomerProductResponse>(
-        `/api/products?${query}`
+        `/api/products?${query}`,
       );
     },
+    staleTime: 1000 * 60 * 5,
+  });
+};
+
+export const useInfiniteProducts = (query: string) => {
+  return useInfiniteQuery({
+    queryKey: ["products-infinite", query],
+    initialPageParam: 1,
+    queryFn: ({ pageParam }) => {
+      const params = new URLSearchParams(query);
+
+      params.set("page", String(pageParam));
+
+      return fetcher<AdminProductResponse | CustomerProductResponse>(
+        `/api/products?${params.toString()}`,
+      );
+    },
+    getNextPageParam: ({ pagination }) => {
+      const { page, totalPages } = pagination;
+
+      return page < totalPages ? Number(page) + 1 : undefined;
+    },
+
     staleTime: 1000 * 60 * 5,
   });
 };
@@ -24,7 +47,7 @@ export const useCategories = (query?: string) => {
     queryKey: ["product_categories", query],
     queryFn: () => {
       return fetcher<ProductCategoriesResponse>(
-        `/api/products/categories?${query}`
+        `/api/products/categories?${query}`,
       );
     },
     staleTime: 1000 * 60 * 5,

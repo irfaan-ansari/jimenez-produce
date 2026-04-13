@@ -1,24 +1,17 @@
 "use client";
 
-import React from "react";
 import {
-  ArrowLeft,
-  ArrowRight,
   Check,
-  Columns2,
-  Columns3,
-  Columns4,
+  LayoutGrid,
   ListFilter,
   Minus,
   Plus,
   SearchIcon,
+  TextAlignJustify,
+  X,
 } from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card";
+import React from "react";
+import { motion } from "motion/react";
 import {
   HoverCard,
   HoverCardContent,
@@ -39,30 +32,26 @@ import { useStore } from "@tanstack/react-form";
 import { Button } from "@/components/ui/button";
 import { useDebounce } from "@/hooks/use-debounce";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useSidebar } from "@/components/ui/sidebar";
 import { type CustomerProductType } from "@/lib/types";
 import { PopoverXDrawer } from "@/components/popover-x-drawer";
-import { useCategories, useProducts } from "@/hooks/use-product";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useCategories, useInfiniteProducts } from "@/hooks/use-product";
 import { EmptyComponent } from "@/components/admin/placeholder-component";
-import { useSidebar } from "@/components/ui/sidebar";
+import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
 
 const LAYOUTS = [
   {
-    value: "col-2",
-    icon: Columns2,
-    className: "grid-cols-2",
+    value: "list",
+    icon: TextAlignJustify,
+    className: "grid-cols-1 divide-y",
     itemClassName: "",
   },
   {
-    value: "col-4",
-    icon: Columns3,
-    className: "grid-cols-4",
-    itemClassName: "",
-  },
-  {
-    value: "col-6",
-    icon: Columns4,
-    className: "grid-cols-6",
+    value: "grid",
+    icon: LayoutGrid,
+    className:
+      "grid-cols-1 @md:grid-cols-2 @lg:grid-cols-3 @2xl:grid-cols-4 @5xl:grid-cols-5 @6xl:grid-cols-6 @8xl:grid-cols-8 gap-4",
     itemClassName: "",
   },
 ];
@@ -76,7 +65,31 @@ export const ItemList = withForm({
     const [layout, setLayout] = React.useState<"list" | "grid">("list");
     const query = new URLSearchParams(filter);
 
-    const { data, isError, error, isPending } = useProducts(query?.toString());
+    const {
+      data,
+      isError,
+      error,
+      isPending,
+      hasNextPage,
+      isFetchingNextPage,
+      fetchNextPage,
+    } = useInfiniteProducts(query?.toString());
+
+    const products =
+      data?.pages.flatMap((page) => page.data as CustomerProductType[]) ?? [];
+
+    const loadMoreRef = useInfiniteScroll(() => {
+      if (hasNextPage && !isFetchingNextPage) {
+        fetchNextPage();
+      }
+    }, true);
+
+    const handleLayoutChange = (newLayout: string) => {
+      const val = newLayout as "list" | "grid";
+      setLayout(val);
+      localStorage.setItem("layout-state", val);
+    };
+    console.log("products::", products);
 
     React.useEffect(() => {
       const savedLayout = localStorage.getItem("layout-state") as
@@ -88,127 +101,86 @@ export const ItemList = withForm({
       if (open) setOpen(false);
     }, []);
 
-    const handleLayoutChange = (newLayout: string) => {
-      const val = newLayout as "list" | "grid";
-      setLayout(val);
-      localStorage.setItem("layout-state", val);
-    };
-
     return (
-      <Card
-        className="rounded-2xl flex-1 ring-0 shadow-none gap-0 border h-[calc(100svh-80px)]"
-        size="default"
+      <div
+        className="group/card @container flex-1 space-y-3"
         data-layout={layout}
       >
-        <CardHeader className="flex relative flex-row gap-6 border-b">
-          <Tabs
-            value={layout}
-            onValueChange={(v) => handleLayoutChange(v)}
-            className="shrink-0"
-          >
-            <TabsList className="h-9 rounded-xl">
-              {LAYOUTS.map(({ value, icon }, i) => {
-                const Icon = icon;
-                return (
-                  <TabsTrigger value={value} key={i} asChild>
-                    <Button
-                      variant={layout === value ? "outline" : "secondary"}
-                      size="icon"
-                      type="button"
-                      className="rounded-xl p-0 size-8!"
-                    >
-                      <Icon />
-                    </Button>
-                  </TabsTrigger>
-                );
-              })}
-            </TabsList>
-          </Tabs>
-          <div className="flex-1 flex items-center gap-2 overflow-x-auto no-scrollbar">
-            <CategoryPills filter={filter} setFilter={setFilter} />
+        <div className="sticky top-0 z-2 bg-background">
+          <div className="relative flex flex-row gap-3 py-3">
+            {(isPending || isFetchingNextPage) && (
+              <div className="absolute inset-x-0 top-0 z-1 h-1 animate-pulse rounded-full bg-primary" />
+            )}
+            <div className="no-scrollbar flex flex-1 items-center gap-2 overflow-x-auto">
+              <CategoryPills filter={filter} setFilter={setFilter} />
+            </div>
+            <SearchBar filter={filter} setFilter={setFilter} />
+            <Tabs
+              value={layout}
+              onValueChange={(v) => handleLayoutChange(v)}
+              className="shrink-0"
+            >
+              <TabsList className="h-9 rounded-xl">
+                {LAYOUTS.map(({ value, icon }, i) => {
+                  const Icon = icon;
+                  return (
+                    <TabsTrigger value={value} key={i} asChild>
+                      <Button
+                        variant={layout === value ? "outline" : "secondary"}
+                        size="icon"
+                        type="button"
+                        className="size-8! rounded-xl p-0"
+                      >
+                        <Icon />
+                      </Button>
+                    </TabsTrigger>
+                  );
+                })}
+              </TabsList>
+            </Tabs>
           </div>
+          {(isPending || isFetchingNextPage) && (
+            <div className="absolute inset-x-0 bottom-0 mb-36 h-1 animate-pulse rounded-full bg-primary" />
+          )}
+        </div>
 
-          <SearchBar filter={filter} setFilter={setFilter} />
-        </CardHeader>
-        <CardContent
-          className={`flex-1 items-start overflow-auto no-scrollbar p-6 grid gap-2 group-data-[layout=col-4]/card:gap-4
+        {products.length > 0 ? (
+          <div
+            className={`flex-1 text-base overflow-auto no-scrollbar px-0 grid
             ${LAYOUTS.find((l) => l.value === layout)?.className}
             `}
-        >
-          {data?.data && data?.data?.length > 0 ? (
-            data?.data?.map((product) => (
-              <ItemRow
+          >
+            {products?.map((product) => (
+              <ProductItem
                 key={product.id}
                 product={product as CustomerProductType}
                 form={form}
                 layout={layout}
               />
-            ))
-          ) : isPending ? (
-            <div className="h-1 bg-primary mb-36 animate-pulse rounded-full group-data-[layout=col-2]:col-span-2 group-data-[layout=col-4]:col-span-4 group-data-[layout=col-6]:col-span-6" />
-          ) : isError ? (
-            <EmptyComponent variant="error" title={error?.message} />
-          ) : (
-            <EmptyComponent variant="empty" />
+            ))}
+          </div>
+        ) : isError && !isPending ? (
+          <EmptyComponent variant="error" title={error?.message} />
+        ) : (
+          <EmptyComponent variant="empty" />
+        )}
+        {/* INFINITE SCROLL SENTINEL */}
+        <motion.div
+          ref={loadMoreRef}
+          className="col-span-full flex h-10 w-full justify-center"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+        >
+          {isFetchingNextPage && (
+            <span className="rounded-xl px-4 py-2 shadow-md ">Loading...</span>
           )}
-        </CardContent>
-        <Pagination pagination={data?.pagination} setFilter={setFilter} />
-      </Card>
+        </motion.div>
+      </div>
     );
   },
 });
 
-const Pagination = ({
-  setFilter,
-  pagination,
-}: {
-  pagination: Record<string, number> | undefined;
-
-  setFilter: React.Dispatch<React.SetStateAction<Record<string, string>>>;
-}) => {
-  const { page, limit, total, totalPages } = pagination || {};
-  const start = (page - 1) * limit + 1;
-  const end = Math.min(page * limit, total);
-
-  return (
-    <CardFooter className="flex flex-row items-center gap-3 border-t">
-      {!pagination ? (
-        <Skeleton className="h-5 w-36 rounded-xl" />
-      ) : (
-        <span>
-          Viewing {start}–{end} of {total}
-        </span>
-      )}
-      <Button
-        size="icon-sm"
-        type="button"
-        className="ml-auto rounded-xl"
-        disabled={page <= 1}
-        onClick={() =>
-          setFilter((prev) => ({ ...prev, page: (page - 1).toString() }))
-        }
-      >
-        <ArrowLeft />
-      </Button>
-      <Button
-        size="icon-sm"
-        disabled={page === totalPages}
-        className="rounded-xl"
-        type="button"
-        onClick={() =>
-          setFilter((prev) => ({
-            ...prev,
-            page: (Number(page) + 1).toString(),
-          }))
-        }
-      >
-        <ArrowRight />
-      </Button>
-    </CardFooter>
-  );
-};
-
-const ItemRow = withForm({
+const ProductItem = withForm({
   ...formOpt,
   props: {} as {
     product: CustomerProductType;
@@ -217,10 +189,9 @@ const ItemRow = withForm({
 
   render: function Render({ form, product, layout }) {
     const lineItems = useStore(form.store, (state) => state.values.lineItems);
-
     const index = lineItems.findIndex((i) => i.productId === product.id);
-
     const qty = index >= 0 ? Number(lineItems[index].quantity) || 0 : 0;
+    const isCartItem = qty > 0;
 
     const updateItem = (options: {
       action?: "increase" | "decrease";
@@ -278,145 +249,257 @@ const ItemRow = withForm({
               Number(item.inventory.offerPrice) * Number(item.quantity)
             }`,
           };
-        })
+        }),
       );
     };
 
-    const isCartItem = qty > 0;
+    return (
+      <div
+        key={product.id}
+        className={cn(
+          `flex cursor-pointer items-center gap-4 rounded-xl border py-2 transition fade-in group-data-[layout=grid]/card:flex-col
+          group-data-[layout=grid]/card:items-stretch group-data-[layout=grid]/card:gap-0
+          group-data-[layout=grid]/card:p-0 group-data-[layout=list]/card:px-4 group-data-[layout=list]/card:not-last:mb-1 
+          hover:shadow-md `,
+          isCartItem ? "bg-primary/6" : "hover:bg-primary/6 ",
+        )}
+        onClick={() => updateItem({ action: "increase" })}
+      >
+        <Thumbnail product={product} qty={qty} updateItem={updateItem} />
 
-    const ProductInfo = () => {
-      return (
-        <div className="space-y-1.5 flex-1 min-w-0 w-full p-4 group-data-[layout=col-2]/card:p-0 group-data-[layout=col-6]/card:p-3">
-          <div className="flex flex-col">
-            <h4 className="font-bold truncate text-sm leading-tight">
-              {product.title}
-            </h4>
-            <span className="text-xs text-muted-foreground">
-              {product.pack ?? "Pack"}
-            </span>
+        <div
+          className="flex min-w-0 flex-1 items-start gap-4
+             group-data-[layout=grid]/card:w-full
+             group-data-[layout=grid]/card:flex-col
+             group-data-[layout=grid]/card:justify-between
+             group-data-[layout=grid]/card:p-4"
+        >
+          <div className="w-full min-w-0 space-y-1 group-data-[layout=grid]/card:space-y-2">
+            <h4 className="leading-tight font-semibold">{product.title}</h4>
+
+            <div className="flex w-full items-center gap-2">
+              <div className="no-scrollbar flex min-w-0 flex-nowrap items-center gap-1 overflow-auto">
+                {product.categories?.map((cat, i) => (
+                  <Badge
+                    key={cat + i}
+                    variant="secondary"
+                    className="h-5 shrink-0 rounded-xl border-blue-200 bg-blue-100 px-1.5 text-blue-600"
+                  >
+                    {cat}
+                  </Badge>
+                ))}
+              </div>
+
+              <LastPurchase
+                product={product}
+                className="group-data-[layout=grid]/card:hidden"
+              />
+            </div>
           </div>
 
-          {/* Categories & Last Purchased - Truncated logic applied */}
-          <div className="flex gap-2 items-center w-full">
-            <div className="flex gap-1 items-center flex-nowrap min-w-0 overflow-hidden">
+          <div className="ml-auto w-24 self-center text-xs text-muted-foreground group-data-[layout=grid]/card:hidden">
+            {product.pack ?? "Pack"}
+          </div>
+
+          <Price
+            price={product?.inventory?.offerPrice ?? 0}
+            className="group-data-[layout=grid]/card:hidden"
+          />
+
+          <QuantityInput
+            qty={qty}
+            updateItem={updateItem}
+            className="group-data-[layout=grid]/card:hidden"
+          />
+
+          <div className="flex w-full items-center gap-2 group-data-[layout=list]/card:hidden">
+            <div className="flex flex-1 flex-col">
+              <div className="text-xs text-muted-foreground">
+                {product.pack ?? "Pack"}
+              </div>
+
+              <Price
+                price={product?.inventory?.offerPrice ?? 0}
+                className="w-auto self-start"
+              />
+            </div>
+            <QuantityInput qty={qty} updateItem={updateItem} />
+          </div>
+        </div>
+      </div>
+    );
+  },
+});
+
+const LastPurchase = ({
+  product,
+  className,
+}: {
+  product: CustomerProductType;
+  className?: string;
+}) => {
+  if (!product.lastPurchased) return;
+  return (
+    <Badge
+      className={cn(
+        "h-5 shrink-0 rounded-xl bg-blue-600 whitespace-nowrap",
+        className,
+      )}
+    >
+      {product.lastPurchased.quantity}cs •{" "}
+      {format(new Date(product.lastPurchased.createdAt!), "MM/dd")}
+    </Badge>
+  );
+};
+
+const Price = ({
+  price,
+  className,
+}: {
+  price: number | string;
+  className?: string;
+}) => {
+  return (
+    <div className={cn("w-24 self-center font-bold text-primary", className)}>
+      {formatUSD(price ?? 0)}
+    </div>
+  );
+};
+
+const Thumbnail = ({
+  product,
+  qty,
+  updateItem,
+}: {
+  product: CustomerProductType;
+  qty: number;
+  updateItem: (t: Record<string, string | number>) => void;
+}) => {
+  return (
+    <HoverCard openDelay={10} closeDelay={100}>
+      <HoverCardTrigger asChild>
+        <div
+          className="relative aspect-square w-12 shrink-0 overflow-hidden rounded-xl bg-secondary
+             group-data-[layout=grid]/card:aspect-video group-data-[layout=grid]/card:w-full"
+        >
+          {product.image && (
+            <img
+              src={product.image}
+              alt={product.title}
+              className="absolute inset-0 h-full w-full object-contain"
+            />
+          )}
+
+          <LastPurchase
+            product={product}
+            className="absolute top-1 left-1 hidden h-5 shrink-0 rounded-xl bg-blue-600 whitespace-nowrap group-data-[layout=grid]/card:inline-flex"
+          />
+        </div>
+      </HoverCardTrigger>
+      <HoverCardContent
+        className="flex w-56 flex-col overflow-hidden rounded-2xl p-0"
+        align="start"
+      >
+        <div className="aspect-video rounded-xl bg-secondary">
+          {product.image && (
+            <img
+              src={product.image}
+              alt={product.title}
+              width={500}
+              height={500}
+              className="aspect-video"
+            />
+          )}
+        </div>
+
+        <div className="space-y-3 p-4">
+          <h4 className="leading-tight font-semibold">{product.title}</h4>
+
+          <div className="flex w-full items-center gap-2">
+            <div className="no-scrollbar flex min-w-0 flex-nowrap items-center gap-1 overflow-auto">
               {product.categories?.map((cat, i) => (
                 <Badge
                   key={cat + i}
                   variant="secondary"
-                  className="rounded-xl bg-blue-100 text-blue-600 border-blue-200 h-5 px-1.5 shrink-0"
+                  className="h-5 shrink-0 rounded-xl border-blue-200 bg-blue-100 px-1.5 text-blue-600"
                 >
                   {cat}
                 </Badge>
               ))}
             </div>
-
-            {product.lastPurchased && (
-              <Badge className="rounded-xl h-5 bg-blue-600 whitespace-nowrap shrink-0">
-                {product.lastPurchased.quantity}cs •{" "}
-                {format(new Date(product.lastPurchased.createdAt!), "MM/dd")}
-              </Badge>
-            )}
           </div>
 
-          {/* Price & Controls Row */}
-          <div className="flex items-center justify-between pt-1">
-            <span className="font-bold text-primary">
-              {formatUSD(product.inventory?.offerPrice ?? 0)}
-            </span>
+          <LastPurchase
+            product={product}
+            className="group-data-[layout=grid]/card:hidden"
+          />
 
-            {/* Quantity Controls */}
-            <InputGroup
-              className="h-9 rounded-xl ml-auto w-24 ml-auto shrink-0 self-center"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <InputGroupInput
-                value={qty}
-                className="text-center text-xs px-0"
-                onChange={(e) => {
-                  const value = Number(e.target.value);
-                  if (!isNaN(value)) updateItem({ qty: value });
-                }}
+          <div className="flex w-full items-center gap-2 group-data-[layout=list]/card:hidden">
+            <div className="flex flex-1 flex-col">
+              <div className="text-xs text-muted-foreground">
+                {product.pack ?? "Pack"}
+              </div>
+
+              <Price
+                price={product?.inventory?.offerPrice ?? 0}
+                className="w-auto self-start"
               />
-
-              <InputGroupAddon align="inline-start">
-                <InputGroupButton
-                  type="button"
-                  size="icon-xs"
-                  className="bg-red-100 text-red-600 hover:text-red-100 hover:bg-red-600 rounded-xl"
-                  onClick={() => updateItem({ action: "decrease" })}
-                >
-                  <Minus />
-                </InputGroupButton>
-              </InputGroupAddon>
-
-              <InputGroupAddon align="inline-end">
-                <InputGroupButton
-                  type="button"
-                  size="icon-xs"
-                  className="bg-green-50 text-green-600 hover:bg-green-600 hover:text-white rounded-xl"
-                  onClick={() => updateItem({ action: "increase" })}
-                >
-                  <Plus className="size-3" />
-                </InputGroupButton>
-              </InputGroupAddon>
-            </InputGroup>
+            </div>
+            <QuantityInput qty={qty} updateItem={updateItem} />
           </div>
         </div>
-      );
-    };
-    return (
-      <div
-        key={product.id}
-        className={cn(
-          `rounded-xl hover:shadow-md 
-          cursor-pointer transition fade-in border flex flex-col h-auto 
-          group-data-[layout=col-2]/card:flex-row group-data-[layout=col-2]/card:p-4 group-data-[layout=col-2]/card:gap-4`,
-          isCartItem
-            ? "bg-primary/6 border-primary/50 hover:border-primary/50"
-            : "hover:border-primary/20 hover:bg-primary/6 "
-        )}
-        onClick={() => updateItem({ action: "increase" })}
-      >
-        {/* Image Section */}
-        <HoverCard openDelay={10} closeDelay={100}>
-          <HoverCardTrigger asChild>
-            <div className="bg-secondary aspect-video inline-flex items-center justify-center rounded-xl shrink-0 basis-24">
-              {product.image && (
-                <img
-                  src={product.image!}
-                  width={200}
-                  height={200}
-                  className="object-contain h-full aspect-video w-auto"
-                />
-              )}
-            </div>
-          </HoverCardTrigger>
-          <HoverCardContent
-            className="flex w-72 flex-col p-0 rounded-2xl"
-            align="start"
-            style={layout !== "col-2" ? { display: "none" } : {}}
-          >
-            <div className="aspect-video bg-secondary rounded-xl">
-              {product.image && (
-                <img
-                  src={product.image}
-                  alt={product.title}
-                  width={500}
-                  height={500}
-                  className="aspect-video"
-                />
-              )}
-            </div>
-            <ProductInfo />
-          </HoverCardContent>
-        </HoverCard>
+      </HoverCardContent>
+    </HoverCard>
+  );
+};
 
-        {/* Product Info Section */}
-        <ProductInfo />
-      </div>
-    );
-  },
-});
+const QuantityInput = ({
+  qty,
+  updateItem,
+  className,
+}: {
+  qty: number;
+  updateItem: (t: Record<string, string | number>) => void;
+  className?: string;
+}) => {
+  return (
+    <InputGroup
+      className={cn("h-9 w-24 shrink-0 self-center rounded-xl", className)}
+      onClick={(e) => e.stopPropagation()}
+    >
+      <InputGroupInput
+        value={qty}
+        className="px-0 text-center text-xs"
+        onChange={(e) => {
+          const value = Number(e.target.value);
+          if (!isNaN(value)) updateItem({ qty: value });
+        }}
+      />
+
+      <InputGroupAddon align="inline-start">
+        <InputGroupButton
+          type="button"
+          size="icon-xs"
+          className="rounded-xl bg-red-100 text-red-600 hover:bg-red-600 hover:text-red-100"
+          onClick={() => updateItem({ action: "decrease" })}
+        >
+          <Minus />
+        </InputGroupButton>
+      </InputGroupAddon>
+
+      <InputGroupAddon align="inline-end">
+        <InputGroupButton
+          type="button"
+          size="icon-xs"
+          className="rounded-xl bg-green-50 text-green-600 hover:bg-green-600 hover:text-white"
+          onClick={() => updateItem({ action: "increase" })}
+        >
+          <Plus className="size-3" />
+        </InputGroupButton>
+      </InputGroupAddon>
+    </InputGroup>
+  );
+};
 
 const CategoryPills = ({
   filter,
@@ -439,22 +522,22 @@ const CategoryPills = ({
 
   if (!data?.data)
     return (
-      <div className="flex items-center gap-0.5 w-full flex-1">
+      <div className="flex w-full flex-1 items-center gap-0.5">
         {[...Array(5)].map((_, i) => (
           <Skeleton key={i} className="h-9 w-18 rounded-xl" />
         ))}
       </div>
     );
 
-  const categories = data.data.slice(0, 4);
+  const categories = data.data.slice(0, 8);
 
   const displayPills =
     filter.cat && !categories.includes(filter.cat)
-      ? [...data.data.slice(0, 3), filter.cat]
+      ? [...data.data.slice(0, 7), filter.cat]
       : categories;
 
   return (
-    <div className="flex gap-1.5 items-center whitespace-nowrap">
+    <div className="flex items-center gap-1.5 whitespace-nowrap">
       {displayPills.map((cat: string) => (
         <Button
           key={cat}
@@ -477,7 +560,7 @@ const CategoryPills = ({
             <ListFilter />
           </Button>
         }
-        className="max-h-80 no-scrollbar overflow-auto"
+        className="no-scrollbar max-h-80 overflow-auto"
       >
         {isPending ? (
           <span className="h-8 animate-pulse bg-secondary"></span>
@@ -505,23 +588,51 @@ const CategoryPills = ({
 
 const SearchBar = ({ filter, setFilter }: { filter: any; setFilter: any }) => {
   const [val, setVal] = React.useState(filter.q || "");
+  const [open, setOpen] = React.useState(false);
+
   const debounce = useDebounce(
     (v: string) => setFilter((p: any) => ({ ...p, q: v, page: "1" })),
-    400
+    400,
   );
 
   return (
-    <InputGroup className="h-9 w-64 shrink-0 rounded-xl">
+    <InputGroup
+      className="group h-9 w-9 max-w-64 rounded-xl transition-all duration-500 data-[open=true]:w-full"
+      data-open={open}
+    >
       <InputGroupInput
+        autoFocus
         placeholder="Search..."
         value={val}
+        // onFocus={() => setOpen(true)}
         onChange={(e) => {
           setVal(e.target.value);
           debounce(e.target.value);
         }}
+        onBlur={() => {
+          if (!val) setOpen(false);
+        }}
       />
-      <InputGroupAddon align="inline-start">
+
+      <InputGroupAddon align="inline-start" onClick={() => setOpen(true)}>
         <SearchIcon className="size-4 text-muted-foreground" />
+      </InputGroupAddon>
+
+      <InputGroupAddon
+        align={"inline-end"}
+        className="group-data-[open=false]:hidden"
+      >
+        <InputGroupButton
+          type="button"
+          size="icon-sm"
+          className="rounded-xl"
+          onClick={() => {
+            setVal("");
+            setOpen(false);
+          }}
+        >
+          <X />
+        </InputGroupButton>
       </InputGroupAddon>
     </InputGroup>
   );

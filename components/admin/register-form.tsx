@@ -65,7 +65,7 @@ export function RegisterForm({
       } else {
         form.setFieldValue(
           "error",
-          error.message ?? "You are not authorized to create an account."
+          error.message ?? "You are not authorized to create an account.",
         );
         toast.error(error.message);
       }
@@ -81,9 +81,9 @@ export function RegisterForm({
         e.preventDefault();
         form.handleSubmit();
       }}
-      className="flex flex-col gap-4 items-start justify-center py-20 px-16"
+      className="flex flex-1 flex-col items-start justify-center gap-4 px-6 py-20 lg:max-w-xl lg:px-16"
     >
-      <h2 className="text-3xl font-bold font-heading">Create your account</h2>
+      <h2 className="font-heading text-3xl font-bold">Create your account</h2>
       <p className="mb-10">
         Create an account to start placing orders and managing your deliveries.
       </p>
@@ -188,7 +188,7 @@ export function RegisterForm({
         {loginError && (
           <Alert
             variant="destructive"
-            className="rounded-xl bg-destructive/5 border-destructive/5 has-data-[slot=alert-action]:pr-8"
+            className="rounded-xl border-destructive/5 bg-destructive/5 has-data-[slot=alert-action]:pr-8"
           >
             <AlertCircleIcon />
             <AlertTitle>Access denied.</AlertTitle>
@@ -232,18 +232,16 @@ export function RegisterForm({
 
         <div className="flex flex-row items-center justify-center gap-4">
           <div className="flex-[1_1_0] border-b "></div>
-          <span className="bg-background shrink-0">OR</span>
+          <span className="shrink-0 bg-background">OR</span>
           <span className="flex-[1_1_0] border-b"></span>
         </div>
 
-        <Field className="text-center">
-          <Link
-            href="/signin"
-            className="ml-auto text-sm underline-offset-4 hover:underline"
-          >
-            Already have an account? Signin.
+        <div className="flex flex-row items-center justify-center gap-2 ">
+          Already have an account?
+          <Link href="/signin" className="underline-offset-4 hover:underline">
+            Signin.
           </Link>
-        </Field>
+        </div>
       </FieldGroup>
     </form>
   );

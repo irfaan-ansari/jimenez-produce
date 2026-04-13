@@ -12,18 +12,14 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
-import {
-  Collapsible,
-  CollapsibleTrigger,
-  CollapsibleContent,
-} from "@/components/ui/collapsible";
+import { Inbox } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { formOpt } from "./order-form-options";
+import { Button } from "@/components/ui/button";
 import { withForm } from "@/hooks/form-context";
 import { useStore } from "@tanstack/react-form";
 import { CheckoutDialog } from "./checkout-dialog";
 import { CustomerSelectType } from "@/lib/db/schema";
-import { ChevronDown, Inbox } from "lucide-react";
 import { formatUSD, getAvatarFallback } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
@@ -31,8 +27,9 @@ export const OrderCart = withForm({
   ...formOpt,
   props: {
     customer: {} as CustomerSelectType,
+    show: false as boolean,
   },
-  render: function Render({ form, customer }) {
+  render: function Render({ form, customer, show }) {
     const values = useStore(form.store, (state) => state.values);
     const { lineItems } = values;
 
@@ -57,7 +54,7 @@ export const OrderCart = withForm({
           lineItemCount: 0,
           lineItemQuantity: 0,
           lineItemTotal: 0,
-        }
+        },
       );
 
       form.setFieldValue("total", String(result.total));
@@ -68,84 +65,90 @@ export const OrderCart = withForm({
     }, [lineItems, form]);
 
     return (
-      <Collapsible asChild>
-        <Card className="rounded-2xl ring-0 gap-0 basis-sm shadow-none border text-base h-[calc(100svh-80px)] relative">
-          <CardHeader className="px-0">
-            <CollapsibleTrigger asChild>
-              <CardTitle className="text-lg px-6 select-none font-semibold flex gap-4 justify-between data-[state=open]:[&>svg]:rotate-180 pb-6 data-[state=open]:border-b">
-                Order Summary
-                <ChevronDown className="size-5" />
-              </CardTitle>
-            </CollapsibleTrigger>
-          </CardHeader>
-          <form.AppField name="lineItems" mode="array">
-            {(field) => (
-              <CollapsibleContent asChild className="grow-0">
-                {field.state.value.length > 0 ? (
-                  <CardContent className="px-0 data-[state=open]:py-6 overflow-y-auto no-scrollbar">
-                    {field?.state?.value?.map((subField, i) => (
-                      <div
-                        className="px-6 not-last:border-b not-first:pt-3 not-last:pb-3"
-                        key={subField.productId}
+      <Card
+        className={`basis-2xs pt-4 h-[calc(100svh-80px)] sticky top-10 gap-0 rounded-2xl border text-base shadow-none ring-0 ${!show ? "hidden" : ""}`}
+      >
+        <CardHeader className="border-b pb-4!">
+          <CardTitle className="text-lg font-semibold">Order Summary</CardTitle>
+        </CardHeader>
+        <form.AppField name="lineItems" mode="array">
+          {(field) =>
+            field.state.value.length > 0 ? (
+              <CardContent className="no-scrollbar flex-1 overflow-y-auto px-0 py-6">
+                {field?.state?.value?.map((subField, i) => (
+                  <div
+                    className="px-6 not-first:pt-3 not-last:border-b not-last:pb-3"
+                    key={subField.productId}
+                  >
+                    <div className="flex items-center justify-start gap-2">
+                      <Avatar className="size-10 shrink-0 rounded-xl ring-2 ring-green-600/20 ring-offset-1 **:rounded-xl after:hidden">
+                        <Badge className="background-blur-sm absolute -top-2 -left-2 size-5 rounded-[100%] bg-blue-600/80">
+                          {i + 1}
+                        </Badge>
+                        <AvatarImage src={subField?.image!} />
+                        <AvatarFallback>
+                          {getAvatarFallback(subField.title)}
+                        </AvatarFallback>
+                      </Avatar>
+
+                      <h4 className="whitespace-wrap line-clamp-2 leading-tight">
+                        {subField.title}
+                      </h4>
+
+                      <Badge
+                        variant="secondary"
+                        className="ml-auto h-6 shrink-0 rounded-xl border border-blue-200 bg-blue-100 text-sm font-semibold text-blue-600"
                       >
-                        <div className="flex gap-3 items-center justify-start">
-                          <Avatar className="rounded-xl **:rounded-xl after:hidden size-10 ring-2 ring-offset-1 ring-green-600/20 shrink-0">
-                            <Badge className="size-5 rounded-[100%] bg-blue-600/80 background-blur-sm absolute -top-2 -left-2">
-                              {i + 1}
-                            </Badge>
-                            <AvatarImage src={subField?.image!} />
-                            <AvatarFallback>
-                              {getAvatarFallback(subField.title)}
-                            </AvatarFallback>
-                          </Avatar>
+                        {formatUSD(subField.total!)}
+                      </Badge>
+                    </div>
+                  </div>
+                ))}
+              </CardContent>
+            ) : (
+              <Empty>
+                <EmptyHeader>
+                  <EmptyMedia variant="icon" className="rounded-xl">
+                    <Inbox />
+                  </EmptyMedia>
+                  <EmptyTitle>Your cart is empty</EmptyTitle>
+                </EmptyHeader>
+              </Empty>
+            )
+          }
+        </form.AppField>
 
-                          <div className="space-y-1 flex-[1_1_0] ">
-                            <h4 className="leading-tight">{subField.title}</h4>
-                            {subField.quantity}
-                          </div>
-                          <Badge
-                            variant="secondary"
-                            className="rounded-xl shrink-0 h-6 bg-blue-100 text-blue-600 border border-blue-200 text-sm font-semibold"
-                          >
-                            {formatUSD(subField.total!)}
-                          </Badge>
-                        </div>
-                      </div>
-                    ))}
-                  </CardContent>
-                ) : (
-                  <Empty>
-                    <EmptyHeader>
-                      <EmptyMedia variant="icon" className="rounded-xl">
-                        <Inbox />
-                      </EmptyMedia>
-                      <EmptyTitle>Your cart is empty</EmptyTitle>
-                    </EmptyHeader>
-                  </Empty>
-                )}
-              </CollapsibleContent>
-            )}
-          </form.AppField>
-
-          <CardFooter className="flex flex-col items-stretch border-t pt-4! pb-6">
-            <div className="space-y-0.5">
-              <div className="flex justify-between">
-                <span>Quantity (cs)</span>
-                <span>{values.lineItemQuantity}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Line items</span>
-                <span>{values.lineItemCount}</span>
-              </div>
-              <div className="flex justify-between text-lg font-semibold">
-                <span>Order Total</span>
-                <span>{formatUSD(values.total)}</span>
-              </div>
+        <CardFooter className="flex flex-col items-stretch border-t pt-4">
+          <div className="space-y-0.5">
+            <div className="flex justify-between">
+              <span>Quantity (cs)</span>
+              <span>{values.lineItemQuantity}</span>
             </div>
-            <CheckoutDialog form={form} />
-          </CardFooter>
-        </Card>
-      </Collapsible>
+            <div className="flex justify-between">
+              <span>Line items</span>
+              <span>{values.lineItemCount}</span>
+            </div>
+            <div className="flex justify-between text-lg font-semibold">
+              <span>Order Total</span>
+              <span>{formatUSD(values.total)}</span>
+            </div>
+          </div>
+          <CheckoutDialog
+            form={form}
+            trigger={
+              <Button
+                className="mt-4 w-full rounded-xl"
+                size="xl"
+                disabled={!values.lineItems.length}
+                type="button"
+              >
+                Checkout <span>•</span>
+                {formatUSD(values.total)}
+              </Button>
+            }
+          />
+        </CardFooter>
+      </Card>
     );
   },
 });

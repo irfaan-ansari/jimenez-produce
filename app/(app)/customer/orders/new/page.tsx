@@ -10,11 +10,7 @@ const NewOrderPage = async () => {
   const { data: customer, success, error } = await getCustomer();
   if (!success) throw new Error(error?.message);
 
-  return (
-    <div className="mt-3">
-      <OrderForm customer={customer!} />
-    </div>
-  );
+  return <OrderForm customer={customer!} />;
 };
 
 export default NewOrderPage;
