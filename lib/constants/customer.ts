@@ -111,6 +111,7 @@ export const SALES_REPRESENTATIVE = [
   "Elizabeth",
   "Jorge",
   "Yhessenia",
+  "Luisa",
   "Other",
 ];
 
