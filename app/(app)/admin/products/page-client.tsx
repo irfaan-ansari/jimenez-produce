@@ -25,7 +25,7 @@ export const PageClient = () => {
   const { searchParams, queryParams } = useRouterStuff();
 
   const { data, error, isPending, isError } = useProducts(
-    searchParams.toString()
+    searchParams.toString(),
   );
 
   // loading
@@ -45,7 +45,7 @@ export const PageClient = () => {
   return (
     <>
       <div className="flex-1 space-y-3">
-        <div className="grid grid-cols-2 gap-4 lg:gap-6 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+        <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 lg:gap-6 xl:grid-cols-4 2xl:grid-cols-6">
           {data?.data?.map((product, i) => {
             const map = STATUS_MAP[product.status as keyof typeof STATUS_MAP];
 
@@ -53,11 +53,11 @@ export const PageClient = () => {
               <Card
                 size="sm"
                 key={i}
-                className="rounded-2xl pt-0! hover:ring-2 hover:ring-offset-1 relative hover:ring-offset-background transition ease-out"
+                className="relative rounded-2xl pt-0! transition ease-out hover:ring-2 hover:ring-offset-1 hover:ring-offset-background"
                 style={{ "--color": map.color } as React.CSSProperties}
               >
-                <div className="bg-background absolute left-2 top-2 z-2 rounded-xl">
-                  <Badge className="bg-(--color)/10 text-(--color) rounded-xl h-6 text-sm">
+                <div className="absolute top-2 left-2 z-2 rounded-xl bg-background">
+                  <Badge className="h-6 rounded-xl bg-(--color)/10 text-sm text-(--color)">
                     <map.icon className="size-3.5" />
                     {map.label}
                   </Badge>
@@ -71,7 +71,7 @@ export const PageClient = () => {
                   }}
                 />
 
-                <div className="rounded-t-[0.5rem] overflow-hidden relative aspect-square bg-secondary">
+                <div className="relative aspect-square overflow-hidden rounded-t-[0.5rem] bg-secondary">
                   {product.image && (
                     <img
                       width={400}
@@ -79,24 +79,26 @@ export const PageClient = () => {
                       src={product.image!}
                       alt={product.title}
                       loading={i <= 10 ? "eager" : "lazy"}
-                      className="relative z-1 w-full object-cover transition ease-out aspect-square rounded-lg"
+                      className="relative z-1 aspect-square w-full rounded-lg object-cover transition ease-out"
                     />
                   )}
                 </div>
-                <CardContent className="mt-auto space-y-1">
-                  <div className="flex gap-2 flex-wrap">
+                <CardContent className="mt-auto space-y-1.5">
+                  <div className="flex flex-wrap gap-1">
                     {product.categories?.map((cat) => (
                       <Badge
                         key={cat}
-                        className="rounded-xl h-6 text-sm"
+                        className="h-6 rounded-xl bg-blue-100 text-sm"
                         variant="outline"
                       >
                         {cat}
                       </Badge>
                     ))}
                   </div>
-                  <CardTitle>{product.title}</CardTitle>
-                  <CardDescription className="text-base space-x-2">
+                  <CardTitle className="font-semibold">
+                    {product.title}
+                  </CardTitle>
+                  <CardDescription className="space-x-2 text-base">
                     {/* <span className={onOffer ? "line-through" : ""}>
                       {product.price}
                     </span>

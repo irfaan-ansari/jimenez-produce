@@ -211,14 +211,23 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
               <span>Total</span> <span>{formatUSD(data.total)}</span>
             </div>
           </div>
-          <Button className="w-full rounded-xl" size="xl">
-            <Download />
-            Download Invoice
+          <Button className="w-full rounded-xl" size="xl" asChild>
+            <a href={`/api/orders/${data.id}/pdf`} target="_blank">
+              <Download />
+              Download Invoice
+            </a>
           </Button>
 
-          <Button className="w-full rounded-xl" size="xl" variant="outline">
-            <Copy />
-            Order Again
+          <Button
+            className="w-full rounded-xl"
+            size="xl"
+            variant="outline"
+            asChild
+          >
+            <Link href={`/customer/orders/new?orderId=${data.id}`}>
+              <Copy />
+              Order Again
+            </Link>
           </Button>
         </CardContent>
       </Card>

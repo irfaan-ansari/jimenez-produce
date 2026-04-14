@@ -1,24 +1,29 @@
 "use client";
 
+import React from "react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { ItemList } from "./item-list";
 import { OrderCart } from "./order-cart";
 import { useRouter } from "next/navigation";
 import { createOrder } from "@/server/order";
-import { formatUSD, getNextDayDate } from "@/lib/utils";
 import { formOpt } from "./order-form-options";
-import { useConfirm } from "@/hooks/use-confirm";
-import { useAppForm } from "@/hooks/form-context";
-import { CustomerSelectType } from "@/lib/db/schema";
-import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { useStore } from "@tanstack/react-form";
-import React from "react";
+import { useConfirm } from "@/hooks/use-confirm";
+import { useAppForm } from "@/hooks/form-context";
 import { CheckoutDialog } from "./checkout-dialog";
-import { line } from "drizzle-orm/pg-core";
+import { CustomerSelectType } from "@/lib/db/schema";
+import { useQueryClient } from "@tanstack/react-query";
+import { formatUSD, getNextDayDate } from "@/lib/utils";
 
-export const OrderForm = ({ customer }: { customer: CustomerSelectType }) => {
+export const OrderForm = ({
+  customer,
+  lineItems,
+}: {
+  customer: CustomerSelectType;
+  lineItems?: [];
+}) => {
   const router = useRouter();
   const confirm = useConfirm();
   const [showSummary, setShowSummary] = React.useState(false);

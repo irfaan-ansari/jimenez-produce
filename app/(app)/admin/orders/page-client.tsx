@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { format } from "date-fns";
+import { format, isBefore } from "date-fns";
 import { formatUSD } from "@/lib/utils";
 import { OrderType } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
@@ -122,9 +122,9 @@ export const columns: ColumnDef<OrderType>[] = [
     accessorKey: "status",
     header: "Status",
     cell: ({ row }) => {
-      const map =
-        orderMap[(row.original.status ?? "active") as keyof typeof orderMap];
-
+      const status = (row.original.status ?? "active") as keyof typeof orderMap;
+      const isDelayed = isBefore(row.original.deliveryDate!, new Date());
+      const map = orderMap[isDelayed ? "delayed" : status];
       return (
         <Badge
           variant="outline"
@@ -132,7 +132,7 @@ export const columns: ColumnDef<OrderType>[] = [
           className="h-7 gap-1.5 rounded-xl border-(--color)/10 bg-(--color)/10 pr-2.5 pl-1.5 text-sm [&>svg]:size-3.5!"
         >
           <map.icon className="text-(--color)" />
-          {map.label}
+          {isDelayed ? "Delayed" : map.label}
         </Badge>
       );
     },
@@ -140,7 +140,9 @@ export const columns: ColumnDef<OrderType>[] = [
   {
     id: "action",
     cell: ({ row }) => {
-      return <OrderActions id={row.original.id} />;
+      return (
+        <OrderActions id={row.original.id} status={row.original.status!} />
+      );
     },
   },
 ];

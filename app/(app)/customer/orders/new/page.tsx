@@ -10,7 +10,7 @@ const NewOrderPage = async () => {
   const { data: customer, success, error } = await getCustomer();
   if (!success) throw new Error(error?.message);
 
-  return <OrderForm customer={customer!} />;
+  return <OrderForm customer={customer!} lineItems={[]} />;
 };
 
 export default NewOrderPage;

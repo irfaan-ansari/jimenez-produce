@@ -1,4 +1,11 @@
-import { CircleDashed, Crown, PackageCheck, Shield, User } from "lucide-react";
+import {
+  AlertCircle,
+  CircleDashed,
+  Crown,
+  PackageCheck,
+  Shield,
+  User,
+} from "lucide-react";
 
 export const roleMap = {
   user: {
@@ -23,6 +30,11 @@ export const orderMap = {
     label: "In Progress",
     icon: CircleDashed,
     color: "#F59E0B",
+  },
+  delayed: {
+    label: "Delayed",
+    icon: AlertCircle,
+    color: "#EF4444",
   },
   completed: {
     label: "Completed",

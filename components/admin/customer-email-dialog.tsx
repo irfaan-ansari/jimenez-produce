@@ -1,13 +1,7 @@
 "use client";
 
 import { Field, FieldError, FieldGroup, FieldLabel } from "../ui/field";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "../ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 import z from "zod";
 
 import { Button } from "../ui/button";
@@ -53,7 +47,7 @@ export const CustomerHoldDialog = ({
 
   return (
     <Dialog open={showDialog} onOpenChange={setShowDialog}>
-      <DialogContent className="ring-ring/10 rounded-2xl sm:max-w-lg py-8">
+      <DialogContent className="rounded-2xl py-8 ring-ring/10 sm:max-w-lg">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold">
             Email Customer
@@ -65,7 +59,7 @@ export const CustomerHoldDialog = ({
             form.handleSubmit();
           }}
         >
-          <div className="no-scrollbar -mx-4 max-h-[min(600px,60vh)] -my-1 py-1  overflow-y-auto px-4">
+          <div className="no-scrollbar -mx-4 -my-1 max-h-[min(600px,60vh)] overflow-y-auto  px-4 py-1">
             <FieldGroup>
               <form.AppField
                 name="statusReason"

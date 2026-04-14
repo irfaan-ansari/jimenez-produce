@@ -19,7 +19,7 @@ import {
   TableHeader,
 } from "@/components/ui/table";
 import Link from "next/link";
-import { format } from "date-fns";
+import { format, isBefore } from "date-fns";
 import React, { use } from "react";
 import { formatUSD } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -57,7 +57,9 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
 
   const { data } = result;
 
-  const status = orderMap[data?.status as StatusIndex];
+  const status = (data?.status ?? "active") as keyof typeof orderMap;
+  const isDelayed = isBefore(data.deliveryDate!, new Date());
+  const map = orderMap[isDelayed ? "delayed" : status];
 
   const STEPS = [
     {
@@ -102,7 +104,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
   return (
     <div
       className="grid grid-cols-6 gap-8"
-      style={{ "--color": status.color } as React.CSSProperties}
+      style={{ "--color": map.color } as React.CSSProperties}
     >
       <div className="col-span-6 space-y-6 lg:col-span-4">
         <div className="flex items-center justify-between gap-4">
@@ -124,10 +126,10 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
               variant="outline"
               className="h-7 gap-1.5 rounded-xl border-(--color)/10 bg-(--color)/10 pr-2.5 pl-1.5 text-sm [&>svg]:size-3.5!"
             >
-              <status.icon className="text-(--color)" />
-              {status.label}
+              <map.icon className="text-(--color)" />
+              {map.label}
             </Badge>
-            <OrderActions showView={false} id={data.id} />
+            <OrderActions showView={false} id={data.id} status={data.status!} />
           </div>
         </div>
 

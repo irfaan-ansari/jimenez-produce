@@ -1,5 +1,13 @@
 "use client";
 
+import {
+  CheckCircle,
+  Download,
+  Eye,
+  MoreVertical,
+  SquarePen,
+  Trash2,
+} from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
 import { useState } from "react";
@@ -8,26 +16,20 @@ import { useConfirm } from "@/hooks/use-confirm";
 import { PopoverXDrawer } from "../popover-x-drawer";
 import { useQueryClient } from "@tanstack/react-query";
 import { deleteOrder, updateOrder } from "@/server/order";
-import {
-  CheckCircle,
-  Download,
-  Eye,
-  FileText,
-  MoreVertical,
-  Trash2,
-} from "lucide-react";
+import { OrderScheduleDialog } from "./order-schedule-dialog";
 
 export const OrderActions = ({
   id,
+  status,
   showView = true,
 }: {
   id: number;
+  status: string;
   showView?: boolean;
 }) => {
-  const queryClient = useQueryClient();
-
-  const [open, setOpen] = useState(false);
   const confirm = useConfirm();
+  const queryClient = useQueryClient();
+  const [open, setOpen] = useState(false);
 
   const handleAction = (action: string) => {
     switch (action) {
@@ -93,9 +95,19 @@ export const OrderActions = ({
         </Button>
       )}
 
-      <Button variant="ghost" onClick={() => handleAction("completed")}>
-        <CheckCircle /> Mark as Completed
-      </Button>
+      {status !== "completed" && (
+        <OrderScheduleDialog id={id} defaultValues={{ date: "", window: "" }}>
+          <Button variant="ghost" className="justify-start rounded-xl">
+            <SquarePen /> Edit Schedule
+          </Button>
+        </OrderScheduleDialog>
+      )}
+
+      {status !== "completed" && (
+        <Button variant="ghost" onClick={() => handleAction("completed")}>
+          <CheckCircle /> Mark as Completed
+        </Button>
+      )}
 
       <Button variant="ghost" asChild>
         <a href={`/api/orders/${id}/pdf`} target="_blank">
