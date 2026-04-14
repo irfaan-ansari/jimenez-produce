@@ -21,7 +21,7 @@ export const JobApplicationPDF = ({
           />
           <View>
             <Text style={[styles.docTitle, { marginBottom: 16 }]}>
-              Jiminez Produce
+              Jimenez Produce
             </Text>
             <Text style={styles.tagline}>
               {data.position + " - " + data.location}

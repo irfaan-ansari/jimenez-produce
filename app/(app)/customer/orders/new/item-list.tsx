@@ -11,7 +11,7 @@ import {
   X,
 } from "lucide-react";
 import React from "react";
-import { motion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import {
   HoverCard,
   HoverCardContent,
@@ -58,7 +58,8 @@ const LAYOUTS = [
 
 export const ItemList = withForm({
   ...formOpt,
-  render: function Render({ form }) {
+  props: { show: true as boolean },
+  render: function Render({ form, show }) {
     const { open, setOpen } = useSidebar();
 
     const [filter, setFilter] = React.useState<Record<string, string>>({});
@@ -101,9 +102,15 @@ export const ItemList = withForm({
     }, []);
 
     return (
-      <div
-        className="group/card @container flex-1 space-y-3"
+      <motion.div
         data-layout={layout}
+        animate={{ flex: show ? 0.7 : 1 }}
+        transition={{
+          type: "spring",
+          stiffness: 180,
+          damping: 28,
+        }}
+        className="group/card @container shrink-0 flex-1 space-y-3 min-w-0 will-change-[flex]"
       >
         <div className="sticky top-0 z-2 bg-background">
           <div className="relative flex flex-row gap-3 py-3">
@@ -144,7 +151,13 @@ export const ItemList = withForm({
         </div>
 
         {products.length > 0 ? (
-          <div
+          <motion.div
+            key={layout}
+            layout
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
             className={`flex-1 text-base overflow-auto no-scrollbar px-0 grid
             ${LAYOUTS.find((l) => l.value === layout)?.className}
             `}
@@ -157,12 +170,13 @@ export const ItemList = withForm({
                 layout={layout}
               />
             ))}
-          </div>
+          </motion.div>
         ) : isError && !isPending ? (
           <EmptyComponent variant="error" title={error?.message} />
         ) : (
           <EmptyComponent variant="empty" />
         )}
+
         {/* INFINITE SCROLL SENTINEL */}
         <motion.div
           ref={loadMoreRef}
@@ -174,7 +188,7 @@ export const ItemList = withForm({
             <span className="rounded-xl px-4 py-2 shadow-md ">Loading...</span>
           )}
         </motion.div>
-      </div>
+      </motion.div>
     );
   },
 });
@@ -252,9 +266,8 @@ const ProductItem = withForm({
 
     return (
       <div
-        key={product.id}
         className={cn(
-          `fade-in flex cursor-pointer items-center gap-4 rounded-xl border py-2 transition group-data-[layout=grid]/card:flex-col
+          `fade-in-50 animate-in slide-in-from-bottom-10 flex cursor-pointer items-center gap-4 rounded-xl border py-2 transition group-data-[layout=grid]/card:flex-col
           group-data-[layout=grid]/card:items-stretch group-data-[layout=grid]/card:gap-0
           group-data-[layout=grid]/card:p-0 group-data-[layout=list]/card:px-4 group-data-[layout=list]/card:not-last:mb-1 
           hover:shadow-md `,
@@ -285,7 +298,6 @@ const ProductItem = withForm({
                     {cat}
                   </Badge>
                 ))}
-                <span>{product.id}</span>
               </div>
 
               <LastPurchase
@@ -296,7 +308,7 @@ const ProductItem = withForm({
           </div>
 
           <div className="ml-auto w-24 self-center text-xs text-muted-foreground group-data-[layout=grid]/card:hidden">
-            {product.pack ?? "Pack"}
+            {product.pack ?? null}
           </div>
 
           <Price
@@ -313,7 +325,7 @@ const ProductItem = withForm({
           <div className="flex w-full items-center gap-2 group-data-[layout=list]/card:hidden">
             <div className="flex flex-1 flex-col">
               <div className="text-xs text-muted-foreground">
-                {product.pack ?? "Pack"}
+                {product.pack ?? null}
               </div>
 
               <Price price={product.price ?? 0} className="w-auto self-start" />

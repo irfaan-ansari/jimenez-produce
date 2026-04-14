@@ -20,6 +20,7 @@ import { withForm } from "@/hooks/form-context";
 import { useStore } from "@tanstack/react-form";
 import { CheckoutDialog } from "./checkout-dialog";
 import { CustomerSelectType } from "@/lib/db/schema";
+import { AnimatePresence, motion } from "motion/react";
 import { formatUSD, getAvatarFallback } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
@@ -63,93 +64,98 @@ export const OrderCart = withForm({
       form.setFieldValue("lineItemTotal", String(result.lineItemTotal));
     }, [lineItems, form]);
 
+    if (!show) return null;
     return (
-      <Card
-        className={`basis-2xs pt-4 h-[calc(100svh-80px)] sticky top-10 gap-0 rounded-2xl border text-base shadow-none ring-0 ${
-          !show ? "hidden" : ""
-        }`}
+      <motion.div
+        animate={{ flex: show ? 0.3 : 0 }}
+        transition={{ duration: 0.35, ease: "easeInOut" }}
+        className="basis-[300px] pt-4 sticky top-10 -translate-y-10"
       >
-        <CardHeader className="border-b pb-4!">
-          <CardTitle className="text-lg font-semibold">Order Summary</CardTitle>
-        </CardHeader>
-        <form.AppField name="lineItems" mode="array">
-          {(field) =>
-            field.state.value.length > 0 ? (
-              <CardContent className="no-scrollbar flex-1 overflow-y-auto px-0 py-6">
-                {field?.state?.value?.map((subField, i) => (
-                  <div
-                    className="px-6 not-first:pt-3 not-last:border-b not-last:pb-3"
-                    key={subField.productId}
-                  >
-                    <div className="flex items-center justify-start gap-2">
-                      <Avatar className="size-10 shrink-0 rounded-xl ring-2 ring-green-600/20 ring-offset-1 **:rounded-xl after:hidden">
-                        <Badge className="background-blur-sm absolute -top-2 -left-2 size-5 rounded-[100%] bg-blue-600/80">
-                          {i + 1}
+        <Card className="gap-0 rounded-2xl border h-[calc(100svh-40px)] text-base shadow-none ring-0">
+          <CardHeader className="border-b pb-4!">
+            <CardTitle className="text-lg font-semibold">
+              Order Summary
+            </CardTitle>
+          </CardHeader>
+          <form.AppField name="lineItems" mode="array">
+            {(field) =>
+              field.state.value.length > 0 ? (
+                <CardContent className="no-scrollbar flex-1 overflow-y-auto px-0 py-6">
+                  {field?.state?.value?.map((subField, i) => (
+                    <div
+                      className="px-6 not-first:pt-3 not-last:border-b not-last:pb-3"
+                      key={subField.productId}
+                    >
+                      <div className="flex items-center justify-start gap-2">
+                        <Avatar className="size-10 shrink-0 rounded-xl ring-2 ring-green-600/20 ring-offset-1 **:rounded-xl after:hidden">
+                          <Badge className="background-blur-sm absolute -top-2 -left-2 size-5 rounded-[100%] bg-blue-600/80">
+                            {i + 1}
+                          </Badge>
+                          <AvatarImage src={subField?.image!} />
+                          <AvatarFallback>
+                            {getAvatarFallback(subField.title)}
+                          </AvatarFallback>
+                        </Avatar>
+
+                        <h4 className="whitespace-wrap line-clamp-2 leading-tight">
+                          {subField.title}
+                        </h4>
+
+                        <Badge
+                          variant="secondary"
+                          className="ml-auto h-6 shrink-0 rounded-xl border border-blue-200 bg-blue-100 text-sm font-semibold text-blue-600"
+                        >
+                          {formatUSD(subField.total!)}
                         </Badge>
-                        <AvatarImage src={subField?.image!} />
-                        <AvatarFallback>
-                          {getAvatarFallback(subField.title)}
-                        </AvatarFallback>
-                      </Avatar>
-
-                      <h4 className="whitespace-wrap line-clamp-2 leading-tight">
-                        {subField.title}
-                      </h4>
-
-                      <Badge
-                        variant="secondary"
-                        className="ml-auto h-6 shrink-0 rounded-xl border border-blue-200 bg-blue-100 text-sm font-semibold text-blue-600"
-                      >
-                        {formatUSD(subField.total!)}
-                      </Badge>
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </CardContent>
-            ) : (
-              <Empty>
-                <EmptyHeader>
-                  <EmptyMedia variant="icon" className="rounded-xl">
-                    <Inbox />
-                  </EmptyMedia>
-                  <EmptyTitle>Your cart is empty</EmptyTitle>
-                </EmptyHeader>
-              </Empty>
-            )
-          }
-        </form.AppField>
-
-        <CardFooter className="flex flex-col items-stretch border-t pt-4">
-          <div className="space-y-0.5">
-            <div className="flex justify-between">
-              <span>Quantity (cs)</span>
-              <span>{values.lineItemQuantity}</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Line items</span>
-              <span>{values.lineItemCount}</span>
-            </div>
-            <div className="flex justify-between text-lg font-semibold">
-              <span>Order Total</span>
-              <span>{formatUSD(values.total)}</span>
-            </div>
-          </div>
-          <CheckoutDialog
-            form={form}
-            trigger={
-              <Button
-                className="mt-4 w-full rounded-xl"
-                size="xl"
-                disabled={!values.lineItems.length}
-                type="button"
-              >
-                Checkout <span>•</span>
-                {formatUSD(values.total)}
-              </Button>
+                  ))}
+                </CardContent>
+              ) : (
+                <Empty>
+                  <EmptyHeader>
+                    <EmptyMedia variant="icon" className="rounded-xl">
+                      <Inbox />
+                    </EmptyMedia>
+                    <EmptyTitle>Your cart is empty</EmptyTitle>
+                  </EmptyHeader>
+                </Empty>
+              )
             }
-          />
-        </CardFooter>
-      </Card>
+          </form.AppField>
+
+          <CardFooter className="flex flex-col items-stretch border-t pt-4">
+            <div className="space-y-0.5">
+              <div className="flex justify-between">
+                <span>Quantity (cs)</span>
+                <span>{values.lineItemQuantity}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Line items</span>
+                <span>{values.lineItemCount}</span>
+              </div>
+              <div className="flex justify-between text-lg font-semibold">
+                <span>Order Total</span>
+                <span>{formatUSD(values.total)}</span>
+              </div>
+            </div>
+            <CheckoutDialog
+              form={form}
+              trigger={
+                <Button
+                  className="mt-4 w-full rounded-xl"
+                  size="xl"
+                  disabled={!values.lineItems.length}
+                  type="button"
+                >
+                  Checkout <span>•</span>
+                  {formatUSD(values.total)}
+                </Button>
+              }
+            />
+          </CardFooter>
+        </Card>
+      </motion.div>
     );
   },
 });

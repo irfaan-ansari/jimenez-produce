@@ -100,7 +100,7 @@ export const OrderForm = ({
       className="relative"
     >
       <div className="flex w-full items-start gap-4">
-        <ItemList form={form} />
+        <ItemList form={form} show={showSummary} />
         <OrderCart customer={customer} form={form} show={showSummary} />
       </div>
 
