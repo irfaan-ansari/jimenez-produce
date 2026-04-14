@@ -43,29 +43,32 @@ export async function GET(req: NextRequest) {
           ? or(
               ilike(product.title, `%${q}%`),
               ilike(product.description, `%${q}%`),
-              ilike(product.identifier, `%${q}%`),
+              ilike(product.identifier, `%${q}%`)
             )
-          : undefined,
+          : undefined
       );
 
-      const products = await db.query.product.findMany({
-        where: filters,
-        limit: Number(limit),
-        offset,
-        orderBy: (product, { desc }) => [
-          desc(product.createdAt),
-          desc(product.id),
-        ],
-      });
+      const products = await db
+        .select({
+          ...getTableColumns(product),
+          price: inventory.price,
+          offerPrice: inventory.offerPrice,
+          stock: inventory.stock,
+        })
+        .from(product)
+        .innerJoin(
+          inventory,
+          and(
+            eq(inventory.productId, product.id),
+            eq(inventory.locationId, customerRes.locationId!)
+          )
+        )
+        .where(filters)
+        .orderBy(desc(product.createdAt), desc(product.id))
+        .limit(Number(limit))
+        .offset(offset);
 
       const productIds = products.map((p) => p.id);
-
-      const inv = await db.query.inventory.findMany({
-        where: and(
-          inArray(inventory.productId, productIds),
-          eq(inventory.locationId, customerRes.locationId!),
-        ),
-      });
 
       const lineItems = await db
         .select({
@@ -76,17 +79,12 @@ export async function GET(req: NextRequest) {
         .where(
           and(
             eq(order.customerId, customerRes.id),
-            inArray(lineItem.productId, productIds),
-          ),
+            inArray(lineItem.productId, productIds)
+          )
         )
         .orderBy(desc(lineItem.createdAt));
 
-      const inventoryMap = new Map<number, (typeof inv)[0]>();
       const lineItemMap = new Map<number, (typeof lineItems)[0]>();
-
-      for (const i of inv) {
-        inventoryMap.set(i.productId!, i);
-      }
 
       for (const li of lineItems) {
         lineItemMap.set(li.productId!, li);
@@ -95,7 +93,6 @@ export async function GET(req: NextRequest) {
       const finalProducts = products.map((p) => {
         return {
           ...p,
-          inventory: inventoryMap.get(p.id) ?? null,
           lastPurchased: lineItemMap.get(p.id) ?? null,
         };
       });
@@ -112,7 +109,7 @@ export async function GET(req: NextRequest) {
             totalPages: Math.ceil(total / (limit as number)),
           },
         },
-        { status: 200 },
+        { status: 200 }
       );
     } else {
       const filters = and(
@@ -121,9 +118,9 @@ export async function GET(req: NextRequest) {
           ? or(
               ilike(product.title, `%${q}%`),
               ilike(product.description, `%${q}%`),
-              ilike(product.identifier, `%${q}%`),
+              ilike(product.identifier, `%${q}%`)
             )
-          : undefined,
+          : undefined
       );
 
       const products = await db.query.product.findMany({
@@ -148,14 +145,14 @@ export async function GET(req: NextRequest) {
             totalPages: Math.ceil(total / (limit as number)),
           },
         },
-        { status: 200 },
+        { status: 200 }
       );
     }
   } catch (error) {
     console.error(error);
     return NextResponse.json(
       { message: "Failed to load data" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

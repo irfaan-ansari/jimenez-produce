@@ -320,36 +320,15 @@ export const ProductDialog = ({
                           <Warehouse />
                           <AlertTitle>{subField.name}</AlertTitle>
                           <AlertDescription>
-                            Set price and available stock for this product at{" "}
-                            {subField.name}
+                            Set price this product at {subField.name}
                           </AlertDescription>
                         </Alert>
-
                         <form.AppField
                           name={`inventory[${i}].price`}
                           children={(field) => (
                             <field.TextField
                               label="Price"
                               className="**:data-[slot=input]:rounded-xl"
-                            />
-                          )}
-                        />
-                        <form.AppField
-                          name={`inventory[${i}].offerPrice`}
-                          children={(field) => (
-                            <field.TextField
-                              label="Offer Price"
-                              className="**:data-[slot=input]:rounded-xl"
-                            />
-                          )}
-                        />
-
-                        <form.AppField
-                          name={`inventory[${i}].stock`}
-                          children={(field) => (
-                            <field.TextField
-                              label="Stock"
-                              className="**:data-[slot=input]:rounded-xl col"
                             />
                           )}
                         />

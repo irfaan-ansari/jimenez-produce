@@ -89,7 +89,6 @@ export const ItemList = withForm({
       setLayout(val);
       localStorage.setItem("layout-state", val);
     };
-    console.log("products::", products);
 
     React.useEffect(() => {
       const savedLayout = localStorage.getItem("layout-state") as
@@ -245,11 +244,9 @@ const ProductItem = withForm({
         updatedItems.map((item) => {
           return {
             ...item,
-            total: `${
-              Number(item.inventory.offerPrice) * Number(item.quantity)
-            }`,
+            total: `${Number(item.price) * Number(item.quantity)}`,
           };
-        }),
+        })
       );
     };
 
@@ -261,7 +258,7 @@ const ProductItem = withForm({
           group-data-[layout=grid]/card:items-stretch group-data-[layout=grid]/card:gap-0
           group-data-[layout=grid]/card:p-0 group-data-[layout=list]/card:px-4 group-data-[layout=list]/card:not-last:mb-1 
           hover:shadow-md `,
-          isCartItem ? "bg-primary/6" : "hover:bg-primary/6 ",
+          isCartItem ? "bg-primary/6" : "hover:bg-primary/6 "
         )}
         onClick={() => updateItem({ action: "increase" })}
       >
@@ -303,7 +300,7 @@ const ProductItem = withForm({
           </div>
 
           <Price
-            price={product?.inventory?.offerPrice ?? 0}
+            price={product.price ?? 0}
             className="group-data-[layout=grid]/card:hidden"
           />
 
@@ -319,10 +316,7 @@ const ProductItem = withForm({
                 {product.pack ?? "Pack"}
               </div>
 
-              <Price
-                price={product?.inventory?.offerPrice ?? 0}
-                className="w-auto self-start"
-              />
+              <Price price={product.price ?? 0} className="w-auto self-start" />
             </div>
             <QuantityInput qty={qty} updateItem={updateItem} />
           </div>
@@ -344,7 +338,7 @@ const LastPurchase = ({
     <Badge
       className={cn(
         "h-5 shrink-0 rounded-xl bg-blue-600 whitespace-nowrap",
-        className,
+        className
       )}
     >
       {product.lastPurchased.quantity}cs •{" "}
@@ -441,10 +435,7 @@ const Thumbnail = ({
                 {product.pack ?? "Pack"}
               </div>
 
-              <Price
-                price={product?.inventory?.offerPrice ?? 0}
-                className="w-auto self-start"
-              />
+              <Price price={product.price ?? 0} className="w-auto self-start" />
             </div>
             <QuantityInput qty={qty} updateItem={updateItem} />
           </div>
@@ -593,7 +584,7 @@ const SearchBar = ({ filter, setFilter }: { filter: any; setFilter: any }) => {
 
   const debounce = useDebounce(
     (v: string) => setFilter((p: any) => ({ ...p, q: v, page: "1" })),
-    400,
+    400
   );
 
   return (

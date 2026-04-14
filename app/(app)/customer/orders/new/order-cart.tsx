@@ -36,8 +36,7 @@ export const OrderCart = withForm({
     React.useEffect(() => {
       const result = lineItems.reduce(
         (acc, item) => {
-          //
-          const price = Number(item.inventory.price || 0);
+          const price = Number(item.price || 0);
           const qty = Number(item.quantity || 0);
 
           acc.total += price * qty;
@@ -54,7 +53,7 @@ export const OrderCart = withForm({
           lineItemCount: 0,
           lineItemQuantity: 0,
           lineItemTotal: 0,
-        },
+        }
       );
 
       form.setFieldValue("total", String(result.total));
@@ -66,7 +65,9 @@ export const OrderCart = withForm({
 
     return (
       <Card
-        className={`basis-2xs pt-4 h-[calc(100svh-80px)] sticky top-10 gap-0 rounded-2xl border text-base shadow-none ring-0 ${!show ? "hidden" : ""}`}
+        className={`basis-2xs pt-4 h-[calc(100svh-80px)] sticky top-10 gap-0 rounded-2xl border text-base shadow-none ring-0 ${
+          !show ? "hidden" : ""
+        }`}
       >
         <CardHeader className="border-b pb-4!">
           <CardTitle className="text-lg font-semibold">Order Summary</CardTitle>

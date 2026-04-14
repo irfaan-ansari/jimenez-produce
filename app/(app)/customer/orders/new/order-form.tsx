@@ -52,7 +52,7 @@ export const OrderForm = ({
       receiverPhone: deliverySchedule[0].receivingPhone,
       deliveryDate: format(
         getNextDayDate(deliverySchedule[0].day),
-        "MM-dd-yyyy",
+        "MM-dd-yyyy"
       ),
       deliveryWindow: deliverySchedule[0].window,
       deliveryInstruction: deliverySchedule[0].instructions,
@@ -86,9 +86,9 @@ export const OrderForm = ({
     },
   });
 
-  const lineItemCount = useStore(
+  const { lineItemCount, total } = useStore(
     form.store,
-    (state) => state.values.lineItemCount,
+    (state) => state.values
   );
 
   return (
@@ -112,7 +112,7 @@ export const OrderForm = ({
                 {lineItemCount ?? 0} items in cart
               </span>
               <span className="text-base font-bold text-primary">
-                {formatUSD(124)}
+                {formatUSD(total)}
               </span>
             </div>
             <Button

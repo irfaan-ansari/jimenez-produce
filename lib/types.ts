@@ -45,7 +45,10 @@ export type Pagination = {
 };
 
 export type CustomerProductType = ProductSelectType & {
-  inventory: InventorySelectType;
+  price: string | null;
+  offerPrice: string | null;
+  stock: string | null;
+} & {
   lastPurchased: LineItemSelectType;
 };
 

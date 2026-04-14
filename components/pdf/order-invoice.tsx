@@ -32,12 +32,16 @@ export const OrderInvoice = ({ data }: OrderInvoiceProps) => {
                 Jimenez Produce LLC
               </Text>
               <View style={styles.headerContactText}>
-                <Text>{data.location?.address?.street}</Text>
                 <Text>
-                  {data.location?.address?.city} {data.location?.address?.state}
+                  {data.location?.address?.street}{" "}
+                  {data.location?.address?.city}
+                </Text>
+                <Text>
+                  {data.location?.address?.state}
                   {data.location?.address?.zip}
                 </Text>
-                <Text>{data.location?.phone}</Text>
+                <Text>Phone: {data.location?.phone}</Text>
+                <Text>Email: {data.location?.email}</Text>
               </View>
             </View>
           </View>

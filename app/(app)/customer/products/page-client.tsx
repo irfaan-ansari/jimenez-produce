@@ -72,7 +72,7 @@ export const PageClient = () => {
                     {product.title}
                   </CardTitle>
                   <CardTitle className="font-semibold text-primary">
-                    {formatUSD(product.inventory?.price ?? 0)}
+                    {formatUSD(product.price ?? 0)}
                   </CardTitle>
                 </CardContent>
               </Card>

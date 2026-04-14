@@ -1,5 +1,5 @@
 import { formOptions } from "@tanstack/react-form";
-import { InventoryInsertType, LineItemInsertType } from "@/lib/db/schema";
+import { LineItemInsertType } from "@/lib/db/schema";
 
 export const defaultValues = {
   shippingAddress: { street: "", city: "", state: "", zip: "" },
@@ -10,9 +10,7 @@ export const defaultValues = {
   lineItemCount: "0",
   lineItemQuantity: "0",
   lineItemTotal: "0",
-  lineItems: [] as (LineItemInsertType & { image: string | undefined } & {
-    inventory: InventoryInsertType;
-  })[],
+  lineItems: [] as (LineItemInsertType & { image: string | undefined })[],
   subtotal: "0",
   discount: "0",
   tax: "0",

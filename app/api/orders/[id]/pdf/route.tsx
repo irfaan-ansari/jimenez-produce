@@ -8,7 +8,7 @@ import { OrderInvoice } from "@/components/pdf/order-invoice";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await getSession();
 

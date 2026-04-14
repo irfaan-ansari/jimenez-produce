@@ -14,6 +14,7 @@ import {
   serial,
   integer,
   date,
+  unique,
 } from "drizzle-orm/pg-core";
 import { on } from "events";
 
@@ -51,7 +52,7 @@ export const session = pgTable(
       .references(() => user.id, { onDelete: "cascade" }),
     impersonatedBy: text("impersonated_by"),
   },
-  (table) => [index("session_userId_idx").on(table.userId)],
+  (table) => [index("session_userId_idx").on(table.userId)]
 );
 
 export const account = pgTable(
@@ -75,7 +76,7 @@ export const account = pgTable(
       .$onUpdate(() => /* @__PURE__ */ new Date())
       .notNull(),
   },
-  (table) => [index("account_userId_idx").on(table.userId)],
+  (table) => [index("account_userId_idx").on(table.userId)]
 );
 
 export const verification = pgTable(
@@ -91,7 +92,7 @@ export const verification = pgTable(
       .$onUpdate(() => /* @__PURE__ */ new Date())
       .notNull(),
   },
-  (table) => [index("verification_identifier_idx").on(table.identifier)],
+  (table) => [index("verification_identifier_idx").on(table.identifier)]
 );
 
 export const userRelations = relations(user, ({ many }) => ({
@@ -226,7 +227,7 @@ export const customer = pgTable(
   (table) => [
     index("customer_status_idx").on(table.status),
     index("customer_created_at_idx").on(table.createdAt),
-  ],
+  ]
 );
 
 export const customerRelations = relations(customer, ({ one }) => ({
@@ -276,7 +277,7 @@ export const product = pgTable(
   (table) => [
     index("products_status_idx").on(table.status),
     index("products_category_idx").on(table.categories),
-  ],
+  ]
 );
 
 export type ProductInsertType = InferInsertModel<typeof product>;
@@ -289,8 +290,12 @@ export const inventory = pgTable(
   "inventory",
   {
     id: serial("id").primaryKey(),
-    locationId: integer("location_id"),
-    productId: integer("product_id"),
+    locationId: integer("location_id")
+      .notNull()
+      .references(() => location.id, { onDelete: "cascade" }),
+    productId: integer("product_id")
+      .notNull()
+      .references(() => product.id, { onDelete: "cascade" }),
     price: text("price"),
     offerPrice: text("offer_price"),
     stock: text("stock"),
@@ -303,7 +308,11 @@ export const inventory = pgTable(
   (table) => [
     index("product_locationId_idx").on(table.locationId),
     index("product_productId_idx").on(table.productId),
-  ],
+    unique("inventory_product_location_unique").on(
+      table.productId,
+      table.locationId
+    ),
+  ]
 );
 
 export const productRelation = relations(product, ({ many }) => ({
@@ -358,7 +367,7 @@ export const customerInvite = pgTable(
       .$onUpdate(() => /* @__PURE__ */ new Date())
       .notNull(),
   },
-  (table) => [index("customer_invite_status_idx").on(table.status)],
+  (table) => [index("customer_invite_status_idx").on(table.status)]
 );
 
 export const customerInviteRelations = relations(customerInvite, ({ one }) => ({
@@ -545,7 +554,7 @@ export const jobApplications = pgTable(
   (table) => [
     index("job_application_position_idx").on(table.position),
     index("job_application_status_idx").on(table.status),
-  ],
+  ]
 );
 
 export const applicantRelations = relations(jobApplications, ({ one }) => ({
@@ -574,7 +583,7 @@ export const jobInvite = pgTable(
       () => jobApplications.id,
       {
         onDelete: "set null",
-      },
+      }
     ),
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at")
@@ -582,7 +591,7 @@ export const jobInvite = pgTable(
       .$onUpdate(() => /* @__PURE__ */ new Date())
       .notNull(),
   },
-  (table) => [index("job_invite_status_idx").on(table.status)],
+  (table) => [index("job_invite_status_idx").on(table.status)]
 );
 
 export const jobInviteRelations = relations(jobInvite, ({ one }) => ({
@@ -639,7 +648,7 @@ export const order = pgTable(
   (table) => [
     index("order_locationId_idx").on(table.locationId),
     index("order_customerId_idx").on(table.customerId),
-  ],
+  ]
 );
 
 export const orderRelations = relations(order, ({ one, many }) => ({
@@ -690,7 +699,7 @@ export const lineItem = pgTable(
   (table) => [
     index("lineItem_locationId_idx").on(table.locationId),
     index("lineItem_customerId_idx").on(table.customerId),
-  ],
+  ]
 );
 
 export const lineItemRelations = relations(lineItem, ({ one }) => ({

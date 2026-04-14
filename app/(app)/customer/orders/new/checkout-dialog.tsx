@@ -197,7 +197,7 @@ export const CheckoutDialog = withForm({
               children={({ isSubmitting, canSubmit }) => (
                 <Button
                   size="xl"
-                  className="min-28 rounded-xl"
+                  className="min-w-32 rounded-xl"
                   onClick={() => form.handleSubmit()}
                   disabled={isSubmitting || !canSubmit}
                 >

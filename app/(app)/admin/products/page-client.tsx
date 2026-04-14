@@ -8,7 +8,6 @@ import {
   CardDescription,
   CardTitle,
 } from "@/components/ui/card";
-import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import {
   EmptyComponent,
@@ -19,13 +18,13 @@ import { STATUS_MAP } from "@/lib/constants/product";
 import { useRouterStuff } from "@/hooks/use-router-stuff";
 import { Pagination } from "@/components/admin/pagination";
 import { ProductAction } from "@/components/admin/product-actions";
-import { AdminProductType } from "@/lib/types";
+import { AdminProductResponse, AdminProductType } from "@/lib/types";
 
 export const PageClient = () => {
   const { searchParams, queryParams } = useRouterStuff();
 
   const { data, error, isPending, isError } = useProducts(
-    searchParams.toString(),
+    searchParams.toString()
   );
 
   // loading
@@ -46,7 +45,7 @@ export const PageClient = () => {
     <>
       <div className="flex-1 space-y-3">
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 lg:gap-6 xl:grid-cols-4 2xl:grid-cols-6">
-          {data?.data?.map((product, i) => {
+          {(data as AdminProductResponse)?.data?.map((product, i) => {
             const map = STATUS_MAP[product.status as keyof typeof STATUS_MAP];
 
             return (

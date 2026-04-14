@@ -1,0 +1,3002 @@
+[
+  {
+    "location_id": 4,
+    "code": "NSF- Fee",
+    "description": "Return Check Fee",
+    "price": 35
+  },
+  {
+    "location_id": 4,
+    "code": "Plate Charge",
+    "description": "Custom Plate Charge",
+    "price": 300
+  },
+  {
+    "location_id": 4,
+    "code": "1BCC1",
+    "description": "Corn Chips Yellow 32lb (Banderita) 2713",
+    "price": 23.99
+  },
+  {
+    "location_id": 4,
+    "code": "1BCC2",
+    "description": "Corn Chips White 30lb (Banderita) 2767",
+    "price": 24.65
+  },
+  {
+    "location_id": 4,
+    "code": "1BCC3",
+    "description": "Corn Chips Color 32lb Red/Whit/Grn (Banderita) 2715",
+    "price": 33.5
+  },
+  {
+    "location_id": 4,
+    "code": "1BCME1",
+    "description": "Enchilada White 6\" 6/90ct (Banderita) 2716",
+    "price": 24.99
+  },
+  {
+    "location_id": 4,
+    "code": "1BCMT01",
+    "description": "4.5\" Corn Mini Street Taco Tortilla White 6/80ct (Banderita) 0118",
+    "price": 23.75
+  },
+  {
+    "location_id": 4,
+    "code": "1BCTY",
+    "description": "Taco Yellow Frying Corn 6\" 6/160 (Banderita) 2704",
+    "price": 25.95
+  },
+  {
+    "location_id": 4,
+    "code": "1BF04",
+    "description": "4.5\" Flour Tortilla 16/20ct (Banderita) 0128",
+    "price": 27.24
+  },
+  {
+    "location_id": 4,
+    "code": "1BF06",
+    "description": "6\" Flour Tortilla 12/24ct (Banderita) 2708",
+    "price": 23.97
+  },
+  {
+    "location_id": 4,
+    "code": "1BF06W",
+    "description": "6\" Whole Wheat Tortilla 12/24ct (Banderita) 27328",
+    "price": 28.61
+  },
+  {
+    "location_id": 4,
+    "code": "1BF08",
+    "description": "8\" Flour Tortilla 16/12ct (Banderita) 27088",
+    "price": 24.27
+  },
+  {
+    "location_id": 4,
+    "code": "1BF10",
+    "description": "10\" Flour Tortilla 16/12ct (Banderita) 27108",
+    "price": 32.42
+  },
+  {
+    "location_id": 4,
+    "code": "1BF12",
+    "description": "12\" Flour Tortilla 8/12ct (Banderita) 27128",
+    "price": 23.32
+  },
+  {
+    "location_id": 4,
+    "code": "1BF14",
+    "description": "14\" Pressed Flour Tortilla 8/12ct (2707)",
+    "price": 38.5
+  },
+  {
+    "location_id": 4,
+    "code": "1FCC1",
+    "description": "Chips Yellow Percut (4134PB) La Fama",
+    "price": 17.5
+  },
+  {
+    "location_id": 4,
+    "code": "1FCM1",
+    "description": "Enchilada White Maseca 6\" (2180) La Fama",
+    "price": 25.9
+  },
+  {
+    "location_id": 4,
+    "code": "1MAMA",
+    "description": "Tortilla Yellow Mesa 16/30oz (Mi Mama)",
+    "price": 32.5
+  },
+  {
+    "location_id": 4,
+    "code": "1MAMA2",
+    "description": "Tortilla Mini Taco/ Little Taco \"4.5\" (Mr. Chips) 6/62oz",
+    "price": 26.7
+  },
+  {
+    "location_id": 4,
+    "code": "1SLC1",
+    "description": "White Chips 25lb (161) Super Lopez",
+    "price": 17.5
+  },
+  {
+    "location_id": 4,
+    "code": "2DC1",
+    "description": "32lb Sour Cream Tub",
+    "price": 41.5
+  },
+  {
+    "location_id": 4,
+    "code": "2DE2",
+    "description": "Eggs, Medium USDA Loose 15dz",
+    "price": 30.1
+  },
+  {
+    "location_id": 4,
+    "code": "2DM1",
+    "description": "Solid Margarine 30/1 lb",
+    "price": 36
+  },
+  {
+    "location_id": 4,
+    "code": "2DM2",
+    "description": "Liquid Margarine 2/17.5gl",
+    "price": 45
+  },
+  {
+    "location_id": 4,
+    "code": "2DMLK",
+    "description": "Milk Whole 4/1galon",
+    "price": 20.75
+  },
+  {
+    "location_id": 4,
+    "code": "2DQ1010",
+    "description": "Cheese, Queso Blanco Blend 90/10 6/5lb (Alejandro)",
+    "price": 68
+  },
+  {
+    "location_id": 4,
+    "code": "2DQ102",
+    "description": "Cheese, EZ Melt White American 6/5lb (Alejandro)",
+    "price": 71.83
+  },
+  {
+    "location_id": 4,
+    "code": "2DQ103",
+    "description": "Cheese, Extra Melt White 6/5lb (Land O' Lakes)",
+    "price": 98.99
+  },
+  {
+    "location_id": 4,
+    "code": "2DQ202",
+    "description": "Cheese, Mild Cheddar Block Avg 40lb",
+    "price": 2.35
+  },
+  {
+    "location_id": 4,
+    "code": "2DQ203",
+    "description": "Cheese Mont Jack Shred Feather 4/5lb",
+    "price": 45
+  },
+  {
+    "location_id": 4,
+    "code": "2DQ204",
+    "description": "Cheese Cheddar Feather Shred 4/5lb",
+    "price": 45
+  },
+  {
+    "location_id": 4,
+    "code": "2DQ2041",
+    "description": "Cheese Monterrey Jack Block 40LB  ..wgt________ wgt________ wgt________ wgt________",
+    "price": 2.37
+  },
+  {
+    "location_id": 4,
+    "code": "2DQ302",
+    "description": "Queso Fresco (Riquesito) 12/10oz",
+    "price": 32.99
+  },
+  {
+    "location_id": 4,
+    "code": "2DQ305",
+    "description": "Queso Fresco (Cacique) 12/10oz",
+    "price": 36
+  },
+  {
+    "location_id": 4,
+    "code": "2DWC1",
+    "description": "Whpd Cream Topping Non Dairy 12/14oz",
+    "price": 39.95
+  },
+  {
+    "location_id": 4,
+    "code": "3CA01",
+    "description": "Mints, Butter Thank You 1000ct",
+    "price": 48.5
+  },
+  {
+    "location_id": 4,
+    "code": "3CA012",
+    "description": "Mints, Butter (El Paso) 1000ct",
+    "price": 51.5
+  },
+  {
+    "location_id": 4,
+    "code": "3CA013",
+    "description": "Mints, Butter (Pedros) 1000ct",
+    "price": 51.5
+  },
+  {
+    "location_id": 4,
+    "code": "3CA015",
+    "description": "Mints, Butter (Blue Iguana) 1000ct",
+    "price": 48.45
+  },
+  {
+    "location_id": 4,
+    "code": "3CA02",
+    "description": "Candy Peppermint Starlight 8/3LB",
+    "price": 72.03
+  },
+  {
+    "location_id": 4,
+    "code": "3CNCRN",
+    "description": "Corn Whole Yllw 24/15.25oz (Del Monte)",
+    "price": 48.95
+  },
+  {
+    "location_id": 4,
+    "code": "3CNHOM",
+    "description": "White Hominy/Maiz Pozolero 6/10 (Bush's)",
+    "price": 44.25
+  },
+  {
+    "location_id": 4,
+    "code": "3CNJ1",
+    "description": "Jalapeño Whole w/Escabeche 6/10 (Clemente Jacq)",
+    "price": 34.75
+  },
+  {
+    "location_id": 4,
+    "code": "3CNJ2",
+    "description": "Jalapeño Nacho 6/10 (Clemente Jacq)",
+    "price": 35.85
+  },
+  {
+    "location_id": 4,
+    "code": "3CNMSH",
+    "description": "Mushrroms Stems Can 24/16oz",
+    "price": 84.31
+  },
+  {
+    "location_id": 4,
+    "code": "3CNPA",
+    "description": "Pineapple, Sliced in Juice 12/20oz (Dole)",
+    "price": 35
+  },
+  {
+    "location_id": 4,
+    "code": "3CNPC2",
+    "description": "Chipotle Pepper 24/7oz (Costena)",
+    "price": 50.95
+  },
+  {
+    "location_id": 4,
+    "code": "3CNT1",
+    "description": "Tomato, Whole Peeled 6/10 (Emerald)",
+    "price": 23.75
+  },
+  {
+    "location_id": 4,
+    "code": "3CNT2",
+    "description": "Tomato, Whole Peeled Pouch (Old California)",
+    "price": 24.15
+  },
+  {
+    "location_id": 4,
+    "code": "3CNT3",
+    "description": "Tomato, Puree Heavy 6/10 (Red Pack)",
+    "price": 42.4
+  },
+  {
+    "location_id": 4,
+    "code": "3CNT31",
+    "description": "Tomato, Puree Heavy 6/10 (San Benito)",
+    "price": 42.4
+  },
+  {
+    "location_id": 4,
+    "code": "3CNT4",
+    "description": "Tomato, Diced 3/8\" Juice Pld 6/10 (Emerald)",
+    "price": 28
+  },
+  {
+    "location_id": 4,
+    "code": "3CNT5",
+    "description": "Tomato, Fire Roasted Diced 3/4\" 6/10 (San Benito)",
+    "price": 46.15
+  },
+  {
+    "location_id": 4,
+    "code": "3CNT6",
+    "description": "Tomato, Whole Peeled 6/10 (San Benito)",
+    "price": 25.5
+  },
+  {
+    "location_id": 4,
+    "code": "3CNT7",
+    "description": "Tomato, Sauce 6/10 (San Benito)",
+    "price": 32.5
+  },
+  {
+    "location_id": 4,
+    "code": "3CNTV2",
+    "description": "Tomatillo, Whole Green 6/10lb (Del Sol)",
+    "price": 37.75
+  },
+  {
+    "location_id": 4,
+    "code": "3FB01",
+    "description": "Pinto Bean Triple Clean 50lb",
+    "price": 28.75
+  },
+  {
+    "location_id": 4,
+    "code": "3FB02",
+    "description": "Black Bean/ Frijol Negro 50lb",
+    "price": 35
+  },
+  {
+    "location_id": 4,
+    "code": "3FC01",
+    "description": "Cherries Maraschino w/stem Plastic Jug 1/.5gal **Split**",
+    "price": 21
+  },
+  {
+    "location_id": 4,
+    "code": "3FC02",
+    "description": "Cherries Maraschino w/stem Plastic Jug 6/.5gal",
+    "price": 103
+  },
+  {
+    "location_id": 4,
+    "code": "3FCN01",
+    "description": "Seasoning Culantro Anchiote 15/36/6.33oz (Goya)",
+    "price": 66.95
+  },
+  {
+    "location_id": 4,
+    "code": "3FCN02",
+    "description": "Achiote Pasta 12/15oz (Yucateco)",
+    "price": 62
+  },
+  {
+    "location_id": 4,
+    "code": "3FCN04",
+    "description": "Montreal Steak Seasoning 29oz (Grill Mates)",
+    "price": 15.72
+  },
+  {
+    "location_id": 4,
+    "code": "3FCN05",
+    "description": "Seasoning, Montreal Steak 24oz (Jimenez Produce)",
+    "price": 10.85
+  },
+  {
+    "location_id": 4,
+    "code": "3FCN06",
+    "description": "Seasoning, Lemon Pepper 29oz Plastic Shaker (Jimenez Produce)",
+    "price": 11.82
+  },
+  {
+    "location_id": 4,
+    "code": "3FCND01",
+    "description": "Ketchup Foil Pack 1000/9g (Red Gold)",
+    "price": 28
+  },
+  {
+    "location_id": 4,
+    "code": "3FCND02",
+    "description": "Ketchup Squeeze Red 16/20oz (Red Gold)",
+    "price": 29.75
+  },
+  {
+    "location_id": 4,
+    "code": "3FCND04",
+    "description": "Ketchup, Fancy Jug W/Pump 6/114oz (Red Gold)",
+    "price": 38
+  },
+  {
+    "location_id": 4,
+    "code": "3FCND061",
+    "description": "Seasoning Salt 5LB Jug (Monarch)",
+    "price": 0
+  },
+  {
+    "location_id": 4,
+    "code": "3FCND11",
+    "description": "Mayonnaise Hvy Duty 4/1gal",
+    "price": 53.65
+  },
+  {
+    "location_id": 4,
+    "code": "3FCND12",
+    "description": "Mayonnaise Packets 200/9gm (Heinz)",
+    "price": 25.53
+  },
+  {
+    "location_id": 4,
+    "code": "3FCND20",
+    "description": "Mustard Salad Classic Yellow 4/105oz (French)",
+    "price": 29.5
+  },
+  {
+    "location_id": 4,
+    "code": "3FCND21",
+    "description": "Mustard Packets 200/5.6gm (Heinz)",
+    "price": 15.5
+  },
+  {
+    "location_id": 4,
+    "code": "3FCND31",
+    "description": "A-1 Steak Sauce 12/10oz",
+    "price": 80.32
+  },
+  {
+    "location_id": 4,
+    "code": "3FCND32",
+    "description": "57 Steak Sauce 12/10oz",
+    "price": 75
+  },
+  {
+    "location_id": 4,
+    "code": "3FCND33",
+    "description": "Sauce, Worcestershire 4/1gal ( French)",
+    "price": 45.42
+  },
+  {
+    "location_id": 4,
+    "code": "3FCND34",
+    "description": "White Vinegar/Vinagre Blanco 4% 4/1gal",
+    "price": 15
+  },
+  {
+    "location_id": 4,
+    "code": "3FCND35",
+    "description": "Kikkoman Soy Sauce 5gal",
+    "price": 46.75
+  },
+  {
+    "location_id": 4,
+    "code": "3FCND36",
+    "description": "Kikkoman Soy Sauce 4/1gal",
+    "price": 52.5
+  },
+  {
+    "location_id": 4,
+    "code": "3FCS",
+    "description": "Crackers Saltine 500/2ct (Lance)",
+    "price": 20.7
+  },
+  {
+    "location_id": 4,
+    "code": "3FCS1",
+    "description": "Corn Flakes 4/34oz",
+    "price": 23.5
+  },
+  {
+    "location_id": 4,
+    "code": "3FCS2",
+    "description": "Croutons Homestyle Season 4/2.5lb",
+    "price": 29.75
+  },
+  {
+    "location_id": 4,
+    "code": "3FD1",
+    "description": "Dressing, Ranch Pouch 60/1.5oz (Kens)",
+    "price": 25.2
+  },
+  {
+    "location_id": 4,
+    "code": "3FD2",
+    "description": "Dressing, Blue Cheese Pouch 60/1.5oz (Kens)",
+    "price": 29.68
+  },
+  {
+    "location_id": 4,
+    "code": "3FD3",
+    "description": "Dressing, Caesar Pouch 60/1.5oz (Kens)",
+    "price": 26.93
+  },
+  {
+    "location_id": 4,
+    "code": "3FD4",
+    "description": "Dressing, Honey Mustard Pouch 60/1.5oz (Kens)",
+    "price": 29.5
+  },
+  {
+    "location_id": 4,
+    "code": "3FD5",
+    "description": "Dressing, Italian Light Pouch 60/1.5oz (Kens)",
+    "price": 21
+  },
+  {
+    "location_id": 4,
+    "code": "3FD6",
+    "description": "Dressing, 1,000 Island Pouch 60/1.5oz (Kens)",
+    "price": 24.56
+  },
+  {
+    "location_id": 4,
+    "code": "3FD7",
+    "description": "Dressing, Creamy French Pouch 60/1.5oz (Kens)",
+    "price": 22.75
+  },
+  {
+    "location_id": 4,
+    "code": "3FD8",
+    "description": "Dressing, Balsamic Vinaigrette Pouch 60/1.5oz (Kens)",
+    "price": 24.45
+  },
+  {
+    "location_id": 4,
+    "code": "3FDG1",
+    "description": "Dressing, Italian Jug 4/1gal (Wish-Bone)",
+    "price": 51.5
+  },
+  {
+    "location_id": 4,
+    "code": "3FDG2",
+    "description": "Dressing, Ranch 4/1Gallon (Kens)",
+    "price": 62.58
+  },
+  {
+    "location_id": 4,
+    "code": "3FFL1",
+    "description": "All Purpose Flour/ Arina Todo Uso 25Lb",
+    "price": 15.92
+  },
+  {
+    "location_id": 4,
+    "code": "3FHNY",
+    "description": "Honey 12/12oz Squeeze Bear Bottle",
+    "price": 38.31
+  },
+  {
+    "location_id": 4,
+    "code": "3FHNY1",
+    "description": "Agave Nectar Light Organic 6/23.5oz (Madhava)",
+    "price": 37.7
+  },
+  {
+    "location_id": 4,
+    "code": "3FM3",
+    "description": "Maseca Nixtamasa 10/4lb",
+    "price": 48.5
+  },
+  {
+    "location_id": 4,
+    "code": "3FM50",
+    "description": "Maseca Regular 50lb",
+    "price": 46.75
+  },
+  {
+    "location_id": 4,
+    "code": "3FR01",
+    "description": "Rice, Long Grain 4% 50lb (Supreme)",
+    "price": 21.5
+  },
+  {
+    "location_id": 4,
+    "code": "3FR02",
+    "description": "Rice, Jasmine Thai 44LB (Gourmet)",
+    "price": 48.95
+  },
+  {
+    "location_id": 4,
+    "code": "3FSBBQ1",
+    "description": "BBQ Sauce 4/1gal (Swt Bby Rays)",
+    "price": 63
+  },
+  {
+    "location_id": 4,
+    "code": "3FSG1",
+    "description": "Sugar Granulated Fine 50LB (Imperial)",
+    "price": 35.25
+  },
+  {
+    "location_id": 4,
+    "code": "3FSG2",
+    "description": "Sugar Packets 2000ct (Domino)",
+    "price": 23.95
+  },
+  {
+    "location_id": 4,
+    "code": "3FSG3",
+    "description": "Sugar Substitute (Pink) 2000ct",
+    "price": 20.5
+  },
+  {
+    "location_id": 4,
+    "code": "3FSG4",
+    "description": "Sugar Substitute (Blue) 2000ct",
+    "price": 29.65
+  },
+  {
+    "location_id": 4,
+    "code": "3FSG5",
+    "description": "Sugar Substitute (Yellow) 2000ct",
+    "price": 31.61
+  },
+  {
+    "location_id": 4,
+    "code": "3FSL1",
+    "description": "Salt Bag 25 lb",
+    "price": 10.25
+  },
+  {
+    "location_id": 4,
+    "code": "3FSL2",
+    "description": "Salt, Sea Crystal Grinder 36/2.12oz (McCormick)",
+    "price": 90.96
+  },
+  {
+    "location_id": 4,
+    "code": "3FSL3",
+    "description": "Black Pepper Whole, Grinder Glass 36/1.24oz (McCormick)",
+    "price": 91.96
+  },
+  {
+    "location_id": 4,
+    "code": "3FSYP1",
+    "description": "Topping Chocolate Sqz Bottle 12/19.5oz (Smuckers)",
+    "price": 43.5
+  },
+  {
+    "location_id": 4,
+    "code": "3FSYP2",
+    "description": "Topping Caramel Sqz Bottle 12/19.5 oz (Smuckers)",
+    "price": 34.5
+  },
+  {
+    "location_id": 4,
+    "code": "3FSYP3",
+    "description": "Topping Raspberry Sqz Bottle 12/19.25oz (Smuckers)",
+    "price": 43.99
+  },
+  {
+    "location_id": 4,
+    "code": "3FSYP5",
+    "description": "Chocolate Abuelita, 6 Tab. 12/19oz",
+    "price": 89.75
+  },
+  {
+    "location_id": 4,
+    "code": "3FVNLLA",
+    "description": "Vanilla Extract Imitation 32oz (McCormick)",
+    "price": 10.5
+  },
+  {
+    "location_id": 4,
+    "code": "3HS01A",
+    "description": "Cholula Salsa Original Bottle 24/5oz",
+    "price": 63.6
+  },
+  {
+    "location_id": 4,
+    "code": "3HS02",
+    "description": "Tabasco Sauce 12/5oz",
+    "price": 37.78
+  },
+  {
+    "location_id": 4,
+    "code": "3HS03",
+    "description": "El Yucateco Green Sauce 12/4oz",
+    "price": 28.5
+  },
+  {
+    "location_id": 4,
+    "code": "3HS04",
+    "description": "El Yucateco Red Sauce 12/4oz",
+    "price": 28.97
+  },
+  {
+    "location_id": 4,
+    "code": "3HS05",
+    "description": "El Yucateco Habenero XXXTRA 12/4oz",
+    "price": 28.75
+  },
+  {
+    "location_id": 4,
+    "code": "3HS06",
+    "description": "Valentina Roja Salsa 24/12oz",
+    "price": 34.9
+  },
+  {
+    "location_id": 4,
+    "code": "3HS07",
+    "description": "Valentina Negra Salsa Picante 24/12oz",
+    "price": 33.25
+  },
+  {
+    "location_id": 4,
+    "code": "3HS08",
+    "description": "Tapatio Salsa 24/5oz",
+    "price": 34.99
+  },
+  {
+    "location_id": 4,
+    "code": "3HS09",
+    "description": "Salsa Huichol Hot Sauce 24/6.5oz",
+    "price": 0
+  },
+  {
+    "location_id": 4,
+    "code": "3HS10",
+    "description": "Mole Doña Maria Rojo 12/8.25",
+    "price": 43.86
+  },
+  {
+    "location_id": 4,
+    "code": "3HS14",
+    "description": "Sauce, Savor Imports Sweet Chili Sauce  3-3lt",
+    "price": 68
+  },
+  {
+    "location_id": 4,
+    "code": "3HS15",
+    "description": "Sauce, Original Hot Sauce 4/1gal (Franks)",
+    "price": 72.5
+  },
+  {
+    "location_id": 4,
+    "code": "3HS17",
+    "description": "Sweet Chili Wing Sauce 4/1gal (Swt Bby Rays)",
+    "price": 75.95
+  },
+  {
+    "location_id": 4,
+    "code": "3HS18",
+    "description": "Garlic Parm Wing Sauce 4/64oz (Swt Bby Rays)",
+    "price": 45.34
+  },
+  {
+    "location_id": 4,
+    "code": "3HS19",
+    "description": "Mango Habanero Sauce 4/64oz (Swt Bby Rays)",
+    "price": 55.74
+  },
+  {
+    "location_id": 4,
+    "code": "3KNR1",
+    "description": "Knorr Caldo de Pollo/Chicken 4/4.4lb",
+    "price": 57.25
+  },
+  {
+    "location_id": 4,
+    "code": "3KNR2",
+    "description": "Knorr Caldo de Tomate 4/4.4lb",
+    "price": 56.75
+  },
+  {
+    "location_id": 4,
+    "code": "3KNR3",
+    "description": "Knorr Caldo de Res/Beef 4/4.4lb",
+    "price": 58.5
+  },
+  {
+    "location_id": 4,
+    "code": "3KNR4",
+    "description": "Knorr Caldo de Shrimp/Camaron 4/4.4lb",
+    "price": 125
+  },
+  {
+    "location_id": 4,
+    "code": "3KNR5",
+    "description": "Knorr Caldo de Pollo/Chicken 4/7.9lb",
+    "price": 82
+  },
+  {
+    "location_id": 4,
+    "code": "3KNR7",
+    "description": "Knorr Seafood Base 1LB",
+    "price": 23.75
+  },
+  {
+    "location_id": 4,
+    "code": "3LRD1",
+    "description": "Lard/Manteca 25lb  (ARMOR)",
+    "price": 57
+  },
+  {
+    "location_id": 4,
+    "code": "3LRD2",
+    "description": "Lard, Shortening Pork 50lb (Stratus)",
+    "price": 79
+  },
+  {
+    "location_id": 4,
+    "code": "3MLK01",
+    "description": "Evaporated Milk 24/12oz (Velvet)",
+    "price": 32.76
+  },
+  {
+    "location_id": 4,
+    "code": "3MLK02",
+    "description": "Condensed Milk 24/14oz (Dulcella)",
+    "price": 51
+  },
+  {
+    "location_id": 4,
+    "code": "3OIL1",
+    "description": "Clear Liquid Fry Oil 35lb",
+    "price": 33.95
+  },
+  {
+    "location_id": 4,
+    "code": "3OIL2",
+    "description": "Extra Virg Olive/Canola Oil 75/25% 1-gal (Savor Imports)",
+    "price": 24.5
+  },
+  {
+    "location_id": 4,
+    "code": "3OIL3",
+    "description": "Extra Virgin Olive Oil 4/3 Liters (DeCecco)",
+    "price": 165
+  },
+  {
+    "location_id": 4,
+    "code": "3OIL4",
+    "description": "Oil Pan Coating Classic 6/21.5oz (Season)",
+    "price": 42.5
+  },
+  {
+    "location_id": 4,
+    "code": "3OIL5",
+    "description": "Oil, Butter Alternative with Garlic 3/1gal (Phase)",
+    "price": 57.95
+  },
+  {
+    "location_id": 4,
+    "code": "3OQ01",
+    "description": "Olive, Stuffed Queen 100-120 4/1gal (Savor Imports)",
+    "price": 101
+  },
+  {
+    "location_id": 4,
+    "code": "3RAMEN01",
+    "description": "Ramen Noodle Beef Flavor 12-3oz",
+    "price": 4.95
+  },
+  {
+    "location_id": 4,
+    "code": "3SP01",
+    "description": "Ajo/Garlic Granulated 5lb",
+    "price": 19
+  },
+  {
+    "location_id": 4,
+    "code": "3SP02",
+    "description": "Chili Powder Light 5lb",
+    "price": 20.95
+  },
+  {
+    "location_id": 4,
+    "code": "3SP02A",
+    "description": "Chili Powder Dark 5lb",
+    "price": 20.95
+  },
+  {
+    "location_id": 4,
+    "code": "3SP03",
+    "description": "Cumin Ground/Comino Molido 5lb",
+    "price": 18
+  },
+  {
+    "location_id": 4,
+    "code": "3SP03A",
+    "description": "Cumin Whole/Comino Entero 1lb",
+    "price": 12
+  },
+  {
+    "location_id": 4,
+    "code": "3SP04",
+    "description": "Black Pepper Ground/Pimienta Molida 5lb",
+    "price": 27.5
+  },
+  {
+    "location_id": 4,
+    "code": "3SP04A",
+    "description": "Black Pepper Whole/Pimienta Entero 1lb",
+    "price": 12.5
+  },
+  {
+    "location_id": 4,
+    "code": "3SP05",
+    "description": "Oregano Mexican Whole/Entero 1lb",
+    "price": 13
+  },
+  {
+    "location_id": 4,
+    "code": "3SP05A",
+    "description": "Oregano Greek Whole/Entero 1lb",
+    "price": 10.25
+  },
+  {
+    "location_id": 4,
+    "code": "3SP05B",
+    "description": "Oregano Ground/Molido 1lb",
+    "price": 10.5
+  },
+  {
+    "location_id": 4,
+    "code": "3SP06",
+    "description": "Parsley Whole/ Perijil Entero 1lb",
+    "price": 10.5
+  },
+  {
+    "location_id": 4,
+    "code": "3SP07",
+    "description": "Pumpkin Seed Raw/ Semilla de Calabaza 5lb",
+    "price": 32.95
+  },
+  {
+    "location_id": 4,
+    "code": "3SP08",
+    "description": "Cloves Ground/ Clavo de Olor Molido 1lb",
+    "price": 13.25
+  },
+  {
+    "location_id": 4,
+    "code": "3SP08A",
+    "description": "Cloves Whole/ Clavo Entero 1lb",
+    "price": 12.75
+  },
+  {
+    "location_id": 4,
+    "code": "3SP09",
+    "description": "Bay Leaves 1 Lb. (Laurel Leaves)",
+    "price": 8.5
+  },
+  {
+    "location_id": 4,
+    "code": "3SP10",
+    "description": "Chile Guajillo 5lb",
+    "price": 22.95
+  },
+  {
+    "location_id": 4,
+    "code": "3SP10A",
+    "description": "Chile De Arbol Stemless 5lb",
+    "price": 21.95
+  },
+  {
+    "location_id": 4,
+    "code": "3SP10B",
+    "description": "Chile De Ancho 5lb",
+    "price": 35.5
+  },
+  {
+    "location_id": 4,
+    "code": "3SP10C",
+    "description": "Chile Morita 5lb",
+    "price": 32
+  },
+  {
+    "location_id": 4,
+    "code": "3SP10D",
+    "description": "Chile Guajillo Bulk w/stem 25lb",
+    "price": 95
+  },
+  {
+    "location_id": 4,
+    "code": "3SP10E",
+    "description": "Chile Pasilla 5lb",
+    "price": 26
+  },
+  {
+    "location_id": 4,
+    "code": "3SP11",
+    "description": "Cinnamon/Canela Molida 1lb",
+    "price": 7.25
+  },
+  {
+    "location_id": 4,
+    "code": "3SP11A",
+    "description": "Cinnamon Sticks/Canela Suave 1lb",
+    "price": 16
+  },
+  {
+    "location_id": 4,
+    "code": "3SP12",
+    "description": "Paprika 120 5lb",
+    "price": 19.25
+  },
+  {
+    "location_id": 4,
+    "code": "3SP14",
+    "description": "Hojas Tamale 1lb",
+    "price": 9
+  },
+  {
+    "location_id": 4,
+    "code": "3SP16",
+    "description": "Hibiscus Jamaica (Sorrel) 5lb",
+    "price": 28.5
+  },
+  {
+    "location_id": 4,
+    "code": "3SP22",
+    "description": "Sesame Seed Natural/Ajonjoli 1lb",
+    "price": 0
+  },
+  {
+    "location_id": 4,
+    "code": "3SP30A",
+    "description": "Fajita Seasoning Red 5lb",
+    "price": 18.75
+  },
+  {
+    "location_id": 4,
+    "code": "3SP30B",
+    "description": "Fajita Seasoning White 5lb",
+    "price": 18.75
+  },
+  {
+    "location_id": 4,
+    "code": "3SP30C",
+    "description": "Fajita Seasoning Red Bulk 25lb",
+    "price": 78.75
+  },
+  {
+    "location_id": 4,
+    "code": "3SP30D",
+    "description": "Fajita Seasoning White Bulk 25lb",
+    "price": 78.78
+  },
+  {
+    "location_id": 4,
+    "code": "3SYP1",
+    "description": "Banderilla Tamarindo 6/50ct (La Helada)",
+    "price": 67.09
+  },
+  {
+    "location_id": 4,
+    "code": "3SYP1*",
+    "description": "Banderilla Tamarindo 50ct (La Helada) **Split**",
+    "price": 13.8
+  },
+  {
+    "location_id": 4,
+    "code": "3SYP2",
+    "description": "Chamoy 12/33oz (Bokados)",
+    "price": 28.5
+  },
+  {
+    "location_id": 4,
+    "code": "3TAJIN",
+    "description": "Seasoning, Chile Tajin Clasico 24/5oz",
+    "price": 55.5
+  },
+  {
+    "location_id": 4,
+    "code": "4CHAR01",
+    "description": "Carbon, Mequite 100% 30lb (Diablo)",
+    "price": 20
+  },
+  {
+    "location_id": 4,
+    "code": "4PAL1",
+    "description": "9\" Almn Pan Combo W/Lid 200ct",
+    "price": 53.25
+  },
+  {
+    "location_id": 4,
+    "code": "4PAL2",
+    "description": "9\" Almn Pan Bulk/No Lids 500ct",
+    "price": 72.5
+  },
+  {
+    "location_id": 4,
+    "code": "4PAL3",
+    "description": "7\" Almn Pan Combo W/Lid 200ct",
+    "price": 32.95
+  },
+  {
+    "location_id": 4,
+    "code": "4PAL4",
+    "description": "7\" Almn Pan Bulk/No Lids 500ct",
+    "price": 47.75
+  },
+  {
+    "location_id": 4,
+    "code": "4PAL7L1",
+    "description": "7\" Plastic Clear Dome Lid 500ct",
+    "price": 24
+  },
+  {
+    "location_id": 4,
+    "code": "4PAL7L2",
+    "description": "7\" Laminated Foil Board Lid Bulk 500ct",
+    "price": 29.95
+  },
+  {
+    "location_id": 4,
+    "code": "4PAL9L1",
+    "description": "9\" Plastic Clear Dome Lid 500ct",
+    "price": 41.25
+  },
+  {
+    "location_id": 4,
+    "code": "4PAL9L2",
+    "description": "9\" Laminated Foil Board Lid Bulk 500ct",
+    "price": 34.25
+  },
+  {
+    "location_id": 4,
+    "code": "4PALSL1",
+    "description": "Lid, Steam Pan Half 100ct",
+    "price": 25.5
+  },
+  {
+    "location_id": 4,
+    "code": "4PALSL2",
+    "description": "Lid, Steam Pan Full 50ct",
+    "price": 32.5
+  },
+  {
+    "location_id": 4,
+    "code": "4PALSP1",
+    "description": "Almn Pan Steam Full Deep 50ct",
+    "price": 53.95
+  },
+  {
+    "location_id": 4,
+    "code": "4PALSP2",
+    "description": "Almn Pan Steam Full Med 50ct",
+    "price": 56.95
+  },
+  {
+    "location_id": 4,
+    "code": "4PALSP3",
+    "description": "Almn Pan Steam Half Med 100ct",
+    "price": 42.95
+  },
+  {
+    "location_id": 4,
+    "code": "4PALSP4",
+    "description": "Chafing Dish Fuel (4 Hrs) 24/6.4oz",
+    "price": 42
+  },
+  {
+    "location_id": 4,
+    "code": "4PB04FC6",
+    "description": "4oz Foam Bowl 1000ct (4FC6) Convermex",
+    "price": 32.5
+  },
+  {
+    "location_id": 4,
+    "code": "4PB04J6",
+    "description": "4oz Foam Bowl 1000ct (4J6)",
+    "price": 50.25
+  },
+  {
+    "location_id": 4,
+    "code": "4PB06-706",
+    "description": "6oz Foam Bowl 1000CT (706) Convermex",
+    "price": 49.75
+  },
+  {
+    "location_id": 4,
+    "code": "4PB06B12",
+    "description": "6oz Foam cont 1000CT (6SJ12)",
+    "price": 52.5
+  },
+  {
+    "location_id": 4,
+    "code": "4PB06B20",
+    "description": "6oz Foam Bowl 1000ct (6B20)",
+    "price": 0
+  },
+  {
+    "location_id": 4,
+    "code": "4PB08FC20",
+    "description": "8oz Foam Bowl 1000ct (8FC20) Convermex",
+    "price": 56.5
+  },
+  {
+    "location_id": 4,
+    "code": "4PB08SJ20",
+    "description": "8oz Foam Bowl 1000ct (8SJ20)",
+    "price": 58.5
+  },
+  {
+    "location_id": 4,
+    "code": "4PB08SJ32",
+    "description": "8oz Foam Bowl 500ct (8SJ32)",
+    "price": 0
+  },
+  {
+    "location_id": 4,
+    "code": "4PB16MJ20",
+    "description": "16oz Foam Bowl 500ct (16MJ20)",
+    "price": 0
+  },
+  {
+    "location_id": 4,
+    "code": "4PB16MJ32",
+    "description": "16oz Foam Bowl 500ct (16MJ32)",
+    "price": 0
+  },
+  {
+    "location_id": 4,
+    "code": "4PB24MJ48",
+    "description": "24oz Foam Bowl 500ct (24MJ48)",
+    "price": 0
+  },
+  {
+    "location_id": 4,
+    "code": "4PB32MJ48",
+    "description": "32oz Foam Bowl 500ct (32MJ48)",
+    "price": 0
+  },
+  {
+    "location_id": 4,
+    "code": "4PBG02",
+    "description": "2 LB White Paper Bag 500ct",
+    "price": 14.75
+  },
+  {
+    "location_id": 4,
+    "code": "4PBG03",
+    "description": "2 LB Brown Paper Bag 500ct",
+    "price": 12.75
+  },
+  {
+    "location_id": 4,
+    "code": "4PBG04",
+    "description": "4 Lb White Paper Bag 500ct",
+    "price": 16.75
+  },
+  {
+    "location_id": 4,
+    "code": "4PBG04B",
+    "description": "4LB Brown Paper Bag 500ct",
+    "price": 13.75
+  },
+  {
+    "location_id": 4,
+    "code": "4PBG06",
+    "description": "6lb White Paper Bag  500ct",
+    "price": 24.5
+  },
+  {
+    "location_id": 4,
+    "code": "4PBG06B",
+    "description": "6lb Brown Paper Bag  500ct",
+    "price": 18.95
+  },
+  {
+    "location_id": 4,
+    "code": "4PBG08",
+    "description": "8 LB White Paper Bag 500ct",
+    "price": 27.25
+  },
+  {
+    "location_id": 4,
+    "code": "4PBG08B",
+    "description": "8lb Brown Paper Bag 500ct",
+    "price": 23.5
+  },
+  {
+    "location_id": 4,
+    "code": "4PBG10",
+    "description": "Bag, Grocery #57 1/6 BBL 500ct",
+    "price": 0
+  },
+  {
+    "location_id": 4,
+    "code": "4PBG20",
+    "description": "Bag, Paper w/handle Lrg 13x7x17 250ct",
+    "price": 61.5
+  },
+  {
+    "location_id": 4,
+    "code": "4PBG20-Paso",
+    "description": "Bag, Paper w/handle Lrg12x8.25x15.75 250ct (Paso)",
+    "price": 62.5
+  },
+  {
+    "location_id": 4,
+    "code": "4PBG20-Pedro",
+    "description": "Bag, Paper w/handle Lrg12x8.25x15.75 250ct (Pedros)",
+    "price": 62.5
+  },
+  {
+    "location_id": 4,
+    "code": "4PBG21",
+    "description": "Bag, Paper w/handle Med 10x6.75x12 250ct",
+    "price": 59.93
+  },
+  {
+    "location_id": 4,
+    "code": "4PBG21-Paso",
+    "description": "Bag, Paper w/handle Med 10.25x7x12.5 250ct (Paso)",
+    "price": 60.95
+  },
+  {
+    "location_id": 4,
+    "code": "4PBG21-Pedros",
+    "description": "Bag, Paper w/handle Med 10.25x7x12.5 250ct (Pedros)",
+    "price": 60.95
+  },
+  {
+    "location_id": 4,
+    "code": "4PBG31",
+    "description": "Food Portion Sandwich Bag 6.5x7x2.25 2000ct",
+    "price": 16.5
+  },
+  {
+    "location_id": 4,
+    "code": "4PBG41",
+    "description": "Bag, Drink Bag Plastic 1-gal w/ Twist Cap 50ct",
+    "price": 79.5
+  },
+  {
+    "location_id": 4,
+    "code": "4PBGC01",
+    "description": "Bag, Silverware Bag White 2.75x10\" 2,000ct",
+    "price": 27
+  },
+  {
+    "location_id": 4,
+    "code": "4PBX1C1",
+    "description": "9x9 Foam Tray White 1-Comp 200ct (4666) Convermex",
+    "price": 23.45
+  },
+  {
+    "location_id": 4,
+    "code": "4PBX1C3",
+    "description": "9x9 Foam Tray White 3-Comp 200ct (4667) Convermex",
+    "price": 24.95
+  },
+  {
+    "location_id": 4,
+    "code": "4PBX1CB",
+    "description": "9x9 Foam Tray Black 1-comp 200ct (4668) Convermex)",
+    "price": 25.5
+  },
+  {
+    "location_id": 4,
+    "code": "4PBX1DRN1",
+    "description": "9x9 Foam Tray White 1-Comp 200ct (Darnel) S-1",
+    "price": 23.45
+  },
+  {
+    "location_id": 4,
+    "code": "4PBX1DRNB",
+    "description": "9x9 Foam Tray Black 1-comp 200ct (Darnel)",
+    "price": 25.5
+  },
+  {
+    "location_id": 4,
+    "code": "4PBX2",
+    "description": "6x6 Foam Tray White Darnel 500ct (DU401101) G-1",
+    "price": 28.75
+  },
+  {
+    "location_id": 4,
+    "code": "4PBX2BLK",
+    "description": "6x6 Foam Tray Black Darnel 500ct (DU401199) G-1",
+    "price": 29
+  },
+  {
+    "location_id": 4,
+    "code": "4PBX3",
+    "description": "9x6 Foam Tray White Darnel 200ct (DU403101H) M-205",
+    "price": 29
+  },
+  {
+    "location_id": 4,
+    "code": "4PBX3BLK",
+    "description": "9x6 Foam Tray Black Darnel 200ct (DU403199H) M-205",
+    "price": 29.95
+  },
+  {
+    "location_id": 4,
+    "code": "4PBX921",
+    "description": "6x6 Clear Plastic Container Hinged 500ct",
+    "price": 67.97
+  },
+  {
+    "location_id": 4,
+    "code": "4PBX922",
+    "description": "9x9 Clear Plastic Container Hinged 200ct",
+    "price": 72.95
+  },
+  {
+    "location_id": 4,
+    "code": "4PC1.5",
+    "description": "1.5oz Clear PP Portion Cup 100/50",
+    "price": 35.35
+  },
+  {
+    "location_id": 4,
+    "code": "4PC12C",
+    "description": "12oz Foam Cup 1000ct (12B16) Convermex",
+    "price": 49.95
+  },
+  {
+    "location_id": 4,
+    "code": "4PC16C",
+    "description": "16oz Foam Cup 500ct (16B16) Convermex",
+    "price": 36.75
+  },
+  {
+    "location_id": 4,
+    "code": "4PC20C",
+    "description": "20oz Foam Cup 500ct (20B16) Convermex",
+    "price": 45.95
+  },
+  {
+    "location_id": 4,
+    "code": "4PC20D",
+    "description": "20oz Foam Cup 500ct (20J16)",
+    "price": 45.95
+  },
+  {
+    "location_id": 4,
+    "code": "4PC24C",
+    "description": "24oz Foam Cup 500ct (24B16) Convermex",
+    "price": 48.95
+  },
+  {
+    "location_id": 4,
+    "code": "4PC24D",
+    "description": "24oz Foam Cup 500ct (24J16)",
+    "price": 48.95
+  },
+  {
+    "location_id": 4,
+    "code": "4PC2S",
+    "description": "2oz Clear PP Portion Cup 100/25",
+    "price": 37.16
+  },
+  {
+    "location_id": 4,
+    "code": "4PC2SBLK",
+    "description": "2oz Black PP Portion Cup 100/25",
+    "price": 36.95
+  },
+  {
+    "location_id": 4,
+    "code": "4PC32C",
+    "description": "32oz Foam Cup 500ct (32TB32) Convermex",
+    "price": 56.95
+  },
+  {
+    "location_id": 4,
+    "code": "4PC4S",
+    "description": "4oz Clear PP Portion Cup 100/25",
+    "price": 53.5
+  },
+  {
+    "location_id": 4,
+    "code": "4PC4SBlk",
+    "description": "4oz Black PP Portion Cup 100/25",
+    "price": 53.95
+  },
+  {
+    "location_id": 4,
+    "code": "4PCH",
+    "description": "4-Cup Holder Paper Tray 300ct",
+    "price": 33.95
+  },
+  {
+    "location_id": 4,
+    "code": "4PCL01",
+    "description": "Can Liner, 38X58 Black 1.1MIL 60gal 100ct",
+    "price": 36.25
+  },
+  {
+    "location_id": 4,
+    "code": "4PCL02",
+    "description": "Can Liner, 33x40 Clear 33gal 250ct",
+    "price": 26
+  },
+  {
+    "location_id": 4,
+    "code": "4PCL03",
+    "description": "Can Liner, 33x39 Black 33gal 100ct",
+    "price": 18.5
+  },
+  {
+    "location_id": 4,
+    "code": "4PCRAYON",
+    "description": "Crayola 4 Color Red, Orange, Green, Blue 3000ct",
+    "price": 99
+  },
+  {
+    "location_id": 4,
+    "code": "4PDC08",
+    "description": "Deli Container, 8oz Clear PP Bulk 500ct",
+    "price": 32.95
+  },
+  {
+    "location_id": 4,
+    "code": "4PDC16",
+    "description": "Deli Container, 16oz Clear PP Bulk 500ct",
+    "price": 42.5
+  },
+  {
+    "location_id": 4,
+    "code": "4PDC32",
+    "description": "Deli Container, 32oz Clear PP Bulk 500ct",
+    "price": 59.75
+  },
+  {
+    "location_id": 4,
+    "code": "4PDCC08",
+    "description": "Deli Container, 8oz Combo PP w/Lid 240ct",
+    "price": 34
+  },
+  {
+    "location_id": 4,
+    "code": "4PDCC12",
+    "description": "Deli Container, 12oz Combo PP w/Lid 240ct",
+    "price": 49.5
+  },
+  {
+    "location_id": 4,
+    "code": "4PDCC16",
+    "description": "Deli Container, 16oz Combo PP w/Lid 240ct",
+    "price": 37.15
+  },
+  {
+    "location_id": 4,
+    "code": "4PDCL832",
+    "description": "Lid, Deli Container Clear 8oz-32oz 500ct",
+    "price": 33.95
+  },
+  {
+    "location_id": 4,
+    "code": "4PDW1",
+    "description": "Dry Wax Paper 10X10.75 12/500",
+    "price": 60.95
+  },
+  {
+    "location_id": 4,
+    "code": "4PDW2",
+    "description": "Dry Wax Paper 12X10.75 12/500 (EZ-12)",
+    "price": 73.1
+  },
+  {
+    "location_id": 4,
+    "code": "4PDW3",
+    "description": "Wax Paper Red/White Checker 12x10.75 12/500ct",
+    "price": 92.15
+  },
+  {
+    "location_id": 4,
+    "code": "4PDW4",
+    "description": "Wax Paper Red/White Checker 12x12 Flat 6/1000ct",
+    "price": 109.95
+  },
+  {
+    "location_id": 4,
+    "code": "4PDWBLUIG",
+    "description": "Blue Iguana - Deli Wax Paper 12X10.75 6,000ct",
+    "price": 138.18
+  },
+  {
+    "location_id": 4,
+    "code": "4PET12",
+    "description": "Cup 12oz Clear Plastic PET 1,000ct (C-KC12)",
+    "price": 65.95
+  },
+  {
+    "location_id": 4,
+    "code": "4PET16",
+    "description": "Cup 16oz Clear Plastic PET 1,000ct",
+    "price": 69.5
+  },
+  {
+    "location_id": 4,
+    "code": "4PET24",
+    "description": "Cup 24oz Clear Plastic PET 600ct",
+    "price": 64.95
+  },
+  {
+    "location_id": 4,
+    "code": "4PETBIGUANA24",
+    "description": "Blue Iguana Cup 24oz Clear Plastic PET 600ct",
+    "price": 54
+  },
+  {
+    "location_id": 4,
+    "code": "4PETLID",
+    "description": "Lid, Flat Clear Plastic PET 12-24oz 1,000ct",
+    "price": 30
+  },
+  {
+    "location_id": 4,
+    "code": "4PETPASO16",
+    "description": "Paso Cup 16oz Clear Plastic PET 1,000ct",
+    "price": 89.5
+  },
+  {
+    "location_id": 4,
+    "code": "4PETPASO24",
+    "description": "Paso Cup 24oz Clear Plastic 24oz 600ct",
+    "price": 66.24
+  },
+  {
+    "location_id": 4,
+    "code": "4PETPEDRO24",
+    "description": "Pedro's Cup 24oz Clear Plastic PET 600ct",
+    "price": 84.5
+  },
+  {
+    "location_id": 4,
+    "code": "4PFR1",
+    "description": "18X500 Almn Foil Standard",
+    "price": 27.15
+  },
+  {
+    "location_id": 4,
+    "code": "4PFR2",
+    "description": "18X500 Almn Foil Hvy Duty",
+    "price": 28.75
+  },
+  {
+    "location_id": 4,
+    "code": "4PFS2",
+    "description": "Foil Sheet 9X10.75 6/500",
+    "price": 65.25
+  },
+  {
+    "location_id": 4,
+    "code": "4PFS3",
+    "description": "Foil Sheet 12X10.75 6/500",
+    "price": 76.95
+  },
+  {
+    "location_id": 4,
+    "code": "4PGC1",
+    "description": "Guest Checks A-7000 50/50ct",
+    "price": 30
+  },
+  {
+    "location_id": 4,
+    "code": "4PGC2",
+    "description": "Guest Checks A-6000 50ct",
+    "price": 30
+  },
+  {
+    "location_id": 4,
+    "code": "4PGN1",
+    "description": "Glove Nitrile PF Black Large 10/100ct",
+    "price": 41
+  },
+  {
+    "location_id": 4,
+    "code": "4PGN2",
+    "description": "Glove Nitrile PF Black Med 10/100",
+    "price": 41
+  },
+  {
+    "location_id": 4,
+    "code": "4PGN3",
+    "description": "Glove Nitrile PF Black XL 10/100ct",
+    "price": 41
+  },
+  {
+    "location_id": 4,
+    "code": "4PHN",
+    "description": "Black Hair Net 144ct",
+    "price": 19.95
+  },
+  {
+    "location_id": 4,
+    "code": "4PL12JL",
+    "description": "Lid, Vented White 1,000ct (12JL)",
+    "price": 30.25
+  },
+  {
+    "location_id": 4,
+    "code": "4PL12PI",
+    "description": "Lid, Vented 6oz Bowl 1,000ct (412PI) Convermex",
+    "price": 30.25
+  },
+  {
+    "location_id": 4,
+    "code": "4PL16SL",
+    "description": "Lid, Straw Slotted 1,000ct (L16ST)",
+    "price": 32
+  },
+  {
+    "location_id": 4,
+    "code": "4PL1S",
+    "description": "Lid, 1oz Clear PET Portion Cup 5000ct",
+    "price": 30.5
+  },
+  {
+    "location_id": 4,
+    "code": "4PL20-LVFC20",
+    "description": "Lid, Vented 8-12-16 Bowl 1,000ct (LVFC20) Convermex",
+    "price": 39
+  },
+  {
+    "location_id": 4,
+    "code": "4PL20JL",
+    "description": "Lid, Vented 1,000ct (20JL)",
+    "price": 39
+  },
+  {
+    "location_id": 4,
+    "code": "4PL2S",
+    "description": "Lid, 2oz Clear PET Portion Cup 2,500ct",
+    "price": 34.5
+  },
+  {
+    "location_id": 4,
+    "code": "4PL32JL",
+    "description": "Lid, White Vented 8-44oz 500ct (32JL)",
+    "price": 0
+  },
+  {
+    "location_id": 4,
+    "code": "4PL32ST",
+    "description": "Lid, 32oz Straw Slot Translucent 500ct (L32ST) Convermex",
+    "price": 37.25
+  },
+  {
+    "location_id": 4,
+    "code": "4PL48JL",
+    "description": "Lid, Vented 500ct (48JL)",
+    "price": 0
+  },
+  {
+    "location_id": 4,
+    "code": "4PL4LVFC4",
+    "description": "Lid, Vented Trans 4oz (LVFC4) Convermex",
+    "price": 23.49
+  },
+  {
+    "location_id": 4,
+    "code": "4PL4S",
+    "description": "Lid, 4oz Clear PET Portion Cup 2,500ct",
+    "price": 46.15
+  },
+  {
+    "location_id": 4,
+    "code": "4PL6JL",
+    "description": "Lid, Vented White 1,000ct (6JL)",
+    "price": 35.95
+  },
+  {
+    "location_id": 4,
+    "code": "4PL8SL",
+    "description": "Lid, Vented White 1,000ct (8JL)",
+    "price": 0
+  },
+  {
+    "location_id": 4,
+    "code": "4PN1",
+    "description": "Napkin, Dinner 15X17 2-Ply 1/8 Fold 3,000ct",
+    "price": 37
+  },
+  {
+    "location_id": 4,
+    "code": "4PN2",
+    "description": "Napkin, Linen-like 15.5x15.5 Wht 1,200ct Flat",
+    "price": 70.75
+  },
+  {
+    "location_id": 4,
+    "code": "4PN3",
+    "description": "Napkin, Dinner 17x17 1/4 Fold 4,000ct",
+    "price": 49.95
+  },
+  {
+    "location_id": 4,
+    "code": "4PN5",
+    "description": "Napkin, Beverage White 1-Ply 4,000ct",
+    "price": 25
+  },
+  {
+    "location_id": 4,
+    "code": "4PN6",
+    "description": "Napkin, Beverage Black 2ply 1,000ct",
+    "price": 24.5
+  },
+  {
+    "location_id": 4,
+    "code": "4PN6-PASO",
+    "description": "El Paso - Napkin, Beverage 9.5X9.5 2-Ply 4,000ct",
+    "price": 72
+  },
+  {
+    "location_id": 4,
+    "code": "4PN6-PEDRO",
+    "description": "Pedros - Napkin, Beverage 9.5X9.5 2-Ply 4,000ct",
+    "price": 72
+  },
+  {
+    "location_id": 4,
+    "code": "4PN621",
+    "description": "Sombrero - Napkin, Beverage White 9.5X9.5 2-Ply 4,000ct",
+    "price": 89
+  },
+  {
+    "location_id": 4,
+    "code": "4PN7",
+    "description": "Napkin, Express Interfold White 12/500 (DX900)-14102900",
+    "price": 39.75
+  },
+  {
+    "location_id": 4,
+    "code": "4PN8",
+    "description": "Napkin, Interfold Dispenser Nap 1ply White  6000ct",
+    "price": 39.75
+  },
+  {
+    "location_id": 4,
+    "code": "4PNB-B",
+    "description": "Napkin Band Black/Negro **Split** 2500ct",
+    "price": 13.5
+  },
+  {
+    "location_id": 4,
+    "code": "4PNB-G",
+    "description": "Napkin Band, Green/Verde **Split** 2500ct",
+    "price": 13.5
+  },
+  {
+    "location_id": 4,
+    "code": "4PNB-V",
+    "description": "Napkin Band, Vino/Burgundy **Split** 2500ct",
+    "price": 13.5
+  },
+  {
+    "location_id": 4,
+    "code": "4PNB-ZPASO",
+    "description": "El Paso, Napkin Band 4/2,500ct",
+    "price": 69.82
+  },
+  {
+    "location_id": 4,
+    "code": "4PNB-ZPEDRO",
+    "description": "Pedro's, Napkin Band 4/2,500ct",
+    "price": 69.82
+  },
+  {
+    "location_id": 4,
+    "code": "4PPA",
+    "description": "Apron, Disposable 28x46 2MIL Wht 100ct",
+    "price": 16.95
+  },
+  {
+    "location_id": 4,
+    "code": "4PPC32",
+    "description": "7\" Black Round Plastic Container With Lid (Combo) 32oz 150ct",
+    "price": 48.5
+  },
+  {
+    "location_id": 4,
+    "code": "4PPC48",
+    "description": "9\" Black Round Plastic Container With Lid (Combo) 48oz 150ct",
+    "price": 59.75
+  },
+  {
+    "location_id": 4,
+    "code": "4PPF1",
+    "description": "18X2000 Plastic Film Wrap Cutter Box",
+    "price": 19
+  },
+  {
+    "location_id": 4,
+    "code": "4PPF2",
+    "description": "12X2000 Plastc Film Wrap Cutter Box",
+    "price": 15.5
+  },
+  {
+    "location_id": 4,
+    "code": "4PPG1",
+    "description": "Jug, Plastic Gallon 48ct",
+    "price": 32.5
+  },
+  {
+    "location_id": 4,
+    "code": "4PPG2",
+    "description": "Cap Screw Orange 100ct",
+    "price": 8.25
+  },
+  {
+    "location_id": 4,
+    "code": "4PPT1",
+    "description": "Towel, Brwn Paper Towel 12-rolls",
+    "price": 26.85
+  },
+  {
+    "location_id": 4,
+    "code": "4PPT2",
+    "description": "Towel, Center Pulled Paper 6-Rolls/520 Sheets",
+    "price": 30.5
+  },
+  {
+    "location_id": 4,
+    "code": "4PPT3",
+    "description": "Towel, 10\" White Paper 6-Rolls (Enmotion 89460)",
+    "price": 84
+  },
+  {
+    "location_id": 4,
+    "code": "4PPT5",
+    "description": "Towel, 8.2\" White Paper 6-Rolls (Enmotion 89420)",
+    "price": 78
+  },
+  {
+    "location_id": 4,
+    "code": "4PPT6",
+    "description": "Towel, Household White Roll 2-Ply 30ct",
+    "price": 0
+  },
+  {
+    "location_id": 4,
+    "code": "4PPT7",
+    "description": "Towel, Multifold White 4,000ct",
+    "price": 28.5
+  },
+  {
+    "location_id": 4,
+    "code": "4PPT8",
+    "description": "Towel, Paper White 8\" 6-Rolls 800ft",
+    "price": 36.5
+  },
+  {
+    "location_id": 4,
+    "code": "4PPZA12",
+    "description": "Pizza Box12x12x2 Plain White 50ct",
+    "price": 27
+  },
+  {
+    "location_id": 4,
+    "code": "4PREG1",
+    "description": "Thermal Paper 3-1/8\" x 200' 50ct",
+    "price": 73.75
+  },
+  {
+    "location_id": 4,
+    "code": "4PREG2",
+    "description": "Register Roll Paper 1ply 3\"x165' 50ct",
+    "price": 44
+  },
+  {
+    "location_id": 4,
+    "code": "4PREG3",
+    "description": "Printer Paper 2ply White/Yllw 3\"x90' 50ct",
+    "price": 69.5
+  },
+  {
+    "location_id": 4,
+    "code": "4PREG4",
+    "description": "Ribbon, Ink Cash Register Red/Blk 6ct",
+    "price": 13.5
+  },
+  {
+    "location_id": 4,
+    "code": "4PSIL",
+    "description": "Cutlery Kit 6pc White Med-Weight 250ct",
+    "price": 17
+  },
+  {
+    "location_id": 4,
+    "code": "4PSILB1",
+    "description": "Cutlery Kit 6pc Black Med-Weight 250ct",
+    "price": 18.5
+  },
+  {
+    "location_id": 4,
+    "code": "4PSILB2",
+    "description": "Cutlery Kit 6pc Black Heavy-Weight 250ct",
+    "price": 20.5
+  },
+  {
+    "location_id": 4,
+    "code": "4PST1",
+    "description": "Straw, Jumbo Wrap Black 7.75\" 24/500ct",
+    "price": 58.75
+  },
+  {
+    "location_id": 4,
+    "code": "4PST2",
+    "description": "Straw, Jumbo UnWrap Black 7.75\" 24/500ct",
+    "price": 50.25
+  },
+  {
+    "location_id": 4,
+    "code": "4PST3",
+    "description": "Straw, Bar Stir Black 5.25\" 10/1000",
+    "price": 22.5
+  },
+  {
+    "location_id": 4,
+    "code": "4PST5",
+    "description": "Straw, Fat Neon 8\" Assorted 2400ct",
+    "price": 40.1
+  },
+  {
+    "location_id": 4,
+    "code": "4PST6",
+    "description": "Straw, 9\" Colossal Mix Colors Wrapped 1600ct",
+    "price": 43.85
+  },
+  {
+    "location_id": 4,
+    "code": "4PST7",
+    "description": "Straw, Tapioca Neon 8\" Assorted 6/175ct",
+    "price": 49.95
+  },
+  {
+    "location_id": 4,
+    "code": "4PST8",
+    "description": "Straw, Jumbo Wrap 10.25'' 4/500ct",
+    "price": 25
+  },
+  {
+    "location_id": 4,
+    "code": "4PTB",
+    "description": "Plastic T-Sack Thank You 12-Mic1,000ct",
+    "price": 21.75
+  },
+  {
+    "location_id": 4,
+    "code": "4PTP",
+    "description": "Tooth Pick Round 24/800ct 405007",
+    "price": 0
+  },
+  {
+    "location_id": 4,
+    "code": "4PTPC",
+    "description": "Chopsticks, Bamboo Wrapped 10/80ct",
+    "price": 18.75
+  },
+  {
+    "location_id": 4,
+    "code": "4PTPW",
+    "description": "Toothpick Wrapped Mint 1000ct",
+    "price": 3.5
+  },
+  {
+    "location_id": 4,
+    "code": "4PTPW1",
+    "description": "Toothpick Wrapped Mint 15/1000ct",
+    "price": 52
+  },
+  {
+    "location_id": 4,
+    "code": "4PTT1",
+    "description": "Jr Jumbo Toilet Tissue 2ply 9\"x700' 12-Roll",
+    "price": 27
+  },
+  {
+    "location_id": 4,
+    "code": "4PTT2",
+    "description": "Toilet Tissue 96 Roll",
+    "price": 43.5
+  },
+  {
+    "location_id": 4,
+    "code": "4PTT9",
+    "description": "Towel, Roll Natural / Cafe 700FT 6Roll.  Tork",
+    "price": 61
+  },
+  {
+    "location_id": 4,
+    "code": "4SW100",
+    "description": "Libbey 27.2oz Magna Grande Glass, 12ct (8427)",
+    "price": 98.2
+  },
+  {
+    "location_id": 4,
+    "code": "4SW101",
+    "description": "Libbey 38oz Clear Glass Bowl, 6ct (3403)",
+    "price": 95.72
+  },
+  {
+    "location_id": 4,
+    "code": "4SW102",
+    "description": "Libbey Chivalry 12oz Goblet, 36ct (3212)",
+    "price": 215.3
+  },
+  {
+    "location_id": 4,
+    "code": "4SW2002",
+    "description": "Dinner Fork, Hvy Wght 1dz Winco 005-05",
+    "price": 14.96
+  },
+  {
+    "location_id": 4,
+    "code": "4SW2003",
+    "description": "Dinner Teaspoon, 1dz Hvy Duty Winco",
+    "price": 11.25
+  },
+  {
+    "location_id": 4,
+    "code": "4SW2004",
+    "description": "Knife Steak, 5\" Polypropylene Handle 1dz (Winco)",
+    "price": 13
+  },
+  {
+    "location_id": 4,
+    "code": "4SW2005",
+    "description": "Spoon Bouillon, , Soup Pacific Rim 24ct (Walco)",
+    "price": 61.03
+  },
+  {
+    "location_id": 4,
+    "code": "4SW201",
+    "description": "Dinner Knife, 1dz Hvy Duty Winco 005-08",
+    "price": 16.48
+  },
+  {
+    "location_id": 4,
+    "code": "5CFAB01",
+    "description": "Lavander Professional Cleaner 4/1gal (Fabuloso)",
+    "price": 47.73
+  },
+  {
+    "location_id": 4,
+    "code": "5CFAB02",
+    "description": "Ocean Cool Cleaner 4/1gal (Fabuloso)",
+    "price": 47.73
+  },
+  {
+    "location_id": 4,
+    "code": "5CFLR1",
+    "description": "Lavender All Purpose Cleaner 4/1gal (Florescencia)",
+    "price": 36.5
+  },
+  {
+    "location_id": 4,
+    "code": "5CFLR2",
+    "description": "Ocean Oasis All Purpose Cleaner 4/1gal (Florescencia)",
+    "price": 28.95
+  },
+  {
+    "location_id": 4,
+    "code": "5CLA1",
+    "description": "Ajax Double Bleach Scourer Powder 12/21oz",
+    "price": 49.5
+  },
+  {
+    "location_id": 4,
+    "code": "5CLAP1",
+    "description": "Cleaner, All Purpose 4/1gal",
+    "price": 37.25
+  },
+  {
+    "location_id": 4,
+    "code": "5CLB1",
+    "description": "Bleach Cleaner 6/1gal",
+    "price": 20.5
+  },
+  {
+    "location_id": 4,
+    "code": "5CPC1",
+    "description": "Pine Cleaner 4/1gal (Floresencia)",
+    "price": 27.53
+  },
+  {
+    "location_id": 4,
+    "code": "5CPD1",
+    "description": "Steel Sponge Scrubber/Fibras Alambre 12ct",
+    "price": 8.5
+  },
+  {
+    "location_id": 4,
+    "code": "5CPD10",
+    "description": "Dispenser,Soap Electonic Black",
+    "price": 0
+  },
+  {
+    "location_id": 4,
+    "code": "5CPD2",
+    "description": "Scouring Pad Med Green/Fibras Verde 20ct",
+    "price": 8.25
+  },
+  {
+    "location_id": 4,
+    "code": "5CPD3",
+    "description": "Grill Brick/Ladrillo para Plancha 12ct",
+    "price": 23.75
+  },
+  {
+    "location_id": 4,
+    "code": "5CPD5",
+    "description": "Mop Head Looped Blue Blend Med 1ct",
+    "price": 7.25
+  },
+  {
+    "location_id": 4,
+    "code": "5CPD6",
+    "description": "Urinal Screen Cucumber Melon Wave 3D 10ct",
+    "price": 24.95
+  },
+  {
+    "location_id": 4,
+    "code": "5CPD7",
+    "description": "Bath Tissue Dispenser, Twin Jumbo Roll, Smoke, 9\"",
+    "price": 45.5
+  },
+  {
+    "location_id": 4,
+    "code": "5CPD8",
+    "description": "Dispenser, Towel 10\" automated.  EnMotion (59460A)",
+    "price": 42.5
+  },
+  {
+    "location_id": 4,
+    "code": "5CPD8A",
+    "description": "Dispenser, Towel Lever Smoke 1ct",
+    "price": 67.99
+  },
+  {
+    "location_id": 4,
+    "code": "5CPD9",
+    "description": "Dispenser, Soap Blk 800ML 1ct",
+    "price": 27
+  },
+  {
+    "location_id": 4,
+    "code": "5CPS1",
+    "description": "Flatware Pre-Soak & Tarnish Remover 4/1gal",
+    "price": 34.5
+  },
+  {
+    "location_id": 4,
+    "code": "5CSMH",
+    "description": "Mop Handle 60\" Plastic Quick Change",
+    "price": 17.75
+  },
+  {
+    "location_id": 4,
+    "code": "5DISHS1",
+    "description": "Emerald Pot & Pan Detergent 5gal (Matador)",
+    "price": 61.5
+  },
+  {
+    "location_id": 4,
+    "code": "5DISHS2",
+    "description": "Palm Olive Dish Detergent 5gal",
+    "price": 81
+  },
+  {
+    "location_id": 4,
+    "code": "5DISHS4",
+    "description": "Platinum Soap Detergent Liquid 5gal (Ultra Shine)",
+    "price": 59.29
+  },
+  {
+    "location_id": 4,
+    "code": "5GC1",
+    "description": "Oven & Grill Cleaner 4/1gal (Matador)",
+    "price": 37.03
+  },
+  {
+    "location_id": 4,
+    "code": "5GC2",
+    "description": "Easy-Off Grill Cleaner 6/24oz",
+    "price": 46.75
+  },
+  {
+    "location_id": 4,
+    "code": "5GC51",
+    "description": "Glass Clean & Clear 4/1gal",
+    "price": 23.15
+  },
+  {
+    "location_id": 4,
+    "code": "5GC52",
+    "description": "Glass Cleaner Spray 8/32oz (Windex)",
+    "price": 39.5
+  },
+  {
+    "location_id": 4,
+    "code": "5HS05",
+    "description": "Gojo Antimicrobial, lotion soap 12/800ml",
+    "price": 47.33
+  },
+  {
+    "location_id": 4,
+    "code": "5MH",
+    "description": "Mop Handle 60\" Plastic Quick Change",
+    "price": 18
+  },
+  {
+    "location_id": 4,
+    "code": "6BDL1",
+    "description": "Delicias Horchata 12/32oz",
+    "price": 72
+  },
+  {
+    "location_id": 4,
+    "code": "6BDL2",
+    "description": "Delicias Tamarindo 12/32oz",
+    "price": 72
+  },
+  {
+    "location_id": 4,
+    "code": "6BDL3",
+    "description": "Delicias Jamaica 12/32oz",
+    "price": 72
+  },
+  {
+    "location_id": 4,
+    "code": "6BF01",
+    "description": "Fruit Mixer, Horchata 12/1L (Frutiva)",
+    "price": 83
+  },
+  {
+    "location_id": 4,
+    "code": "6BF02",
+    "description": "Fruit Mixer, Tamarindo 12/1L (Frutiva)",
+    "price": 83
+  },
+  {
+    "location_id": 4,
+    "code": "6BF03",
+    "description": "Fruit Mixer, Jamaica 12/1L (Frutiva)",
+    "price": 83
+  },
+  {
+    "location_id": 4,
+    "code": "6BF04",
+    "description": "Fruit Mixer, Fresa/Strawberry 12/1L (Frutiva)",
+    "price": 83
+  },
+  {
+    "location_id": 4,
+    "code": "6BF05",
+    "description": "Fruit Mixer, Mango 12/1L (Frutiva)",
+    "price": 83
+  },
+  {
+    "location_id": 4,
+    "code": "6BF06",
+    "description": "Fruit Mixer, Pina/Pineapple 12/1L (Frutiva)",
+    "price": 83
+  },
+  {
+    "location_id": 4,
+    "code": "6BF07",
+    "description": "Fruit Mixer, Limon/Lime 12/1L (Frutiva)",
+    "price": 83
+  },
+  {
+    "location_id": 4,
+    "code": "6BF08",
+    "description": "Fruit Mixer, Melon/Cantaloupe 12/1L (Frutiva)",
+    "price": 83
+  },
+  {
+    "location_id": 4,
+    "code": "6BF09",
+    "description": "Fruit Mixer, Guayaba Rosa 12/1L (Frutiva)",
+    "price": 83
+  },
+  {
+    "location_id": 4,
+    "code": "6BF10",
+    "description": "Fruit Mixer, Limonada de Fresa 12/1L (Frutiva)",
+    "price": 83
+  },
+  {
+    "location_id": 4,
+    "code": "6BF11",
+    "description": "Fruit Mixer, Limonada/Lemonade 12/1L (Frutiva)",
+    "price": 83
+  },
+  {
+    "location_id": 4,
+    "code": "6BF12",
+    "description": "Fruit Mixer, Guayaba Amarillo 12/1L (Frutiva)",
+    "price": 83
+  },
+  {
+    "location_id": 4,
+    "code": "6BJ01",
+    "description": "Juice, Pineapple Large Can 12/46oz (Dole)",
+    "price": 50.93
+  },
+  {
+    "location_id": 4,
+    "code": "6BJ01A",
+    "description": "Juice, Pineapple Small Can 48/6oz (Dole)",
+    "price": 43.24
+  },
+  {
+    "location_id": 4,
+    "code": "6BJ02",
+    "description": "Juice, Orange Large 12/32oz (Ocean Spray)",
+    "price": 38.92
+  },
+  {
+    "location_id": 4,
+    "code": "6BJ02A",
+    "description": "Juice, Orange Small Can 24/7.2oz (Ocean Spray)",
+    "price": 28.96
+  },
+  {
+    "location_id": 4,
+    "code": "6BJ03A",
+    "description": "Juice, Cranberry Small Can 24/7.2oz (Ocean Spray)",
+    "price": 26
+  },
+  {
+    "location_id": 4,
+    "code": "6BJ04",
+    "description": "Juice, Apple Large 8/60oz (Ocean Spray)",
+    "price": 33.8
+  },
+  {
+    "location_id": 4,
+    "code": "6BJ05A",
+    "description": "Juice, Grapefruit Small Can 24/7.2oz (Ocean Spray)",
+    "price": 25.62
+  },
+  {
+    "location_id": 4,
+    "code": "6BJ06",
+    "description": "Juice, Lime 100% 4/1gal (Realime)",
+    "price": 57.52
+  },
+  {
+    "location_id": 4,
+    "code": "6BJ06A",
+    "description": "Juice, Lemon 12/32oz (Sunfield)",
+    "price": 43.95
+  },
+  {
+    "location_id": 4,
+    "code": "6BJ07",
+    "description": "Juice, Tomato Cocktail 12/32oz (Clamato)",
+    "price": 39
+  },
+  {
+    "location_id": 4,
+    "code": "6BJR01",
+    "description": "Topo Chico Agua Mineral 24/12oz",
+    "price": 33.5
+  },
+  {
+    "location_id": 4,
+    "code": "6BJR02",
+    "description": "Jarritos, Grapefruit/Toronja 24/12.5oz",
+    "price": 26.99
+  },
+  {
+    "location_id": 4,
+    "code": "6BJR03",
+    "description": "Jarritos, Strawberry/Fresa 24/12.5oz",
+    "price": 26.9
+  },
+  {
+    "location_id": 4,
+    "code": "6BJR04",
+    "description": "Jarritos, Tamarindo 24/12.5oz",
+    "price": 26.99
+  },
+  {
+    "location_id": 4,
+    "code": "6BJR05",
+    "description": "Jarritos, Pineapple/Piña 24/12.5oz",
+    "price": 26.99
+  },
+  {
+    "location_id": 4,
+    "code": "6BJR06",
+    "description": "Jarritos, Mandarina/Orange 24/12.5oz",
+    "price": 26.99
+  },
+  {
+    "location_id": 4,
+    "code": "6BJR07",
+    "description": "Jarritos, Lime/Limon 24/12.5oz",
+    "price": 26.99
+  },
+  {
+    "location_id": 4,
+    "code": "6BJR09",
+    "description": "Jarritos, Fruit Punch/Tuti Fruti 24/12.5oz",
+    "price": 26.99
+  },
+  {
+    "location_id": 4,
+    "code": "6BJR10",
+    "description": "Jarritos, Mango 24/12.5oz",
+    "price": 27.5
+  },
+  {
+    "location_id": 4,
+    "code": "6BJR11",
+    "description": "Jarritos, Guava 24/12.5oz",
+    "price": 27.5
+  },
+  {
+    "location_id": 4,
+    "code": "6BJR12",
+    "description": "Jarritos, Passion Fruit/ Maracuya 24/12.5oz",
+    "price": 27.5
+  },
+  {
+    "location_id": 4,
+    "code": "6BMS1",
+    "description": "Coke Coca-Cola Mex  24-1/2L Bottle",
+    "price": 39.5
+  },
+  {
+    "location_id": 4,
+    "code": "6BMS2",
+    "description": "Sprite Mexican Bottle 24-1/2L Bottle",
+    "price": 41
+  },
+  {
+    "location_id": 4,
+    "code": "6BMS3",
+    "description": "Fanta Orange Mex Bottle 24-1/2L",
+    "price": 43.5
+  },
+  {
+    "location_id": 4,
+    "code": "6BMS4",
+    "description": "Coke/Coca-Cola Mex Bottle 24/12oz",
+    "price": 37.8
+  },
+  {
+    "location_id": 4,
+    "code": "6BMS5",
+    "description": "Squirt Mexican Bottle 24/12.5oz",
+    "price": 39
+  },
+  {
+    "location_id": 4,
+    "code": "6BMX01",
+    "description": "Bar Mix, Lemon Amarillo Powder Franco 12/24oz",
+    "price": 69
+  },
+  {
+    "location_id": 4,
+    "code": "6BMX02",
+    "description": "Bar Mix, Lime Verde Powder Franco 12/24oz",
+    "price": 63.34
+  },
+  {
+    "location_id": 4,
+    "code": "6BMX03",
+    "description": "Franco's Margarita Salt-Colores 18/1lb",
+    "price": 78
+  },
+  {
+    "location_id": 4,
+    "code": "6BMX041",
+    "description": "Bar, Mix Nina's Natural Bloody Mary Mix 12/1L",
+    "price": 49
+  },
+  {
+    "location_id": 4,
+    "code": "6BMX042",
+    "description": "Bar Mix, Nina's Natural Michelada Mix 12/1L",
+    "price": 55.25
+  },
+  {
+    "location_id": 4,
+    "code": "6BMX051",
+    "description": "Bar Mix, Grenadine 12/1L (Ninas's Classic)",
+    "price": 52.5
+  },
+  {
+    "location_id": 4,
+    "code": "6BMX061",
+    "description": "Bar Mix, Triple Sec Syrup 12/1L  (Nina's Classic)",
+    "price": 48
+  },
+  {
+    "location_id": 4,
+    "code": "6BMX07",
+    "description": "Cream of Coconut 24/15oz (Coco Lopez)",
+    "price": 92
+  },
+  {
+    "location_id": 4,
+    "code": "6BMX08",
+    "description": "Bar Mix, Simple Syrup Light (Finest Call) 12/1Lb",
+    "price": 75
+  },
+  {
+    "location_id": 4,
+    "code": "6BMX11",
+    "description": "Bar Mix, JP's Lemon Yellow Powder 12/24oz",
+    "price": 62
+  },
+  {
+    "location_id": 4,
+    "code": "6BMX12",
+    "description": "Bar Mix, JP's Lime Verde Powder 12/24oz",
+    "price": 59.25
+  },
+  {
+    "location_id": 4,
+    "code": "6BMX20",
+    "description": "Bar Mix, Strawberry Aseptic 12/32oz (Island Oasis)",
+    "price": 91.57
+  },
+  {
+    "location_id": 4,
+    "code": "6BMX21",
+    "description": "Bar Mix, Mango Puree 12/1L (Island Oasis)",
+    "price": 91.57
+  },
+  {
+    "location_id": 4,
+    "code": "6BMX22",
+    "description": "Bar Mix, Peach Puree 12/1L (Island Oasis)",
+    "price": 86.29
+  },
+  {
+    "location_id": 4,
+    "code": "6BMX23",
+    "description": "Bar Mix, Pina Colada 12/1L (Island Oasis)",
+    "price": 83.25
+  },
+  {
+    "location_id": 4,
+    "code": "6BMX26",
+    "description": "Bar Mix, Margarita 12/1L  (Island Oasis)",
+    "price": 64.25
+  },
+  {
+    "location_id": 4,
+    "code": "6BSG",
+    "description": "Sangria 24/11.6oz",
+    "price": 26.5
+  },
+  {
+    "location_id": 4,
+    "code": "6BSM",
+    "description": "Sidral Mundet Apple 24/12oz",
+    "price": 27.5
+  },
+  {
+    "location_id": 4,
+    "code": "8BB03",
+    "description": "Beef, Flap Bottom Sirloin CAB Avg 65lb",
+    "price": 0
+  },
+  {
+    "location_id": 4,
+    "code": "8BB08",
+    "description": "Small Tripas (American) 15#",
+    "price": 0
+  },
+  {
+    "location_id": 4,
+    "code": "8BB09",
+    "description": "Beef, Tongue Black #1 Avg 25lb",
+    "price": 0
+  },
+  {
+    "location_id": 4,
+    "code": "8BS300",
+    "description": "Seafood Mix Frzn 20/1lb",
+    "price": 91
+  },
+  {
+    "location_id": 4,
+    "code": "9AV01",
+    "description": "Avocado, Hass 60ct",
+    "price": 32.75
+  },
+  {
+    "location_id": 4,
+    "code": "9BROC",
+    "description": "Broccoli, Crown 20lb",
+    "price": 35.98
+  },
+  {
+    "location_id": 4,
+    "code": "9CAB1",
+    "description": "Cabbage, Green Head 1ct **Split**",
+    "price": 2.75
+  },
+  {
+    "location_id": 4,
+    "code": "9CAB2",
+    "description": "Cabbage, Red Head 1ct **Split**",
+    "price": 3.15
+  },
+  {
+    "location_id": 4,
+    "code": "9CAR01",
+    "description": "Carrot, Jumbo Fresh 5lb **Split**",
+    "price": 7
+  },
+  {
+    "location_id": 4,
+    "code": "9CAR02",
+    "description": "Carrot, Jumbo Fresh 50lb",
+    "price": 30
+  },
+  {
+    "location_id": 4,
+    "code": "9CEL01",
+    "description": "Celery/Apio Fresh 3ct **Split**",
+    "price": 8.25
+  },
+  {
+    "location_id": 4,
+    "code": "9CEL02",
+    "description": "Celery/Apio Fresh 30ct Case",
+    "price": 36.71
+  },
+  {
+    "location_id": 4,
+    "code": "9CILAN",
+    "description": "Cilantro Fresh 60ct",
+    "price": 22.74
+  },
+  {
+    "location_id": 4,
+    "code": "9CORN02",
+    "description": "Corn, Elote Yellow Fresh 48ct",
+    "price": 81.9
+  },
+  {
+    "location_id": 4,
+    "code": "9CUC01",
+    "description": "Cucumber, Med Select 5lb **Split**",
+    "price": 8.89
+  },
+  {
+    "location_id": 4,
+    "code": "9CUC02",
+    "description": "Cucumber, Med Select 40lb",
+    "price": 60.9
+  },
+  {
+    "location_id": 4,
+    "code": "9FLR01",
+    "description": "Flower, Orchid 100ct",
+    "price": 29.9
+  },
+  {
+    "location_id": 4,
+    "code": "9FMAN1",
+    "description": "Mango 9ct",
+    "price": 18
+  },
+  {
+    "location_id": 4,
+    "code": "9FPINA1",
+    "description": "Pineapple, Gold 6-8ct",
+    "price": 21.28
+  },
+  {
+    "location_id": 4,
+    "code": "9GAR",
+    "description": "Garlic, Peeled Whole 5lb **Split**",
+    "price": 21.75
+  },
+  {
+    "location_id": 4,
+    "code": "9GAR1",
+    "description": "Garlic, Peeled Whole 4/5lb Case",
+    "price": 82
+  },
+  {
+    "location_id": 4,
+    "code": "9JUICE01",
+    "description": "Juice, Orange 4/1gal (Prairie Farms)",
+    "price": 33.4
+  },
+  {
+    "location_id": 4,
+    "code": "9LEM1",
+    "description": "Lemon Amarillo Ch 165ct",
+    "price": 43.62
+  },
+  {
+    "location_id": 4,
+    "code": "9LEM2",
+    "description": "Lemon Amarillo Ch 95-115ct",
+    "price": 44.75
+  },
+  {
+    "location_id": 4,
+    "code": "9LET1",
+    "description": "Lettuce, Iceberg Fresh 24ct",
+    "price": 31.98
+  },
+  {
+    "location_id": 4,
+    "code": "9LET2",
+    "description": "Lettuce, Romaine Fresh 24ct",
+    "price": 39
+  },
+  {
+    "location_id": 4,
+    "code": "9LIME",
+    "description": "Lime/Limon Verde Fresh 200ct",
+    "price": 72.18
+  },
+  {
+    "location_id": 4,
+    "code": "9LIME*",
+    "description": "Lime/Limon Verde Fresh Grande 110ct",
+    "price": 74.72
+  },
+  {
+    "location_id": 4,
+    "code": "9MINT",
+    "description": "Mint, Fresh 1lb",
+    "price": 12.69
+  },
+  {
+    "location_id": 4,
+    "code": "9MUSH1",
+    "description": "Mushrooms/Hongos Med 10Lb",
+    "price": 25.75
+  },
+  {
+    "location_id": 4,
+    "code": "9NOPAL",
+    "description": "Cactus Leaves Nopal Fresh Case",
+    "price": 24.25
+  },
+  {
+    "location_id": 4,
+    "code": "9ON01",
+    "description": "Onion, Yellow Jumbo #1 USA 50lb",
+    "price": 16.37
+  },
+  {
+    "location_id": 4,
+    "code": "9ON02",
+    "description": "Onion, Red Jumbo #1 USA 25lb",
+    "price": 17.25
+  },
+  {
+    "location_id": 4,
+    "code": "9ON04",
+    "description": "Onion, Green Mexican Bulb (Chambray)",
+    "price": 25.46
+  },
+  {
+    "location_id": 4,
+    "code": "9ORNG80",
+    "description": "Orange, Fresh 80-88ct",
+    "price": 38.25
+  },
+  {
+    "location_id": 4,
+    "code": "9PBG",
+    "description": "Pepper, Bell Green 20-25b",
+    "price": 53.78
+  },
+  {
+    "location_id": 4,
+    "code": "9PBR",
+    "description": "Pepper, Bell Red 20-25lb",
+    "price": 52
+  },
+  {
+    "location_id": 4,
+    "code": "9PBY",
+    "description": "Pepper, Bell Yellow 20-25lb",
+    "price": 46
+  },
+  {
+    "location_id": 4,
+    "code": "9PHAB",
+    "description": "Pepper, Habanero 8lb",
+    "price": 43.91
+  },
+  {
+    "location_id": 4,
+    "code": "9PJAL",
+    "description": "Pepper, Jalapeno Fresco Case 35lb",
+    "price": 60.98
+  },
+  {
+    "location_id": 4,
+    "code": "9POT1",
+    "description": "Potato, Russet ID White 70ct 50lb",
+    "price": 20.34
+  },
+  {
+    "location_id": 4,
+    "code": "9POT2",
+    "description": "Potato, Red  A #2 50lb",
+    "price": 30.8
+  },
+  {
+    "location_id": 4,
+    "code": "9PPOB",
+    "description": "Pepper, Poblano 20lb",
+    "price": 60.53
+  },
+  {
+    "location_id": 4,
+    "code": "9PSER1",
+    "description": "Pepper, Serrano 35lb Avg Case",
+    "price": 60.35
+  },
+  {
+    "location_id": 4,
+    "code": "9PSER2",
+    "description": "Pepper, Serrano 5lb **Split**",
+    "price": 9.15
+  },
+  {
+    "location_id": 4,
+    "code": "9SPIN1",
+    "description": "Spinach, Washed Fresh 4/2.5lb",
+    "price": 25.5
+  },
+  {
+    "location_id": 4,
+    "code": "9SPIN2",
+    "description": "Spinach, Washed Fresh Ba 1/2.5Lb **Split**",
+    "price": 8.5
+  },
+  {
+    "location_id": 4,
+    "code": "9SPRING",
+    "description": "Spring Mix, Arcadian Blend 3lb",
+    "price": 28.95
+  },
+  {
+    "location_id": 4,
+    "code": "9SQUA1",
+    "description": "Squash, Zucchini/Calabaza Med 20lb",
+    "price": 26.74
+  },
+  {
+    "location_id": 4,
+    "code": "9SQUA2",
+    "description": "Squash, Yellow #1 Med 20lb",
+    "price": 26
+  },
+  {
+    "location_id": 4,
+    "code": "9TOM2",
+    "description": "Tomato, Roma Large 25lb",
+    "price": 41.38
+  },
+  {
+    "location_id": 4,
+    "code": "9TOM4",
+    "description": "Tomatillo, Verde Fresh Case",
+    "price": 34.62
+  },
+  {
+    "location_id": 4,
+    "code": "9TOM5",
+    "description": "Tomato, Green/Verde 25lb",
+    "price": 43
+  },
+  {
+    "location_id": 4,
+    "code": "9z1",
+    "description": "Cabbage Green Med 40lb Crtn",
+    "price": 22.5
+  },
+  {
+    "location_id": 4,
+    "code": "9z2",
+    "description": "Cabbage Red Med 40lb Crtn",
+    "price": 26.5
+  }
+]

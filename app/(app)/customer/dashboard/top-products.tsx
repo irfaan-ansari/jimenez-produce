@@ -14,7 +14,7 @@ export function TopProducts() {
     ...item,
     color: COLORS[i % COLORS.length],
   }));
-  console.log(items);
+
   return (
     <Card className="rounded-2xl ring-0 shadow-none border col-span-2">
       <CardHeader>
