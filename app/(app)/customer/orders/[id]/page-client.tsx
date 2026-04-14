@@ -5,13 +5,13 @@ import { format } from "date-fns";
 import React, { use } from "react";
 import { formatUSD } from "@/lib/utils";
 import {
+  Copy,
+  Home,
+  Download,
+  MapPinned,
   ChevronLeft,
   CircleCheck,
   ClipboardCheck,
-  Copy,
-  Download,
-  Home,
-  MapPinned,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useOrder } from "@/hooks/use-customer";
@@ -51,42 +51,40 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
 
   const status = orderMap[data?.status as StatusIndex];
 
-  const STEPS = React.useMemo(() => {
-    return [
-      {
-        icon: CircleCheck,
-        label: "Ordered",
-        date: data.createdAt,
-        active: true,
-      },
-      {
-        icon: ClipboardCheck,
-        label: "Processing",
-        date: data.createdAt,
-        active: true,
-      },
-      {
-        icon: Home,
-        label: data.status === "completed" ? "Delivered" : "Delivery",
-        date: data.status === "completed" ? data.updatedAt : data.deliveryDate,
-        active: data.status === "completed",
-      },
-    ];
-  }, [data]);
+  const STEPS = [
+    {
+      icon: CircleCheck,
+      label: "Ordered",
+      date: data.createdAt,
+      active: true,
+    },
+    {
+      icon: ClipboardCheck,
+      label: "Processing",
+      date: data.createdAt,
+      active: true,
+    },
+    {
+      icon: Home,
+      label: data.status === "completed" ? "Delivered" : "Delivery",
+      date: data.status === "completed" ? data.updatedAt : data.deliveryDate,
+      active: data.status === "completed",
+    },
+  ];
 
   return (
     <div
       className="grid grid-cols-6 gap-8"
       style={{ "--color": status.color } as React.CSSProperties}
     >
-      <div className="col-span-6 lg:col-span-4 space-y-6">
-        <div className="flex gap-4 items-center justify-between">
-          <div className="flex gap-4 items-center">
+      <div className="col-span-6 space-y-6 lg:col-span-4">
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
             <Button
               size="sm"
               asChild
               variant="outline"
-              className="rounded-xl shrink-0"
+              className="shrink-0 rounded-xl"
             >
               <Link href="/customer/orders">
                 <ChevronLeft /> Back
@@ -96,7 +94,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
           </div>
           <Badge
             variant="outline"
-            className="h-7 rounded-xl pl-1.5 pr-2.5 gap-1.5 [&>svg]:size-3.5! bg-(--color)/10 border-(--color)/10 text-sm"
+            className="h-7 gap-1.5 rounded-xl border-(--color)/10 bg-(--color)/10 pr-2.5 pl-1.5 text-sm [&>svg]:size-3.5!"
           >
             <status.icon className="text-(--color)" />
             {status.label}
@@ -106,7 +104,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
         {/* progress */}
         <Card className="rounded-2xl">
           <CardHeader>
-            <CardTitle className="flex gap-4 items-center text-lg font-semibold">
+            <CardTitle className="flex items-center gap-4 text-lg font-semibold">
               <MapPinned className="size-5 shrink-0" />
               Order Progress
             </CardTitle>
@@ -125,36 +123,36 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
               Purchased Items ({data?.lineItemCount})
             </CardTitle>
           </CardHeader>
-          <CardContent className="text-base px-0">
+          <CardContent className="px-0 text-base">
             <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead className="pl-6">Item</TableHead>
                   <TableHead>Price</TableHead>
                   <TableHead>Quantity</TableHead>
-                  <TableHead className="text-right pr-6">Total</TableHead>
+                  <TableHead className="pr-6 text-right">Total</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {data.lineItems.map((line) => (
                   <TableRow key={line.id}>
                     <TableCell className="pl-6">
-                      <div className="flex gap-4 items-start">
-                        <Avatar className="rounded-xl **:rounded-xl after:hidden size-9 ring-2 ring-offset-1 ring-green-600/20">
+                      <div className="flex items-start gap-4">
+                        <Avatar className="size-9 rounded-xl ring-2 ring-green-600/20 ring-offset-1 **:rounded-xl after:hidden">
                           <AvatarImage src={line?.image!} />
                           <AvatarFallback>
                             {line.title?.charAt(0)}
                           </AvatarFallback>
                         </Avatar>
 
-                        <h4 className="font-medium max-w-3xs truncate">
+                        <h4 className="max-w-3xs truncate font-medium">
                           {line.title}
                         </h4>
                       </div>
                     </TableCell>
                     <TableCell>{formatUSD(line.price!)}</TableCell>
                     <TableCell>{line.quantity}</TableCell>
-                    <TableCell className="text-right pr-6">
+                    <TableCell className="pr-6 text-right">
                       {formatUSD(line.total!)}
                     </TableCell>
                   </TableRow>
@@ -171,21 +169,21 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
           </CardHeader>
           <CardContent className="grid grid-cols-3 gap-4 text-base">
             <div>
-              <h4 className="uppercase text-sm font-medium text-muted-foreground mb-4">
+              <h4 className="mb-4 text-sm font-medium text-muted-foreground uppercase">
                 Shipping Address
               </h4>
               {data.shippingAddress?.street} {data.shippingAddress?.city}{" "}
               {data.shippingAddress?.state} {data.shippingAddress?.zip}
             </div>
             <div>
-              <h4 className="uppercase text-sm font-medium text-muted-foreground mb-4">
+              <h4 className="mb-4 text-sm font-medium text-muted-foreground uppercase">
                 Recipient
               </h4>
               <div>{data.receiverName}</div>
               <div>{data.receiverPhone}</div>
             </div>
             <div>
-              <h4 className="uppercase text-sm font-medium text-muted-foreground mb-4">
+              <h4 className="mb-4 text-sm font-medium text-muted-foreground uppercase">
                 Schedule
               </h4>
               <div>{data.deliveryWindow}</div>
@@ -197,28 +195,28 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
       </div>
 
       {/* order summary */}
-      <Card className="rounded-2xl bg-secondary col-span-2">
+      <Card className="col-span-2 rounded-2xl bg-secondary">
         <CardHeader>
           <CardTitle className="text-xl font-semibold">Order Summary</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6 text-base">
           <div className="space-y-2">
-            <div className="flex justify-between items-center">
+            <div className="flex items-center justify-between">
               <span>Subtotal</span> <span>{formatUSD(data.subtotal)}</span>
             </div>
-            <div className="flex justify-between items-center">
+            <div className="flex items-center justify-between">
               <span>Fee</span> <span>{formatUSD(data.subtotal)}</span>
             </div>
-            <div className="flex justify-between items-center text-lg font-semibold">
+            <div className="flex items-center justify-between text-lg font-semibold">
               <span>Total</span> <span>{formatUSD(data.total)}</span>
             </div>
           </div>
-          <Button className="rounded-xl w-full" size="xl">
+          <Button className="w-full rounded-xl" size="xl">
             <Download />
             Download Invoice
           </Button>
 
-          <Button className="rounded-xl w-full" size="xl" variant="outline">
+          <Button className="w-full rounded-xl" size="xl" variant="outline">
             <Copy />
             Order Again
           </Button>
@@ -239,7 +237,7 @@ const StepItem = ({
   date: string | Date | null;
   active: boolean;
 }) => (
-  <div className="flex flex-col self-center items-center">
+  <div className="flex flex-col items-center self-center">
     <span
       className={`size-10 mb-2 rounded-xl inline-flex items-center justify-center ${
         active ? "bg-primary text-primary-foreground" : "bg-secondary"
@@ -248,9 +246,9 @@ const StepItem = ({
       <Icon className="size-4" />
     </span>
 
-    <span className="uppercase text-base">{label}</span>
+    <span className="text-base uppercase">{label}</span>
 
-    <span className="text-muted-foreground text-sm">
+    <span className="text-sm text-muted-foreground">
       {format(date!, "MMMM dd, hh:mm a")}
     </span>
   </div>

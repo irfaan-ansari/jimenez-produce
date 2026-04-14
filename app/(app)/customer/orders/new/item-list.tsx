@@ -257,7 +257,7 @@ const ProductItem = withForm({
       <div
         key={product.id}
         className={cn(
-          `flex cursor-pointer items-center gap-4 rounded-xl border py-2 transition fade-in group-data-[layout=grid]/card:flex-col
+          `fade-in flex cursor-pointer items-center gap-4 rounded-xl border py-2 transition group-data-[layout=grid]/card:flex-col
           group-data-[layout=grid]/card:items-stretch group-data-[layout=grid]/card:gap-0
           group-data-[layout=grid]/card:p-0 group-data-[layout=list]/card:px-4 group-data-[layout=list]/card:not-last:mb-1 
           hover:shadow-md `,
@@ -288,6 +288,7 @@ const ProductItem = withForm({
                     {cat}
                   </Badge>
                 ))}
+                <span>{product.identifier}</span>
               </div>
 
               <LastPurchase

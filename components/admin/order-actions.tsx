@@ -8,7 +8,14 @@ import { useConfirm } from "@/hooks/use-confirm";
 import { PopoverXDrawer } from "../popover-x-drawer";
 import { useQueryClient } from "@tanstack/react-query";
 import { deleteOrder, updateOrder } from "@/server/order";
-import { CheckCircle, Eye, FileText, MoreVertical, Trash2 } from "lucide-react";
+import {
+  CheckCircle,
+  Download,
+  Eye,
+  FileText,
+  MoreVertical,
+  Trash2,
+} from "lucide-react";
 
 export const OrderActions = ({
   id,
@@ -25,7 +32,7 @@ export const OrderActions = ({
   const handleAction = (action: string) => {
     switch (action) {
       case "completed":
-        confirm.info({
+        confirm.warning({
           title: "Mark as Completed",
           description: "This will mark the order as delivered to the customer.",
           actionLabel: "Yes",
@@ -92,7 +99,7 @@ export const OrderActions = ({
 
       <Button variant="ghost" asChild>
         <a href={`/api/orders/${id}/pdf`} target="_blank">
-          <FileText /> Download Invoice
+          <Download /> Download Invoice
         </a>
       </Button>
 

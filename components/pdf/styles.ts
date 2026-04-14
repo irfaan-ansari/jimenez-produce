@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
+    alignItems: "flex-start",
     marginBottom: 10,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.divider,
@@ -79,6 +79,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textTransform: "uppercase",
     marginBottom: 2,
+    lineHeight: 1,
   },
   value: {
     fontSize: 10,
@@ -100,7 +101,7 @@ const styles = StyleSheet.create({
   },
   tableRow: {
     flexDirection: "row",
-    padding: "6 4",
+    padding: "0 0",
     borderBottomWidth: 0.5,
     borderBottomColor: "#f1f5f9",
   },
@@ -124,6 +125,33 @@ const styles = StyleSheet.create({
     textAlign: "justify",
     marginBottom: 8,
     marginTop: 10,
+  },
+  table: {
+    width: "auto",
+    borderStyle: "solid",
+    borderWidth: 1,
+    borderRightWidth: 0,
+    borderBottomWidth: 0,
+  },
+  tableColHeader: {
+    width: "100%",
+    borderStyle: "solid",
+    borderWidth: 1,
+    borderLeftWidth: 0,
+    borderTopWidth: 0,
+    padding: 5,
+    fontSize: 10,
+    fontWeight: "bold",
+  },
+  tableCell: {
+    width: "100%",
+    borderStyle: "solid",
+    borderWidth: 1,
+    borderLeftWidth: 0,
+    borderTopWidth: 0,
+    padding: 5,
+    fontSize: 9,
+    lineHeight: 1,
   },
 });
 

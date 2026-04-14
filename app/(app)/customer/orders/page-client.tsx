@@ -3,7 +3,6 @@
 import React from "react";
 import Link from "next/link";
 import { format } from "date-fns";
-import { Eye } from "lucide-react";
 import { formatUSD } from "@/lib/utils";
 import { OrderType } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
@@ -13,12 +12,14 @@ import { useOrders } from "@/hooks/use-customer";
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "@/components/admin/data-table";
 import { useRouterStuff } from "@/hooks/use-router-stuff";
+import { Copy, Download, Eye, MoreVertical } from "lucide-react";
+import { PopoverXDrawer } from "@/components/popover-x-drawer";
 
 export const PageClient = () => {
   const { searchParams } = useRouterStuff();
 
   const { data, error, isPending, isError } = useOrders(
-    searchParams.toString()
+    searchParams.toString(),
   );
 
   // data
@@ -40,24 +41,24 @@ export const columns: ColumnDef<OrderType>[] = [
     cell: ({ row }) => {
       return (
         <Link
-          href={`/customer/order/${row.original.id}`}
+          href={`/customer/orders/${row.original.id}`}
           className="font-medium hover:underline"
         >
-          {row.original.id}
+          #{row.original.id}
         </Link>
       );
     },
   },
   {
     id: "createdAt",
-    header: "Order Placed",
+    header: "Placed on",
     cell: ({ row }) => {
       return (
         <div className="flex flex-col">
           <span className="font-medium">
             {format(row.original.createdAt!, "MMMM dd, yyyy")}
           </span>
-          <span className="text-muted-foreground text-sm">
+          <span className="text-sm text-muted-foreground">
             {format(row.original.createdAt!, "hh:mm:ss a")}
           </span>
         </div>
@@ -71,8 +72,8 @@ export const columns: ColumnDef<OrderType>[] = [
     cell: ({ row }) => {
       const { lineItems } = row.original;
       return (
-        <div className="flex flex-col max-w-40">
-          <h4 className="font-medium truncate">
+        <div className="flex max-w-40 flex-col">
+          <h4 className="truncate font-medium">
             {lineItems?.[0]?.title} Lorem ipsum dolor sit amet.
           </h4>
           {lineItems.length > 1 && <span>+ {lineItems.length - 1} Items</span>}
@@ -100,14 +101,14 @@ export const columns: ColumnDef<OrderType>[] = [
   },
   {
     id: "shippingAddress",
-    header: "Ship To",
+    header: "Recipient",
     cell: ({ row }) => {
-      const { receiverName, receiverPhone, shippingAddress } = row.original;
+      const { receiverName, shippingAddress } = row.original;
       const { street, city, state, zip } = shippingAddress || {};
       return (
         <div className="flex flex-col">
           <span className="font-medium">{receiverName}</span>
-          <span>
+          <span className="text-sm text-muted-foreground">
             {street} {city} {state}-{zip}
           </span>
         </div>
@@ -132,7 +133,7 @@ export const columns: ColumnDef<OrderType>[] = [
         <Badge
           variant="outline"
           style={{ "--color": map.color } as React.CSSProperties}
-          className="h-7 rounded-xl pl-1.5 pr-2.5 gap-1.5 [&>svg]:size-3.5! bg-(--color)/10 border-(--color)/10 text-sm"
+          className="h-7 gap-1.5 rounded-xl border-(--color)/10 bg-(--color)/10 pr-2.5 pl-1.5 text-sm [&>svg]:size-3.5!"
         >
           <map.icon className="text-(--color)" />
           {map.label}
@@ -143,12 +144,38 @@ export const columns: ColumnDef<OrderType>[] = [
   {
     id: "action",
     cell: ({ row }) => {
+      const [open, setOpen] = React.useState(false);
+      const { id } = row.original;
       return (
-        <Button size="icon" asChild variant="outline" className="rounded-xl">
-          <Link href={`/customer/orders/${row.original.id}`}>
-            <Eye />
-          </Link>
-        </Button>
+        <PopoverXDrawer
+          open={open}
+          setOpen={setOpen}
+          trigger={
+            <Button size="icon" variant="outline" className="rounded-xl">
+              <MoreVertical className="size-5" />
+            </Button>
+          }
+        >
+          <Button type="button" variant="ghost" asChild>
+            <Link href={`/admin/orders/${id}`}>
+              <Eye />
+              View
+            </Link>
+          </Button>
+          <Button type="button" variant="ghost" asChild>
+            {/* set items to localstorage */}
+            <Link href={`/admin/orders/new`}>
+              <Copy />
+              Order Again
+            </Link>
+          </Button>
+
+          <Button variant="ghost" asChild>
+            <a href={`/api/orders/${id}/pdf`} target="_blank">
+              <Download /> Download Invoice
+            </a>
+          </Button>
+        </PopoverXDrawer>
       );
     },
   },

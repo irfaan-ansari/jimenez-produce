@@ -417,6 +417,32 @@ export const CONTACT_SECTIONS = {
 
 export const OPEN_POSITIONS = [
   {
+    title: "Office Administrator",
+    location: "Alabama / Louisiana",
+    tags: [],
+    href: "office-administrator",
+    description:
+      "The Office Administrator is responsible for ensuring smooth day-to-day office operations, supporting staff, managing administrative processes, and maintaining an organized and efficient workplace environment.",
+    details: `
+### Key Responsibilities:
+- Manage daily office operations and administrative tasks
+- Coordinate schedules, meetings, and office communications
+- Maintain organized filing systems and accurate records
+- Handle incoming calls, emails, and correspondence
+- Support internal teams with documentation and reporting
+- Monitor office supplies and coordinate orders as needed
+- Assist with onboarding and general HR administrative support
+### Qualifications:
+- Previous administrative or office support experience preferred
+- Strong organizational and multitasking abilities
+- Excellent communication and interpersonal skills
+- Proficiency in Microsoft Office and basic office software
+- Detail-oriented with strong problem-solving skills
+- Bilingual (English/Spanish) preferred
+`,
+    form: TerritoryManagerForm,
+  },
+  {
     title: "Territory Manager (Sales)",
     location: "Alabama / Louisiana",
     tags: ["Bilingual (English/Spanish)"],
