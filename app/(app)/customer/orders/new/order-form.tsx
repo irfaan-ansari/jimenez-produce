@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { useStore } from "@tanstack/react-form";
 import React from "react";
 import { CheckoutDialog } from "./checkout-dialog";
+import { line } from "drizzle-orm/pg-core";
 
 export const OrderForm = ({ customer }: { customer: CustomerSelectType }) => {
   const router = useRouter();
@@ -80,8 +81,11 @@ export const OrderForm = ({ customer }: { customer: CustomerSelectType }) => {
     },
   });
 
-  const values = useStore(form.store, (state) => state.values);
-  const { lineItems } = values;
+  const lineItemCount = useStore(
+    form.store,
+    (state) => state.values.lineItemCount,
+  );
+
   return (
     <form
       onSubmit={(e) => {
@@ -95,11 +99,13 @@ export const OrderForm = ({ customer }: { customer: CustomerSelectType }) => {
         <OrderCart customer={customer} form={form} show={showSummary} />
       </div>
 
-      {lineItems.length > 0 && (
+      {Number(lineItemCount ?? 0) > 0 && (
         <div className="sticky bottom-6 mx-auto h-16 w-xl rounded-2xl bg-secondary px-6  py-4 shadow-lg ring-2 ring-primary/50 ring-offset-2 backdrop-blur-2xl">
           <div className="flex h-full items-center gap-4">
             <div className="gap-0.5e flex flex-col">
-              <span className="text-xs uppercase">2 items in cart</span>
+              <span className="text-xs uppercase">
+                {lineItemCount ?? 0} items in cart
+              </span>
               <span className="text-base font-bold text-primary">
                 {formatUSD(124)}
               </span>

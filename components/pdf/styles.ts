@@ -3,7 +3,7 @@ import { StyleSheet } from "@react-pdf/renderer";
 const COLORS = {
   primary: "#80b83a",
   main: "#141414",
-  secondary: "#64748b",
+  secondary: "#676767",
   divider: "#e2e8f0",
   bgSubtle: "#f8fafc",
 };
@@ -98,6 +98,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: COLORS.secondary,
     textTransform: "uppercase",
+    padding: "4 6",
   },
   tableRow: {
     flexDirection: "row",
@@ -105,7 +106,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0.5,
     borderBottomColor: "#f1f5f9",
   },
-
   signatureBlock: {
     width: "50%",
     borderBottomWidth: 1,
@@ -144,6 +144,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   tableCell: {
+    minHeight: 20,
     width: "100%",
     borderStyle: "solid",
     borderWidth: 1,

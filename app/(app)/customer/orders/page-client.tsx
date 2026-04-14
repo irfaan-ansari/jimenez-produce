@@ -12,8 +12,8 @@ import { useOrders } from "@/hooks/use-customer";
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "@/components/admin/data-table";
 import { useRouterStuff } from "@/hooks/use-router-stuff";
-import { Copy, Download, Eye, MoreVertical } from "lucide-react";
 import { PopoverXDrawer } from "@/components/popover-x-drawer";
+import { Copy, Download, Eye, MoreVertical } from "lucide-react";
 
 export const PageClient = () => {
   const { searchParams } = useRouterStuff();
@@ -22,7 +22,6 @@ export const PageClient = () => {
     searchParams.toString(),
   );
 
-  // data
   return (
     <DataTable
       columns={columns}

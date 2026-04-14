@@ -1,6 +1,3 @@
-import { db } from "@/lib/db";
-import { customer, inventory, lineItem, order, product } from "@/lib/db/schema";
-import { getSession } from "@/server/auth";
 import {
   eq,
   or,
@@ -12,7 +9,10 @@ import {
   getTableColumns,
   desc,
 } from "drizzle-orm";
+import { db } from "@/lib/db";
+import { getSession } from "@/server/auth";
 import { NextRequest, NextResponse } from "next/server";
+import { customer, inventory, lineItem, order, product } from "@/lib/db/schema";
 
 export async function GET(req: NextRequest) {
   try {
@@ -43,16 +43,19 @@ export async function GET(req: NextRequest) {
           ? or(
               ilike(product.title, `%${q}%`),
               ilike(product.description, `%${q}%`),
-              ilike(product.identifier, `%${q}%`)
+              ilike(product.identifier, `%${q}%`),
             )
-          : undefined
+          : undefined,
       );
 
       const products = await db.query.product.findMany({
         where: filters,
         limit: Number(limit),
         offset,
-        orderBy: (product, { desc }) => [desc(product.createdAt)],
+        orderBy: (product, { desc }) => [
+          desc(product.createdAt),
+          desc(product.id),
+        ],
       });
 
       const productIds = products.map((p) => p.id);
@@ -60,7 +63,7 @@ export async function GET(req: NextRequest) {
       const inv = await db.query.inventory.findMany({
         where: and(
           inArray(inventory.productId, productIds),
-          eq(inventory.locationId, customerRes.locationId!)
+          eq(inventory.locationId, customerRes.locationId!),
         ),
       });
 
@@ -73,8 +76,8 @@ export async function GET(req: NextRequest) {
         .where(
           and(
             eq(order.customerId, customerRes.id),
-            inArray(lineItem.productId, productIds)
-          )
+            inArray(lineItem.productId, productIds),
+          ),
         )
         .orderBy(desc(lineItem.createdAt));
 
@@ -109,7 +112,7 @@ export async function GET(req: NextRequest) {
             totalPages: Math.ceil(total / (limit as number)),
           },
         },
-        { status: 200 }
+        { status: 200 },
       );
     } else {
       const filters = and(
@@ -118,9 +121,9 @@ export async function GET(req: NextRequest) {
           ? or(
               ilike(product.title, `%${q}%`),
               ilike(product.description, `%${q}%`),
-              ilike(product.identifier, `%${q}%`)
+              ilike(product.identifier, `%${q}%`),
             )
-          : undefined
+          : undefined,
       );
 
       const products = await db.query.product.findMany({
@@ -145,14 +148,14 @@ export async function GET(req: NextRequest) {
             totalPages: Math.ceil(total / (limit as number)),
           },
         },
-        { status: 200 }
+        { status: 200 },
       );
     }
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return NextResponse.json(
       { message: "Failed to load data" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

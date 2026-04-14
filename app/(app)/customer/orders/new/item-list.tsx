@@ -288,7 +288,7 @@ const ProductItem = withForm({
                     {cat}
                   </Badge>
                 ))}
-                <span>{product.identifier}</span>
+                <span>{product.id}</span>
               </div>
 
               <LastPurchase

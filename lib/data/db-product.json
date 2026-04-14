@@ -377,20 +377,7 @@
     "type": null,
     "pack": null
   },
-  {
-    "id": 1562,
-    "title": "Cheese, Queso Blanco Blend 9//10 6/5lb (Alejandro)",
-    "identifier": "2DQ1010",
-    "description": "",
-    "categories": ["Dairy", "Cheese"],
-    "status": "private",
-    "image": "https://bnl8ryis1b5ogqgd.public.blob.vercel-storage.com/products/2dq1010-lEchj2fa3M7c8OaJXN9CjGI2JJLw44.avif",
-    "images": [],
-    "created_at": "2026-03-01 23:11:38.527117",
-    "updated_at": "2026-03-02 19:17:24.976",
-    "type": null,
-    "pack": null
-  },
+
   {
     "id": 1563,
     "title": "Cheese, Extra Melt White 6/5lb (Land O' Lakes)",

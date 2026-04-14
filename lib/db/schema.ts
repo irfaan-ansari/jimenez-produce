@@ -127,11 +127,10 @@ export const location = pgTable("location", {
   phone: text("phone").notNull(),
   email: text("email").notNull(),
   address: jsonb("address").$type<{
-    day: string;
-    window: string;
-    receivingName: string;
-    receivingPhone: string;
-    instructions: string;
+    street: string;
+    city: string;
+    state: string;
+    zip: string;
   }>(),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at")
@@ -256,7 +255,7 @@ export const product = pgTable(
   {
     id: serial("id").primaryKey(),
     title: text("title").notNull(),
-    identifier: text("identifier"),
+    identifier: text("identifier").unique().notNull(),
     type: text("type"),
     pack: text("pack"),
     description: text("description"),

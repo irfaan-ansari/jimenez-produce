@@ -1,0 +1,1 @@
+ALTER TABLE "product" ALTER COLUMN "identifier" SET NOT NULL;

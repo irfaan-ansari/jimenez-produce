@@ -1,12 +1,16 @@
+import {
+  OrderSelectType,
+  LineItemSelectType,
+  LocationSelectType,
+} from "@/lib/db/schema";
 import { format } from "date-fns";
-import { COLORS, styles } from "./styles"; // Assuming styles contains table formatting
-import { OrderSelectType, LineItemSelectType } from "@/lib/db/schema";
+import { styles } from "./styles";
 import { Document, Page, Text, View, Image } from "@react-pdf/renderer";
 
 interface OrderInvoiceProps {
   data: OrderSelectType & {
     lineItems: LineItemSelectType[];
-    driver?: { name: string };
+    location: LocationSelectType | null;
   };
 }
 
@@ -28,9 +32,12 @@ export const OrderInvoice = ({ data }: OrderInvoiceProps) => {
                 Jimenez Produce LLC
               </Text>
               <View style={styles.headerContactText}>
-                <Text>23141 Rubens Ln</Text>
-                <Text>Robertsdale, AL 36567</Text>
-                <Text>251-262-2607</Text>
+                <Text>{data.location?.address?.street}</Text>
+                <Text>
+                  {data.location?.address?.city} {data.location?.address?.state}
+                  {data.location?.address?.zip}
+                </Text>
+                <Text>{data.location?.phone}</Text>
               </View>
             </View>
           </View>
@@ -44,111 +51,70 @@ export const OrderInvoice = ({ data }: OrderInvoiceProps) => {
             >
               Packing Slip
             </Text>
-
             <View
               style={[
-                styles.row,
-                { border: "1px solid red", marginTop: 20, gap: 0 },
+                styles.table,
+                { marginTop: 15, width: "80%", marginLeft: "auto" },
               ]}
             >
-              <View
-                style={{
-                  width: "50%",
-                  borderRight: "1px solid red",
-                  textAlign: "left",
-                }}
-              >
-                <Text
-                  style={[
-                    styles.label,
-                    { borderBottom: "1px solid red", padding: 8 },
-                  ]}
-                >
-                  Invoice #:
+              <View style={[styles.tableRow]}>
+                <Text style={[styles.tableCell, { backgroundColor: "#eee" }]}>
+                  Invoice ID:
                 </Text>
-                <Text style={[styles.value, { padding: 8 }]}>{data.id}</Text>
+                <Text style={styles.tableCell}>#{data.id}</Text>
               </View>
-              <View
-                style={{
-                  width: "50%",
-                  textAlign: "left",
-                }}
-              >
-                <Text
-                  style={[
-                    styles.label,
-                    { borderBottom: "1px solid red", padding: 8 },
-                  ]}
-                >
+              <View style={styles.tableRow}>
+                <Text style={[styles.tableCell, { backgroundColor: "#eee" }]}>
                   Invoice Date:
                 </Text>
-                <Text style={[styles.value, { padding: 8 }]}>{data.id}</Text>
+                <Text style={styles.tableCell}>
+                  {format(new Date(data.createdAt!), "MMMM dd, yyyy")}
+                </Text>
               </View>
             </View>
           </View>
         </View>
 
-        {/* SHIP TO SECTION */}
-        <View style={[styles.row]}>
-          <View style={{ width: "33.33%" }}>
-            <Text
-              style={[
-                styles.label,
-                { padding: 4, lineHeight: 1, borderBottom: "1px solid red" },
-              ]}
-            >
-              Ship To
-            </Text>
+        <View style={[styles.row, { alignItems: "flex-start" }]}>
+          {/* SHIP TO  */}
+          <View style={[styles.table, { marginTop: 15, width: "30%" }]}>
+            <View style={[styles.tableRow, { backgroundColor: "#eee" }]}>
+              <Text style={styles.tableCell}>Ship To.</Text>
+            </View>
+            <View style={styles.tableRow}>
+              <View style={[styles.tableCell]}>
+                <Text>{data.receiverName}</Text>
+                <Text>{data.shippingAddress?.street}</Text>
+                {data.shippingAddress?.city} {data.shippingAddress?.state}
+                {data.shippingAddress?.zip}
+                <Text>{data.receiverPhone}</Text>
+              </View>
+            </View>
           </View>
 
-          <View>
-            <Text style={styles.value}>{data.receiverName}</Text>
-            <Text style={styles.value}>{data.shippingAddress?.street}</Text>
-            <Text style={styles.value}>
-              {data.shippingAddress?.city}, {data.shippingAddress?.state}{" "}
-              {data.shippingAddress?.zip}
-            </Text>
-            <Text style={styles.value}>{data.receiverPhone}</Text>
-          </View>
-          <View style={{ width: "33%" }}>
-            <Text
-              style={[
-                styles.label,
-                { padding: 4, borderBottom: "1px solid red" },
-              ]}
-            >
-              Ship To
-            </Text>
-            <View>
-              <Text style={styles.value}>{data.receiverName}</Text>
-              <Text style={styles.value}>{data.shippingAddress?.street}</Text>
-              <Text style={styles.value}>
-                {data.shippingAddress?.city}, {data.shippingAddress?.state}{" "}
-                {data.shippingAddress?.zip}
-              </Text>
-              <Text style={styles.value}>{data.receiverPhone}</Text>
+          {/* ORDER SUMMARY TABLE (P.O., Driver, etc) */}
+          <View
+            style={[
+              styles.table,
+              { marginTop: 15, width: "70%", height: "auto" },
+            ]}
+          >
+            <View style={[styles.tableRow, { backgroundColor: "#eee" }]}>
+              <Text style={styles.tableCell}>P.O. No.</Text>
+              <Text style={styles.tableCell}>Ship Date</Text>
+              <Text style={styles.tableCell}>Driver</Text>
+              <Text style={styles.tableCell}>Status</Text>
+            </View>
+            <View style={styles.tableRow}>
+              <Text style={styles.tableCell}>{data.po || ""}</Text>
+              <Text style={styles.tableCell}>{data.deliveryDate || ""}</Text>
+              <Text style={styles.tableCell}>{data.driverId || "Tony"}</Text>
+              <Text style={styles.tableCell}>{data.status}</Text>
             </View>
           </View>
         </View>
-
-        {/* ORDER SUMMARY TABLE (P.O., Driver, etc) */}
-        <View style={[styles.table, { marginTop: 15 }]}>
-          <View style={[styles.tableRow, { backgroundColor: "#eee" }]}>
-            <Text style={styles.tableCell}>P.O. No.</Text>
-            <Text style={styles.tableCell}>Ship Date</Text>
-            <Text style={styles.tableCell}>Driver</Text>
-            <Text style={styles.tableCell}>Status</Text>
-          </View>
-          <View style={styles.tableRow}>
-            <Text style={styles.tableCell}>{data.po || ""}</Text>
-            <Text style={styles.tableCell}>{data.deliveryDate || ""}</Text>
-            <Text style={styles.tableCell}>{data.driverId || "Tony"}</Text>
-            <Text style={styles.tableCell}>{data.status}</Text>
-          </View>
-        </View>
-
         {/* LINE ITEMS TABLE */}
-        <View style={[styles.table, { marginTop: 20, flexGrow: 1 }]}>
+        <View style={[styles.table, { marginTop: 20 }]}>
           <View style={[styles.tableRow, { backgroundColor: "#eee" }]}>
             <View style={{ width: "15%" }}>
               <Text style={styles.tableColHeader}>Quantity</Text>
@@ -162,7 +128,13 @@ export const OrderInvoice = ({ data }: OrderInvoiceProps) => {
           </View>
 
           {data.lineItems?.map((item, index) => (
-            <View key={index} style={styles.tableRow}>
+            <View
+              key={index}
+              style={[
+                styles.tableRow,
+                index % 2 !== 0 ? { backgroundColor: "#EEEEEE" } : {},
+              ]}
+            >
               <View style={{ width: "15%" }}>
                 <Text style={styles.tableCell}>{item.quantity}</Text>
               </View>
@@ -176,45 +148,7 @@ export const OrderInvoice = ({ data }: OrderInvoiceProps) => {
               </View>
             </View>
           ))}
-
-          {/* Fuel Charge Row */}
-          <View style={styles.tableRow}>
-            <View style={{ width: "15%" }}>
-              <Text style={styles.tableCell}></Text>
-            </View>
-            <View style={{ width: "25%" }}>
-              <Text style={styles.tableCell}>FC</Text>
-            </View>
-            <View style={{ width: "60%" }}>
-              <Text style={styles.tableCell}>Fuel Charge</Text>
-            </View>
-          </View>
-        </View>
-
-        {/* TOTALS FOOTER */}
-        <View style={{ marginTop: 20, borderTop: 1, paddingTop: 10 }}>
-          <View style={{ flexDirection: "row", justifyContent: "flex-end" }}>
-            <View style={{ width: 150 }}>
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Text style={styles.label}>Subtotal:</Text>
-                <Text style={styles.value}>${data.subtotal}</Text>
-              </View>
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Text style={styles.label}>Total:</Text>
-                <Text style={styles.value}>${data.total}</Text>
-              </View>
-            </View>
-          </View>
+          {/* other charges */}
         </View>
 
         <Text

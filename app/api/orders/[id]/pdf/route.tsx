@@ -21,6 +21,7 @@ export async function GET(
     where: eq(order.id, Number(id)),
     with: {
       lineItems: true,
+      location: true,
     },
   });
 
