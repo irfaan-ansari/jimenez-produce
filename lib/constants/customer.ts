@@ -225,6 +225,12 @@ export const statusMap = {
       },
     ],
   },
+  submitted: {
+    label: "Submitted",
+    color: "#F59E0B",
+    icon: Send,
+    actions: [],
+  },
 } as const;
 
 export const inviteStatusMap = {
