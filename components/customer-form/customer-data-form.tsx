@@ -2,11 +2,6 @@
 
 import z from "zod";
 import { toast } from "sonner";
-import {
-  defaultValues,
-  DELIVERY_DAYS,
-  DELIVERY_TIME,
-} from "@/lib/constants/customer";
 import { Loader } from "lucide-react";
 import { Button } from "../ui/button";
 import { FieldGroup } from "../ui/field";
@@ -14,6 +9,7 @@ import { useRouter } from "next/navigation";
 import { upload } from "@vercel/blob/client";
 import { useAppForm } from "@/hooks/form-context";
 import { createCustomer } from "@/server/customer";
+import { defaultValues } from "@/lib/constants/customer";
 import { fileSchema } from "@/lib/form-schema/customer-schema";
 
 const schema = z.object({
@@ -66,11 +62,6 @@ export const CustomerDataForm = ({ name }: { name: string }) => {
       onChange: schema,
     },
     onSubmit: async ({ value }) => {
-      if (!name) {
-        toast("Invalid request.");
-        return;
-      }
-
       const blob = await upload(
         `customer/${value.certificate.name}`,
         value.certificate,
@@ -161,24 +152,6 @@ export const CustomerDataForm = ({ name }: { name: string }) => {
                       className="grid grid-cols-1 gap-6 md:col-span-2 md:grid-cols-2"
                       key={i}
                     >
-                      <form.AppField
-                        name={`deliverySchedule[${i}].day`}
-                        children={(field) => (
-                          <field.SelectField
-                            label="Delivery Day"
-                            options={DELIVERY_DAYS}
-                          />
-                        )}
-                      />
-                      <form.AppField
-                        name={`deliverySchedule[${i}].window`}
-                        children={(field) => (
-                          <field.SelectField
-                            options={DELIVERY_TIME}
-                            label="Delivery Window"
-                          />
-                        )}
-                      />
                       <form.AppField
                         name={`deliverySchedule[${i}].receivingName`}
                         children={(field) => (

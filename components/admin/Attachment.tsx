@@ -23,15 +23,15 @@ export const Attachment = ({
   const hanldeSave = async (file: File) => {
     if (type !== "image") return;
 
-    const [uploaded, _] = await Promise.all([
-      upload(file.name, file, {
-        access: "public",
-        handleUploadUrl: "/api/upload",
-      }),
-      deleteBlob(url),
-    ]);
+    // const [uploaded, _] = await Promise.all([
+    //   upload(file.name, file, {
+    //     access: "public",
+    //     handleUploadUrl: "/api/upload",
+    //   }),
+    //   deleteBlob(url),
+    // ]);
 
-    await onUpdate?.(uploaded.url);
+    // await onUpdate?.(uploaded.url);
   };
 
   return (
