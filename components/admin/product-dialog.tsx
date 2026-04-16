@@ -40,7 +40,7 @@ const schema = z.object({
   identifier: z.string(),
   title: z.string().min(1, "Enter title"),
   description: z.string(),
-  categories: z.array(z.string()).min(1, "Select categories"),
+  categories: z.array(z.string()),
   status: z.string().min(1, "Select status"),
   image: z.string(),
   imageObj: z.file().mime(["image/png", "image/jpeg"]).or(z.any()),
@@ -48,7 +48,7 @@ const schema = z.object({
     .object({
       locationId: z.number(),
       name: z.string(),
-      offerPrice: z.string(),
+      offerPrice: z.any(),
       price: z.string(),
       stock: z.string(),
     })
@@ -103,19 +103,19 @@ export const ProductDialog = ({
           access: "public",
           handleUploadUrl: "/api/upload",
         });
+
         rest.image = blob.url;
       }
 
       if (product && product.id) {
         // @ts-expect-error
-        const { success, error } = await updateProduct(product.id, {
+        const { data, success, error } = await updateProduct(product.id, {
           ...rest,
           status,
         });
         if (success) {
           toast.success("Product has been saved!");
           setOpen(false);
-          queryClient.invalidateQueries({ queryKey: ["products"] });
         } else {
           toast.error(error.message ?? "Failed to update product");
         }
@@ -124,13 +124,14 @@ export const ProductDialog = ({
         const { success, error } = await createProduct({ ...rest, status });
         if (success) {
           toast.success("Product has been saved!");
-          queryClient.invalidateQueries({ queryKey: ["products"] });
+
           setOpen(false);
           form.reset();
         } else {
           toast.error(error.message ?? "Failed to updatee product");
         }
       }
+      queryClient.invalidateQueries({ queryKey: ["products"] });
     },
   });
 

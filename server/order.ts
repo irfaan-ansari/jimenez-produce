@@ -20,7 +20,7 @@ export const createOrder = handleAction(
   async (
     data: OrderInsertType & {
       lineItems: LineItemInsertType[];
-    }
+    },
   ) => {
     const session = await getSession();
     if (!session) throw new Error("Authentication required");
@@ -29,7 +29,7 @@ export const createOrder = handleAction(
 
     const [orderRes] = await db
       .insert(order)
-      .values({ ...rest })
+      .values({ ...rest, status: "in_progress" })
       .returning();
 
     const [lineItemsres] = await db
@@ -40,12 +40,12 @@ export const createOrder = handleAction(
           orderId: orderRes.id,
           locationId: orderRes.locationId,
           customerId: orderRes.customerId,
-        }))
+        })),
       )
       .returning();
 
     return { ...orderRes, lineItems: lineItemsres };
-  }
+  },
 );
 
 /**
@@ -72,7 +72,7 @@ export const updateOrder = handleAction(
       .where(eq(order.id, id))
       .returning();
     return result;
-  }
+  },
 );
 
 /**

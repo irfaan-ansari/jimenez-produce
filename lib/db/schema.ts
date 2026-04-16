@@ -16,7 +16,6 @@ import {
   date,
   unique,
 } from "drizzle-orm/pg-core";
-import { on } from "events";
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -95,30 +94,6 @@ export const verification = pgTable(
   (table) => [index("verification_identifier_idx").on(table.identifier)]
 );
 
-export const userRelations = relations(user, ({ many }) => ({
-  sessions: many(session),
-  accounts: many(account),
-}));
-
-export const sessionRelations = relations(session, ({ one }) => ({
-  user: one(user, {
-    fields: [session.userId],
-    references: [user.id],
-  }),
-}));
-
-export const accountRelations = relations(account, ({ one }) => ({
-  user: one(user, {
-    fields: [account.userId],
-    references: [user.id],
-  }),
-}));
-
-export type UserInsertType = InferInsertModel<typeof user>;
-export type UserSelectType = InferSelectModel<typeof user>;
-export type SessionInsertType = InferInsertModel<typeof session>;
-export type SessionSelectType = InferSelectModel<typeof session>;
-
 /* -----------------------------
    Location Table
 ----------------------------- */
@@ -140,13 +115,6 @@ export const location = pgTable("location", {
     .notNull(),
 });
 
-export type LocationSelectType = InferSelectModel<typeof location>;
-export type LocationInsertType = InferInsertModel<typeof location>;
-
-export const locationRelations = relations(location, ({ many }) => ({
-  inventory: many(inventory),
-}));
-
 /* -----------------------------
    Customers Table
 ----------------------------- */
@@ -157,6 +125,7 @@ export const customer = pgTable(
     status: text("status").notNull().default("new"),
     thumbnail: text("thumbnail"),
     locationId: integer("location_id"),
+    priceLevelId: integer("price_level_id"),
     accountId: text("account_id"),
     /* ---------------- Business Info ---------------- */
     companyName: text("company_name").notNull(),
@@ -230,24 +199,6 @@ export const customer = pgTable(
   ]
 );
 
-export const customerRelations = relations(customer, ({ one }) => ({
-  reviewer: one(user, {
-    fields: [customer.reviewedBy],
-    references: [user.id],
-  }),
-  account: one(user, {
-    fields: [customer.accountId],
-    references: [user.id],
-  }),
-  location: one(location, {
-    fields: [customer.locationId],
-    references: [location.id],
-  }),
-}));
-
-export type CustomerSelectType = InferSelectModel<typeof customer>;
-export type CustomerInsertType = InferInsertModel<typeof customer>;
-
 /* -----------------------------
    Product Table
 ----------------------------- */
@@ -279,9 +230,6 @@ export const product = pgTable(
     index("products_category_idx").on(table.categories),
   ]
 );
-
-export type ProductInsertType = InferInsertModel<typeof product>;
-export type ProductSelectType = InferSelectModel<typeof product>;
 
 /* -----------------------------
    Inventory Table
@@ -315,23 +263,42 @@ export const inventory = pgTable(
   ]
 );
 
-export const productRelation = relations(product, ({ many }) => ({
-  inventory: many(inventory),
-}));
+export const priceLevel = pgTable("price_level", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(), // Retail, Wholesale, VIP
+  type: text("type").notNull(), // "fixed" | "percentage"
+  value: integer("value"), // -10, 5, 80
+  status: text("status").default("active") /** active | inactive */,
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at")
+    .defaultNow()
+    .$onUpdate(() => /* @__PURE__ */ new Date())
+    .notNull(),
+});
 
-export const inventoryRelations = relations(inventory, ({ one }) => ({
-  product: one(product, {
-    fields: [inventory.productId],
-    references: [product.id],
-  }),
-  location: one(location, {
-    fields: [inventory.locationId],
-    references: [location.id],
-  }),
-}));
-
-export type InventoryInsertType = InferInsertModel<typeof inventory>;
-export type InventorySelectType = InferSelectModel<typeof inventory>;
+export const priceLevelItem = pgTable(
+  "price_level_item",
+  {
+    id: serial("id").primaryKey(),
+    priceLevelId: integer("price_level_id").notNull(),
+    productId: integer("product_id").notNull(),
+    type: text("type").notNull(), // "fixed" | "percentage"
+    value: integer("value").notNull(),
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at")
+      .defaultNow()
+      .$onUpdate(() => /* @__PURE__ */ new Date())
+      .notNull(),
+  },
+  (table) => [
+    index("price_level_item_priceLevelId_idx").on(table.priceLevelId),
+    index("price_level_item_productId_idx").on(table.productId),
+    unique("price_level_product_unique").on(
+      table.priceLevelId,
+      table.productId
+    ),
+  ]
+);
 
 export const customerInvite = pgTable(
   "customer_invite",
@@ -376,9 +343,6 @@ export const customerInviteRelations = relations(customerInvite, ({ one }) => ({
     references: [customer.id],
   }),
 }));
-
-export type CustomerInviteInsertType = InferInsertModel<typeof customerInvite>;
-export type CustomerInviteSelectType = InferSelectModel<typeof customerInvite>;
 
 export const jobApplications = pgTable(
   "job_applications",
@@ -557,16 +521,6 @@ export const jobApplications = pgTable(
   ]
 );
 
-export const applicantRelations = relations(jobApplications, ({ one }) => ({
-  user: one(user, {
-    fields: [jobApplications.reviewedBy],
-    references: [user.id],
-  }),
-}));
-
-export type JobApplicationInsertType = InferInsertModel<typeof jobApplications>;
-export type JobApplicationSelectType = InferSelectModel<typeof jobApplications>;
-
 export const jobInvite = pgTable(
   "job_invite",
   {
@@ -593,16 +547,6 @@ export const jobInvite = pgTable(
   },
   (table) => [index("job_invite_status_idx").on(table.status)]
 );
-
-export const jobInviteRelations = relations(jobInvite, ({ one }) => ({
-  user: one(jobApplications, {
-    fields: [jobInvite.applicationId],
-    references: [jobApplications.id],
-  }),
-}));
-
-export type JobInviteInsertType = InferInsertModel<typeof jobInvite>;
-export type JobInviteSelectType = InferSelectModel<typeof jobInvite>;
 
 export const order = pgTable(
   "order",
@@ -651,25 +595,6 @@ export const order = pgTable(
   ]
 );
 
-export const orderRelations = relations(order, ({ one, many }) => ({
-  driver: one(jobApplications, {
-    fields: [order.driverId],
-    references: [jobApplications.id],
-  }),
-  location: one(location, {
-    fields: [order.locationId],
-    references: [location.id],
-  }),
-  customer: one(customer, {
-    fields: [order.customerId],
-    references: [customer.id],
-  }),
-  lineItems: many(lineItem),
-}));
-
-export type OrderSelectType = InferSelectModel<typeof order>;
-export type OrderInsertType = InferInsertModel<typeof order>;
-
 export const lineItem = pgTable(
   "line_item",
   {
@@ -702,20 +627,38 @@ export const lineItem = pgTable(
   ]
 );
 
-export const lineItemRelations = relations(lineItem, ({ one }) => ({
-  order: one(order, {
-    fields: [lineItem.orderId],
-    references: [order.id],
-  }),
-  location: one(location, {
-    fields: [lineItem.locationId],
-    references: [location.id],
-  }),
-  customer: one(customer, {
-    fields: [lineItem.customerId],
-    references: [customer.id],
-  }),
-}));
+export type InventoryInsertType = InferInsertModel<typeof inventory>;
+export type InventorySelectType = InferSelectModel<typeof inventory>;
 
+export type ProductInsertType = InferInsertModel<typeof product>;
+export type ProductSelectType = InferSelectModel<typeof product>;
+export type CustomerSelectType = InferSelectModel<typeof customer>;
+export type CustomerInsertType = InferInsertModel<typeof customer>;
+
+export type LocationSelectType = InferSelectModel<typeof location>;
+export type LocationInsertType = InferInsertModel<typeof location>;
+
+export type UserInsertType = InferInsertModel<typeof user>;
+export type UserSelectType = InferSelectModel<typeof user>;
+export type SessionInsertType = InferInsertModel<typeof session>;
+export type SessionSelectType = InferSelectModel<typeof session>;
+
+export type PriceLevelInsertType = InferInsertModel<typeof priceLevel>;
+export type PriceLevelSelectType = InferSelectModel<typeof priceLevel>;
+
+export type PriceLevelItemInsertType = InferInsertModel<typeof priceLevelItem>;
+export type PriceLevelItemSelectType = InferSelectModel<typeof priceLevelItem>;
+
+export type CustomerInviteInsertType = InferInsertModel<typeof customerInvite>;
+export type CustomerInviteSelectType = InferSelectModel<typeof customerInvite>;
+
+export type JobApplicationInsertType = InferInsertModel<typeof jobApplications>;
+export type JobApplicationSelectType = InferSelectModel<typeof jobApplications>;
+
+export type JobInviteInsertType = InferInsertModel<typeof jobInvite>;
+export type JobInviteSelectType = InferSelectModel<typeof jobInvite>;
+
+export type OrderSelectType = InferSelectModel<typeof order>;
+export type OrderInsertType = InferInsertModel<typeof order>;
 export type LineItemSelectType = InferSelectModel<typeof lineItem>;
 export type LineItemInsertType = InferInsertModel<typeof lineItem>;

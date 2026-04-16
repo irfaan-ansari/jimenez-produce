@@ -111,7 +111,7 @@ export const OrderActions = ({
 
       <Button variant="ghost" asChild>
         <a href={`/api/orders/${id}/pdf`} target="_blank">
-          <Download /> Download Invoice
+          <Download /> Packing Slip
         </a>
       </Button>
 

@@ -140,7 +140,8 @@ export const updateProduct = handleAction(
       .update(product)
       .set(data)
       .where(eq(product.id, id))
-      .returning({ id: product.id });
+      .returning();
+
     return result;
   }
 );

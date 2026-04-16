@@ -225,6 +225,34 @@
       "when": 1776164859742,
       "tag": "0031_tearful_the_santerians",
       "breakpoints": true
+    },
+    {
+      "idx": 32,
+      "version": "7",
+      "when": 1776276202510,
+      "tag": "0032_chubby_sandman",
+      "breakpoints": true
+    },
+    {
+      "idx": 33,
+      "version": "7",
+      "when": 1776277033728,
+      "tag": "0033_perpetual_hellion",
+      "breakpoints": true
+    },
+    {
+      "idx": 34,
+      "version": "7",
+      "when": 1776277393181,
+      "tag": "0034_lazy_gorilla_man",
+      "breakpoints": true
+    },
+    {
+      "idx": 35,
+      "version": "7",
+      "when": 1776277616495,
+      "tag": "0035_graceful_rumiko_fujikawa",
+      "breakpoints": true
     }
   ]
 }

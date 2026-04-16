@@ -101,7 +101,7 @@ const DateField = ({
             variant="outline"
             size="xl"
             data-empty={!field.state.value}
-            className="data-[empty=true]:text-muted-foreground aria-invalid:ring-0 justify-start font-normal px-2.5 text-sm"
+            className="justify-start px-2.5 text-sm font-normal aria-invalid:ring-0 data-[empty=true]:text-muted-foreground"
           >
             <CalendarIcon />
             {field.state.value || placeholder}
@@ -149,7 +149,7 @@ const SelectField = ({
       >
         <SelectTrigger
           aria-invalid={isInvalid}
-          className="h-12! aria-invalid:ring-0!"
+          className="h-11! aria-invalid:ring-0!"
         >
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
@@ -230,7 +230,7 @@ const SignatureField = ({
 
   const handleChange = async () => {
     const file = await canvasToFile(
-      canvasRef.current?.getTrimmedCanvas() as HTMLCanvasElement
+      canvasRef.current?.getTrimmedCanvas() as HTMLCanvasElement,
     );
 
     field.handleChange(file);
@@ -258,7 +258,7 @@ const SignatureField = ({
   return (
     <Field className={cn("gap-2", className)}>
       {label && <FieldLabel>{label}</FieldLabel>}
-      <div className="border p-2 border-dashed relative">
+      <div className="relative border border-dashed p-2">
         <SignatureCanvas
           ref={canvasRef}
           canvasProps={{ className: "w-full h-36 bg-secondary block" }}
@@ -267,7 +267,7 @@ const SignatureField = ({
         <Button
           size="sm"
           variant="outline"
-          className="absolute right-4 top-4"
+          className="absolute top-4 right-4"
           onClick={clear}
           type="button"
         >
@@ -281,7 +281,7 @@ const SignatureField = ({
   );
 };
 
-const FileField = ({ label, className }: FieldProps) => {
+const FileField = ({ label, description, className }: FieldProps) => {
   const field = useFieldContext<File>();
 
   const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
@@ -327,7 +327,7 @@ const FileField = ({ label, className }: FieldProps) => {
           accept="image/jpeg, image/png, application/pdf"
         />
       </FieldLabel>
-
+      {description && <FieldDescription>{description}</FieldDescription>}
       {isInvalid && <FieldError errors={field.state.meta.errors} />}
     </Field>
   );

@@ -24,21 +24,3 @@ export const roleMap = {
     color: "#000000",
   },
 };
-
-export const orderMap = {
-  active: {
-    label: "In Progress",
-    icon: CircleDashed,
-    color: "#F59E0B",
-  },
-  delayed: {
-    label: "Delayed",
-    icon: AlertCircle,
-    color: "#EF4444",
-  },
-  completed: {
-    label: "Completed",
-    icon: PackageCheck,
-    color: "#22C55E",
-  },
-};
