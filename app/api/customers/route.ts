@@ -1,7 +1,7 @@
 import { db } from "@/lib/db";
 import { customer } from "@/lib/db/schema";
 import { getSession } from "@/server/auth";
-import { eq, or, and, ilike, desc } from "drizzle-orm";
+import { eq, or, and, ilike, desc, ne } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -23,7 +23,9 @@ export async function GET(req: NextRequest) {
 
     const conditions = [];
 
-    if (status !== "all") {
+    if (!status || status === "all") {
+      conditions.push(ne(customer.status, "submitted"));
+    } else {
       conditions.push(eq(customer.status, status));
     }
 

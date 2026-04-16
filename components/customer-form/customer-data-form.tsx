@@ -11,24 +11,80 @@ import { useAppForm } from "@/hooks/form-context";
 import { createCustomer } from "@/server/customer";
 import { defaultValues } from "@/lib/constants/customer";
 import { fileSchema } from "@/lib/form-schema/customer-schema";
+import {
+  LanguageSelector,
+  Translations,
+  useTranslation,
+} from "../ui/language-selector";
+
+const translations = {
+  en: {
+    dir: "ltr",
+    values: {
+      title: "Provide Company Information",
+      manager: "Manager",
+      ordering: "Ordering & Receiving",
+      companyName: "Company Name",
+      companyPhone: "Company Number",
+      companyEmail: "Company Email",
+      officerFirst: "Full Name",
+      officerMobile: "Phone Number",
+      officerEmail: "Email",
+      orderingName: "Ordering Contact Name",
+      orderingPhone: "Ordering Contact Phone",
+      receivingName: "Receiving Contact Name",
+      receivingPhone: "Receiving Phone",
+      certificate: "Resale Certificate",
+      certificateDesc: "Upload a PDF or image of resale certificate.",
+    },
+  },
+
+  es: {
+    dir: "ltr",
+    values: {
+      title: "Proporcionar información de la empresa",
+      manager: "Gerente",
+      ordering: "Pedidos y Recepción",
+      companyName: "Nombre de la empresa",
+      companyPhone: "Número de la empresa",
+      companyEmail: "Correo electrónico de la empresa",
+      officerFirst: "Nombre completo",
+      officerMobile: "Número de teléfono",
+      officerEmail: "Correo electrónico",
+      orderingName: "Nombre del contacto de pedidos",
+      orderingPhone: "Teléfono del contacto de pedidos",
+      receivingName: "Nombre del contacto de recepción",
+      receivingPhone: "Teléfono de recepción",
+      certificate: "Certificado de reventa",
+      certificateDesc: "Sube un PDF o imagen del certificado de reventa.",
+    },
+  },
+} as const;
+const phoneSchema = z
+  .string()
+  .transform((val) => val.replace(/\D/g, "")) // keep digits only
+  .refine((val) => val.length === 10, {
+    message: "Phone must be 10 digits",
+  });
 
 const schema = z.object({
   companyName: z.string().min(1, "Company name is required"),
   companyPhone: z.string().min(1, "Company phone is required"),
   companyEmail: z.email("Invalid email"),
   officerFirst: z.string().min(1, "Officer first name is required"),
-  officerLast: z.string().min(1, "Officer last name is required"),
+  officerLast: z.string(),
   officerEmail: z.email("Invalid email"),
+  officerMobile: phoneSchema,
   orderingName: z.string().min(1, "Ordering contact name is required"),
-  orderingPhone: z.string().min(1, "Ordering contact phone is required"),
+  orderingPhone: phoneSchema,
   deliverySchedule: z.array(
     z.object({
       day: z.string(),
       window: z.string(),
       receivingName: z.string().min(1, "Receiving contact name is required"),
-      receivingPhone: z.string().min(1, "Receiving contact phone is required"),
+      receivingPhone: phoneSchema,
       instructions: z.string(),
-    }),
+    })
   ),
   certificate: fileSchema,
   status: z.string(),
@@ -36,6 +92,12 @@ const schema = z.object({
 
 export const CustomerDataForm = ({ name }: { name: string }) => {
   const router = useRouter();
+
+  const { t, dir, setLanguage, language } = useTranslation(
+    translations as Translations,
+    "en"
+  );
+
   const form = useAppForm({
     defaultValues: {
       companyName: name ?? "",
@@ -43,6 +105,7 @@ export const CustomerDataForm = ({ name }: { name: string }) => {
       companyEmail: "",
       officerFirst: "",
       officerLast: "",
+      officerMobile: "",
       officerEmail: "",
       orderingName: "",
       orderingPhone: "",
@@ -72,7 +135,7 @@ export const CustomerDataForm = ({ name }: { name: string }) => {
       // @ts-ignore
       const { success, error } = await createCustomer(
         { ...defaultValues, ...rest, certificateUrl: blob.url },
-        false,
+        false
       );
 
       if (success) {
@@ -90,53 +153,67 @@ export const CustomerDataForm = ({ name }: { name: string }) => {
         e.preventDefault();
         form.handleSubmit();
       }}
+      className="overflow-hidden"
     >
-      <h2 className="mb-8 text-2xl font-semibold">
-        Provide Company Information
-      </h2>
+      <div className="flex justify-between items-start mb-8">
+        <h2 className="text-2xl font-semibold">{t["title"]}</h2>
+        <LanguageSelector
+          value={language}
+          onValueChange={(v) => setLanguage(v)}
+          className="mb-8 ml-auto"
+        />
+      </div>
       <FieldGroup className="grid grid-cols-1 md:grid-cols-2">
         <form.AppField
           name="companyName"
           children={(field) => (
-            <field.TextField label="Company Name" className="md:col-span-2" />
+            <field.TextField
+              label={t["companyName"]}
+              className="md:col-span-2"
+            />
           )}
         />
 
         <form.AppField
           name="companyPhone"
-          children={(field) => <field.TextField label="Company Number" />}
+          children={(field) => <field.TextField label={t["companyPhone"]} />}
         />
         <form.AppField
           name="companyEmail"
-          children={(field) => <field.TextField label="Company Email" />}
+          children={(field) => <field.TextField label={t["companyEmail"]} />}
+        />
+        <div className="md:col-span-2 text-xl font-semibold">
+          {t["manager"]}
+        </div>
+        <form.AppField
+          name="officerFirst"
+          children={(field) => (
+            <field.TextField
+              label={t["officerFirst"]}
+              className="md:col-span-2"
+            />
+          )}
         />
 
         <form.AppField
-          name="officerFirst"
-          children={(field) => <field.TextField label="Manager First Name" />}
-        />
-        <form.AppField
-          name="officerLast"
-          children={(field) => <field.TextField label="Manager Last Name" />}
+          name="officerMobile"
+          children={(field) => <field.PhoneField label={t["officerMobile"]} />}
         />
         <form.AppField
           name="officerEmail"
-          children={(field) => (
-            <field.TextField label="Manager Email" className="md:col-span-2" />
-          )}
+          children={(field) => <field.TextField label={t["officerEmail"]} />}
         />
 
+        <div className="md:col-span-2 text-xl font-semibold">
+          {t["ordering"]}
+        </div>
         <form.AppField
           name="orderingName"
-          children={(field) => (
-            <field.TextField label="Ordering Contact Name" />
-          )}
+          children={(field) => <field.TextField label={t["orderingName"]} />}
         />
         <form.AppField
           name="orderingPhone"
-          children={(field) => (
-            <field.TextField label="Ordering Contact Phone" />
-          )}
+          children={(field) => <field.PhoneField label={t["orderingPhone"]} />}
         />
         <form.AppField
           name="deliverySchedule"
@@ -153,13 +230,13 @@ export const CustomerDataForm = ({ name }: { name: string }) => {
                       <form.AppField
                         name={`deliverySchedule[${i}].receivingName`}
                         children={(field) => (
-                          <field.TextField label="Receiving Contact Name" />
+                          <field.TextField label={t["receivingName"]} />
                         )}
                       />
                       <form.AppField
                         name={`deliverySchedule[${i}].receivingPhone`}
                         children={(field) => (
-                          <field.TextField label="Receiving Phone" />
+                          <field.PhoneField label={t["receivingPhone"]} />
                         )}
                       />
                     </div>
@@ -174,8 +251,8 @@ export const CustomerDataForm = ({ name }: { name: string }) => {
           children={(field) => (
             <field.FileField
               className="md:col-span-2"
-              label={`Resale Certificate ${new Date().getFullYear()}`}
-              description="Upload a PDF or image of resale certificate."
+              label={t["certificate"] + new Date().getFullYear()}
+              description={t["certificateDes"]}
             />
           )}
         />

@@ -2,7 +2,7 @@ import { z } from "zod";
 export const MAX_UPLOAD_SIZE = 10 * 1024 * 1024; // 10MB
 
 export const fileSchema = z
-  .file()
+  .file("Required")
   .max(MAX_UPLOAD_SIZE, "Upload file less than 10MB")
   .mime(
     ["image/png", "image/jpeg", "application/pdf"],

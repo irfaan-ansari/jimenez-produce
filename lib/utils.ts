@@ -107,3 +107,17 @@ export const getNextDayDate = (dayName: string) => {
 
   return addDays(today, diff);
 };
+
+export const formatPhone = (value: string) => {
+  const digits = value.replace(/\D/g, "").slice(0, 10);
+
+  const match = digits.match(/(\d{0,3})(\d{0,3})(\d{0,4})/);
+
+  if (!match) return value;
+
+  const [, a, b, c] = match;
+
+  if (b) return `${a}-${b}${c ? `-${c}` : ""}`;
+  if (a) return a;
+  return "";
+};

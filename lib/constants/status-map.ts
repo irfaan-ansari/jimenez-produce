@@ -17,12 +17,18 @@ import {
   PackageCheck,
   CircleDashed,
   Pause,
+  Ban,
 } from "lucide-react";
 
 export const STATUS_MAP = {
   new: {
     label: "New",
     color: "#F59E0B",
+    icon: Circle,
+  },
+  all: {
+    label: "All",
+    color: "#A1A1AA",
     icon: Circle,
   },
   under_review: {
@@ -89,6 +95,21 @@ export const STATUS_MAP = {
     label: "Archived",
     color: "#71717A",
     icon: Archive,
+  },
+  approved: {
+    label: "Approved",
+    color: "#22C55E",
+    icon: CheckCircle,
+  },
+  converted: {
+    label: "Approved",
+    color: "#22C55E",
+    icon: CheckCircle,
+  },
+  revoked: {
+    label: "Revoked",
+    color: "#71717A",
+    icon: Ban,
   },
   user: {
     label: "User",

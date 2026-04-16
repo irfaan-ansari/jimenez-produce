@@ -27,7 +27,7 @@ import {
   Trash2,
   Upload,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, formatPhone } from "@/lib/utils";
 import {
   Select,
   SelectContent,
@@ -230,7 +230,7 @@ const SignatureField = ({
 
   const handleChange = async () => {
     const file = await canvasToFile(
-      canvasRef.current?.getTrimmedCanvas() as HTMLCanvasElement,
+      canvasRef.current?.getTrimmedCanvas() as HTMLCanvasElement
     );
 
     field.handleChange(file);
@@ -332,6 +332,43 @@ const FileField = ({ label, description, className }: FieldProps) => {
     </Field>
   );
 };
+const PhoneField = ({
+  label,
+  description,
+  placeholder,
+  className,
+  ...props
+}: FieldProps) => {
+  const field = useFieldContext<string>();
+
+  const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
+
+  const displayValue = formatPhone(field.state.value ?? "");
+
+  return (
+    <Field className={cn("gap-2", className)} {...props}>
+      {label && <FieldLabel htmlFor={field.name}>{label}</FieldLabel>}
+
+      <Input
+        id={field.name}
+        name={field.name}
+        value={displayValue}
+        onBlur={field.handleBlur}
+        onChange={(e) => {
+          // store digits only
+          const digits = e.target.value.replace(/\D/g, "").slice(0, 10);
+          field.handleChange(digits);
+        }}
+        aria-invalid={isInvalid}
+        placeholder={placeholder}
+        type="tel"
+      />
+
+      {description && <FieldDescription>{description}</FieldDescription>}
+      {isInvalid && <FieldError errors={field.state.meta.errors} />}
+    </Field>
+  );
+};
 export {
   TextField,
   DateField,
@@ -339,4 +376,5 @@ export {
   SignatureField,
   RadioField,
   FileField,
+  PhoneField,
 };

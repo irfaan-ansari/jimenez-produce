@@ -254,7 +254,7 @@ const ProductItem = withForm({
             ...item,
             total: `${Number(item.price) * Number(item.quantity)}`,
           };
-        }),
+        })
       );
     };
 
@@ -265,7 +265,7 @@ const ProductItem = withForm({
           group-data-[layout=grid]/card:items-stretch group-data-[layout=grid]/card:gap-0
           group-data-[layout=grid]/card:p-0 group-data-[layout=list]/card:px-4 group-data-[layout=list]/card:not-last:mb-1 
           hover:shadow-md `,
-          isCartItem ? "bg-primary/6" : "hover:bg-primary/6 ",
+          isCartItem ? "bg-primary/6" : "hover:bg-primary/6 "
         )}
         onClick={() => updateItem({ action: "increase" })}
       >
@@ -344,7 +344,7 @@ const LastPurchase = ({
     <Badge
       className={cn(
         "h-5 shrink-0 rounded-xl bg-amber-600 whitespace-nowrap",
-        className,
+        className
       )}
     >
       {product.lastPurchased.quantity}cs •{" "}
@@ -593,6 +593,19 @@ const CategoryPills = ({
           onClick={() => toggle(cat)}
         >
           {cat}
+          {filter.cat === cat && (
+            <Button
+              size="icon-xs"
+              className="rounded-xl"
+              variant="ghost"
+              type="button"
+              asChild
+            >
+              <span>
+                <X />
+              </span>
+            </Button>
+          )}
         </Button>
       ))}
     </div>
@@ -605,7 +618,7 @@ const SearchBar = ({ filter, setFilter }: { filter: any; setFilter: any }) => {
 
   const debounce = useDebounce(
     (v: string) => setFilter((p: any) => ({ ...p, q: v, page: "1" })),
-    400,
+    400
   );
 
   return (

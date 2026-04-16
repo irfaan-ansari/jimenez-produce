@@ -1,6 +1,5 @@
 import { Plus, Upload } from "lucide-react";
 import { PageClient } from "./page-client";
-import { SIDEBAR_MENU } from "@/lib/config";
 import { Button } from "@/components/ui/button";
 import { FilterTabs } from "@/components/admin/filter-tabs";
 import { SearchBar } from "@/components/admin/search-filters";
@@ -9,16 +8,19 @@ import { ProductDialog } from "@/components/admin/product-dialog";
 export const metadata = {
   title: "Products",
 };
-const TAB_OPTIONS =
-  SIDEBAR_MENU.find((i) => i.href === "/admin/products")?.items ||
-  SIDEBAR_MENU[0]["items"];
+const OPTIONS = [
+  { label: "All", value: "" },
+  { label: "Active", value: "active" },
+  { label: "Private", value: "private" },
+  { label: "Archived", value: "archived" },
+];
 
 const CatalogPage = async () => {
   return (
     <div className="flex flex-col h-full gap-5">
       <h1 className="text-2xl font-semibold">Products</h1>
 
-      <FilterTabs tabs={TAB_OPTIONS} queryKey="products" />
+      <FilterTabs tabs={OPTIONS} queryKey="products" />
 
       <div className="flex gap-4 items-center">
         <SearchBar />
