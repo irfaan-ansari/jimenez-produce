@@ -11,7 +11,7 @@ import {
   X,
 } from "lucide-react";
 import React from "react";
-import { AnimatePresence, motion } from "motion/react";
+import { motion } from "motion/react";
 import {
   HoverCard,
   HoverCardContent,
@@ -35,10 +35,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useSidebar } from "@/components/ui/sidebar";
 import { type CustomerProductType } from "@/lib/types";
 import { PopoverXDrawer } from "@/components/popover-x-drawer";
+import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useCategories, useInfiniteProducts } from "@/hooks/use-product";
 import { EmptyComponent } from "@/components/admin/placeholder-component";
-import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
 
 const LAYOUTS = [
   {
@@ -538,19 +538,6 @@ const CategoryPills = ({
 
   return (
     <div className="flex items-center gap-1.5 whitespace-nowrap">
-      {displayPills.map((cat: string) => (
-        <Button
-          key={cat}
-          type="button"
-          data-active={filter.cat === cat}
-          variant="secondary"
-          className="rounded-xl bg-blue-100 text-blue-600 data-[active=true]:bg-blue-600 data-[active=true]:text-blue-100"
-          onClick={() => toggle(cat)}
-        >
-          {cat}
-        </Button>
-      ))}
-
       <PopoverXDrawer
         open={open}
         setOpen={setOpen}
@@ -565,23 +552,49 @@ const CategoryPills = ({
         {isPending ? (
           <span className="h-8 animate-pulse bg-secondary"></span>
         ) : (
-          data?.data?.map((cat, i) => (
+          <>
             <Button
-              variant={filter.cat === cat ? "secondary" : "ghost"}
-              key={cat + i}
+              variant={!filter.cat ? "secondary" : "ghost"}
               className="rounded-xl"
               type="button"
-              onClick={() => setFilter({ ...filter, cat })}
+              onClick={() => setFilter({ ...filter, cat: "" })}
             >
-              {cat}
+              All
               <Check
-                data-selected={cat === filter.cat}
+                data-selected={!filter.cat}
                 className="ml-auto opacity-0 data-[selected=true]:opacity-100"
               />
             </Button>
-          ))
+            {data?.data?.map((cat, i) => (
+              <Button
+                variant={filter.cat === cat ? "secondary" : "ghost"}
+                className="rounded-xl"
+                type="button"
+                key={cat + i}
+                onClick={() => setFilter({ ...filter, cat })}
+              >
+                {cat}
+                <Check
+                  data-selected={cat === filter.cat}
+                  className="ml-auto opacity-0 data-[selected=true]:opacity-100"
+                />
+              </Button>
+            ))}
+          </>
         )}
       </PopoverXDrawer>
+      {displayPills.map((cat: string) => (
+        <Button
+          key={cat}
+          type="button"
+          data-active={filter.cat === cat}
+          variant="secondary"
+          className="rounded-xl bg-blue-100 text-blue-600 data-[active=true]:bg-blue-600 data-[active=true]:text-blue-100"
+          onClick={() => toggle(cat)}
+        >
+          {cat}
+        </Button>
+      ))}
     </div>
   );
 };
@@ -604,13 +617,16 @@ const SearchBar = ({ filter, setFilter }: { filter: any; setFilter: any }) => {
         autoFocus
         placeholder="Search..."
         value={val}
-        // onFocus={() => setOpen(true)}
+        onFocus={() => setOpen(true)}
         onChange={(e) => {
-          setVal(e.target.value);
-          debounce(e.target.value);
+          const value = e.target.value;
+          setVal(value);
+          debounce(value);
         }}
-        onBlur={() => {
-          if (!val) setOpen(false);
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+          }
         }}
       />
 

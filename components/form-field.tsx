@@ -292,7 +292,7 @@ const FileField = ({ label, description, className }: FieldProps) => {
       </FieldLegend>
       <FieldLabel
         htmlFor={field.name}
-        className={`h-12 px-4 border border-primary border-dashed bg-primary/20`}
+        className={`h-11 px-4 border border-primary border-dashed bg-primary/20`}
       >
         {field.state.value ? (
           <>

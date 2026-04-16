@@ -1,5 +1,6 @@
-import { inviteStatusMap, statusMap } from "./constants/customer";
+import { inviteStatusMap } from "./constants/customer";
 import { jobApplicationStatusMap } from "./constants/job";
+import { STATUS_MAP } from "./constants/status-map";
 import {
   CustomerSelectType,
   InventorySelectType,
@@ -19,7 +20,7 @@ export interface EmailTemplateConfig {
 
 export type CustomerInviteStatus = keyof typeof inviteStatusMap;
 export type CustomerApplicationStatus =
-  | keyof typeof statusMap
+  | keyof typeof STATUS_MAP
   | CustomerInviteStatus;
 
 type ActionSuccess<T> = {

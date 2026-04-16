@@ -253,6 +253,13 @@
       "when": 1776277616495,
       "tag": "0035_graceful_rumiko_fujikawa",
       "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "7",
+      "when": 1776346454762,
+      "tag": "0036_glamorous_cerise",
+      "breakpoints": true
     }
   ]
 }

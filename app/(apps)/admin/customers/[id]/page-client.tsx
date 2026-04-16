@@ -12,14 +12,14 @@ import {
 import { updateCustomer } from "@/server/customer";
 import { useCustomer } from "@/hooks/use-customer";
 import { useQueryClient } from "@tanstack/react-query";
-import { statusMap } from "@/lib/constants/customer";
 import { Attachment } from "@/components/admin/Attachment";
 import { ChevronLeft, MailCheck, Phone } from "lucide-react";
 import { CustomerAction } from "@/components/admin/customer-actions";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { STATUS_MAP } from "@/lib/constants/status-map";
 
-type StatusIndex = keyof typeof statusMap;
+type StatusIndex = keyof typeof STATUS_MAP;
 export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = use(params);
   const queryClient = useQueryClient();
@@ -35,7 +35,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
 
   const { data } = result;
 
-  const status = statusMap[data?.status as StatusIndex];
+  const status = STATUS_MAP[data?.status as StatusIndex];
 
   return (
     <div

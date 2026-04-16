@@ -6,15 +6,15 @@ import { Button } from "../ui/button";
 import { useConfirm } from "@/hooks/use-confirm";
 import { CustomerDialog } from "./customer-dialog";
 import { CustomerSelectType } from "@/lib/db/schema";
-import { statusMap } from "@/lib/constants/customer";
 import { PopoverXDrawer } from "../popover-x-drawer";
 import { useQueryClient } from "@tanstack/react-query";
 import { CustomerStatusDialog } from "./customer-status-dialog";
 import { deleteCustomer, updateCustomer } from "@/server/customer";
 import { Eye, FileText, MoreVertical, SquarePen, Trash2 } from "lucide-react";
 import { CustomerApproveDialog } from "./customer-approve-dialog";
+import { CUSTOMER_ACTIONS } from "@/lib/constants/status-map";
 
-type Status = keyof typeof statusMap;
+type Status = keyof typeof CUSTOMER_ACTIONS;
 
 interface Props {
   data: CustomerSelectType;
@@ -29,7 +29,7 @@ export const CustomerAction = ({ data, showView = true }: Props) => {
   const [statusVariant, setStatusVariant] = useState("rejected");
   const [showStatusDialog, setShowStatusDialog] = useState(false);
 
-  const availableActions = statusMap[status].actions;
+  const availableActions = CUSTOMER_ACTIONS[status] ?? [];
 
   const handleAction = (action: string) => {
     switch (action) {

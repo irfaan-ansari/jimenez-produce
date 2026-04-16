@@ -11,7 +11,7 @@ import { useRouterStuff } from "@/hooks/use-router-stuff";
 import { DataTable } from "@/components/admin/data-table";
 import { CustomerAction } from "@/components/admin/customer-actions";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { statusMap } from "@/lib/constants/customer";
+import { STATUS_MAP } from "@/lib/constants/status-map";
 
 export const PageClient = () => {
   const { searchParams } = useRouterStuff();
@@ -139,7 +139,7 @@ export const columns: ColumnDef<CustomerSelectType>[] = [
     accessorKey: "status",
     header: "Status",
     cell: ({ row }) => {
-      const map = statusMap[row.original.status as keyof typeof statusMap];
+      const map = STATUS_MAP[row.original.status as keyof typeof STATUS_MAP];
 
       return (
         <Badge

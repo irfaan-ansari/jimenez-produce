@@ -51,7 +51,7 @@ export const session = pgTable(
       .references(() => user.id, { onDelete: "cascade" }),
     impersonatedBy: text("impersonated_by"),
   },
-  (table) => [index("session_userId_idx").on(table.userId)]
+  (table) => [index("session_userId_idx").on(table.userId)],
 );
 
 export const account = pgTable(
@@ -75,7 +75,7 @@ export const account = pgTable(
       .$onUpdate(() => /* @__PURE__ */ new Date())
       .notNull(),
   },
-  (table) => [index("account_userId_idx").on(table.userId)]
+  (table) => [index("account_userId_idx").on(table.userId)],
 );
 
 export const verification = pgTable(
@@ -91,7 +91,7 @@ export const verification = pgTable(
       .$onUpdate(() => /* @__PURE__ */ new Date())
       .notNull(),
   },
-  (table) => [index("verification_identifier_idx").on(table.identifier)]
+  (table) => [index("verification_identifier_idx").on(table.identifier)],
 );
 
 /* -----------------------------
@@ -196,7 +196,7 @@ export const customer = pgTable(
   (table) => [
     index("customer_status_idx").on(table.status),
     index("customer_created_at_idx").on(table.createdAt),
-  ]
+  ],
 );
 
 /* -----------------------------
@@ -228,7 +228,7 @@ export const product = pgTable(
   (table) => [
     index("products_status_idx").on(table.status),
     index("products_category_idx").on(table.categories),
-  ]
+  ],
 );
 
 /* -----------------------------
@@ -258,9 +258,9 @@ export const inventory = pgTable(
     index("product_productId_idx").on(table.productId),
     unique("inventory_product_location_unique").on(
       table.productId,
-      table.locationId
+      table.locationId,
     ),
-  ]
+  ],
 );
 
 export const priceLevel = pgTable("price_level", {
@@ -295,9 +295,9 @@ export const priceLevelItem = pgTable(
     index("price_level_item_productId_idx").on(table.productId),
     unique("price_level_product_unique").on(
       table.priceLevelId,
-      table.productId
+      table.productId,
     ),
-  ]
+  ],
 );
 
 export const customerInvite = pgTable(
@@ -334,7 +334,7 @@ export const customerInvite = pgTable(
       .$onUpdate(() => /* @__PURE__ */ new Date())
       .notNull(),
   },
-  (table) => [index("customer_invite_status_idx").on(table.status)]
+  (table) => [index("customer_invite_status_idx").on(table.status)],
 );
 
 export const customerInviteRelations = relations(customerInvite, ({ one }) => ({
@@ -518,7 +518,7 @@ export const jobApplications = pgTable(
   (table) => [
     index("job_application_position_idx").on(table.position),
     index("job_application_status_idx").on(table.status),
-  ]
+  ],
 );
 
 export const jobInvite = pgTable(
@@ -537,7 +537,7 @@ export const jobInvite = pgTable(
       () => jobApplications.id,
       {
         onDelete: "set null",
-      }
+      },
     ),
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at")
@@ -545,7 +545,7 @@ export const jobInvite = pgTable(
       .$onUpdate(() => /* @__PURE__ */ new Date())
       .notNull(),
   },
-  (table) => [index("job_invite_status_idx").on(table.status)]
+  (table) => [index("job_invite_status_idx").on(table.status)],
 );
 
 export const order = pgTable(
@@ -575,6 +575,10 @@ export const order = pgTable(
     subtotal: text("subtotal").notNull(),
     discount: text("discount").default("0").notNull(),
     tax: text("tax").default("0").notNull(),
+    charges: jsonb("charges").$type<{
+      type: string;
+      amount: string;
+    }>(),
     total: text("total").default("0").notNull(),
     po: text(""),
     notes: text("notes"),
@@ -592,7 +596,7 @@ export const order = pgTable(
   (table) => [
     index("order_locationId_idx").on(table.locationId),
     index("order_customerId_idx").on(table.customerId),
-  ]
+  ],
 );
 
 export const lineItem = pgTable(
@@ -624,7 +628,7 @@ export const lineItem = pgTable(
   (table) => [
     index("lineItem_locationId_idx").on(table.locationId),
     index("lineItem_customerId_idx").on(table.customerId),
-  ]
+  ],
 );
 
 export type InventoryInsertType = InferInsertModel<typeof inventory>;

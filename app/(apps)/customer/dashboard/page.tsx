@@ -8,7 +8,7 @@ import { Plus } from "lucide-react";
 import { OrderTrendChart } from "./order-trend-chart";
 import { RecentOrders } from "./recent-orders";
 import { getCustomer } from "@/server/customer";
-import { statusMap } from "@/lib/constants/customer";
+import { STATUS_MAP } from "@/lib/constants/status-map";
 
 export const metadata = {
   title: "Dashboard",
@@ -18,12 +18,12 @@ const DashboardPage = async () => {
   const { data, success, error } = await getCustomer();
   if (!success) throw new Error(error.message);
 
-  const map = statusMap[(data?.status ?? "active") as keyof typeof statusMap];
+  const map = STATUS_MAP[(data?.status ?? "active") as keyof typeof STATUS_MAP];
 
   return (
-    <div className="flex flex-col gap-8 mt-4 h-full">
+    <div className="mt-4 flex h-full flex-col gap-8">
       {/* header */}
-      <div className="flex gap-4 items-center">
+      <div className="flex items-center gap-4">
         <div>
           <h1 className="text-2xl font-semibold">Hey there</h1>
           <p>
@@ -31,7 +31,7 @@ const DashboardPage = async () => {
             <Badge
               variant="outline"
               style={{ "--color": map.color } as React.CSSProperties}
-              className="h-7 ml-1.5 rounded-xl pl-1.5 pr-2.5 gap-1.5 [&>svg]:size-3.5! bg-(--color)/10 border-(--color)/10 text-sm"
+              className="ml-1.5 h-7 gap-1.5 rounded-xl border-(--color)/10 bg-(--color)/10 pr-2.5 pl-1.5 text-sm [&>svg]:size-3.5!"
             >
               <map.icon className="text-(--color)" />
 
@@ -40,7 +40,7 @@ const DashboardPage = async () => {
           </p>
         </div>
 
-        <Button size="xl" className="rounded-xl ml-auto" asChild>
+        <Button size="xl" className="ml-auto rounded-xl" asChild>
           <Link href="/customer/orders/new">
             <Plus /> New Order
           </Link>

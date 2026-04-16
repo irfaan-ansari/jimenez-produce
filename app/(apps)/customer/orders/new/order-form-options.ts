@@ -15,7 +15,7 @@ export const defaultValues = {
   discount: "0",
   tax: "0",
   total: "0",
-  additionalCharges: "0",
+  charges: { type: "Fuel Charge", amount: "15" },
   po: "",
   notes: "",
   deliveryDate: "",

@@ -20,7 +20,6 @@ import { withForm } from "@/hooks/form-context";
 import { useStore } from "@tanstack/react-form";
 import { CheckoutDialog } from "./checkout-dialog";
 import { CustomerSelectType } from "@/lib/db/schema";
-import { motion } from "motion/react";
 import { formatUSD, getAvatarFallback } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
@@ -57,7 +56,10 @@ export const OrderCart = withForm({
         },
       );
 
-      form.setFieldValue("total", String(result.total));
+      form.setFieldValue(
+        "total",
+        String(result.total + Number(values.charges.amount)),
+      );
       form.setFieldValue("subtotal", String(result.subtotal));
       form.setFieldValue("lineItemCount", String(result.lineItemCount));
       form.setFieldValue("lineItemQuantity", String(result.lineItemQuantity));
@@ -85,8 +87,8 @@ export const OrderCart = withForm({
                     >
                       <div className="flex items-center justify-start gap-2">
                         <Avatar className="size-10 shrink-0 rounded-xl ring-2 ring-green-600/20 ring-offset-1 **:rounded-xl after:hidden">
-                          <Badge className="background-blur-sm absolute -top-2 -left-2 size-5 rounded-[100%] bg-blue-600/80">
-                            {i + 1}
+                          <Badge className="background-blur-sm absolute -top-2 -left-2 size-5 rounded-[100%] bg-primary/80">
+                            {subField.quantity}
                           </Badge>
                           <AvatarImage src={subField?.image!} />
                           <AvatarFallback>
@@ -100,7 +102,7 @@ export const OrderCart = withForm({
 
                         <Badge
                           variant="secondary"
-                          className="ml-auto h-6 shrink-0 rounded-xl border border-blue-200 bg-blue-100 text-sm font-semibold text-blue-600"
+                          className="ml-auto h-6 shrink-0 rounded-xl text-sm font-semibold"
                         >
                           {formatUSD(subField.total!)}
                         </Badge>
@@ -130,6 +132,10 @@ export const OrderCart = withForm({
               <div className="flex justify-between">
                 <span>Line items</span>
                 <span>{values.lineItemCount}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>{values.charges.type}</span>
+                <span>{formatUSD(values.charges.amount)}</span>
               </div>
               <div className="flex justify-between text-lg font-semibold">
                 <span>Order Total</span>

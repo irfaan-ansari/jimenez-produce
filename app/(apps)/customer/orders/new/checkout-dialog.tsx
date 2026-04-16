@@ -41,7 +41,7 @@ export const CheckoutDialog = withForm({
     const [open, setOpen] = React.useState(false);
 
     const values = useStore(form.store, (state) => state.values);
-    const { lineItems, subtotal, total, additionalCharges } = values;
+    const { lineItems, subtotal, total, charges } = values;
 
     return (
       <Dialog open={open} onOpenChange={setOpen}>
@@ -119,68 +119,70 @@ export const CheckoutDialog = withForm({
               </div>
             </CollapsibleContent>
           </Collapsible>
+          <div className="no-scrollbar h-full max-h-[460px] flex-1 overflow-y-auto">
+            <Table className="text-base">
+              <TableHeader className="text-xs text-muted-foreground uppercase">
+                <TableRow>
+                  <TableHead className="pl-0">Item</TableHead>
+                  <TableHead className="text-right">Price</TableHead>
+                  <TableHead className="text-right">Quanity</TableHead>
+                  <TableHead className="pr-2 text-right">Ext.</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {lineItems.map((item) => (
+                  <TableRow key={item.id}>
+                    <TableCell className="pl-1">
+                      <div className="flex items-start gap-4">
+                        <Avatar className="size-9 rounded-xl ring-2 ring-green-600/20 ring-offset-1 **:rounded-xl after:hidden">
+                          <AvatarImage src={item.image!} />
+                          <AvatarFallback>
+                            {getAvatarFallback(item.title)}
+                          </AvatarFallback>
+                        </Avatar>
 
-          <Table className="no-scrollbar max-h-72 overflow-auto text-base">
-            <TableHeader className="text-xs text-muted-foreground uppercase">
-              <TableRow>
-                <TableHead className="pl-0">Item</TableHead>
-                <TableHead className="text-right">Price</TableHead>
-                <TableHead className="text-right">Quanity</TableHead>
-                <TableHead className="pr-2 text-right">Ext.</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {lineItems.map((item) => (
-                <TableRow key={item.id}>
-                  <TableCell className="pl-1">
-                    <div className="flex items-start gap-4">
-                      <Avatar className="size-9 rounded-xl ring-2 ring-green-600/20 ring-offset-1 **:rounded-xl after:hidden">
-                        <AvatarImage src={item.image!} />
-                        <AvatarFallback>
-                          {getAvatarFallback(item.title)}
-                        </AvatarFallback>
-                      </Avatar>
-
-                      <h4 className="max-w-3xs truncate font-medium">
-                        {item.title}
-                      </h4>
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    {formatUSD(item.price!)}
-                  </TableCell>
-                  <TableCell className="text-right">{item.quantity}</TableCell>
-                  <TableCell className="pr-0 text-right font-medium">
-                    {formatUSD(item.total!)}
+                        <h4 className="max-w-3xs truncate font-medium">
+                          {item.title}
+                        </h4>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {formatUSD(item.price!)}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {item.quantity}
+                    </TableCell>
+                    <TableCell className="pr-0 text-right font-medium">
+                      {formatUSD(item.total!)}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+              <TableFooter className="bg-background">
+                <TableRow>
+                  <TableCell colSpan={2} />
+                  <TableCell>Subtotal</TableCell>
+                  <TableCell className="pr-0 text-right">
+                    {formatUSD(total)}
                   </TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-            <TableFooter className="bg-background">
-              <TableRow>
-                <TableCell colSpan={2} />
-                <TableCell>Subtotal</TableCell>
-                <TableCell className="pr-0 text-right">
-                  {formatUSD(total)}
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell colSpan={2} />
-                <TableCell>Fuel Charge</TableCell>
-                <TableCell className="pr-0 text-right">
-                  {formatUSD(additionalCharges)}
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell colSpan={2} />
-                <TableCell>Total</TableCell>
-                <TableCell className="pr-0 text-right">
-                  {formatUSD(total)}
-                </TableCell>
-              </TableRow>
-            </TableFooter>
-          </Table>
-
+                <TableRow>
+                  <TableCell colSpan={2} />
+                  <TableCell>{charges.type}</TableCell>
+                  <TableCell className="pr-0 text-right">
+                    {formatUSD(charges.amount)}
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell colSpan={2} />
+                  <TableCell>Total</TableCell>
+                  <TableCell className="pr-0 text-right">
+                    {formatUSD(total)}
+                  </TableCell>
+                </TableRow>
+              </TableFooter>
+            </Table>
+          </div>
           <Field className="flex flex-col-reverse gap-4 sm:flex-row sm:justify-end sm:[&>*]:w-auto">
             <DialogClose asChild>
               <Button

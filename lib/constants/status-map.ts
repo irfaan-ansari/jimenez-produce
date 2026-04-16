@@ -16,6 +16,7 @@ import {
   AlertCircle,
   PackageCheck,
   CircleDashed,
+  Pause,
 } from "lucide-react";
 
 export const STATUS_MAP = {
@@ -119,4 +120,67 @@ export const STATUS_MAP = {
     icon: PackageCheck,
     color: "#22C55E",
   },
+};
+
+export const CUSTOMER_ACTIONS = {
+  new: [
+    {
+      label: "Review",
+      action: "under_review",
+      icon: Clock,
+    },
+    {
+      label: "Approve",
+      action: "active",
+      icon: CheckCircle,
+    },
+    {
+      label: "Hold",
+      action: "on_hold",
+      icon: Pause,
+    },
+    {
+      label: "Reject",
+      action: "rejected",
+      icon: CircleOff,
+    },
+  ],
+  under_review: [
+    {
+      label: "Approve",
+      action: "active",
+      icon: CheckCircle,
+    },
+    {
+      label: "Hold",
+      action: "on_hold",
+      icon: Pause,
+    },
+    {
+      label: "Reject",
+      action: "rejected",
+      icon: CircleOff,
+    },
+  ],
+  active: [],
+  rejected: [
+    {
+      label: "Review",
+      action: "under_review",
+      icon: Clock,
+    },
+  ],
+  on_hold: [
+    {
+      label: "Approve",
+      action: "active",
+      icon: CheckCircle,
+    },
+    {
+      label: "Reject",
+      action: "rejected",
+      icon: CircleOff,
+    },
+  ],
+  submitted: [],
 };

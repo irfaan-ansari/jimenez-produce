@@ -1,12 +1,12 @@
-import { statusMap } from "@/lib/constants/customer";
-import { CONTACT_SECTIONS } from "@/lib/constants/web";
-import { CustomerSelectType } from "@/lib/db/schema";
-import { Document, Page, Text, View, Image } from "@react-pdf/renderer";
 import { format } from "date-fns";
 import { COLORS, styles } from "./styles";
+import { CustomerSelectType } from "@/lib/db/schema";
+import { CONTACT_SECTIONS } from "@/lib/constants/web";
+import { STATUS_MAP } from "@/lib/constants/status-map";
+import { Document, Page, Text, View, Image } from "@react-pdf/renderer";
 
 export const CustomerPDF = ({ data }: { data: CustomerSelectType }) => {
-  const map = statusMap[data.status as keyof typeof statusMap];
+  const map = STATUS_MAP[data.status as keyof typeof STATUS_MAP];
 
   return (
     <Document title={`Customer Application - ${data.companyName}`}>

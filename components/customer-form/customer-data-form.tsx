@@ -23,8 +23,8 @@ const schema = z.object({
   orderingPhone: z.string().min(1, "Ordering contact phone is required"),
   deliverySchedule: z.array(
     z.object({
-      day: z.string().min(1, "Day is required"),
-      window: z.string().min(1, "Window is required"),
+      day: z.string(),
+      window: z.string(),
       receivingName: z.string().min(1, "Receiving contact name is required"),
       receivingPhone: z.string().min(1, "Receiving contact phone is required"),
       instructions: z.string(),
@@ -48,8 +48,8 @@ export const CustomerDataForm = ({ name }: { name: string }) => {
       orderingPhone: "",
       deliverySchedule: [
         {
-          day: "",
-          window: "",
+          day: "Anytime",
+          window: "Anytime",
           receivingName: "",
           receivingPhone: "",
           instructions: "",
@@ -62,18 +62,16 @@ export const CustomerDataForm = ({ name }: { name: string }) => {
       onChange: schema,
     },
     onSubmit: async ({ value }) => {
-      const blob = await upload(
-        `customer/${value.certificate.name}`,
-        value.certificate,
-        {
-          access: "public",
-          handleUploadUrl: "/api/upload",
-        },
-      );
+      const { certificate, ...rest } = value;
+
+      const blob = await upload(`customer/${certificate.name}`, certificate, {
+        access: "public",
+        handleUploadUrl: "/api/upload",
+      });
 
       // @ts-ignore
       const { success, error } = await createCustomer(
-        { ...defaultValues, ...value, certificateUrl: blob.url },
+        { ...defaultValues, ...rest, certificateUrl: blob.url },
         false,
       );
 

@@ -94,15 +94,12 @@ export const CustomerInviteDialog = ({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button
-          size="xl"
-          className="rounded-xl size-12 md:w-auto md:px-8 md:min-w-32"
-        >
+        <Button size="xl" className="rounded-xl md:w-auto md:min-w-32 md:px-6">
           <SendHorizonal />
           <span className="hidden md:inline">{config.button}</span>
         </Button>
       </DialogTrigger>
-      <DialogContent className="ring-ring/10 rounded-2xl sm:max-w-lg py-8">
+      <DialogContent className="rounded-2xl py-8 ring-ring/10 sm:max-w-lg">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold">
             {config.title}
@@ -117,14 +114,14 @@ export const CustomerInviteDialog = ({
             form.handleSubmit();
           }}
         >
-          <div className="no-scrollbar -mx-4 max-h-[min(400px,60vh)] -my-1 py-1  overflow-y-auto px-4">
+          <div className="-mx-4 -my-1 no-scrollbar max-h-[min(400px,60vh)] overflow-y-auto  px-4 py-1">
             <FieldGroup className="grid grid-cols-2">
               <form.AppField
                 name="name"
                 children={(field) => (
                   <field.TextField
                     label="Name"
-                    className="**:data-[slot=input]:rounded-xl col-span-2"
+                    className="col-span-2 **:data-[slot=input]:rounded-xl"
                   />
                 )}
               />
@@ -134,7 +131,7 @@ export const CustomerInviteDialog = ({
                 children={(field) => (
                   <field.TextField
                     label="Company Name"
-                    className="**:data-[slot=input]:rounded-xl col-span-2"
+                    className="col-span-2 **:data-[slot=input]:rounded-xl"
                   />
                 )}
               />

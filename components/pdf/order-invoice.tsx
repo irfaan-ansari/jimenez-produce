@@ -12,9 +12,10 @@ interface OrderInvoiceProps {
     lineItems: LineItemSelectType[];
     location: LocationSelectType | null;
   };
+  role: string;
 }
 
-export const OrderInvoice = ({ data }: OrderInvoiceProps) => {
+export const OrderInvoice = ({ data, role }: OrderInvoiceProps) => {
   return (
     <Document title={`Invoice - ${data.id}`}>
       <Page size="A4" style={[styles.page]}>
@@ -26,11 +27,6 @@ export const OrderInvoice = ({ data }: OrderInvoiceProps) => {
               style={styles.logo}
             />
             <View>
-              <Text
-                style={(styles.docTitle, { fontSize: 20, lineHeight: 1.25 })}
-              >
-                Jimenez Produce LLC
-              </Text>
               <View style={styles.headerContactText}>
                 <Text>
                   {data.location?.address?.street}{" "}
@@ -53,7 +49,7 @@ export const OrderInvoice = ({ data }: OrderInvoiceProps) => {
                 { fontSize: 12, textTransform: "uppercase" },
               ]}
             >
-              Packing Slip
+              {role === "customer" ? "Invoice" : "Packing Slip"}
             </Text>
             <View
               style={[
@@ -100,20 +96,21 @@ export const OrderInvoice = ({ data }: OrderInvoiceProps) => {
           <View
             style={[
               styles.table,
-              { marginTop: 15, width: "70%", height: "auto" },
+              {
+                marginTop: 15,
+                width: "32%",
+                height: "auto",
+                marginLeft: "auto",
+              },
             ]}
           >
             <View style={[styles.tableRow, { backgroundColor: "#eee" }]}>
               <Text style={styles.tableCell}>P.O. No.</Text>
               <Text style={styles.tableCell}>Ship Date</Text>
-              <Text style={styles.tableCell}>Driver</Text>
-              <Text style={styles.tableCell}>Status</Text>
             </View>
             <View style={styles.tableRow}>
               <Text style={styles.tableCell}>{data.po || ""}</Text>
               <Text style={styles.tableCell}>{data.deliveryDate || ""}</Text>
-              <Text style={styles.tableCell}>{data.driverId || "Tony"}</Text>
-              <Text style={styles.tableCell}>{data.status}</Text>
             </View>
           </View>
         </View>
@@ -152,7 +149,27 @@ export const OrderInvoice = ({ data }: OrderInvoiceProps) => {
               </View>
             </View>
           ))}
-          {/* other charges */}
+        </View>
+        {/* other charges */}
+        <View
+          style={[
+            styles.table,
+            {
+              marginTop: 15,
+              width: "32%",
+              height: "auto",
+              marginLeft: "auto",
+            },
+          ]}
+        >
+          <View style={[styles.tableRow]}>
+            <Text style={styles.tableCell}>Quantity</Text>
+            <Text style={styles.tableCell}>{data.lineItemQuantity}</Text>
+          </View>
+          <View style={styles.tableRow}>
+            <Text style={styles.tableCell}>{data.po || ""}</Text>
+            <Text style={styles.tableCell}>{data.deliveryDate || ""}</Text>
+          </View>
         </View>
 
         <Text

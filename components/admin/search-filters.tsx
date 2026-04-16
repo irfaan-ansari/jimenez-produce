@@ -54,7 +54,7 @@ export const DateFilter = () => {
       trigger={
         <Button
           variant="outline"
-          className="rounded-xl min-w-40 justify-start"
+          className="min-w-40 justify-start rounded-xl"
           size="xl"
         >
           <Calendar /> Today
@@ -86,7 +86,7 @@ export const SearchBar = ({
 
   return (
     <InputGroup
-      className={cn("max-w-sm w-full rounded-xl h-12", className)}
+      className={cn("h-11 w-full max-w-sm rounded-xl", className)}
       {...props}
     >
       <InputGroupAddon className="pl-3">

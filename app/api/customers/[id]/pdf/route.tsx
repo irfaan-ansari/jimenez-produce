@@ -2,14 +2,13 @@ import { db } from "@/lib/db";
 import { eq } from "drizzle-orm";
 import { customer } from "@/lib/db/schema";
 import { renderToStream } from "@react-pdf/renderer";
-import { statusMap } from "@/lib/constants/customer";
 import { NextRequest, NextResponse } from "next/server";
 import { CustomerPDF } from "@/components/pdf/customer";
 import { getSession } from "@/server/auth";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const session = await getSession();
 
@@ -23,8 +22,6 @@ export async function GET(
   });
 
   if (!data) return NextResponse.json({ message: "Failed" }, { status: 400 });
-
-  const status = statusMap[data.status as keyof typeof statusMap];
 
   const stream = await renderToStream(<CustomerPDF data={data} />);
 

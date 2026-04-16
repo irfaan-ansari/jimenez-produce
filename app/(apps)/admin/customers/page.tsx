@@ -17,17 +17,17 @@ const TAB_OPTIONS =
 
 const CustomersPage = async () => {
   return (
-    <div className="flex flex-col h-full gap-5">
+    <div className="flex h-full flex-col gap-5">
       <h1 className="text-2xl font-semibold">Customers</h1>
       <FilterTabs tabs={TAB_OPTIONS} queryKey="customers" />
-      <div className="flex gap-4 items-center">
+      <div className="flex items-center gap-4">
         <SearchBar />
-        <div className="flex gap-4 items-center justify-end flex-1">
+        <div className="flex flex-1 items-center justify-end gap-4">
           <CustomerDialog>
             <Button
               size="xl"
               variant="outline"
-              className="rounded-xl size-12 md:w-auto md:px-8 md:min-w-32"
+              className="rounded-xl md:w-auto md:min-w-32 md:px-6"
             >
               <PlusCircle />
               <span className="hidden md:inline">Add Customer</span>
