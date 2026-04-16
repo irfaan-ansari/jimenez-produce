@@ -17,7 +17,7 @@ export const PageClient = () => {
   const { searchParams } = useRouterStuff();
 
   const { data, error, isPending, isError } = useCustomers(
-    searchParams.toString(),
+    searchParams.toString()
   );
 
   // data
@@ -56,8 +56,8 @@ export const columns: ColumnDef<CustomerSelectType>[] = [
               <AvatarFallback>A</AvatarFallback>
             </Avatar>
           </div>
-          <div className="w-full max-w-3xs space-y-1">
-            <h4 className="text-base font-medium">{companyName}</h4>
+          <div className="w-full max-w-3xs space-y-1 overflow-hidden">
+            <h4 className="text-base font-medium ">{companyName}</h4>
             <div className="flex flex-col text-muted-foreground">
               <span className="line-clamp-1 text-sm">{companyStreet}</span>
               <span className="text-sm">

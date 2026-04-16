@@ -1,6 +1,6 @@
+import { twMerge } from "tailwind-merge";
 import { upload } from "@vercel/blob/client";
 import { clsx, type ClassValue } from "clsx";
-import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -10,21 +10,20 @@ export function getAvatarFallback(value?: string | null): string {
   if (!value) return "??";
 
   const trimmed = value.trim();
-
   if (!trimmed) return "??";
 
-  // If it's an email, use the part before @
+  // If email, take part before @
   const namePart = trimmed.includes("@") ? trimmed.split("@")[0] : trimmed;
 
   const parts = namePart.split(" ").filter(Boolean);
 
-  // If full name → take first letter of first + last word
-  if (parts.length >= 2) {
-    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-  }
+  // Take first letter of first + second word (if exists)
+  const first = parts[0]?.[0] ?? "";
+  const second = parts[1]?.[0] ?? "";
 
-  // If single word → take first 2 letters
-  return parts[0].slice(0, 2).toUpperCase();
+  const initials = (first + second).toUpperCase();
+
+  return initials || "??";
 }
 
 export function getFileType(url: string): "image" | "unknown" {

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { format } from "date-fns";
 import React, { use } from "react";
+import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,16 +13,17 @@ import {
 import { updateCustomer } from "@/server/customer";
 import { useCustomer } from "@/hooks/use-customer";
 import { useQueryClient } from "@tanstack/react-query";
+import { STATUS_MAP } from "@/lib/constants/status-map";
 import { Attachment } from "@/components/admin/Attachment";
 import { ChevronLeft, MailCheck, Phone } from "lucide-react";
 import { CustomerAction } from "@/components/admin/customer-actions";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { STATUS_MAP } from "@/lib/constants/status-map";
 
 type StatusIndex = keyof typeof STATUS_MAP;
 export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = use(params);
+  const router = useRouter();
   const queryClient = useQueryClient();
   const { data: result, isPending, error, isError } = useCustomer(Number(id));
 
@@ -46,13 +48,11 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
         <div className="flex items-center gap-4">
           <Button
             size="sm"
-            asChild
             variant="outline"
             className="shrink-0 rounded-xl"
+            onClick={() => router.back()}
           >
-            <Link href="/admin/customers">
-              <ChevronLeft /> Back
-            </Link>
+            <ChevronLeft /> Back
           </Button>
           <h1 className="flex-1 truncate text-xl font-semibold">
             {data.companyDBA}

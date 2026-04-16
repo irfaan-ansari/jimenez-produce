@@ -15,6 +15,11 @@ const styles = StyleSheet.create({
     fontSize: 10,
     color: COLORS.main,
     lineHeight: 1.4,
+    position: "relative",
+    paddingTop: 40,
+    paddingLeft: 40,
+    paddingRight: 40,
+    paddingBottom: 60,
   },
   header: {
     flexDirection: "row",
@@ -104,6 +109,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     padding: "0 0",
     borderBottomWidth: 0.5,
+    alignItems: "stretch",
     borderBottomColor: "#f1f5f9",
   },
   signatureBlock: {
@@ -144,7 +150,8 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   tableCell: {
-    minHeight: 20,
+    minHeight: 24,
+    height: "auto",
     width: "100%",
     borderStyle: "solid",
     borderWidth: 1,
@@ -153,6 +160,13 @@ const styles = StyleSheet.create({
     padding: 5,
     fontSize: 9,
     lineHeight: 1,
+  },
+  pageNumber: {
+    position: "absolute",
+    bottom: 20,
+    left: 0,
+    right: 0,
+    textAlign: "center",
   },
 });
 

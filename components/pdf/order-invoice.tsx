@@ -21,105 +21,129 @@ export const OrderInvoice = ({ data, role }: OrderInvoiceProps) => {
     <Document title={`Invoice - ${data.id}`}>
       <Page size="A4" style={[styles.page]}>
         {/* HEADER SECTION */}
-        <View style={styles.header}>
-          <View style={styles.headerLeft}>
-            <Image
-              src={process.env.BETTER_AUTH_URL + "/logo.png"}
-              style={styles.logo}
-            />
-            <View>
-              <View style={styles.headerContactText}>
-                <Text>
-                  {data.location?.address?.street}{" "}
-                  {data.location?.address?.city}
-                </Text>
-                <Text>
-                  {data.location?.address?.state}
-                  {data.location?.address?.zip}
-                </Text>
-                <Text>Phone: {data.location?.phone}</Text>
-                <Text>Email: {data.location?.email}</Text>
+        <View fixed>
+          <View style={styles.header}>
+            <View style={styles.headerLeft}>
+              <Image
+                src={process.env.BETTER_AUTH_URL + "/logo.png"}
+                style={styles.logo}
+              />
+              <View>
+                <View style={styles.headerContactText}>
+                  <Text>
+                    {data.location?.address?.street}{" "}
+                    {data.location?.address?.city}
+                  </Text>
+                  <Text>
+                    {data.location?.address?.state}
+                    {data.location?.address?.zip}
+                  </Text>
+                  <Text>Phone: {data.location?.phone}</Text>
+                  <Text>Email: {data.location?.email}</Text>
+                </View>
+              </View>
+            </View>
+
+            <View style={styles.headerRight}>
+              <Text
+                style={[
+                  styles.docTitle,
+                  { fontSize: 12, textTransform: "uppercase" },
+                ]}
+              >
+                {role === "customer" ? "Invoice" : "Packing Slip"}
+              </Text>
+              <View
+                style={[
+                  styles.table,
+                  { marginTop: 15, width: "80%", marginLeft: "auto" },
+                ]}
+              >
+                <View style={[styles.tableRow]}>
+                  <Text
+                    style={[
+                      styles.tableCell,
+                      { backgroundColor: "#eee", textAlign: "center" },
+                    ]}
+                  >
+                    Invoice #:
+                  </Text>
+                  <Text
+                    style={[
+                      styles.tableCell,
+                      { backgroundColor: "#eee", textAlign: "center" },
+                    ]}
+                  >
+                    Invoice Date:
+                  </Text>
+                </View>
+                <View style={styles.tableRow}>
+                  <Text style={[styles.tableCell, { textAlign: "center" }]}>
+                    {data.id}
+                  </Text>
+                  <Text style={[styles.tableCell, { textAlign: "center" }]}>
+                    {format(new Date(data.createdAt!), "MMMM dd, yyyy")}
+                  </Text>
+                </View>
               </View>
             </View>
           </View>
 
-          <View style={styles.headerRight}>
-            <Text
-              style={[
-                styles.docTitle,
-                { fontSize: 12, textTransform: "uppercase" },
-              ]}
-            >
-              {role === "customer" ? "Invoice" : "Packing Slip"}
-            </Text>
+          <View style={[styles.row, { alignItems: "flex-start" }]}>
+            {/* SHIP TO  */}
+            <View style={[styles.table, { marginTop: 15, width: "30%" }]}>
+              <View style={[styles.tableRow, { backgroundColor: "#eee" }]}>
+                <Text style={styles.tableCell}>Ship To.</Text>
+              </View>
+              <View style={styles.tableRow}>
+                <View style={[styles.tableCell]}>
+                  <Text>{data.receiverName}</Text>
+                  <Text>{data.shippingAddress?.street}</Text>
+                  <Text>
+                    {data.shippingAddress?.city} {data.shippingAddress?.state}
+                    {data.shippingAddress?.zip}
+                  </Text>
+                  <Text>{data.receiverPhone}</Text>
+                </View>
+              </View>
+            </View>
+
+            {/* ORDER SUMMARY TABLE (P.O., Driver, etc) */}
             <View
               style={[
                 styles.table,
-                { marginTop: 15, width: "80%", marginLeft: "auto" },
+                {
+                  marginTop: 15,
+                  width: "32%",
+                  height: "auto",
+                  marginLeft: "auto",
+                },
               ]}
             >
-              <View style={[styles.tableRow]}>
-                <Text style={[styles.tableCell, { backgroundColor: "#eee" }]}>
-                  Invoice ID:
-                </Text>
-                <Text style={styles.tableCell}>#{data.id}</Text>
+              <View style={[styles.tableRow, { backgroundColor: "#eee" }]}>
+                <Text style={styles.tableCell}>P.O. No.</Text>
+                <Text style={styles.tableCell}>Ship Date</Text>
               </View>
               <View style={styles.tableRow}>
-                <Text style={[styles.tableCell, { backgroundColor: "#eee" }]}>
-                  Invoice Date:
-                </Text>
-                <Text style={styles.tableCell}>
-                  {format(new Date(data.createdAt!), "MMMM dd, yyyy")}
-                </Text>
+                <Text style={styles.tableCell}>{data.po || ""}</Text>
+                <Text style={styles.tableCell}>{data.deliveryDate || ""}</Text>
               </View>
             </View>
           </View>
         </View>
 
-        <View style={[styles.row, { alignItems: "flex-start" }]}>
-          {/* SHIP TO  */}
-          <View style={[styles.table, { marginTop: 15, width: "30%" }]}>
-            <View style={[styles.tableRow, { backgroundColor: "#eee" }]}>
-              <Text style={styles.tableCell}>Ship To.</Text>
-            </View>
-            <View style={styles.tableRow}>
-              <View style={[styles.tableCell]}>
-                <Text>{data.receiverName}</Text>
-                <Text>{data.shippingAddress?.street}</Text>
-                {data.shippingAddress?.city} {data.shippingAddress?.state}
-                {data.shippingAddress?.zip}
-                <Text>{data.receiverPhone}</Text>
-              </View>
-            </View>
-          </View>
-
-          {/* ORDER SUMMARY TABLE (P.O., Driver, etc) */}
-          <View
-            style={[
-              styles.table,
-              {
-                marginTop: 15,
-                width: "32%",
-                height: "auto",
-                marginLeft: "auto",
-              },
-            ]}
-          >
-            <View style={[styles.tableRow, { backgroundColor: "#eee" }]}>
-              <Text style={styles.tableCell}>P.O. No.</Text>
-              <Text style={styles.tableCell}>Ship Date</Text>
-            </View>
-            <View style={styles.tableRow}>
-              <Text style={styles.tableCell}>{data.po || ""}</Text>
-              <Text style={styles.tableCell}>{data.deliveryDate || ""}</Text>
-            </View>
-          </View>
-        </View>
         {/* LINE ITEMS TABLE */}
         <View style={[styles.table, { marginTop: 20 }]}>
-          <View style={[styles.tableRow, { backgroundColor: "#eee" }]}>
+          <View
+            style={[styles.tableRow, { backgroundColor: "#eee" }]}
+            wrap={false}
+            fixed
+          >
             <View style={{ width: "12%" }}>
               <Text style={styles.tableColHeader}>Item Code</Text>
+            </View>
+            <View style={{ width: "12%" }}>
+              <Text style={styles.tableColHeader}>Quantity</Text>
             </View>
             <View style={{ width: "52%" }}>
               <Text style={styles.tableColHeader}>Description</Text>
@@ -127,9 +151,7 @@ export const OrderInvoice = ({ data, role }: OrderInvoiceProps) => {
             <View style={{ width: "12%" }}>
               <Text style={styles.tableColHeader}>Price Each</Text>
             </View>
-            <View style={{ width: "12%" }}>
-              <Text style={styles.tableColHeader}>Quantity</Text>
-            </View>
+
             <View style={{ width: "12%" }}>
               <Text style={styles.tableColHeader}>Amount</Text>
             </View>
@@ -138,21 +160,32 @@ export const OrderInvoice = ({ data, role }: OrderInvoiceProps) => {
           {data.lineItems?.map((item, index) => (
             <View
               key={index}
+              wrap={false}
               style={[
                 styles.tableRow,
                 index % 2 !== 0 ? { backgroundColor: "#EEEEEE" } : {},
               ]}
             >
-              <View style={{ width: "15%" }}>
-                <Text style={styles.tableCell}>{item.quantity}</Text>
+              <View style={[styles.tableCell, { width: "12%" }]}>
+                <Text>{item.identifier}</Text>
               </View>
-              <View style={{ width: "25%" }}>
-                <Text style={styles.tableCell}>{item.identifier}</Text>
+              <View
+                style={[styles.tableCell, { width: "12%", textAlign: "right" }]}
+              >
+                <Text>{item.quantity}</Text>
               </View>
-              <View style={{ width: "60%" }}>
-                <Text style={styles.tableCell}>
-                  {item.title} {item.pack ? `(${item.pack})` : ""}
-                </Text>
+              <View style={[styles.tableCell, { width: "52%" }]}>
+                <Text>{item.title}</Text>
+              </View>
+              <View
+                style={[styles.tableCell, { width: "12%", textAlign: "right" }]}
+              >
+                <Text>{formatUSD(item.price ?? 0)}</Text>
+              </View>
+              <View
+                style={[styles.tableCell, { width: "12%", textAlign: "right" }]}
+              >
+                <Text>{formatUSD(item.total ?? 0)}</Text>
               </View>
             </View>
           ))}
@@ -179,7 +212,7 @@ export const OrderInvoice = ({ data, role }: OrderInvoiceProps) => {
           </View>
           <View style={[styles.tableRow]}>
             <Text style={[styles.tableCell, { backgroundColor: "#eee" }]}>
-              Quantity (cs)
+              Quantity
             </Text>
             <Text style={[styles.tableCell, { textAlign: "right" }]}>
               {data.lineItemQuantity}
@@ -196,7 +229,7 @@ export const OrderInvoice = ({ data, role }: OrderInvoiceProps) => {
           </View>
           <View style={[styles.tableRow]}>
             <Text style={[styles.tableCell, { backgroundColor: "#eee" }]}>
-              Tax
+              TBD
             </Text>
             <Text style={[styles.tableCell, { textAlign: "right" }]}>
               {formatUSD(data.tax)}
@@ -220,9 +253,17 @@ export const OrderInvoice = ({ data, role }: OrderInvoiceProps) => {
           </View>
         </View>
 
+        <View fixed>
+          <Text
+            render={({ pageNumber, totalPages }) =>
+              `Page ${pageNumber} of ${totalPages}`
+            }
+          />
+        </View>
         <Text
+          style={styles.pageNumber}
           render={({ pageNumber, totalPages }) =>
-            `Page ${pageNumber} of ${totalPages}`
+            `${pageNumber} / ${totalPages}`
           }
           fixed
         />

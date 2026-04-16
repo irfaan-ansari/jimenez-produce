@@ -19,7 +19,7 @@ export const PageClient = () => {
   const { searchParams } = useRouterStuff();
 
   const { data, error, isPending, isError } = useOrders(
-    searchParams.toString(),
+    searchParams.toString()
   );
 
   return (
@@ -162,7 +162,7 @@ export const columns: ColumnDef<OrderType>[] = [
           </Button>
           <Button type="button" variant="ghost" asChild>
             {/* set items to localstorage */}
-            <Link href={`/admin/orders/new`}>
+            <Link href={`/admin/orders/new?orderId=${id}`}>
               <Copy />
               Order Again
             </Link>

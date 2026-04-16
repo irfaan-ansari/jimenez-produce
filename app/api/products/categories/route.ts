@@ -20,6 +20,7 @@ export async function GET(req: NextRequest) {
         SELECT DISTINCT jsonb_array_elements_text(categories) AS label
         FROM ${product}
         WHERE categories IS NOT NULL
+        ORDER BY label ASC
       `);
     const categories = rows.map((row) => row.label as string);
 

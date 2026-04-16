@@ -25,7 +25,7 @@ const translations = {
       manager: "Manager",
       ordering: "Ordering & Receiving",
       companyName: "Company Name",
-      companyPhone: "Company Number",
+      companyPhone: "Company Phone",
       companyEmail: "Company Email",
       officerFirst: "Full Name",
       officerMobile: "Phone Number",
@@ -69,7 +69,7 @@ const phoneSchema = z
 
 const schema = z.object({
   companyName: z.string().min(1, "Company name is required"),
-  companyPhone: z.string().min(1, "Company phone is required"),
+  companyPhone: phoneSchema,
   companyEmail: z.email("Invalid email"),
   officerFirst: z.string().min(1, "Officer first name is required"),
   officerLast: z.string(),
@@ -176,7 +176,7 @@ export const CustomerDataForm = ({ name }: { name: string }) => {
 
         <form.AppField
           name="companyPhone"
-          children={(field) => <field.TextField label={t["companyPhone"]} />}
+          children={(field) => <field.PhoneField label={t["companyPhone"]} />}
         />
         <form.AppField
           name="companyEmail"

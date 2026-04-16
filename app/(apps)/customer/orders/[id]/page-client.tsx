@@ -1,9 +1,5 @@
 "use client";
 
-import Link from "next/link";
-import { format } from "date-fns";
-import React, { use } from "react";
-import { formatUSD, getAvatarFallback } from "@/lib/utils";
 import {
   Copy,
   Home,
@@ -21,6 +17,9 @@ import {
   TableRow,
   TableHeader,
 } from "@/components/ui/table";
+import Link from "next/link";
+import { format } from "date-fns";
+import React, { use } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useOrder } from "@/hooks/use-customer";
@@ -29,6 +28,7 @@ import {
   LoadingSkeleton,
 } from "@/components/admin/placeholder-component";
 import { STATUS_MAP } from "@/lib/constants/status-map";
+import { formatUSD, getAvatarFallback } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -199,11 +199,21 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
         <CardContent className="space-y-6 text-base">
           <div className="space-y-2">
             <div className="flex items-center justify-between">
+              <span>Item Count</span> <span>{data.lineItemCount}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span>Quantity</span> <span>{data.lineItemQuantity}</span>
+            </div>
+            <div className="flex items-center justify-between">
               <span>Subtotal</span> <span>{formatUSD(data.subtotal)}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span>Fuel Charge</span>
-              <span>{formatUSD(0)}</span>
+              <span>TBD</span>
+              <span>{formatUSD(data.tax)}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span>{data.charges?.type}</span>
+              <span>{formatUSD(data.charges?.amount ?? 0)}</span>
             </div>
             <div className="flex items-center justify-between text-lg font-semibold">
               <span>Total</span> <span>{formatUSD(data.total)}</span>
@@ -228,6 +238,24 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
             </Link>
           </Button>
         </CardContent>
+        {data.po && (
+          <>
+            <CardHeader>
+              <CardTitle className="text-xl font-semibold">Po</CardTitle>
+            </CardHeader>
+            <CardContent>{data.po}</CardContent>
+          </>
+        )}
+        {data.notes && (
+          <>
+            <CardHeader>
+              <CardTitle className="text-xl font-semibold">Notes</CardTitle>
+            </CardHeader>
+            <CardContent className="whitespace-pre-line">
+              {data.notes}
+            </CardContent>
+          </>
+        )}
       </Card>
     </div>
   );

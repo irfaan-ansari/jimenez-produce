@@ -161,6 +161,20 @@ export const CheckoutDialog = withForm({
               <TableFooter className="bg-background">
                 <TableRow>
                   <TableCell colSpan={2} />
+                  <TableCell>Item Count</TableCell>
+                  <TableCell className="pr-0 text-right">
+                    {values.lineItemCount}
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell colSpan={2} />
+                  <TableCell>Quantity</TableCell>
+                  <TableCell className="pr-0 text-right">
+                    {values.lineItemQuantity}
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell colSpan={2} />
                   <TableCell>Subtotal</TableCell>
                   <TableCell className="pr-0 text-right">
                     {formatUSD(total)}

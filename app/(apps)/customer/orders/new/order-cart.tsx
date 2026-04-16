@@ -53,12 +53,12 @@ export const OrderCart = withForm({
           lineItemCount: 0,
           lineItemQuantity: 0,
           lineItemTotal: 0,
-        },
+        }
       );
 
       form.setFieldValue(
         "total",
-        String(result.total + Number(values.charges.amount)),
+        String(result.total + Number(values.charges.amount))
       );
       form.setFieldValue("subtotal", String(result.subtotal));
       form.setFieldValue("lineItemCount", String(result.lineItemCount));
@@ -126,12 +126,12 @@ export const OrderCart = withForm({
           <CardFooter className="flex flex-col items-stretch border-t pt-4">
             <div className="space-y-0.5">
               <div className="flex justify-between">
-                <span>Quantity (cs)</span>
-                <span>{values.lineItemQuantity}</span>
+                <span>Item Count</span>
+                <span>{values.lineItemCount}</span>
               </div>
               <div className="flex justify-between">
-                <span>Line items</span>
-                <span>{values.lineItemCount}</span>
+                <span>Quantity</span>
+                <span>{values.lineItemQuantity}</span>
               </div>
               <div className="flex justify-between">
                 <span>{values.charges.type}</span>

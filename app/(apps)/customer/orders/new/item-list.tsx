@@ -38,7 +38,10 @@ import { PopoverXDrawer } from "@/components/popover-x-drawer";
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useCategories, useInfiniteProducts } from "@/hooks/use-product";
-import { EmptyComponent } from "@/components/admin/placeholder-component";
+import {
+  EmptyComponent,
+  LoadingSkeleton,
+} from "@/components/admin/placeholder-component";
 
 const LAYOUTS = [
   {
@@ -165,23 +168,21 @@ export const ItemList = withForm({
               />
             ))}
           </motion.div>
-        ) : isError && !isPending ? (
+        ) : isPending || isFetchingNextPage ? (
+          <LoadingSkeleton />
+        ) : isError ? (
           <EmptyComponent variant="error" title={error?.message} />
         ) : (
           <EmptyComponent variant="empty" />
         )}
 
         {/* INFINITE SCROLL SENTINEL */}
-        <motion.div
+        <div
           ref={loadMoreRef}
-          className="col-span-full flex h-10 w-full justify-center"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+          className="col-span-full flex w-full justify-center"
         >
-          {isFetchingNextPage && (
-            <span className="rounded-xl px-4 py-2 shadow-md ">Loading...</span>
-          )}
-        </motion.div>
+          {isFetchingNextPage && <LoadingSkeleton />}
+        </div>
       </div>
     );
   },
