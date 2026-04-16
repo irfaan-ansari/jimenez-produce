@@ -82,7 +82,7 @@ async function getCroppedImage({
     0,
     0,
     cropWidth,
-    cropHeight,
+    cropHeight
   );
 
   return new Promise((resolve) => {
@@ -117,7 +117,7 @@ export const TransformImageDialog = ({
   const [zoom, setZoom] = React.useState(1);
   const [crop, setCrop] = React.useState({ x: 0, y: 0 });
   const [croppedArea, setCroppedArea] = React.useState<CroppedPixelType | null>(
-    null,
+    null
   );
 
   const [previewUrl, setPreviewUrl] = React.useState<string | null>(null);
@@ -209,14 +209,12 @@ export const TransformImageDialog = ({
             crop={crop}
             zoom={zoom}
             rotation={rotation}
-            objectFit="contain"
-            minZoom={1}
             onCropChange={setCrop}
             onZoomChange={setZoom}
             onRotationChange={setRotation}
-            onCropComplete={(_, croppedAreaPixels) => {
-              setCroppedArea(croppedAreaPixels);
-            }}
+            onCropComplete={(_, croppedAreaPixels) =>
+              setCroppedArea(croppedAreaPixels)
+            }
           />
         </div>
 

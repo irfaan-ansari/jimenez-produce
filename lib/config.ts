@@ -113,10 +113,14 @@ export const SIDEBAR_MENU = [
         href: "/admin/customers?status=rejected",
         color: "#EF4444",
       },
-
       {
         label: "Data Submitted",
         href: "/admin/customers?status=submitted",
+        color: "#A1A1AA",
+      },
+      {
+        label: "Invites",
+        href: "/admin/customers/invites",
         color: "#A1A1AA",
       },
     ],
@@ -148,7 +152,12 @@ export const SIDEBAR_MENU = [
       },
       {
         label: "Price Level",
-        href: "/admin/price-level",
+        href: "/admin/products/price-level",
+        color: "#A1A1AA",
+      },
+      {
+        label: "Catalog Requests",
+        href: "/admin/products/catalog-requests",
         color: "#A1A1AA",
       },
     ],
@@ -184,100 +193,104 @@ export const SIDEBAR_MENU = [
         href: "/admin/job-applications?status=hired",
         color: "#22C55E",
       },
-
       {
         label: "Rejected",
         href: "/admin/job-applications?status=rejected",
         color: "#EF4444",
       },
-    ],
-  },
-  {
-    label: "Catalog Requests",
-    icon: Shield,
-    href: "/admin/catalog-requests",
-    items: [
       {
-        label: "All",
-        href: "/admin/catalog-requests",
+        label: "Invites",
+        href: "/admin/job-applications/job-invites",
         color: "#A1A1AA",
       },
-      {
-        label: "New",
-        href: "/admin/catalog-requests?status=new",
-        color: "#F59E0B",
-      },
-      {
-        label: "Approved",
-        href: "/admin/catalog-requests?status=approved",
-        color: "#22C55E",
-      },
-      {
-        label: "Rejected",
-        href: "/admin/catalog-requests?status=rejected",
-        color: "#EF4444",
-      },
-      {
-        label: "Revoked",
-        href: "/admin/catalog-requests?status=revoked",
-        color: "#71717A",
-      },
     ],
   },
-  {
-    label: "Candidate Invitations",
-    icon: ClipboardClock,
-    href: "/admin/job-invites",
-    items: [
-      {
-        label: "All",
-        href: "/admin/job-invites",
-        color: "#71717A",
-      },
-      {
-        label: "Invited",
-        href: "/admin/job-invites?status=invited",
-        color: "#F59E0B",
-      },
-      {
-        label: "Applied",
-        href: "/admin/job-invites?status=applied",
-        color: "#3B82F6",
-      },
-      {
-        label: "Hired",
-        href: "/admin/job-invites?status=hired",
-        color: "#22C55E",
-      },
-    ],
-  },
-  {
-    label: "Customer Invitations",
-    icon: MailPlus,
-    href: "/admin/invites",
-    items: [
-      {
-        label: "All",
-        href: "/admin/invites",
-        color: "#71717A",
-      },
-      {
-        label: "Invited",
-        href: "/admin/invites?status=invited",
-        color: "#F59E0B",
-      },
-      {
-        label: "Applied",
-        href: "/admin/invites?status=applied",
-        color: "#3B82F6",
-      },
-      {
-        label: "Approved",
-        href: "/admin/invites?status=converted",
-        color: "#22C55E",
-      },
-    ],
-  },
+  // {
+  //   label: "Catalog Requests",
+  //   icon: Shield,
+  //   href: "/admin/catalog-requests",
+  //   items: [
+  //     {
+  //       label: "All",
+  //       href: "/admin/catalog-requests",
+  //       color: "#A1A1AA",
+  //     },
+  //     {
+  //       label: "New",
+  //       href: "/admin/catalog-requests?status=new",
+  //       color: "#F59E0B",
+  //     },
+  //     {
+  //       label: "Approved",
+  //       href: "/admin/catalog-requests?status=approved",
+  //       color: "#22C55E",
+  //     },
+  //     {
+  //       label: "Rejected",
+  //       href: "/admin/catalog-requests?status=rejected",
+  //       color: "#EF4444",
+  //     },
+  //     {
+  //       label: "Revoked",
+  //       href: "/admin/catalog-requests?status=revoked",
+  //       color: "#71717A",
+  //     },
+  //   ],
+  // },
+  // {
+  //   label: "Candidate Invitations",
+  //   icon: ClipboardClock,
+  //   href: "/admin/job-invites",
+  //   items: [
+  //     {
+  //       label: "All",
+  //       href: "/admin/job-invites",
+  //       color: "#71717A",
+  //     },
+  //     {
+  //       label: "Invited",
+  //       href: "/admin/job-invites?status=invited",
+  //       color: "#F59E0B",
+  //     },
+  //     {
+  //       label: "Applied",
+  //       href: "/admin/job-invites?status=applied",
+  //       color: "#3B82F6",
+  //     },
+  //     {
+  //       label: "Hired",
+  //       href: "/admin/job-invites?status=hired",
+  //       color: "#22C55E",
+  //     },
+  //   ],
+  // },
+  // {
+  //   label: "Customer Invitations",
+  //   icon: MailPlus,
+  //   href: "/admin/invites",
+  //   items: [
+  //     {
+  //       label: "All",
+  //       href: "/admin/invites",
+  //       color: "#71717A",
+  //     },
+  //     {
+  //       label: "Invited",
+  //       href: "/admin/invites?status=invited",
+  //       color: "#F59E0B",
+  //     },
+  //     {
+  //       label: "Applied",
+  //       href: "/admin/invites?status=applied",
+  //       color: "#3B82F6",
+  //     },
+  //     {
+  //       label: "Approved",
+  //       href: "/admin/invites?status=converted",
+  //       color: "#22C55E",
+  //     },
+  //   ],
+  // },
 
   {
     label: "Users",

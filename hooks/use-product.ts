@@ -1,4 +1,5 @@
 import {
+  PriceLevelResponse,
   TopProduct,
   type AdminProductResponse,
   type CustomerProductResponse,
@@ -12,7 +13,7 @@ export const useProducts = (query: string) => {
     queryKey: ["products", query],
     queryFn: () => {
       return fetcher<AdminProductResponse | CustomerProductResponse>(
-        `/api/products?${query}`,
+        `/api/products?${query}`
       );
     },
     staleTime: 1000 * 60 * 5,
@@ -21,15 +22,15 @@ export const useProducts = (query: string) => {
 
 export const useInfiniteProducts = (query: string) => {
   return useInfiniteQuery({
-    queryKey: ["products-infinite", query],
+    queryKey: ["customer-products", query],
     initialPageParam: 1,
     queryFn: ({ pageParam }) => {
       const params = new URLSearchParams(query);
 
       params.set("page", String(pageParam));
 
-      return fetcher<AdminProductResponse | CustomerProductResponse>(
-        `/api/products?${params.toString()}`,
+      return fetcher<CustomerProductResponse>(
+        `/api/products/customer?${params.toString()}`
       );
     },
     getNextPageParam: ({ pagination }) => {
@@ -47,7 +48,7 @@ export const useCategories = (query?: string) => {
     queryKey: ["product_categories", query],
     queryFn: () => {
       return fetcher<ProductCategoriesResponse>(
-        `/api/products/categories?${query}`,
+        `/api/products/categories?${query}`
       );
     },
     staleTime: 1000 * 60 * 5,
@@ -59,6 +60,16 @@ export const useTopProducts = (query?: string) => {
     queryKey: ["top-products", query],
     queryFn: () => {
       return fetcher<{ data: TopProduct[] }>(`/api/analytics/top-products`);
+    },
+    staleTime: 1000 * 60 * 5,
+  });
+};
+
+export const usePriceLevel = (query?: string) => {
+  return useQuery({
+    queryKey: ["price-level", query],
+    queryFn: () => {
+      return fetcher<PriceLevelResponse>(`/api/price-level`);
     },
     staleTime: 1000 * 60 * 5,
   });

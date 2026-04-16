@@ -141,6 +141,11 @@ export const STATUS_MAP = {
     icon: PackageCheck,
     color: "#22C55E",
   },
+  inactive: {
+    label: "Inactive",
+    color: "#EF4444",
+    icon: CircleOff,
+  },
 };
 
 export const CUSTOMER_ACTIONS = {

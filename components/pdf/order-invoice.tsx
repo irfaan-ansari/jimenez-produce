@@ -5,8 +5,8 @@ import {
 } from "@/lib/db/schema";
 import { format } from "date-fns";
 import { styles } from "./styles";
-import { Document, Page, Text, View, Image } from "@react-pdf/renderer";
 import { formatUSD } from "@/lib/utils";
+import { Document, Page, Text, View, Image } from "@react-pdf/renderer";
 
 interface OrderInvoiceProps {
   data: OrderSelectType & {

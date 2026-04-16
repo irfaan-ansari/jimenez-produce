@@ -7,6 +7,7 @@ import {
   Minus,
   Plus,
   SearchIcon,
+  Star,
   TextAlignJustify,
   X,
 } from "lucide-react";
@@ -288,7 +289,7 @@ const ProductItem = withForm({
                   <Badge
                     key={cat + i}
                     variant="secondary"
-                    className="h-5 shrink-0 rounded-xl bg-primary px-1.5 text-primary-foreground"
+                    className="h-5 shrink-0 rounded-xl px-1.5"
                   >
                     {cat}
                   </Badge>
@@ -344,7 +345,7 @@ const LastPurchase = ({
   return (
     <Badge
       className={cn(
-        "h-5 shrink-0 rounded-xl bg-amber-600 whitespace-nowrap",
+        "h-5 shrink-0 rounded-xl bg-primary uppercase whitespace-nowrap",
         className
       )}
     >
@@ -425,7 +426,7 @@ const Thumbnail = ({
                 <Badge
                   key={cat + i}
                   variant="secondary"
-                  className="h-5 shrink-0 rounded-xl bg-primary px-1.5 text-primary-foreground"
+                  className="h-5 shrink-0 rounded-xl px-1.5"
                 >
                   {cat}
                 </Badge>
@@ -539,6 +540,27 @@ const CategoryPills = ({
 
   return (
     <div className="flex items-center gap-1.5 whitespace-nowrap">
+      <Button
+        variant="secondary"
+        type="button"
+        data-active={filter.guide}
+        className="rounded-xl group bg-yellow-500 data-[active=true]:bg-yellow-600 data-[active=true]:text-primary-foreground hover:bg-yellow-500/80 transition"
+        onClick={() => setFilter({ ...filter, guide: !filter.guide })}
+      >
+        <Star />
+        Order Guide
+        <Button
+          asChild
+          variant="ghost"
+          className="rounded-xl opacity-0 group-data-[active=true]:opacity-100"
+          size="icon-xs"
+          type="button"
+        >
+          <span>
+            <X />
+          </span>
+        </Button>
+      </Button>
       <PopoverXDrawer
         open={open}
         setOpen={setOpen}
@@ -590,7 +612,7 @@ const CategoryPills = ({
           type="button"
           data-active={filter.cat === cat}
           variant="secondary"
-          className="rounded-xl bg-blue-100 text-blue-600 data-[active=true]:bg-blue-600 data-[active=true]:text-blue-100"
+          className="rounded-xl bg-primary/20 data-[active=true]:bg-primary data-[active=true]:text-primary-foreground"
           onClick={() => toggle(cat)}
         >
           {cat}

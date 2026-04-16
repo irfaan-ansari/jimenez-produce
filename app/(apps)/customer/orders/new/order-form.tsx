@@ -16,6 +16,7 @@ import { CheckoutDialog } from "./checkout-dialog";
 import { CustomerSelectType } from "@/lib/db/schema";
 import { useQueryClient } from "@tanstack/react-query";
 import { formatUSD, getNextDayDate } from "@/lib/utils";
+import { Star } from "lucide-react";
 
 export const OrderForm = ({
   customer,
@@ -52,7 +53,7 @@ export const OrderForm = ({
       receiverPhone: deliverySchedule[0].receivingPhone,
       deliveryDate: format(
         getNextDayDate(deliverySchedule[0].day),
-        "MM-dd-yyyy",
+        "MM-dd-yyyy"
       ),
       deliveryWindow: deliverySchedule[0].window,
       deliveryInstruction: deliverySchedule[0].instructions,
@@ -88,7 +89,7 @@ export const OrderForm = ({
 
   const { lineItemCount, total } = useStore(
     form.store,
-    (state) => state.values,
+    (state) => state.values
   );
 
   return (
@@ -99,7 +100,7 @@ export const OrderForm = ({
       }}
       className="relative"
     >
-      <div className="flex w-full items-start gap-4">
+      <div className="flex w-full items-start gap-4 relative">
         <ItemList form={form} show={showSummary} />
         <OrderCart customer={customer} form={form} show={showSummary} />
       </div>

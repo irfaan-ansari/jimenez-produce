@@ -7,6 +7,8 @@ import {
   LineItemSelectType,
   LocationSelectType,
   OrderSelectType,
+  PriceLevelItemSelectType,
+  PriceLevelSelectType,
   ProductSelectType,
 } from "./db/schema";
 
@@ -89,3 +91,12 @@ export interface TopProduct {
   totalRevenue: number;
   lastPurchasedAt: Date | string;
 }
+
+export type PriceLevelType = PriceLevelSelectType & {
+  priceLevelItem: PriceLevelItemSelectType;
+};
+
+export type PriceLevelResponse = {
+  data: PriceLevelType[];
+  pagination: Pagination;
+};

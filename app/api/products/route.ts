@@ -2,12 +2,12 @@ import {
   eq,
   or,
   and,
-  ilike,
   ne,
-  arrayContains,
-  inArray,
-  getTableColumns,
   desc,
+  ilike,
+  inArray,
+  arrayContains,
+  getTableColumns,
 } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { getSession } from "@/server/auth";
@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
 
     const searchParams = req.nextUrl.searchParams;
     const query = Object.fromEntries(searchParams.entries());
-    const { page = 1, limit = 24, status, q, cat } = query;
+    const { page = 1, limit = 24, status, q, cat, guide } = query;
     const offset = ((page as number) - 1) * Number(limit);
 
     if (session.user.role === "customer") {

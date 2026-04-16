@@ -31,8 +31,8 @@ import { ProfileDialog } from "../profile-dialog";
 import { useTabRouter } from "@/hooks/use-tab-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { ChangePasswordDialog } from "../change-password";
+import { ChevronRight, Lock, LogOut, User } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { ChevronRight, Loader, Lock, LogOut, User } from "lucide-react";
 
 export function AppSidebar({ variant }: { variant: "admin" | "customer" }) {
   const { pathname, buildPath, isActive: subItemActive } = useTabRouter();

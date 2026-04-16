@@ -13,7 +13,7 @@ interface FilterProps {
 
 export const FilterTabs = ({ tabs, queryKey }: FilterProps) => {
   const { searchParamsObj } = useRouterStuff();
-  console.log(tabs);
+
   const { data, isPending } = useStatusCount(queryKey);
 
   const activeStatus =
