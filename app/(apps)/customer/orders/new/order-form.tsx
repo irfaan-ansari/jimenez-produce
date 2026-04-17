@@ -53,7 +53,7 @@ export const OrderForm = ({
       receiverPhone: deliverySchedule[0].receivingPhone,
       deliveryDate: format(
         getNextDayDate(deliverySchedule[0].day),
-        "MM-dd-yyyy",
+        "MM-dd-yyyy"
       ),
       deliveryWindow: deliverySchedule[0].window,
       deliveryInstruction: deliverySchedule[0].instructions,
@@ -89,7 +89,7 @@ export const OrderForm = ({
 
   const { lineItemCount, total } = useStore(
     form.store,
-    (state) => state.values,
+    (state) => state.values
   );
 
   return (
@@ -100,7 +100,7 @@ export const OrderForm = ({
       }}
       className="relative"
     >
-      <div className="relative flex w-full items-start gap-4">
+      <div className="relative flex w-full min-h-svh items-start gap-4">
         <ItemList form={form} show={showSummary} />
         <OrderCart customer={customer} form={form} show={showSummary} />
       </div>

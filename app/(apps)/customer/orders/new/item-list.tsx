@@ -258,7 +258,7 @@ const ProductItem = withForm({
             ...item,
             total: `${Number(item.price) * Number(item.quantity)}`,
           };
-        }),
+        })
       );
     };
 
@@ -269,7 +269,7 @@ const ProductItem = withForm({
           group-data-[layout=grid]/card:flex-col group-data-[layout=grid]/card:items-stretch group-data-[layout=grid]/card:gap-0
           group-data-[layout=grid]/card:p-0 group-data-[layout=list]/card:mb-1 group-data-[layout=list]/card:px-4 
           hover:shadow-md`,
-          isCartItem ? "bg-primary/6" : "hover:bg-primary/6 ",
+          isCartItem ? "bg-primary/6" : "hover:bg-primary/6 "
         )}
         onClick={() => updateItem({ action: "increase" })}
       >
@@ -348,7 +348,7 @@ const LastPurchase = ({
     <Badge
       className={cn(
         "h-5 shrink-0 rounded-xl bg-primary whitespace-nowrap uppercase",
-        className,
+        className
       )}
     >
       {product.lastPurchased.quantity}cs •{" "}
@@ -540,6 +540,7 @@ const CategoryPills = ({
       ? [...data.data.slice(0, 7), filter.cat]
       : categories;
 
+  console.log(filter);
   return (
     <div className="flex items-center gap-1.5 whitespace-nowrap">
       <Button
@@ -643,7 +644,7 @@ const SearchBar = ({ filter, setFilter }: { filter: any; setFilter: any }) => {
 
   const debounce = useDebounce(
     (v: string) => setFilter((p: any) => ({ ...p, q: v, page: "1" })),
-    400,
+    400
   );
 
   return (
