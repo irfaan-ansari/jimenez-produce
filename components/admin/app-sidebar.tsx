@@ -21,25 +21,30 @@ import {
   SidebarMenuSubButton,
 } from "@/components/ui/sidebar";
 import { useState } from "react";
-import { SIDEBAR_MENU_CUSTOMER, SITE_CONFIG } from "@/lib/config";
 import { useRouter } from "next/navigation";
 import { SIDEBAR_MENU } from "@/lib/config";
 import { useSession } from "@/hooks/use-auth";
 import { authClient } from "@/lib/auth/client";
 import { getAvatarFallback } from "@/lib/utils";
 import { ProfileDialog } from "../profile-dialog";
-import { useTabRouter } from "@/hooks/use-tab-router";
 import { useQueryClient } from "@tanstack/react-query";
+import { useRouterStuff } from "@/hooks/use-router-stuff";
 import { ChangePasswordDialog } from "../change-password";
 import { ChevronRight, Lock, LogOut, User } from "lucide-react";
+import { SIDEBAR_MENU_CUSTOMER, SITE_CONFIG } from "@/lib/config";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 export function AppSidebar({ variant }: { variant: "admin" | "customer" }) {
-  const { pathname, buildPath, isActive: subItemActive } = useTabRouter();
+  const { pathname, searchParamsObj } = useRouterStuff();
+
   const MENU = variant === "customer" ? SIDEBAR_MENU_CUSTOMER : SIDEBAR_MENU;
 
   const isActive = (href: string) => {
     return pathname === href || (pathname.includes(href) && pathname !== "/");
+  };
+
+  const isSubItemActive = (subItem: any) => {
+    return pathname.includes(subItem.href);
   };
 
   return (
@@ -56,7 +61,7 @@ export function AppSidebar({ variant }: { variant: "admin" | "customer" }) {
                       asChild
                       isActive={isActive(item.href)}
                       tooltip={item.label}
-                      className="data-[state=open]:bg-sidebar-accent rounded-xl h-10"
+                      className="h-10 rounded-xl data-[state=open]:bg-sidebar-accent"
                     >
                       <Link href={item.href}>
                         {item.icon && (
@@ -94,8 +99,8 @@ export function AppSidebar({ variant }: { variant: "admin" | "customer" }) {
                       <SidebarMenuSub>
                         {item.items?.map((subItem) => (
                           <SidebarMenuSubItem
-                            key={subItem.label}
-                            className="after:absolute after:opacity-0 after:transition group-data-[active=true]/collapsible:after:opacity-100 after:size-2  after:rounded-full after:bg-(--color) after:-left-3.5 after:top-1/2 after:-translate-y-1/2"
+                            key={subItem.href}
+                            className="after:absolute after:top-1/2 after:-left-3.5 after:size-2 after:-translate-y-1/2  after:rounded-full after:bg-(--color) after:opacity-0 after:transition group-data-[active=true]/collapsible:after:opacity-100"
                             style={
                               {
                                 "--color": subItem.color,
@@ -105,9 +110,9 @@ export function AppSidebar({ variant }: { variant: "admin" | "customer" }) {
                             <SidebarMenuSubButton
                               asChild
                               className="rounded-xl"
-                              isActive={subItemActive(subItem)}
+                              isActive={isSubItemActive(subItem.href)}
                             >
-                              <Link href={buildPath(subItem)}>
+                              <Link href={subItem.href}>
                                 <span>{subItem.label}</span>
                               </Link>
                             </SidebarMenuSubButton>
@@ -131,17 +136,17 @@ export function AppSidebar({ variant }: { variant: "admin" | "customer" }) {
 export const SidebarLogo = () => {
   return (
     <SidebarHeader className="mb-4">
-      <SidebarMenuItem className="px-2.5 py-2 inline-flex gap-4 items-center  bg-sidebar-accent rounded-xl">
-        <Avatar className="rounded-xl **:rounded-xl after:hidden size-9 ring-2 ring-offset-1 ring-green-600/20">
+      <SidebarMenuItem className="inline-flex items-center gap-4 rounded-xl bg-sidebar-accent  px-2.5 py-2">
+        <Avatar className="size-9 rounded-xl ring-2 ring-green-600/20 ring-offset-1 **:rounded-xl after:hidden">
           <AvatarImage src={SITE_CONFIG.logo} alt="profile image" asChild>
             <Image src={SITE_CONFIG.logo} alt="Logo" width={100} height={100} />
           </AvatarImage>
-          <AvatarFallback className="bg-primary/40 font-medium text-xs">
+          <AvatarFallback className="bg-primary/40 text-xs font-medium">
             {getAvatarFallback(SITE_CONFIG.name)}
           </AvatarFallback>
         </Avatar>
 
-        <span className="font-semibold text-base">{SITE_CONFIG.name}</span>
+        <span className="text-base font-semibold">{SITE_CONFIG.name}</span>
       </SidebarMenuItem>
     </SidebarHeader>
   );
@@ -166,17 +171,17 @@ const Profile = () => {
   };
   return (
     <SidebarFooter>
-      <SidebarMenu className="rounded-2xl gap-0 border">
+      <SidebarMenu className="gap-0 rounded-2xl border">
         <SidebarMenuItem>
-          <div className="flex gap-2 px-2.5 py-2 items-center">
-            <Avatar className="rounded-xl **:rounded-xl after:hidden size-9 ring-2 ring-offset-1 ring-green-600/20">
+          <div className="flex items-center gap-2 px-2.5 py-2">
+            <Avatar className="size-9 rounded-xl ring-2 ring-green-600/20 ring-offset-1 **:rounded-xl after:hidden">
               <AvatarImage src={data?.user.image!} alt="profile image" />
-              <AvatarFallback className="rounded-xl bg-primary/40 font-semibold text-xs text-primary">
+              <AvatarFallback className="rounded-xl bg-primary/40 text-xs font-semibold text-primary">
                 {getAvatarFallback(data?.user.name)}
               </AvatarFallback>
             </Avatar>
             <div className="flex flex-col">
-              <span className="truncate font-medium text-sm">
+              <span className="truncate text-sm font-medium">
                 {data?.user.name}
               </span>
               <span className="text-xs text-muted-foreground">
@@ -209,7 +214,7 @@ const Profile = () => {
         <SidebarMenuItem className="border-t p-1">
           <SidebarMenuButton
             onClick={handleLogout}
-            className="hover:bg-destructive/10 hover:text-destructive rounded-xl"
+            className="rounded-xl hover:bg-destructive/10 hover:text-destructive"
           >
             <LogOut />
             {loading ? "Please wait..." : "Logout"}

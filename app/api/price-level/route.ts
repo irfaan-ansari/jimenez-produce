@@ -1,14 +1,14 @@
 import { db } from "@/lib/db";
-import { priceLevel } from "@/lib/db/schema";
 import { getSession } from "@/server/auth";
 import { eq, ilike, and } from "drizzle-orm";
+import { priceLevel } from "@/lib/db/schema";
 import { NextRequest, NextResponse } from "next/server";
 
 export const GET = async (req: NextRequest) => {
   try {
     const session = await getSession();
 
-    if (!session || session?.user?.role === "customer")
+    if (!session || session.user.role === "customer")
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
 
     const searchParams = req.nextUrl.searchParams;
@@ -43,13 +43,13 @@ export const GET = async (req: NextRequest) => {
           totalPages: Math.ceil(total / (limit as number)),
         },
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error(error);
     return NextResponse.json(
       { message: "Failed to load data" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 };

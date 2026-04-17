@@ -23,20 +23,20 @@ export const FilterTabs = ({ tabs, queryKey }: FilterProps) => {
 
   return (
     <div
-      className="relative shrink-0 flex items-start gap-4 overflow-x-auto no-scrollbar
-      after:absolute after:bottom-0 after:inset-x-0 after:h-[2px] after:bg-border"
+      className="relative no-scrollbar flex shrink-0 items-start gap-4 overflow-x-auto
+      after:absolute after:inset-x-0 after:bottom-0 after:h-[2px] after:bg-border"
     >
       {tabs.map(({ label, value }, i) => {
         const map = STATUS_MAP[(value || "all") as keyof typeof STATUS_MAP];
-        console.log(map, value);
+
         return (
           <Link
             key={value + i}
             href={`?${value ? `status=${value}` : ""}`}
             data-active={activeStatus === value || (!value && !activeStatus)}
-            className="relative h-9 inline-flex items-start gap-2 font-medium
-            border-b-2 border-transparent z-1 leading-tight
-            data-[active=true]:border-black hover:border-black transition whitespace-nowrap"
+            className="relative z-1 inline-flex h-9 items-start gap-2
+            border-b-2 border-transparent leading-tight font-medium
+            whitespace-nowrap transition hover:border-black data-[active=true]:border-black"
             style={{ "--color": map.color } as React.CSSProperties}
           >
             {label}
@@ -45,7 +45,7 @@ export const FilterTabs = ({ tabs, queryKey }: FilterProps) => {
             ) : (
               <Badge
                 variant="outline"
-                className="min-w-6 border-(--color)/10 bg-(--color)/10 text-(--color) rounded-xl px-1 text-xs"
+                className="min-w-6 rounded-xl border-(--color)/10 bg-(--color)/10 px-1 text-xs text-(--color)"
               >
                 {data?.data?.[value || "all"] ?? 0}
               </Badge>

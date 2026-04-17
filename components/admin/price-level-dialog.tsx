@@ -45,16 +45,21 @@ export const PriceLevelDialog = ({
           }}
           className="space-y-4"
         >
-          <DialogHeader>
+          <DialogHeader className="mb-4">
             <DialogTitle className="text-xl font-semibold">
-              Price Level
+              <form.Subscribe
+                selector={(state) => state.values.name}
+                children={(name) => name || "Price Level"}
+              />
             </DialogTitle>
           </DialogHeader>
-          <FieldGroup className="grid grid-cols-1 lg:grid-cos-2">
+          <FieldGroup className="grid grid-cols-1 lg:grid-cols-2">
             {/* Name */}
             <form.AppField
               name="name"
-              children={(field) => <field.TextField label="Name" />}
+              children={(field) => (
+                <field.TextField label="Name" className="**:rounded-xl" />
+              )}
             />
             {/* type */}
             <form.AppField
@@ -62,6 +67,7 @@ export const PriceLevelDialog = ({
               children={(field) => (
                 <field.SelectField
                   label="Type"
+                  className="**:rounded-xl"
                   options={["Fixed", "Percentage"]}
                 />
               )}
@@ -70,14 +76,20 @@ export const PriceLevelDialog = ({
             {/* Value */}
             <form.AppField
               name="value"
-              children={(field) => <field.TextField label="Value" />}
+              children={(field) => (
+                <field.TextField label="Value" className="**:rounded-xl" />
+              )}
             />
 
             {/* type */}
             <form.AppField
               name="type"
               children={(field) => (
-                <field.SelectField label="Type" options={["All", "Per Item"]} />
+                <field.SelectField
+                  label="Type"
+                  className="**:rounded-xl"
+                  options={["All", "Per Item"]}
+                />
               )}
             />
             {/* scope */}
@@ -86,6 +98,7 @@ export const PriceLevelDialog = ({
               children={(field) => (
                 <field.SelectField
                   label="Scope"
+                  className="**:rounded-xl"
                   options={["Active", "Inactive"]}
                 />
               )}
@@ -97,12 +110,13 @@ export const PriceLevelDialog = ({
               children={(field) => (
                 <field.SelectField
                   label="Status"
+                  className="**:rounded-xl"
                   options={["Active", "Inactive"]}
                 />
               )}
             />
           </FieldGroup>
-          <Field className="mt-6 flex flex-col-reverse gap-4 sm:flex-row sm:[&>button]:flex-1">
+          <Field className="mt-10 flex flex-col-reverse gap-4 sm:flex-row sm:justify-end  sm:[&>*]:w-32">
             <Button
               variant="outline"
               size="xl"

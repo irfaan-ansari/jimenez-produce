@@ -1,11 +1,8 @@
 import {
-  ClipboardClock,
   ClipboardList,
   Inbox,
   LayoutDashboard,
-  MailPlus,
   Settings,
-  Shield,
   Tag,
   UserPlus,
   Users,
@@ -62,19 +59,57 @@ export const SIDEBAR_MENU = [
         query: { status: "" },
       },
       {
-        label: "In Progress",
+        label: "Active",
         href: "/admin/orders?status=in_progress",
         color: "#F59E0B",
       },
       {
-        label: "In Progress",
+        label: "Delayed",
         href: "/admin/orders?status=delayed",
         color: "#F59E0B",
       },
       {
-        label: "Past Orders",
+        label: "Completed",
         href: "/admin/orders?status=completed",
         color: "#22C55E",
+      },
+    ],
+  },
+
+  {
+    label: "Products",
+    icon: Tag,
+    href: "/admin/products",
+    items: [
+      {
+        label: "All",
+        href: "/admin/products",
+        color: "#A1A1AA",
+      },
+      {
+        label: "Active",
+        href: "/admin/products?status=active",
+        color: "#22C55E",
+      },
+      {
+        label: "Private",
+        href: "/admin/products?status=private",
+        color: "#6366F1",
+      },
+      {
+        label: "Archived",
+        href: "/admin/products?status=archived",
+        color: "#71717A",
+      },
+      {
+        label: "Price Level",
+        href: "/admin/products/price-level",
+        color: "#A1A1AA",
+      },
+      {
+        label: "Catalog Requests",
+        href: "/admin/products/catalog-requests",
+        color: "#A1A1AA",
       },
     ],
   },
@@ -125,44 +160,6 @@ export const SIDEBAR_MENU = [
       },
     ],
   },
-  {
-    label: "Products",
-    icon: Tag,
-    href: "/admin/products",
-    items: [
-      {
-        label: "All",
-        href: "/admin/products",
-        color: "#A1A1AA",
-      },
-      {
-        label: "Active",
-        href: "/admin/products?status=active",
-        color: "#22C55E",
-      },
-      {
-        label: "Private",
-        href: "/admin/products?status=private",
-        color: "#6366F1",
-      },
-      {
-        label: "Archived",
-        href: "/admin/products?status=archived",
-        color: "#71717A",
-      },
-      {
-        label: "Price Level",
-        href: "/admin/products/price-level",
-        color: "#A1A1AA",
-      },
-      {
-        label: "Catalog Requests",
-        href: "/admin/products/catalog-requests",
-        color: "#A1A1AA",
-      },
-    ],
-  },
-
   {
     label: "Job Applications",
     icon: ClipboardList,

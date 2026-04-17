@@ -43,12 +43,13 @@ import {
   EmptyComponent,
   LoadingSkeleton,
 } from "@/components/admin/placeholder-component";
+import { BlurFade } from "@/components/ui/blur-fade";
 
 const LAYOUTS = [
   {
     value: "list",
     icon: TextAlignJustify,
-    className: "grid-cols-1 divide-y",
+    className: "grid-cols-1",
     itemClassName: "",
   },
   {
@@ -80,8 +81,7 @@ export const ItemList = withForm({
       fetchNextPage,
     } = useInfiniteProducts(query?.toString());
 
-    const products =
-      data?.pages.flatMap((page) => page.data as CustomerProductType[]) ?? [];
+    const products = data?.pages.flatMap((page) => page.data) ?? [];
 
     const loadMoreRef = useInfiniteScroll(() => {
       if (hasNextPage && !isFetchingNextPage) {
@@ -108,7 +108,7 @@ export const ItemList = withForm({
     return (
       <div
         data-layout={layout}
-        className="group/card @container min-w-0 flex-1 space-y-3 will-change-[flex]"
+        className="group/card @container min-w-0 flex-1 space-y-3"
       >
         <div className="sticky top-0 z-2 bg-background">
           <div className="relative flex flex-row gap-3 py-3">
@@ -148,41 +148,43 @@ export const ItemList = withForm({
           )}
         </div>
 
-        {products.length > 0 ? (
-          <motion.div
-            key={layout}
-            layout
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
+        {/* error component */}
+        {isError && <EmptyComponent variant="error" title={error?.message} />}
+
+        {/* empty component */}
+        {!products.length && !isPending && <EmptyComponent variant="empty" />}
+
+        {/* products */}
+        {products.length > 0 && (
+          <div
             className={`flex-1 text-base overflow-auto no-scrollbar px-0 grid
             ${LAYOUTS.find((l) => l.value === layout)?.className}
             `}
           >
-            {products?.map((product) => (
-              <ProductItem
+            {products?.map((product, idx) => (
+              <BlurFade
                 key={product.id}
-                product={product as CustomerProductType}
-                form={form}
-                layout={layout}
-              />
+                className="h-full"
+                delay={idx * 0.01}
+                direction="up"
+                offset={10}
+              >
+                <ProductItem
+                  product={product as CustomerProductType}
+                  form={form}
+                  layout={layout}
+                />
+              </BlurFade>
             ))}
-          </motion.div>
-        ) : isPending || isFetchingNextPage ? (
-          <LoadingSkeleton />
-        ) : isError ? (
-          <EmptyComponent variant="error" title={error?.message} />
-        ) : (
-          <EmptyComponent variant="empty" />
+          </div>
         )}
 
         {/* INFINITE SCROLL SENTINEL */}
         <div
           ref={loadMoreRef}
-          className="col-span-full flex w-full justify-center"
+          className="col-span-full flex min-h-10 w-full justify-center"
         >
-          {isFetchingNextPage && <LoadingSkeleton />}
+          {(isFetchingNextPage || isPending) && <LoadingSkeleton />}
         </div>
       </div>
     );
@@ -256,18 +258,18 @@ const ProductItem = withForm({
             ...item,
             total: `${Number(item.price) * Number(item.quantity)}`,
           };
-        })
+        }),
       );
     };
 
     return (
       <div
         className={cn(
-          `flex animate-in cursor-pointer items-center gap-4 rounded-xl border py-2 transition fade-in-50 slide-in-from-bottom-10 group-data-[layout=grid]/card:flex-col
-          group-data-[layout=grid]/card:items-stretch group-data-[layout=grid]/card:gap-0
-          group-data-[layout=grid]/card:p-0 group-data-[layout=list]/card:px-4 group-data-[layout=list]/card:not-last:mb-1 
-          hover:shadow-md `,
-          isCartItem ? "bg-primary/6" : "hover:bg-primary/6 "
+          `flex animate-in cursor-pointer items-center gap-4 rounded-xl border py-2 transition fade-in-50 slide-in-from-bottom-10 group-data-[layout=grid]/card:h-full
+          group-data-[layout=grid]/card:flex-col group-data-[layout=grid]/card:items-stretch group-data-[layout=grid]/card:gap-0
+          group-data-[layout=grid]/card:p-0 group-data-[layout=list]/card:mb-1 group-data-[layout=list]/card:px-4 
+          hover:shadow-md`,
+          isCartItem ? "bg-primary/6" : "hover:bg-primary/6 ",
         )}
         onClick={() => updateItem({ action: "increase" })}
       >
@@ -345,8 +347,8 @@ const LastPurchase = ({
   return (
     <Badge
       className={cn(
-        "h-5 shrink-0 rounded-xl bg-primary uppercase whitespace-nowrap",
-        className
+        "h-5 shrink-0 rounded-xl bg-primary whitespace-nowrap uppercase",
+        className,
       )}
     >
       {product.lastPurchased.quantity}cs •{" "}
@@ -544,7 +546,7 @@ const CategoryPills = ({
         variant="secondary"
         type="button"
         data-active={filter.guide}
-        className="rounded-xl group bg-yellow-500 data-[active=true]:bg-yellow-600 data-[active=true]:text-primary-foreground hover:bg-yellow-500/80 transition"
+        className="group rounded-xl bg-yellow-500 transition hover:bg-yellow-500/80 data-[active=true]:bg-yellow-600 data-[active=true]:text-primary-foreground"
         onClick={() => setFilter({ ...filter, guide: !filter.guide })}
       >
         <Star />
@@ -641,7 +643,7 @@ const SearchBar = ({ filter, setFilter }: { filter: any; setFilter: any }) => {
 
   const debounce = useDebounce(
     (v: string) => setFilter((p: any) => ({ ...p, q: v, page: "1" })),
-    400
+    400,
   );
 
   return (
