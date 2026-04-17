@@ -2,13 +2,14 @@
 
 import {
   Home,
-  Download,
   CheckCircle,
   MapPinned,
   ChevronLeft,
   CircleCheck,
   ClipboardCheck,
   SquarePen,
+  Receipt,
+  Package,
 } from "lucide-react";
 import {
   Table,
@@ -144,41 +145,34 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
         </Card>
 
         {/* purchased items */}
-        <Card className="rounded-2xl">
+        <Card className="rounded-2xl gap-0">
           <CardHeader className="border-b">
             <CardTitle className="text-lg font-semibold">
               Purchased Items ({data?.lineItemCount})
             </CardTitle>
           </CardHeader>
           <CardContent className="px-0 text-base">
-            <Table className="text-base">
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="pl-6">Item</TableHead>
-                  <TableHead>Price</TableHead>
-                  <TableHead>Quantity</TableHead>
-                  <TableHead className="pr-6 text-right">Total</TableHead>
-                </TableRow>
-              </TableHeader>
+            <Table className="text-base break-all">
               <TableBody>
                 {data.lineItems.map((line) => (
                   <TableRow key={line.id}>
-                    <TableCell className="pl-6">
-                      <div className="flex items-start gap-4">
-                        <Avatar className="size-9 rounded-xl ring-2 ring-green-600/20 ring-offset-1 **:rounded-xl after:hidden">
-                          <AvatarImage src={line?.image!} />
-                          <AvatarFallback>
-                            {line.title?.charAt(0)}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <h4 className="leading-tight font-medium">
-                            {line.title}
-                          </h4>
-                          <span className="text-sm leading-tight">
-                            #{line.identifier}
-                          </span>
-                        </div>
+                    <TableCell className="pl-6 w-9 align-top pt-3">
+                      <Avatar className="size-9 rounded-xl ring-2 ring-green-600/20 ring-offset-1 **:rounded-xl after:hidden">
+                        <AvatarImage src={line?.image!} />
+                        <AvatarFallback>{line.title?.charAt(0)}</AvatarFallback>
+                      </Avatar>
+                    </TableCell>
+                    <TableCell>
+                      <div className="max-w-2xs w-full">
+                        <h4 className="leading-tight font-medium whitespace-normal">
+                          {line.title}
+                        </h4>
+                        <Badge
+                          variant="secondary"
+                          className="border border-border rounded-xl uppercase"
+                        >
+                          {line.identifier}
+                        </Badge>
                       </div>
                     </TableCell>
                     <TableCell>{formatUSD(line.price!)}</TableCell>
@@ -247,31 +241,56 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
               <span>Subtotal</span> <span>{formatUSD(data.subtotal)}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span>Fee</span> <span>{formatUSD(data.subtotal)}</span>
+              <span>Tax</span>
+              <span>
+                {/* {formatUSD(data.subtotal)} */}
+                TBD
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span>{data.charges?.type}</span>
+              <span>{formatUSD(data.charges?.amount ?? 0)}</span>
             </div>
             <div className="flex items-center justify-between text-lg font-semibold">
               <span>Total</span> <span>{formatUSD(data.total)}</span>
             </div>
           </div>
 
-          <Button className="w-full rounded-xl" size="xl" asChild>
-            <a href={`/api/orders/${data.id}/pdf`}>
-              <Download />
-              Download Packing Slip
-            </a>
-          </Button>
+          <div className="grid gap-4">
+            {data.status !== "completed" && (
+              <Button
+                className="w-full rounded-xl"
+                size="xl"
+                onClick={handleComplete}
+              >
+                <CheckCircle />
+                Mark as Completed
+              </Button>
+            )}
 
-          {data.status !== "completed" && (
             <Button
-              className="w-full rounded-xl"
+              className="w-full rounded-xl bg-primary/20 border-primary/40 hover:bg-primary/40"
               size="xl"
               variant="outline"
-              onClick={handleComplete}
+              asChild
             >
-              <CheckCircle />
-              Mark as Completed
+              <a href={`/api/orders/${data.id}/packing-slip`} target="_blank">
+                <Package />
+                Download Packing Slip
+              </a>
             </Button>
-          )}
+            <Button
+              className="w-full rounded-xl"
+              variant="outline"
+              size="xl"
+              asChild
+            >
+              <a href={`/api/orders/${data.id}/invoice`} target="_blank">
+                <Receipt />
+                Download Invoice
+              </a>
+            </Button>
+          </div>
         </CardContent>
       </Card>
     </div>

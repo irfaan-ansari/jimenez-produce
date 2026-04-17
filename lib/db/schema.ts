@@ -265,7 +265,7 @@ export const inventory = pgTable(
 
 export const priceLevel = pgTable("price_level", {
   id: serial("id").primaryKey(),
-  name: text("name").notNull(), // Retail, Wholesale, VIP
+  name: text("name").notNull(),
   type: text("type").notNull(), // "fixed" | "percentage"
   // add scope: text("scope").default("all").notNull(),  "all" | "items"
   value: integer("value"), // -10, 5, 80

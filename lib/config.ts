@@ -66,7 +66,7 @@ export const SIDEBAR_MENU = [
       {
         label: "Delayed",
         href: "/admin/orders?status=delayed",
-        color: "#F59E0B",
+        color: "#EF4444",
       },
       {
         label: "Completed",

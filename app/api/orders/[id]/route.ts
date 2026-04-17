@@ -33,10 +33,22 @@ export const GET = async (
     if (!response)
       return NextResponse.json({ message: "Not found" }, { status: 404 });
 
-    return NextResponse.json({ data: response }, { status: 200 });
-  } catch (error) {
-    console.error("Customers API Error:", error);
+    const sortOrder = ["9", "8", "7", "2", "1", "3", "4", "5", "6"];
+    const orderMap = Object.fromEntries(sortOrder.map((v, i) => [v, i]));
 
+    const { lineItems } = response;
+    lineItems.sort((a, b) => {
+      const aKey = a.identifier?.[0]!;
+      const bKey = b.identifier?.[0]!;
+      return (orderMap[aKey] ?? Infinity) - (orderMap[bKey] ?? Infinity);
+    });
+
+    return NextResponse.json(
+      { data: { ...response, lineItems } },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Order API Error:", error);
     return NextResponse.json(
       { message: "Failed to load data" },
       { status: 500 }

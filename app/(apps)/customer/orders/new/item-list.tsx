@@ -67,7 +67,7 @@ export const ItemList = withForm({
   render: function Render({ form, show }) {
     const { open, setOpen } = useSidebar();
 
-    const [filter, setFilter] = React.useState<Record<string, string>>({});
+    const [filter, setFilter] = React.useState<Record<string, any>>({});
     const [layout, setLayout] = React.useState<"list" | "grid">("list");
     const query = new URLSearchParams(filter);
 
@@ -115,9 +115,30 @@ export const ItemList = withForm({
             {(isPending || isFetchingNextPage) && (
               <div className="absolute inset-x-0 top-0 z-1 h-1 animate-pulse rounded-full bg-primary" />
             )}
-            <div className="no-scrollbar flex flex-1 items-center gap-2 overflow-x-auto">
-              <CategoryPills filter={filter} setFilter={setFilter} />
-            </div>
+            <Button
+              variant="secondary"
+              type="button"
+              data-active={filter.guide}
+              className="group rounded-xl bg-yellow-500 transition hover:bg-yellow-500/80 data-[active=true]:bg-yellow-600 data-[active=true]:text-primary-foreground"
+              onClick={() => setFilter({ ...filter, guide: !filter.guide })}
+            >
+              <Star />
+              Order Guide
+              <Button
+                asChild
+                variant="ghost"
+                className="rounded-xl opacity-0 group-data-[active=true]:opacity-100"
+                size="icon-xs"
+                type="button"
+              >
+                <span>
+                  <X />
+                </span>
+              </Button>
+            </Button>
+
+            <CategoryPills filter={filter} setFilter={setFilter} />
+
             <SearchBar filter={filter} setFilter={setFilter} />
             <Tabs
               value={layout}
@@ -197,7 +218,6 @@ const ProductItem = withForm({
     product: CustomerProductType;
     layout: string;
   },
-
   render: function Render({ form, product, layout }) {
     const lineItems = useStore(form.store, (state) => state.values.lineItems);
     const index = lineItems.findIndex((i) => i.productId === product.id);
@@ -540,30 +560,8 @@ const CategoryPills = ({
       ? [...data.data.slice(0, 7), filter.cat]
       : categories;
 
-  console.log(filter);
   return (
-    <div className="flex items-center gap-1.5 whitespace-nowrap">
-      <Button
-        variant="secondary"
-        type="button"
-        data-active={filter.guide}
-        className="group rounded-xl bg-yellow-500 transition hover:bg-yellow-500/80 data-[active=true]:bg-yellow-600 data-[active=true]:text-primary-foreground"
-        onClick={() => setFilter({ ...filter, guide: !filter.guide })}
-      >
-        <Star />
-        Order Guide
-        <Button
-          asChild
-          variant="ghost"
-          className="rounded-xl opacity-0 group-data-[active=true]:opacity-100"
-          size="icon-xs"
-          type="button"
-        >
-          <span>
-            <X />
-          </span>
-        </Button>
-      </Button>
+    <>
       <PopoverXDrawer
         open={open}
         setOpen={setOpen}
@@ -609,32 +607,35 @@ const CategoryPills = ({
           </>
         )}
       </PopoverXDrawer>
-      {displayPills.map((cat: string) => (
-        <Button
-          key={cat}
-          type="button"
-          data-active={filter.cat === cat}
-          variant="secondary"
-          className="rounded-xl bg-primary/20 data-[active=true]:bg-primary data-[active=true]:text-primary-foreground"
-          onClick={() => toggle(cat)}
-        >
-          {cat}
-          {filter.cat === cat && (
-            <Button
-              size="icon-xs"
-              className="rounded-xl"
-              variant="ghost"
-              type="button"
-              asChild
-            >
-              <span>
-                <X />
-              </span>
-            </Button>
-          )}
-        </Button>
-      ))}
-    </div>
+
+      <div className="no-scrollbar flex flex-1 items-center gap-2 overflow-x-auto">
+        {displayPills.map((cat: string) => (
+          <Button
+            key={cat}
+            type="button"
+            data-active={filter.cat === cat}
+            variant="secondary"
+            className="rounded-xl bg-primary/20 data-[active=true]:bg-primary data-[active=true]:text-primary-foreground"
+            onClick={() => toggle(cat)}
+          >
+            {cat}
+            {filter.cat === cat && (
+              <Button
+                size="icon-xs"
+                className="rounded-xl"
+                variant="ghost"
+                type="button"
+                asChild
+              >
+                <span>
+                  <X />
+                </span>
+              </Button>
+            )}
+          </Button>
+        ))}
+      </div>
+    </>
   );
 };
 

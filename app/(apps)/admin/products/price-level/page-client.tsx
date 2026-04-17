@@ -2,17 +2,15 @@
 
 import React from "react";
 import Link from "next/link";
-import { format } from "date-fns";
 import { PriceLevelType } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { ColumnDef } from "@tanstack/react-table";
 import { usePriceLevel } from "@/hooks/use-product";
 import { STATUS_MAP } from "@/lib/constants/status-map";
 import { DataTable } from "@/components/admin/data-table";
 import { useRouterStuff } from "@/hooks/use-router-stuff";
-import { OrderActions } from "@/components/admin/order-actions";
 import { PopoverXDrawer } from "@/components/popover-x-drawer";
-import { Button } from "@/components/ui/button";
 import { MoreVertical, SquarePen, Trash } from "lucide-react";
 import { PriceLevelDialog } from "@/components/admin/price-level-dialog";
 
@@ -45,10 +43,7 @@ export const columns: ColumnDef<PriceLevelType>[] = [
       </Link>
     ),
   },
-  {
-    accessorKey: "name",
-    header: "Name",
-  },
+  { accessorKey: "name", header: "Name" },
   {
     accessorKey: "type",
     header: "Type",
@@ -58,14 +53,8 @@ export const columns: ColumnDef<PriceLevelType>[] = [
       </Badge>;
     },
   },
-  {
-    accessorKey: "value",
-    header: "Value",
-  },
-  {
-    accessorKey: "scope",
-    header: "Scope",
-  },
+  { accessorKey: "value", header: "Value" },
+  { accessorKey: "scope", header: "Scope" },
   {
     accessorKey: "status",
     header: "Status",

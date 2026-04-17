@@ -5,7 +5,6 @@ import {
 } from "@/lib/db/schema";
 import { format } from "date-fns";
 import { styles } from "./styles";
-import { formatUSD } from "@/lib/utils";
 import { Document, Page, Text, View, Image } from "@react-pdf/renderer";
 
 interface OrderInvoiceProps {
@@ -15,9 +14,9 @@ interface OrderInvoiceProps {
   };
 }
 
-export const OrderInvoice = ({ data }: OrderInvoiceProps) => {
+export const PackingSlip = ({ data }: OrderInvoiceProps) => {
   return (
-    <Document title={`Invoice - ${data.id}`}>
+    <Document title={`Packing Slip - ${data.id}`}>
       <Page size="A4" style={[styles.page]}>
         {/* HEADER SECTION */}
         <View fixed>
@@ -30,7 +29,7 @@ export const OrderInvoice = ({ data }: OrderInvoiceProps) => {
               <View>
                 <View style={styles.headerContactText}>
                   <Text>
-                    {data.location?.address?.street}{" "}
+                    {data.location?.address?.street}
                     {data.location?.address?.city}
                   </Text>
                   <Text>
@@ -51,7 +50,7 @@ export const OrderInvoice = ({ data }: OrderInvoiceProps) => {
                   { fontSize: 12, textTransform: "uppercase" },
                 ]}
               >
-                Invoice
+                Packing Slip
               </Text>
               <View
                 style={[
@@ -139,21 +138,14 @@ export const OrderInvoice = ({ data }: OrderInvoiceProps) => {
             wrap={false}
             fixed
           >
-            <View style={{ width: "12%" }}>
+            <View style={{ width: "15%" }}>
               <Text style={styles.tableColHeader}>Item Code</Text>
             </View>
-            <View style={{ width: "12%" }}>
+            <View style={{ width: "15%" }}>
               <Text style={styles.tableColHeader}>Quantity</Text>
             </View>
-            <View style={{ width: "52%" }}>
+            <View style={{ width: "70%" }}>
               <Text style={styles.tableColHeader}>Description</Text>
-            </View>
-            <View style={{ width: "12%" }}>
-              <Text style={styles.tableColHeader}>Price Each</Text>
-            </View>
-
-            <View style={{ width: "12%" }}>
-              <Text style={styles.tableColHeader}>Amount</Text>
             </View>
           </View>
 
@@ -166,26 +158,16 @@ export const OrderInvoice = ({ data }: OrderInvoiceProps) => {
                 index % 2 !== 0 ? { backgroundColor: "#EEEEEE" } : {},
               ]}
             >
-              <View style={[styles.tableCell, { width: "12%" }]}>
+              <View style={[styles.tableCell, { width: "15%" }]}>
                 <Text>{item.identifier}</Text>
               </View>
               <View
-                style={[styles.tableCell, { width: "12%", textAlign: "right" }]}
+                style={[styles.tableCell, { width: "15%", textAlign: "right" }]}
               >
                 <Text>{item.quantity}</Text>
               </View>
-              <View style={[styles.tableCell, { width: "52%" }]}>
+              <View style={[styles.tableCell, { width: "70%" }]}>
                 <Text>{item.title}</Text>
-              </View>
-              <View
-                style={[styles.tableCell, { width: "12%", textAlign: "right" }]}
-              >
-                <Text>{formatUSD(item.price ?? 0)}</Text>
-              </View>
-              <View
-                style={[styles.tableCell, { width: "12%", textAlign: "right" }]}
-              >
-                <Text>{formatUSD(item.total ?? 0)}</Text>
               </View>
             </View>
           ))}
@@ -216,40 +198,6 @@ export const OrderInvoice = ({ data }: OrderInvoiceProps) => {
             </Text>
             <Text style={[styles.tableCell, { textAlign: "right" }]}>
               {data.lineItemQuantity}
-            </Text>
-          </View>
-
-          <View style={[styles.tableRow]}>
-            <Text style={[styles.tableCell, { backgroundColor: "#eee" }]}>
-              Subtotal
-            </Text>
-            <Text style={[styles.tableCell, { textAlign: "right" }]}>
-              {formatUSD(data.subtotal)}
-            </Text>
-          </View>
-          <View style={[styles.tableRow]}>
-            <Text style={[styles.tableCell, { backgroundColor: "#eee" }]}>
-              Tax
-            </Text>
-            <Text style={[styles.tableCell, { textAlign: "right" }]}>
-              {/* {formatUSD(data.tax)} */}
-              TBD
-            </Text>
-          </View>
-          <View style={[styles.tableRow]}>
-            <Text style={[styles.tableCell, { backgroundColor: "#eee" }]}>
-              {data.charges?.type}
-            </Text>
-            <Text style={[styles.tableCell, { textAlign: "right" }]}>
-              {formatUSD(data.charges?.amount ?? 0)}
-            </Text>
-          </View>
-          <View style={[styles.tableRow]}>
-            <Text style={[styles.tableCell, { backgroundColor: "#eee" }]}>
-              Total
-            </Text>
-            <Text style={[styles.tableCell, { textAlign: "right" }]}>
-              {formatUSD(data.total)}
             </Text>
           </View>
         </View>

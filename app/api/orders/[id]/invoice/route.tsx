@@ -8,7 +8,7 @@ import { OrderInvoice } from "@/components/pdf/order-invoice";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await getSession();
 
@@ -27,9 +27,7 @@ export async function GET(
 
   if (!data) return NextResponse.json({ message: "Failed" }, { status: 400 });
 
-  const stream = await renderToStream(
-    <OrderInvoice data={data} role={session.user.role || ""} />,
-  );
+  const stream = await renderToStream(<OrderInvoice data={data} />);
 
   return new NextResponse(stream as any, {
     headers: {

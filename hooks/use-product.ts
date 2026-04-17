@@ -1,6 +1,6 @@
 import {
-  PriceLevelResponse,
   TopProduct,
+  PriceLevelResponse,
   type AdminProductResponse,
   type CustomerProductResponse,
   type ProductCategoriesResponse,
@@ -12,9 +12,7 @@ export const useProducts = (query: string) => {
   return useQuery({
     queryKey: ["products", query],
     queryFn: () => {
-      return fetcher<AdminProductResponse | CustomerProductResponse>(
-        `/api/products?${query}`
-      );
+      return fetcher<AdminProductResponse>(`/api/products?${query}`);
     },
     staleTime: 1000 * 60 * 5,
   });

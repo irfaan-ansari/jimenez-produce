@@ -124,27 +124,26 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
           </CardHeader>
           <CardContent className="px-0">
             <Table className="text-base">
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="pl-6">Item</TableHead>
-                  <TableHead>Price</TableHead>
-                  <TableHead>Quantity</TableHead>
-                  <TableHead className="pr-6 text-right">Total</TableHead>
-                </TableRow>
-              </TableHeader>
               <TableBody>
                 {data.lineItems.map((line) => (
                   <TableRow key={line.id}>
-                    <TableCell className="pl-6">
-                      <div className="flex items-start gap-4">
-                        <Avatar className="size-9 rounded-xl ring-2 ring-green-600/20 ring-offset-1 **:rounded-xl after:hidden">
-                          <AvatarImage src={line?.image!} />
-                          <AvatarFallback>
-                            {getAvatarFallback(line.title)}
-                          </AvatarFallback>
-                        </Avatar>
-
-                        <h4 className="font-medium">{line.title}</h4>
+                    <TableCell className="pl-6 w-9 align-top pt-3">
+                      <Avatar className="size-9 rounded-xl ring-2 ring-green-600/20 ring-offset-1 **:rounded-xl after:hidden">
+                        <AvatarImage src={line?.image!} />
+                        <AvatarFallback>{line.title?.charAt(0)}</AvatarFallback>
+                      </Avatar>
+                    </TableCell>
+                    <TableCell>
+                      <div className="max-w-2xs w-full">
+                        <h4 className="leading-tight font-medium whitespace-normal">
+                          {line.title}
+                        </h4>
+                        <Badge
+                          variant="secondary"
+                          className="border border-border rounded-xl"
+                        >
+                          {line.identifier}
+                        </Badge>
                       </div>
                     </TableCell>
                     <TableCell>{formatUSD(line.price!)}</TableCell>
@@ -208,8 +207,11 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
               <span>Subtotal</span> <span>{formatUSD(data.subtotal)}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span>TBD</span>
-              <span>{formatUSD(data.tax)}</span>
+              <span>Tax</span>
+              <span>
+                {/* {formatUSD(data.tax)} */}
+                TBD
+              </span>
             </div>
             <div className="flex items-center justify-between">
               <span>{data.charges?.type}</span>
@@ -220,7 +222,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
             </div>
           </div>
           <Button className="w-full rounded-xl" size="xl" asChild>
-            <a href={`/api/orders/${data.id}/pdf`} target="_blank">
+            <a href={`/api/orders/${data.id}/invoice`} target="_blank">
               <Download />
               Download Invoice
             </a>
