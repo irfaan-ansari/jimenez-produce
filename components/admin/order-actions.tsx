@@ -12,6 +12,7 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { useState } from "react";
 import { Button } from "../ui/button";
+import { OrderType } from "@/lib/types";
 import { useConfirm } from "@/hooks/use-confirm";
 import { PopoverXDrawer } from "../popover-x-drawer";
 import { useQueryClient } from "@tanstack/react-query";
@@ -19,17 +20,16 @@ import { deleteOrder, updateOrder } from "@/server/order";
 import { OrderScheduleDialog } from "./order-schedule-dialog";
 
 export const OrderActions = ({
-  id,
-  status,
-  showView = true,
+  showView,
+  data,
 }: {
-  id: number;
-  status: string;
+  data: OrderType;
   showView?: boolean;
 }) => {
   const confirm = useConfirm();
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
+  const { id, deliveryDate, deliveryWindow, status } = data;
 
   const handleAction = (action: string) => {
     switch (action) {
@@ -96,7 +96,9 @@ export const OrderActions = ({
       )}
 
       {status !== "completed" && (
-        <OrderScheduleDialog id={id} defaultValues={{ date: "", window: "" }}>
+        <OrderScheduleDialog
+          defaultValues={{ id, deliveryDate, deliveryWindow }}
+        >
           <Button variant="ghost" className="justify-start rounded-xl">
             <SquarePen /> Edit Schedule
           </Button>

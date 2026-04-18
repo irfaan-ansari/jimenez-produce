@@ -51,12 +51,12 @@ export const CustomerApproveDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="ring-ring/10 rounded-2xl px-8 pt-14 pb-10 overflow-hidden sm:max-w-md">
-        <DialogHeader className="flex flex-col items-center text-center gap-2">
-          <DialogTitle className="text-2xl font-semibold">
+      <DialogContent className="overflow-hidden rounded-2xl ring-ring/10 sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle className="text-xl font-semibold">
             Approve Application
           </DialogTitle>
-          <DialogDescription className="text-base">
+          <DialogDescription>
             Approving this application will activate the customer account and
             send a notification to the customer.
           </DialogDescription>
@@ -74,7 +74,7 @@ export const CustomerApproveDialog = ({
               const isInvalid =
                 field.state.meta.isTouched && !field.state.meta.isValid;
               if (isPending)
-                return <Skeleton className="rounded-xl h-10 w-full" />;
+                return <Skeleton className="h-10 w-full rounded-xl" />;
               return (
                 <Field className="w-full">
                   <FieldLabel>Location</FieldLabel>
@@ -85,7 +85,7 @@ export const CustomerApproveDialog = ({
                     onValueChange={(value) => field.handleChange(value)}
                   >
                     <SelectTrigger
-                      className="rounded-xl"
+                      className="h-11! rounded-xl"
                       aria-invalid={isInvalid}
                     >
                       <SelectValue placeholder="Assign location" />

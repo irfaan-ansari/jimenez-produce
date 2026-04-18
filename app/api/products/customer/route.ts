@@ -8,6 +8,7 @@ import {
   arrayContains,
   getTableColumns,
   count,
+  isNotNull,
 } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { getSession } from "@/server/auth";
@@ -36,9 +37,9 @@ export async function GET(req: NextRequest) {
         ? or(
             ilike(product.title, `%${q}%`),
             ilike(product.description, `%${q}%`),
-            ilike(product.identifier, `%${q}%`)
+            ilike(product.identifier, `%${q}%`),
           )
-        : undefined
+        : undefined,
     );
 
     /** if guide is true */
@@ -60,15 +61,15 @@ export async function GET(req: NextRequest) {
           lineItem,
           and(
             eq(product.id, lineItem.productId),
-            eq(lineItem.customerId, customerId!)
-          )
+            eq(lineItem.customerId, customerId!),
+          ),
         )
         .innerJoin(
           inventory,
           and(
             eq(inventory.productId, product.id),
-            eq(inventory.locationId, locationId!)
-          )
+            eq(inventory.locationId, locationId!),
+          ),
         )
         .where(filters)
         .orderBy(product.id, desc(lineItem.createdAt), desc(lineItem.quantity))
@@ -85,15 +86,16 @@ export async function GET(req: NextRequest) {
           lineItem,
           and(
             eq(product.id, lineItem.productId),
-            eq(lineItem.customerId, customerId!)
-          )
+            eq(lineItem.customerId, customerId!),
+          ),
         )
         .innerJoin(
           inventory,
           and(
             eq(inventory.productId, product.id),
-            eq(inventory.locationId, locationId!)
-          )
+            eq(inventory.locationId, locationId!),
+            and(isNotNull(inventory.price), ne(inventory.price, "0")),
+          ),
         )
         .where(filters);
 
@@ -107,7 +109,7 @@ export async function GET(req: NextRequest) {
             totalPages: Math.ceil(total / (limit as number)),
           },
         },
-        { status: 200 }
+        { status: 200 },
       );
     }
 
@@ -130,15 +132,16 @@ export async function GET(req: NextRequest) {
         lineItem,
         and(
           eq(lineItem.productId, product.id),
-          eq(lineItem.customerId, customerId!)
-        )
+          eq(lineItem.customerId, customerId!),
+        ),
       )
       .innerJoin(
         inventory,
         and(
           eq(inventory.productId, product.id),
-          eq(inventory.locationId, locationId!)
-        )
+          eq(inventory.locationId, locationId!),
+          and(isNotNull(inventory.price), ne(inventory.price, "0")),
+        ),
       )
       .where(filters)
       .orderBy(product.id, desc(lineItem.createdAt), desc(lineItem.quantity))
@@ -155,15 +158,15 @@ export async function GET(req: NextRequest) {
         lineItem,
         and(
           eq(lineItem.productId, product.id),
-          eq(lineItem.customerId, customerId!)
-        )
+          eq(lineItem.customerId, customerId!),
+        ),
       )
       .innerJoin(
         inventory,
         and(
           eq(inventory.productId, product.id),
-          eq(inventory.locationId, locationId!)
-        )
+          eq(inventory.locationId, locationId!),
+        ),
       )
       .where(filters);
 
@@ -177,13 +180,13 @@ export async function GET(req: NextRequest) {
           totalPages: Math.ceil(total / (limit as number)),
         },
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error(error);
     return NextResponse.json(
       { message: "Failed to load data" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

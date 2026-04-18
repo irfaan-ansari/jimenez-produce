@@ -1,5 +1,5 @@
 import { auth } from "@/lib/auth";
-import { PlusCircle } from "lucide-react";
+import { Plus } from "lucide-react";
 import { PageClient } from "./page-client";
 import { getSession } from "@/server/auth";
 import { Button } from "@/components/ui/button";
@@ -24,20 +24,16 @@ const TeamPage = async () => {
   });
 
   return (
-    <div className="flex flex-col h-full gap-5">
+    <div className="flex h-full flex-col gap-5">
       <h1 className="text-2xl font-semibold">Users</h1>
 
       <FilterTabs tabs={[{ label: "All", value: "" }]} queryKey="" />
 
-      <div className="flex gap-4 items-center">
+      <div className="flex items-center gap-4">
         <SearchBar />
         <AddUserDialog>
-          <Button
-            size="xl"
-            className="min-w-36 ml-auto rounded-xl"
-            disabled={!success}
-          >
-            <PlusCircle /> Add User
+          <Button size="xl" className="ml-auto rounded-xl" disabled={!success}>
+            <Plus /> Add New
           </Button>
         </AddUserDialog>
       </div>

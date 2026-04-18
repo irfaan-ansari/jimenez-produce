@@ -81,11 +81,11 @@ export const InviteCandidate = () => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button size="xl" className="rounded-xl ml-auto min-w-32 px-8">
-          <SendHorizonal /> Invite Candidate
+        <Button size="xl" className="ml-auto rounded-xl">
+          <Send /> Invite
         </Button>
       </DialogTrigger>
-      <DialogContent className="ring-ring/10 rounded-2xl sm:max-w-lg py-8">
+      <DialogContent className="rounded-2xl ring-ring/10 sm:max-w-xl">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold">
             Invite Candidate
@@ -100,14 +100,14 @@ export const InviteCandidate = () => {
             form.handleSubmit();
           }}
         >
-          <div className="no-scrollbar -mx-4 max-h-[min(400px,60vh)] -my-1 py-1  overflow-y-auto px-4">
+          <div className="-mx-4 -my-1 no-scrollbar max-h-[min(480px,80vh)] overflow-y-auto  px-4 py-1">
             <FieldGroup className="grid grid-cols-2">
               <form.AppField
                 name="name"
                 children={(field) => (
                   <field.TextField
                     label="Name"
-                    className="**:data-[slot=input]:rounded-xl col-span-2"
+                    className="col-span-2 **:data-[slot=input]:rounded-xl"
                   />
                 )}
               />
@@ -134,7 +134,7 @@ export const InviteCandidate = () => {
                 children={(field) => (
                   <field.SelectField
                     label="Position"
-                    className="**:data-[slot=input]:rounded-xl col-span-2"
+                    className="col-span-2 **:data-[slot=input]:rounded-xl"
                     options={POSOTIONS.map((l) => l.label)}
                   />
                 )}
@@ -169,7 +169,7 @@ export const InviteCandidate = () => {
               />
             </FieldGroup>
           </div>
-          <Field className="mt-6 flex flex-col-reverse gap-4 sm:flex-row sm:[&>button]:flex-1">
+          <Field className="mt-6 flex flex-col-reverse gap-4 sm:flex-row sm:justify-end sm:[&>button]:w-32">
             <Button
               variant="outline"
               size="xl"

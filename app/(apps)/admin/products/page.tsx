@@ -17,20 +17,20 @@ const OPTIONS = [
 
 const CatalogPage = async () => {
   return (
-    <div className="flex flex-col h-full gap-5">
+    <div className="flex h-full flex-col gap-5">
       <h1 className="text-2xl font-semibold">Products</h1>
 
       <FilterTabs tabs={OPTIONS} queryKey="products" />
 
-      <div className="flex gap-4 items-center">
+      <div className="flex items-center gap-4">
         <SearchBar />
 
-        <Button variant="outline" size="xl" className="rounded-xl ml-auto">
+        <Button variant="outline" size="xl" className="ml-auto rounded-xl">
           <Upload /> Import
         </Button>
         <ProductDialog
           trigger={
-            <Button size="xl" className="rounded-xl  min-w-32 px-8">
+            <Button size="xl" className="min-w-32  rounded-xl">
               <Plus />
               Add Product
             </Button>

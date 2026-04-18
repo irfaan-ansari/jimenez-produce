@@ -26,15 +26,15 @@ export const getProducts = handleAction(
         where: and(
           or(
             eq(customer.companyEmail, email),
-            eq(customer.officerEmail, email)
+            eq(customer.officerEmail, email),
           ),
-          eq(customer.status, "approved")
+          eq(customer.status, "approved"),
         ),
       }),
       db.query.customerInvite.findFirst({
         where: and(
           eq(customerInvite.email, email),
-          eq(customerInvite.status, "approved")
+          eq(customerInvite.status, "approved"),
         ),
       }),
     ]);
@@ -47,12 +47,12 @@ export const getProducts = handleAction(
     const statusFilter = isPublicUser
       ? eq(product.status, "active")
       : status
-      ? eq(product.status, status)
-      : undefined;
+        ? eq(product.status, status)
+        : undefined;
 
     const filters = and(
       statusFilter,
-      q ? ilike(product.title, `%${q}%`) : undefined
+      q ? ilike(product.title, `%${q}%`) : undefined,
     );
 
     const products = await db
@@ -75,7 +75,7 @@ export const getProducts = handleAction(
         totalPages: Math.ceil(total / (limit as number)),
       },
     };
-  }
+  },
 );
 
 /**
@@ -87,7 +87,7 @@ export const createProduct = handleAction(
   async (
     data: ProductInsertType & {
       inventory: InventoryInsertType[];
-    }
+    },
   ) => {
     const session = await getSession();
 
@@ -106,12 +106,12 @@ export const createProduct = handleAction(
         inventoryData.map((inv) => ({
           ...inv,
           productId: result.id,
-        }))
+        })),
       )
       .returning();
 
     return { ...result, inventory: inv };
-  }
+  },
 );
 
 /**
@@ -125,7 +125,7 @@ export const updateProduct = handleAction(
     id: number,
     data: ProductInsertType & {
       inventory: InventoryInsertType[];
-    }
+    },
   ) => {
     const session = await getSession();
     if (!session) throw new Error("Authentication required.");
@@ -143,7 +143,7 @@ export const updateProduct = handleAction(
       .returning();
 
     return result;
-  }
+  },
 );
 
 /**
@@ -168,21 +168,3 @@ export const deleteProduct = handleAction(async (id: number) => {
 
   return result;
 });
-
-/**
- * Get categories
- * @returns list of unique categories
- */
-export const getCategories = async () => {
-  const session = await getSession();
-  if (!session) throw new Error("Authentication required.");
-
-  const { rows } = await db.execute(sql`
-                    SELECT DISTINCT jsonb_array_elements_text(categories) AS label
-                    FROM ${product}
-                    WHERE categories IS NOT NULL
-                  `);
-  const categories = rows.map((row) => row.label as string);
-
-  return { data: categories };
-};

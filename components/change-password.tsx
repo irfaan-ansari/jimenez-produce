@@ -55,7 +55,7 @@ export const ChangePasswordDialog = ({
           onError: (err) => {
             toast.error(err.error.message || "Something went wrong!");
           },
-        }
+        },
       );
     },
   });
@@ -63,8 +63,8 @@ export const ChangePasswordDialog = ({
   return (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="ring-ring/10 rounded-2xl overflow-hidden sm:max-w-md">
-        <DialogHeader className="flex flex-row gap-6 items-center pt-4 pb-6">
+      <DialogContent className="overflow-hidden rounded-2xl ring-ring/10 sm:max-w-xl">
+        <DialogHeader className="flex flex-row items-center gap-6">
           <DialogTitle className="text-xl font-semibold">
             Change Password
           </DialogTitle>
@@ -111,7 +111,7 @@ export const ChangePasswordDialog = ({
             />
           </FieldGroup>
 
-          <Field className="mt-10 flex flex-col-reverse gap-4 sm:flex-row sm:[&>button]:flex-1">
+          <Field className="mt-10 flex flex-col-reverse gap-4 sm:flex-row sm:justify-end sm:[&>button]:w-32">
             <DialogClose asChild>
               <Button
                 variant="outline"

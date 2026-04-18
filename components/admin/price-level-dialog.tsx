@@ -24,11 +24,10 @@ import {
   InputGroupAddon,
   InputGroupInput,
 } from "../ui/input-group";
-import { Input } from "../ui/input";
-import { Button } from "../ui/button";
-import { formatUSD, getAvatarFallback } from "@/lib/utils";
-import React, { useState } from "react";
+
 import {
+  ArrowLeft,
+  ArrowRight,
   Check,
   DollarSign,
   ListFilter,
@@ -38,20 +37,23 @@ import {
   Search,
   X,
 } from "lucide-react";
-import { useAppForm, withForm } from "@/hooks/form-context";
-import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Badge } from "../ui/badge";
+import { Tooltip } from "../tooltip";
+import { Button } from "../ui/button";
+import React, { useState } from "react";
 import { useStore } from "@tanstack/react-form";
-import { useCategories, useProducts } from "@/hooks/use-product";
 import { useDebounce } from "@/hooks/use-debounce";
 import { PopoverXDrawer } from "../popover-x-drawer";
-import { Tooltip } from "../tooltip";
+import { formatUSD, getAvatarFallback } from "@/lib/utils";
+import { useAppForm, withForm } from "@/hooks/form-context";
+import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
+import { useCategories, useProducts } from "@/hooks/use-product";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 const defaultValues = {
   name: "",
   type: "fixed", // fixed | percentage
-  value: "0",
+  value: "",
   scope: "all", // all | per_item
   status: "active",
   items: [] as Record<string, any>[],
@@ -78,13 +80,13 @@ export const PriceLevelDialog = ({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="ring-ring/10 rounded-2xl sm:max-w-2xl px-0">
+      <DialogContent className="rounded-2xl px-0 ring-ring/10 sm:max-w-2xl">
         <form
           onSubmit={(e) => {
             e.preventDefault();
             form.handleSubmit();
           }}
-          className="flex flex-col h-[calc(100svh-200px)]"
+          className="flex h-[calc(100svh-200px)] flex-col"
         >
           <DialogHeader className="mb-4 px-6">
             <DialogTitle className="text-xl font-semibold">
@@ -94,8 +96,8 @@ export const PriceLevelDialog = ({
               />
             </DialogTitle>
           </DialogHeader>
-          <div className="flex-1 overflow-auto no-scrollbar">
-            <FieldGroup className="grid grid-cols-1 lg:grid-cols-2 px-6">
+          <div className="no-scrollbar flex-1 overflow-auto">
+            <FieldGroup className="grid grid-cols-1 px-6 lg:grid-cols-2">
               {/* name */}
               <form.AppField
                 name="name"
@@ -132,7 +134,7 @@ export const PriceLevelDialog = ({
                             <FieldContent>
                               <FieldTitle>Fixed</FieldTitle>
                               <FieldDescription>
-                                Set a fixed amount
+                                Adjust by fixed amount
                               </FieldDescription>
                             </FieldContent>
                             <RadioGroupItem value="fixed" id="fixed" />
@@ -260,7 +262,7 @@ export const PriceLevelDialog = ({
             {/* per item  */}
             {values.scope === "per_item" && <ItemList form={form} />}
           </div>
-          <Field className="pt-4 flex flex-col-reverse gap-4 px-6 sm:flex-row sm:justify-end  sm:[&>*]:w-32">
+          <Field className="flex flex-col-reverse gap-4 px-6 pt-4 sm:flex-row sm:justify-end  sm:[&>*]:w-32">
             <Button
               variant="outline"
               size="xl"
@@ -300,21 +302,21 @@ const ItemList = withForm({
     const { items, type } = useStore(form.store, (state) => state.values);
 
     return (
-      <div className="flex flex-col mt-6">
-        <div className="px-6 mb-6 space-y-2">
+      <div className="mt-6 flex flex-col">
+        <div className="mb-6 space-y-2 px-6">
           <div className="text-base font-semibold">Browse Products</div>
           <SelectItemDialog form={form} />
         </div>
-        <div className="flex w-full border-y gap-4 px-6 py-3 text-sm text-muted-foreground uppercase bg-secondary">
+        <div className="flex w-full gap-4 border-y bg-secondary px-6 py-3 text-sm text-muted-foreground uppercase">
           <span className="flex-1">item</span>
-          <span className="w-28 shrink-0 text-right truncate">price</span>
-          <span className="w-28 shrink-0 text-right">new price</span>
+          <span className="w-28 shrink-0 truncate text-right">price</span>
+          <span className="w-24 shrink-0 text-right">Inc/Dec</span>
         </div>
 
         <div className="divide-y">
           {items.map((line, i) => (
             <div className="flex gap-4 px-6 py-2" key={line.id}>
-              <div className="flex gap-3 items-start flex-1">
+              <div className="flex flex-1 items-start gap-3">
                 <div className="shrink-0 pt-1">
                   <Avatar className="size-9 rounded-xl ring-2 ring-green-600/20 ring-offset-1 **:rounded-xl after:hidden">
                     <AvatarImage src={line?.image as string} />
@@ -329,22 +331,18 @@ const ItemList = withForm({
                   </h4>
                   <Badge
                     variant="secondary"
-                    className="border border-border rounded-xl uppercase"
+                    className="rounded-xl border border-border uppercase"
                   >
                     {line.identifier}
                   </Badge>
                 </div>
               </div>
-              <div className="w-28 text-right self-center grid">
-                <Tooltip content="lorem">
-                  <>
-                    <span>{formatUSD(20)}</span>
-                    <span>{formatUSD(20)}</span>
-                  </>
-                </Tooltip>
+              <div className="grid w-28 self-center text-right">
+                <span>{formatUSD(20)}</span>
+                <span>{formatUSD(20)}</span>
               </div>
-              <div className="w-28 text-right self-center">
-                <InputGroup className="rounded-xl h-10">
+              <div className="w-24 self-center text-right">
+                <InputGroup className="h-10 rounded-xl">
                   <form.Field
                     name={`items[${i}].value`}
                     children={(field) => (
@@ -363,6 +361,11 @@ const ItemList = withForm({
               </div>
             </div>
           ))}
+          {items.length === 0 && (
+            <div className="flex items-center justify-center py-12">
+              <p className="text-muted-foreground">No items added</p>
+            </div>
+          )}
         </div>
       </div>
     );
@@ -373,7 +376,8 @@ const SelectItemDialog = withForm({
   defaultValues,
   render: function Render({ form }) {
     const [open, setOpen] = useState(false);
-    const [filters, setFilters] = useState({ q: "", cat: "" });
+    const [filters, setFilters] = useState({ q: "", cat: "", page: "1" });
+
     const query = new URLSearchParams(filters);
     // use debounce on search
     const { data: categories } = useCategories();
@@ -386,7 +390,7 @@ const SelectItemDialog = withForm({
           <Button
             variant="outline"
             type="button"
-            className="rounded-xl justify-start w-full"
+            className="w-full justify-start rounded-xl"
             size="lg"
           >
             <Search />
@@ -394,17 +398,17 @@ const SelectItemDialog = withForm({
           </Button>
         </DialogTrigger>
 
-        <DialogContent className="ring-ring/10 gap-0 h-[calc(100svh-200px)] rounded-2xl sm:max-w-xl px-0 flex flex-col">
+        <DialogContent className="flex h-[calc(100svh-200px)] flex-col gap-0 rounded-2xl px-0 ring-ring/10 sm:max-w-xl">
           {/* header */}
-          <DialogHeader className="px-6 mb-6">
+          <DialogHeader className="mb-6 px-6">
             <DialogTitle className="text-xl font-semibold">
               Add Items
             </DialogTitle>
           </DialogHeader>
 
           {/* search and filter */}
-          <div className="flex gap-6 px-6 items-center mb-6">
-            <InputGroup className="rounded-xl">
+          <div className="mb-6 flex items-center gap-6 px-6">
+            <InputGroup className="h-10 rounded-xl">
               <InputGroupInput
                 placeholder="Search..."
                 value={filters.q}
@@ -421,9 +425,9 @@ const SelectItemDialog = withForm({
               trigger={
                 <Button
                   variant="secondary"
-                  size="xl"
+                  size="lg"
                   type="button"
-                  className="rounded-xl px-4 text-sm border-border"
+                  className="rounded-xl border-border px-4 text-sm"
                 >
                   All Categories <ListFilter />
                 </Button>
@@ -461,26 +465,26 @@ const SelectItemDialog = withForm({
           </div>
 
           {/* item list */}
-          <div className="flex w-full border-y gap-4 px-6 py-3 text-sm text-muted-foreground uppercase bg-secondary">
+          <div className="flex w-full gap-4 border-y bg-secondary px-6 py-3 text-sm text-muted-foreground uppercase">
             <span className="flex-1">item</span>
             <span className="w-28 shrink-0 text-right">price</span>
             <span className="w-28 shrink-0 text-right">action</span>
           </div>
 
-          <div className="overflow-auto no-scrollbar divide-y flex-1">
+          <div className="mb-6 no-scrollbar flex-1 divide-y overflow-auto">
             {isPending && (
-              <div className="h-1 bg-primary animate-pulse rounded-full" />
+              <div className="h-1 animate-pulse rounded-full bg-primary" />
             )}
             {data?.data?.map((line, i) => {
               const isAdded = items.findIndex((i) => i.id === line.id) >= 0;
               return (
                 <div
                   className={`flex gap-4 px-6 py-2 ${
-                    isAdded ? "bg-primary/20" : ""
+                    isAdded ? "bg-primary/10" : ""
                   }`}
                   key={line.id}
                 >
-                  <div className="flex gap-3 items-start flex-1">
+                  <div className="flex flex-1 items-start gap-3">
                     <div className="shrink-0 pt-1">
                       <Avatar className="size-9 rounded-xl ring-2 ring-green-600/20 ring-offset-1 **:rounded-xl after:hidden">
                         <AvatarImage src={line?.image!} />
@@ -495,25 +499,25 @@ const SelectItemDialog = withForm({
                       </h4>
                       <Badge
                         variant="secondary"
-                        className="border border-border rounded-xl uppercase"
+                        className="rounded-xl border border-border uppercase"
                       >
                         {line.identifier}
                       </Badge>
                     </div>
                   </div>
-                  <div className="w-28 text-right self-center">
+                  <div className="w-28 self-center text-right">
                     {formatUSD(15)}
                   </div>
-                  <div className="w-28 text-right self-center">
+                  <div className="w-28 self-center text-right">
                     {isAdded ? (
                       <Button
                         type="button"
                         variant="outline"
                         className="rounded-xl"
-                        size="icon"
+                        size="icon-sm"
                         onClick={() => {
                           const filtered = items.filter(
-                            (i) => i.id !== line.id
+                            (i) => i.id !== line.id,
                           );
                           form.setFieldValue("items", filtered);
                         }}
@@ -528,6 +532,45 @@ const SelectItemDialog = withForm({
               );
             })}
           </div>
+
+          <Field className="flex flex-col-reverse gap-4 px-6 sm:flex-row sm:justify-end  sm:[&>*]:size-8">
+            {(data?.pagination.page ?? 1) >
+              (data?.pagination?.totalPages ?? 1) && (
+              <Tooltip content="Previous page">
+                <Button
+                  className="rounded-xl"
+                  size="icon"
+                  variant="outline"
+                  onClick={() => {
+                    setFilters({
+                      ...filters,
+                      page: String((data?.pagination.page ?? 1) - 1),
+                    });
+                  }}
+                >
+                  <ArrowLeft />
+                </Button>
+              </Tooltip>
+            )}
+            {(data?.pagination.page ?? 1) <
+              (data?.pagination?.totalPages ?? 1) && (
+              <Tooltip content="Next page">
+                <Button
+                  className="rounded-xl"
+                  size="icon"
+                  variant="outline"
+                  onClick={() => {
+                    setFilters({
+                      ...filters,
+                      page: String((data?.pagination.page ?? 1) + 1),
+                    });
+                  }}
+                >
+                  <ArrowRight />
+                </Button>
+              </Tooltip>
+            )}
+          </Field>
         </DialogContent>
       </Dialog>
     );
@@ -542,23 +585,24 @@ const AddItemDialog = withForm({
   render: function ({ form, item }) {
     const { items, type } = useStore(form.store, (state) => state.values);
     const [value, setValue] = useState("");
+    const [open, setOpen] = useState(false);
 
     const handleClick = () => {
-      console.log("clicked");
       const updatedItems = [...items];
       updatedItems.push({ ...item, value });
       form.setFieldValue("items", updatedItems);
+      setOpen(false);
     };
 
     return (
-      <Dialog>
+      <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <Button className="rounded-xl">
+          <Button className="rounded-xl" size="sm">
             <Plus />
             Add
           </Button>
         </DialogTrigger>
-        <DialogContent className="ring-0 rounded-2xl">
+        <DialogContent className="rounded-2xl ring-0">
           <DialogHeader>
             <DialogTitle className="text-xl font-semibold">
               Add Item
@@ -568,12 +612,17 @@ const AddItemDialog = withForm({
             <InputGroupInput
               value={value}
               onChange={(e) => setValue(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  handleClick();
+                }
+              }}
             />
             <InputGroupAddon align="inline-end">
               {type === "percentage" ? <Percent /> : <DollarSign />}
             </InputGroupAddon>
           </InputGroup>
-          <Field className="flex flex-col-reverse gap-4 sm:flex-row sm:justify-end  sm:[&>*]:w-32">
+          <Field className="flex flex-col-reverse gap-4 sm:flex-row sm:justify-end  sm:[&>*]:w-28">
             <DialogClose asChild>
               <Button
                 variant="outline"
@@ -584,16 +633,15 @@ const AddItemDialog = withForm({
                 Cancel
               </Button>
             </DialogClose>
-            <DialogClose asChild>
-              <Button
-                type="button"
-                size="xl"
-                className="rounded-xl"
-                onClick={handleClick}
-              >
-                Add
-              </Button>
-            </DialogClose>
+
+            <Button
+              type="button"
+              size="xl"
+              className="rounded-xl"
+              onClick={handleClick}
+            >
+              Add
+            </Button>
           </Field>
         </DialogContent>
       </Dialog>

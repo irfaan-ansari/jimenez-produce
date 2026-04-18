@@ -13,7 +13,7 @@ import { toast } from "sonner";
 import { useState } from "react";
 import { Button } from "../ui/button";
 import { useAppForm } from "@/hooks/form-context";
-import { Loader, SendHorizonal } from "lucide-react";
+import { Loader, Send, SendHorizonal } from "lucide-react";
 import {
   Field,
   FieldDescription,
@@ -36,8 +36,8 @@ const schema = z.object({
 
 const CONFIG = {
   invitation: {
-    button: "Invite Customer",
-    title: "Customer Invitations",
+    button: "Invite",
+    title: "Invite Customer",
     description: "Invite a business to become a customer.",
     success: "Customer invited successfully",
   },
@@ -94,12 +94,12 @@ export const CustomerInviteDialog = ({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button size="xl" className="rounded-xl md:w-auto md:min-w-32 md:px-6">
-          <SendHorizonal />
+        <Button size="xl" className="rounded-xl md:w-auto">
+          <Send />
           <span className="hidden md:inline">{config.button}</span>
         </Button>
       </DialogTrigger>
-      <DialogContent className="rounded-2xl py-8 ring-ring/10 sm:max-w-lg">
+      <DialogContent className="rounded-2xl ring-ring/10 sm:max-w-xl">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold">
             {config.title}
@@ -114,7 +114,7 @@ export const CustomerInviteDialog = ({
             form.handleSubmit();
           }}
         >
-          <div className="-mx-4 -my-1 no-scrollbar max-h-[min(400px,60vh)] overflow-y-auto  px-4 py-1">
+          <div className="-mx-4 -my-1 no-scrollbar max-h-[min(480px,80vh)] overflow-y-auto  px-4 py-1">
             <FieldGroup className="grid grid-cols-2">
               <form.AppField
                 name="name"
@@ -184,7 +184,7 @@ export const CustomerInviteDialog = ({
               />
             </FieldGroup>
           </div>
-          <Field className="mt-6 flex flex-col-reverse gap-4 sm:flex-row sm:[&>button]:flex-1">
+          <Field className="mt-6 flex flex-col-reverse gap-4 sm:flex-row sm:justify-end sm:[&>button]:w-32">
             <Button
               variant="outline"
               size="xl"

@@ -53,7 +53,7 @@ export const AddUserDialog = ({ children }: { children: React.ReactNode }) => {
           role: value.role.toLowerCase() as any,
           data: {
             image: `https://api.dicebear.com/9.x/identicon/svg?seed=${encodeURIComponent(
-              value.name
+              value.name,
             )}`,
           },
         },
@@ -70,7 +70,7 @@ export const AddUserDialog = ({ children }: { children: React.ReactNode }) => {
           onError: (err) => {
             toast.error(err.error.message || "Something went wrong");
           },
-        }
+        },
       );
     },
   });
@@ -78,18 +78,15 @@ export const AddUserDialog = ({ children }: { children: React.ReactNode }) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="ring-ring/10 rounded-2xl overflow-hidden sm:max-w-md">
+      <DialogContent className="overflow-hidden rounded-2xl ring-ring/10 sm:max-w-xl">
         <DialogHeader>
-          <DialogTitle className="text-xl font-semibold">
-            Add new user
-          </DialogTitle>
+          <DialogTitle className="text-xl font-semibold">Add New</DialogTitle>
         </DialogHeader>
         <form
           onSubmit={(e) => {
             e.preventDefault();
             form.handleSubmit();
           }}
-          className=""
         >
           <FieldGroup className="grid grid-cols-2">
             <form.AppField
@@ -97,7 +94,7 @@ export const AddUserDialog = ({ children }: { children: React.ReactNode }) => {
               children={(field) => (
                 <field.TextField
                   label="Name"
-                  className="**:data-[slot=input]:rounded-xl col-span-2"
+                  className="col-span-2 **:data-[slot=input]:rounded-xl"
                 />
               )}
             />
@@ -106,7 +103,7 @@ export const AddUserDialog = ({ children }: { children: React.ReactNode }) => {
               children={(field) => (
                 <field.TextField
                   label="Email"
-                  className="**:data-[slot=input]:rounded-xl col-span-2"
+                  className="col-span-2 **:data-[slot=input]:rounded-xl"
                 />
               )}
             />
@@ -115,7 +112,7 @@ export const AddUserDialog = ({ children }: { children: React.ReactNode }) => {
               children={(field) => (
                 <field.SelectField
                   label="Role"
-                  className="**:rounded-xl col-span-2"
+                  className="col-span-2 **:rounded-xl"
                   options={["User", "Admin", "Customer"]}
                 />
               )}
@@ -141,7 +138,7 @@ export const AddUserDialog = ({ children }: { children: React.ReactNode }) => {
             />
           </FieldGroup>
 
-          <Field className="mt-10 flex flex-col-reverse gap-4 sm:flex-row sm:[&>button]:flex-1">
+          <Field className="mt-10 flex flex-col-reverse gap-4 sm:flex-row sm:justify-end sm:[&>button]:w-32">
             <DialogClose asChild>
               <Button
                 variant="outline"
@@ -164,11 +161,7 @@ export const AddUserDialog = ({ children }: { children: React.ReactNode }) => {
                   className="rounded-xl"
                   disabled={isSubmitting || !canSubmit}
                 >
-                  {isSubmitting ? (
-                    <Loader className="animate-spin" />
-                  ) : (
-                    "Add User"
-                  )}
+                  {isSubmitting ? <Loader className="animate-spin" /> : "Save"}
                 </Button>
               )}
             />

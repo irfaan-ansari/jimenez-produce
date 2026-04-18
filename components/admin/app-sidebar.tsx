@@ -19,6 +19,7 @@ import {
   SidebarMenuSub,
   SidebarMenuSubItem,
   SidebarMenuSubButton,
+  SidebarMenuBadge,
 } from "@/components/ui/sidebar";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -35,7 +36,7 @@ import { SIDEBAR_MENU_CUSTOMER, SITE_CONFIG } from "@/lib/config";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 export function AppSidebar({ variant }: { variant: "admin" | "customer" }) {
-  const { pathname, searchParamsObj } = useRouterStuff();
+  const { pathname, getQueryString } = useRouterStuff();
 
   const MENU = variant === "customer" ? SIDEBAR_MENU_CUSTOMER : SIDEBAR_MENU;
 
@@ -43,8 +44,10 @@ export function AppSidebar({ variant }: { variant: "admin" | "customer" }) {
     return pathname === href || (pathname.includes(href) && pathname !== "/");
   };
 
-  const isSubItemActive = (subItem: any) => {
-    return pathname.includes(subItem.href);
+  const isSubItemActive = (href: any) => {
+    if (!href) return false;
+    const path = pathname + getQueryString();
+    return href === path;
   };
 
   return (
@@ -93,8 +96,12 @@ export function AppSidebar({ variant }: { variant: "admin" | "customer" }) {
                         )}
                         <span>{item.label}</span>
                         <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                        {/* <SidebarMenuBadge className="rounded-full bg-red-500">
+                          4
+                        </SidebarMenuBadge> */}
                       </SidebarMenuButton>
                     </CollapsibleTrigger>
+
                     <CollapsibleContent>
                       <SidebarMenuSub>
                         {item.items?.map((subItem) => (

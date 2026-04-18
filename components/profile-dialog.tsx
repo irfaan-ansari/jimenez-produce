@@ -52,7 +52,7 @@ export const ProfileDialog = <T,>({
           onError: (err) => {
             toast.error(err.error.message || "Something went wrong!");
           },
-        }
+        },
       );
     },
   });
@@ -60,18 +60,15 @@ export const ProfileDialog = <T,>({
   return (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="ring-ring/10 rounded-2xl overflow-hidden sm:max-w-md">
+      <DialogContent className="overflow-hidden rounded-2xl ring-ring/10 sm:max-w-xl">
         <DialogHeader>
-          <DialogTitle className="text-xl font-semibold">
-            {user.name}
-          </DialogTitle>
+          <DialogTitle className="text-xl font-semibold">Profile</DialogTitle>
         </DialogHeader>
         <form
           onSubmit={(e) => {
             e.preventDefault();
             form.handleSubmit();
           }}
-          className=""
         >
           <FieldGroup>
             <form.AppField
@@ -111,7 +108,7 @@ export const ProfileDialog = <T,>({
             />
           </FieldGroup>
 
-          <Field className="mt-10 flex flex-col-reverse gap-4 sm:flex-row sm:[&>button]:flex-1">
+          <Field className="mt-10 flex flex-col-reverse gap-4 sm:flex-row sm:justify-end sm:[&>button]:w-32">
             <DialogClose asChild>
               <Button
                 variant="outline"

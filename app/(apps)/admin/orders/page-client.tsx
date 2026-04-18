@@ -138,9 +138,7 @@ export const columns: ColumnDef<OrderType>[] = [
   {
     id: "action",
     cell: ({ row }) => {
-      return (
-        <OrderActions id={row.original.id} status={row.original.status!} />
-      );
+      return <OrderActions data={row.original} />;
     },
   },
 ];

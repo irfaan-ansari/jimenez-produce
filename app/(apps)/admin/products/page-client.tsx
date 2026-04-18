@@ -19,12 +19,13 @@ import { useRouterStuff } from "@/hooks/use-router-stuff";
 import { Pagination } from "@/components/admin/pagination";
 import { ProductAction } from "@/components/admin/product-actions";
 import { AdminProductResponse, AdminProductType } from "@/lib/types";
+import { formatUSD } from "@/lib/utils";
 
 export const PageClient = () => {
   const { searchParams, queryParams } = useRouterStuff();
 
   const { data, error, isPending, isError } = useProducts(
-    searchParams.toString()
+    searchParams.toString(),
   );
 
   // loading
@@ -70,7 +71,7 @@ export const PageClient = () => {
                   }}
                 />
 
-                <div className="relative aspect-square overflow-hidden rounded-t-[0.5rem] bg-secondary">
+                <div className="relative aspect-[1.6/1] overflow-hidden rounded-t-[0.5rem] bg-secondary">
                   {product.image && (
                     <img
                       width={400}
@@ -78,7 +79,7 @@ export const PageClient = () => {
                       src={product.image!}
                       alt={product.title}
                       loading={i <= 10 ? "eager" : "lazy"}
-                      className="relative z-1 aspect-square w-full rounded-lg object-cover transition ease-out"
+                      className="relative z-1 aspect-[1.6/1] w-full rounded-lg object-contain transition ease-out"
                     />
                   )}
                 </div>
@@ -87,8 +88,8 @@ export const PageClient = () => {
                     {product.categories?.map((cat) => (
                       <Badge
                         key={cat}
-                        className="h-6 rounded-xl bg-blue-100 text-sm"
-                        variant="outline"
+                        className="h-6 rounded-xl bg-primary/10 text-sm"
+                        variant="secondary"
                       >
                         {cat}
                       </Badge>
@@ -97,11 +98,19 @@ export const PageClient = () => {
                   <CardTitle className="font-semibold">
                     {product.title}
                   </CardTitle>
-                  <CardDescription className="space-x-2 text-base">
-                    {/* <span className={onOffer ? "line-through" : ""}>
-                      {product.price}
-                    </span>
-                    {onOffer && <span>{product.offerPrice}</span>} */}
+                  <CardDescription className="text-base">
+                    {product.inventory.map((inv) => (
+                      <div
+                        key={inv.id}
+                        className="flex items-center justify-between gap-2"
+                      >
+                        {/* @ts-ignore */}
+                        <span>{inv?.location?.name}:</span>
+                        <span className="text-primary">
+                          {formatUSD(inv.price! ?? 0)}
+                        </span>
+                      </div>
+                    ))}
                   </CardDescription>
                 </CardContent>
               </Card>

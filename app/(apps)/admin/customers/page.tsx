@@ -1,4 +1,4 @@
-import { PlusCircle } from "lucide-react";
+import { Plus, PlusCircle } from "lucide-react";
 import { PageClient } from "./page-client";
 import { Button } from "@/components/ui/button";
 import { FilterTabs } from "@/components/admin/filter-tabs";
@@ -27,17 +27,13 @@ const CustomersPage = async () => {
       <div className="flex items-center gap-4">
         <SearchBar />
         <div className="flex flex-1 items-center justify-end gap-4">
+          <CustomerInviteDialog type="invitation" />
           <CustomerDialog>
-            <Button
-              size="xl"
-              variant="outline"
-              className="rounded-xl md:w-auto md:min-w-32 md:px-6"
-            >
-              <PlusCircle />
-              <span className="hidden md:inline">Add Customer</span>
+            <Button size="xl" className="rounded-xl">
+              <Plus />
+              Add New
             </Button>
           </CustomerDialog>
-          <CustomerInviteDialog type="invitation" />
         </div>
       </div>
       {/* content */}

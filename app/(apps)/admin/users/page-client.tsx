@@ -29,18 +29,19 @@ export const PageClient = () => {
 
   return (
     <div className="flex-1 space-y-3">
-      <div className="flex flex-col h-full gap-3">
-        <div className="overflow-hidden **:data-[slot=table-container]:no-scrollbar rounded-2xl border">
+      <div className="flex h-full flex-col gap-3">
+        <div className="overflow-hidden rounded-2xl border **:data-[slot=table-container]:no-scrollbar">
           <Table className="text-base">
             <TableHeader>
-              <TableRow className="bg-sidebar">
-                <TableHead className="py-4 px-4 font-medium">Name</TableHead>
-                <TableHead className="py-4 px-4 font-medium">Email</TableHead>
-                <TableHead className="py-4 px-4 font-medium">Role</TableHead>
-                <TableHead className="py-4 px-4 font-medium">
+              <TableRow className="bg-secondary text-sm uppercase **:text-muted-foreground">
+                <TableHead className="px-4 py-4 font-medium">Name</TableHead>
+                <TableHead className="px-4 py-4 font-medium">Email</TableHead>
+                <TableHead className="px-4 py-4 font-medium">Role</TableHead>
+                <TableHead className="px-4 py-4 font-medium">STATUS</TableHead>
+                <TableHead className="px-4 py-4 font-medium">
                   Created At
                 </TableHead>
-                <TableHead className="py-4 px-4 font-medium"></TableHead>
+                <TableHead className="px-4 py-4 font-medium"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -53,13 +54,13 @@ export const PageClient = () => {
                   return (
                     <TableRow key={row.id}>
                       <TableCell className="p-4">
-                        <div className="flex gap-3 items-center">
-                          <Avatar className="rounded-xl after:hidden size-9 ring-2 ring-offset-1 ring-green-600/20">
+                        <div className="flex items-center gap-3">
+                          <Avatar className="size-9 rounded-xl ring-2 ring-green-600/20 ring-offset-1 after:hidden">
                             <AvatarImage
                               src={row.image ?? undefined}
                               alt="profile image"
                             />
-                            <AvatarFallback className="rounded-xl bg-primary/40 font-semibold text-xs text-primary">
+                            <AvatarFallback className="rounded-xl bg-primary/40 text-xs font-semibold text-primary">
                               {row.name?.[0]?.toUpperCase()}
                             </AvatarFallback>
                           </Avatar>
@@ -68,7 +69,7 @@ export const PageClient = () => {
                           {isCurrentUser && (
                             <Badge
                               variant="secondary"
-                              className="uppercase font-medium rounded-xl"
+                              className="rounded-xl font-medium uppercase"
                             >
                               You
                             </Badge>
@@ -76,9 +77,12 @@ export const PageClient = () => {
                         </div>
                       </TableCell>
                       <TableCell className="p-4">
-                        <span className="text-muted-foreground">
-                          {row.email}
-                        </span>
+                        <div className="grid">
+                          <span>{row.email}</span>
+                          <span className="text-sm text-muted-foreground">
+                            ###-###-####
+                          </span>
+                        </div>
                       </TableCell>
                       <TableCell className="p-4">
                         <Badge
@@ -86,16 +90,29 @@ export const PageClient = () => {
                           style={
                             { "--color": map.color } as React.CSSProperties
                           }
-                          className="h-7 rounded-xl pl-1.5 pr-2.5 gap-1.5 [&>svg]:size-3.5 bg-(--color)/10 border-(--color)/10 text-sm"
+                          className="h-7 gap-1.5 rounded-xl border-(--color)/10 bg-(--color)/10 pr-2.5 pl-1.5 text-sm [&>svg]:size-3.5"
                         >
                           <map.icon className="text-(--color)" />
                           {map.label}
                         </Badge>
                       </TableCell>
                       <TableCell className="p-4">
-                        <span>
-                          {format(new Date(row.createdAt), "MMMM dd, yyyy")}
-                        </span>
+                        <Badge
+                          variant="outline"
+                          className={`h-7 rounded-xl text-sm ${row.banned ? "bg-red-500/10 text-red-500 border-red-500/10" : "bg-green-500/10 text-green-500 border-green-500/10"}`}
+                        >
+                          {row.banned ? "Inactive" : "Active"}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="p-4">
+                        <div className="grid text-sm">
+                          <span>
+                            {format(new Date(row.createdAt), "MMM dd, yyyy")}
+                          </span>
+                          <span className="text-muted-foreground">
+                            {format(new Date(row.createdAt), "hh:mm:ss a")}
+                          </span>
+                        </div>
                       </TableCell>
                       <TableCell className="p-4">
                         {session?.user.role === "admin" &&
@@ -110,9 +127,9 @@ export const PageClient = () => {
                 })
               ) : (
                 <TableRow>
-                  <TableCell colSpan={5} className="h-24 text-center">
+                  <TableCell colSpan={5} className="h-24 p-0 text-center">
                     {isPending ? (
-                      <div className="h-1 bg-primary mb-36 animate-pulse rounded-full"></div>
+                      <div className="mb-36 h-1 animate-pulse rounded-full bg-primary"></div>
                     ) : isError ? (
                       <EmptyComponent variant="error" title={error?.message} />
                     ) : (

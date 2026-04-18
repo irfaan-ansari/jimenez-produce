@@ -76,11 +76,11 @@ export const ProductDialog = ({
       image: product?.image || "",
       imageObj: null as any,
       inventory: product
-        ? product.inventory.map((inv) => ({
+        ? (product.inventory.map((inv) => ({
             ...inv,
             name: locations?.data?.find((loc) => loc.id === inv.locationId)
               ?.name,
-          })) ?? []
+          })) ?? [])
         : locations?.data?.map((loc) => ({
             locationId: loc.id,
             name: loc.name,
@@ -145,8 +145,8 @@ export const ProductDialog = ({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
-      <DialogContent className="ring-ring/10 rounded-2xl sm:max-w-lg">
-        <DialogHeader>
+      <DialogContent className="rounded-2xl px-0 ring-ring/10 sm:max-w-2xl">
+        <DialogHeader className="px-6">
           <DialogTitle className="text-xl font-semibold">
             {product ? "Edit Product" : "Create Product"}
           </DialogTitle>
@@ -156,98 +156,103 @@ export const ProductDialog = ({
             e.preventDefault();
             form.handleSubmit();
           }}
+          className="flex h-[calc(100svh-200px)] flex-col"
         >
-          <div className="no-scrollbar -mx-4 max-h-[min(440px,60vh)] -my-1 py-1  overflow-y-auto px-4">
+          <div className="no-scrollbar flex-1 overflow-y-auto px-6">
             <FieldGroup>
-              <form.Field
-                name="image"
-                children={(field) => {
-                  const isInvalid =
-                    field.state.meta.isTouched && !field.state.meta.isValid;
-
-                  return (
-                    <Field aria-invalid={isInvalid}>
-                      {field.state.value ? (
-                        <div className="rounded-xl border-dashed border bg-sidebar h-28 justify-center relative z-1 w-full flex">
-                          <Image
-                            src={field.state.value}
-                            width={112}
-                            height={112}
-                            alt="Product Image"
-                            className="w-auto h-28"
-                          />
-                          <Button
-                            type="button"
-                            size="icon-sm"
-                            variant="outline"
-                            className="absolute top-2 right-2 rounded-xl"
-                            onClick={handleDeleteImage}
-                          >
-                            <Trash2 />
-                          </Button>
-                        </div>
-                      ) : (
-                        <FieldLabel
-                          htmlFor={field.name}
-                          className="rounded-xl border-dashed border bg-sidebar h-28 justify-center hover:ring-1 hover:border-solid hover:ring-ring/50 transition"
-                        >
-                          <FieldLegend>Upload Image</FieldLegend>
-
-                          <Input
-                            className="sr-only"
-                            type="file"
-                            accept="image/*"
-                            id={field.name}
-                            onChange={(e) => {
-                              form.setFieldValue(
-                                "imageObj",
-                                e.target.files?.[0]
-                              );
-                              const url = URL.createObjectURL(
-                                e.target.files?.[0]!
-                              );
-                              form.setFieldValue("image", url);
-                            }}
-                          />
-                        </FieldLabel>
-                      )}
-                      {isInvalid && (
-                        <FieldError errors={field.state.meta.errors} />
-                      )}
-                    </Field>
-                  );
-                }}
-              />
-              <form.AppField
-                name="title"
-                children={(field) => (
-                  <field.TextField
-                    label="Title"
-                    className="**:data-[slot=input]:rounded-xl"
+              <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                <div className="flex flex-col gap-6">
+                  <form.AppField
+                    name="title"
+                    children={(field) => (
+                      <field.TextField
+                        label="Title"
+                        className="**:data-[slot=input]:rounded-xl"
+                      />
+                    )}
                   />
-                )}
-              />
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <form.AppField
-                  name="identifier"
-                  children={(field) => (
-                    <field.TextField
-                      label="Product Code"
-                      className="**:data-[slot=input]:rounded-xl"
-                    />
-                  )}
-                />
-                <form.AppField
-                  name="status"
-                  children={(field) => (
-                    <field.SelectField
-                      label="Status"
-                      className="**:data-[slot=select-trigger]:rounded-xl"
-                      options={["Active", "Private", "Archived"]}
-                    />
-                  )}
+
+                  <form.AppField
+                    name="identifier"
+                    children={(field) => (
+                      <field.TextField
+                        label="Product Code"
+                        className="**:data-[slot=input]:rounded-xl"
+                      />
+                    )}
+                  />
+                  <form.AppField
+                    name="status"
+                    children={(field) => (
+                      <field.SelectField
+                        label="Status"
+                        className="**:data-[slot=select-trigger]:rounded-xl"
+                        options={["Active", "Private", "Archived"]}
+                      />
+                    )}
+                  />
+                </div>
+                <form.Field
+                  name="image"
+                  children={(field) => {
+                    const isInvalid =
+                      field.state.meta.isTouched && !field.state.meta.isValid;
+
+                    return (
+                      <Field aria-invalid={isInvalid}>
+                        {field.state.value ? (
+                          <div className="relative z-1 flex h-full w-full justify-center rounded-xl border border-dashed bg-sidebar p-2">
+                            <Image
+                              src={field.state.value}
+                              width={112}
+                              height={112}
+                              alt="Product Image"
+                              className="h-full w-auto"
+                            />
+                            <Button
+                              type="button"
+                              size="icon-sm"
+                              variant="outline"
+                              className="absolute top-2 right-2 rounded-xl"
+                              onClick={handleDeleteImage}
+                            >
+                              <Trash2 />
+                            </Button>
+                          </div>
+                        ) : (
+                          <FieldLabel
+                            htmlFor={field.name}
+                            className="h-full justify-center rounded-xl border border-dashed bg-sidebar transition hover:border-solid hover:ring-1 hover:ring-ring/50"
+                          >
+                            <FieldLegend>Upload Image</FieldLegend>
+
+                            <Input
+                              className="sr-only"
+                              type="file"
+                              accept="image/*"
+                              id={field.name}
+                              onChange={(e) => {
+                                form.setFieldValue(
+                                  "imageObj",
+                                  e.target.files?.[0],
+                                );
+                                const url = URL.createObjectURL(
+                                  e.target.files?.[0]!,
+                                );
+                                form.setFieldValue("image", url);
+                              }}
+                            />
+                          </FieldLabel>
+                        )}
+                        {isInvalid && (
+                          <FieldError errors={field.state.meta.errors} />
+                        )}
+                      </Field>
+                    );
+                  }}
                 />
               </div>
+
               <form.Field
                 name="categories"
                 children={(field) => {
@@ -258,12 +263,12 @@ export const ProductDialog = ({
                       <FieldLabel htmlFor={field.name}>Categories</FieldLabel>
                       <CategorySelector field={field} />
                       {field.state.value.length > 0 && (
-                        <div className="flex gap-2 flex-wrap">
+                        <div className="flex flex-wrap gap-2">
                           {(field.state.value as string[]).map((v, i) => (
                             <Badge
                               key={v}
                               variant="secondary"
-                              className="rounded-xl h-7 text-sm pr-1"
+                              className="h-7 rounded-xl pr-1 text-sm"
                             >
                               {v}
                               <Button
@@ -285,7 +290,6 @@ export const ProductDialog = ({
                   );
                 }}
               />
-
               <form.Field
                 name="description"
                 children={(field) => {
@@ -316,20 +320,16 @@ export const ProductDialog = ({
                   Array.isArray(field?.state?.value) &&
                   field?.state?.value.map((subField, i) => {
                     return (
-                      <div className="grid grid-cols-1 gap-7" key={i}>
-                        <Alert className="text-amber-500 rounded-xl">
-                          <Warehouse />
-                          <AlertTitle>{subField.name}</AlertTitle>
-                          <AlertDescription>
-                            Set price this product at {subField.name}
-                          </AlertDescription>
-                        </Alert>
+                      <div className="rounded-2xl border bg-muted p-4" key={i}>
+                        <div className="mb-3 font-semibold">
+                          Price at {subField.name}
+                        </div>
                         <form.AppField
                           name={`inventory[${i}].price`}
                           children={(field) => (
                             <field.TextField
-                              label="Price"
                               className="**:data-[slot=input]:rounded-xl"
+                              description={`Set price this product at ${subField.name}`}
                             />
                           )}
                         />
@@ -340,7 +340,7 @@ export const ProductDialog = ({
               </form.Field>
             </FieldGroup>
           </div>
-          <Field className="mt-6 flex flex-col-reverse gap-4 sm:flex-row sm:[&>button]:flex-1">
+          <Field className="mt-4 flex flex-col-reverse gap-4 px-6 pt-4 sm:flex-row sm:justify-end  sm:[&>*]:w-28">
             <Button
               variant="outline"
               size="xl"
@@ -382,7 +382,7 @@ const CategorySelector = ({ field }: { field: AnyFieldApi }) => {
 
   const filtered =
     data?.data?.filter((i) =>
-      i?.toLowerCase().includes(value?.toLowerCase())
+      i?.toLowerCase().includes(value?.toLowerCase()),
     ) ?? [];
 
   React.useEffect(() => {
@@ -422,7 +422,7 @@ const CategorySelector = ({ field }: { field: AnyFieldApi }) => {
         }`}
       >
         {isPending ? (
-          <Loader className="animate-spin mx-auto size-4" />
+          <Loader className="mx-auto size-4 animate-spin" />
         ) : filtered.length > 0 ? (
           filtered.map((cat) => (
             <Button

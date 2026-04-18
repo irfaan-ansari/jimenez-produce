@@ -10,6 +10,7 @@ import { db } from "@/lib/db";
 import { eq } from "drizzle-orm";
 import { getSession } from "./auth";
 import { handleAction } from "@/lib/helper/error-handler";
+import { isBefore } from "date-fns";
 
 /**
  * create order
@@ -64,13 +65,19 @@ export const updateOrder = handleAction(
     const existing = await db.query.order.findFirst({
       where: eq(order.id, id),
     });
+
     if (!existing) throw new Error("Resource not found.");
 
-    const result = await db
+    if (rest.deliveryDate && isBefore(rest.deliveryDate, new Date())) {
+      throw new Error("Cannot update order after delivery date.");
+    }
+
+    const [result] = await db
       .update(order)
       .set(rest)
       .where(eq(order.id, id))
       .returning();
+
     return result;
   },
 );

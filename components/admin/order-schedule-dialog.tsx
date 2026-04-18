@@ -9,47 +9,61 @@ import {
   DialogTrigger,
 } from "../ui/dialog";
 import React from "react";
+import { toast } from "sonner";
 import { Button } from "../ui/button";
 import { Loader } from "lucide-react";
+import { updateOrder } from "@/server/order";
 import { Field, FieldGroup } from "../ui/field";
 import { useAppForm } from "@/hooks/form-context";
 import { DELIVERY_TIME } from "@/lib/constants/customer";
+import { useQueryClient } from "@tanstack/react-query";
 
 const schema = z.object({
   deliveryDate: z.string().min(1, "Select date"),
   deliveryWindow: z.string().min(1, "Select window"),
 });
 
-export const OrderScheduleDialog = ({
-  id,
-  children,
-  defaultValues,
-}: {
-  id: number;
+interface Props {
   children: React.ReactNode;
-  defaultValues?: Record<string, string>;
-}) => {
+  defaultValues?: {
+    id: number;
+    deliveryDate: string | null;
+    deliveryWindow: string | null;
+  };
+}
+export const OrderScheduleDialog = ({ children, defaultValues }: Props) => {
+  const { id, deliveryDate, deliveryWindow } = defaultValues || {};
+  const queryClient = useQueryClient();
   const [open, setOpen] = React.useState(false);
+
   const form = useAppForm({
     defaultValues: {
-      deliveryDate: "",
-      deliveryWindow: "",
+      deliveryDate: deliveryDate ?? "",
+      deliveryWindow: deliveryWindow ?? "",
     },
     validators: {
       onSubmit: schema,
     },
     onSubmit: async ({ value }) => {
-      // submit handler
-      // if has id then update else create
-
-      console.log(value);
+      if (!id) {
+        toast("Order ID not found");
+        return;
+      }
+      const { success, error } = await updateOrder(id, value);
+      if (success) {
+        toast("Schedule updated successfully.");
+        queryClient.invalidateQueries({ queryKey: ["orders"] });
+        setOpen(false);
+      } else {
+        toast(error.message);
+      }
     },
   });
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="rounded-2xl py-8 ring-ring/10 sm:max-w-lg">
+      <DialogContent className="rounded-2xl ring-ring/10 sm:max-w-lg">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold">
             Edit Schedule
@@ -61,27 +75,26 @@ export const OrderScheduleDialog = ({
             form.handleSubmit();
           }}
         >
-          <div className="no-scrollbar -mx-4 -my-1 max-h-[min(600px,60vh)] overflow-y-auto  px-4 py-1">
-            <FieldGroup>
-              <form.AppField
-                name="deliveryDate"
-                children={(field) => (
-                  <field.DateField label="Title" className="**:rounded-xl" />
-                )}
-              />
-              <form.AppField
-                name="deliveryWindow"
-                children={(field) => (
-                  <field.SelectField
-                    label="Window"
-                    options={DELIVERY_TIME}
-                    className="**:rounded-xl"
-                  />
-                )}
-              />
-            </FieldGroup>
-          </div>
-          <Field className="mt-6 flex flex-col-reverse gap-4 sm:flex-row sm:[&>button]:flex-1">
+          <FieldGroup>
+            <form.AppField
+              name="deliveryDate"
+              children={(field) => (
+                <field.DateField label="Title" className="**:rounded-xl" />
+              )}
+            />
+            <form.AppField
+              name="deliveryWindow"
+              children={(field) => (
+                <field.SelectField
+                  label="Window"
+                  options={DELIVERY_TIME}
+                  className="**:rounded-xl"
+                />
+              )}
+            />
+          </FieldGroup>
+
+          <Field className="mt-10 flex flex-col-reverse gap-4 sm:flex-row sm:justify-end sm:[&>button]:w-32">
             <Button
               variant="outline"
               size="xl"

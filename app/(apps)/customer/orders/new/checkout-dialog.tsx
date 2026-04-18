@@ -46,116 +46,120 @@ export const CheckoutDialog = withForm({
     return (
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>{trigger}</DialogTrigger>
-        <DialogContent className="gap-4 overflow-hidden rounded-2xl ring-ring/10 sm:max-w-2xl">
-          <DialogHeader>
+        <DialogContent className="gap-4 overflow-hidden rounded-2xl px-0 ring-ring/10 sm:max-w-2xl">
+          <DialogHeader className="px-6">
             <DialogTitle className="text-xl font-semibold">
               Confirm Order
             </DialogTitle>
           </DialogHeader>
-          <Collapsible>
-            <CollapsibleTrigger className="flex w-full gap-4 rounded-xl bg-secondary px-4 py-2">
-              Add Notes & Preferences
-              <ChevronDown className="ml-auto size-4 group-data-[state=open]:rotate-180" />
-            </CollapsibleTrigger>
-            <CollapsibleContent className="mt-4">
-              <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-                <form.AppField
-                  name="deliveryDate"
-                  children={(field) => (
-                    <field.DateField
-                      label="Delivery Date"
-                      className="**:rounded-xl"
-                    />
-                  )}
-                />
 
-                <form.AppField
-                  name="deliveryWindow"
-                  children={(field) => (
-                    <field.SelectField
-                      options={DELIVERY_TIME}
-                      label="Delivery Time"
-                      className="**:rounded-xl"
-                    />
-                  )}
-                />
-                <form.AppField
-                  name="po"
-                  children={(field) => {
-                    return (
-                      <field.TextField
-                        label="PO / Reference"
+          <div className="no-scrollbar h-[calc(100svh-300px)] flex-1 overflow-y-auto">
+            <Collapsible className="px-6">
+              <CollapsibleTrigger className="flex w-full gap-4 rounded-xl bg-secondary px-4 py-2">
+                Add Notes & Preferences
+                <ChevronDown className="ml-auto size-4 group-data-[state=open]:rotate-180" />
+              </CollapsibleTrigger>
+              <CollapsibleContent className="mt-4">
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+                  <form.AppField
+                    name="deliveryDate"
+                    children={(field) => (
+                      <field.DateField
+                        label="Delivery Date"
                         className="**:rounded-xl"
                       />
-                    );
-                  }}
-                />
+                    )}
+                  />
 
-                <form.Field
-                  name="notes"
-                  children={(field) => {
-                    const isInvalid =
-                      field.state.meta.isTouched && !field.state.meta.isValid;
-                    return (
-                      <Field className="md:col-span-3">
-                        <FieldLabel htmlFor={field.name}>Notes</FieldLabel>
-                        <Textarea
-                          id={field.name}
-                          name={field.name}
-                          value={field.state.value!}
-                          onBlur={field.handleBlur}
-                          onChange={(e) => field.handleChange(e.target.value)}
-                          aria-invalid={isInvalid}
-                          className="min-h-24 resize-none rounded-xl"
-                          placeholder="Optional notes..."
+                  <form.AppField
+                    name="deliveryWindow"
+                    children={(field) => (
+                      <field.SelectField
+                        options={DELIVERY_TIME}
+                        label="Delivery Time"
+                        className="**:rounded-xl"
+                      />
+                    )}
+                  />
+                  <form.AppField
+                    name="po"
+                    children={(field) => {
+                      return (
+                        <field.TextField
+                          label="PO / Reference"
+                          className="**:rounded-xl"
                         />
-                        {isInvalid && (
-                          <FieldError errors={field.state.meta.errors} />
-                        )}
-                      </Field>
-                    );
-                  }}
-                />
-              </div>
-            </CollapsibleContent>
-          </Collapsible>
-          <div className="no-scrollbar h-full max-h-[460px] flex-1 overflow-y-auto">
-            <Table className="text-base">
-              <TableHeader className="text-xs text-muted-foreground uppercase">
-                <TableRow>
-                  <TableHead className="pl-0">Item</TableHead>
-                  <TableHead className="text-right">Price</TableHead>
-                  <TableHead className="text-right">Quanity</TableHead>
-                  <TableHead className="pr-2 text-right">Ext.</TableHead>
-                </TableRow>
-              </TableHeader>
+                      );
+                    }}
+                  />
+
+                  <form.Field
+                    name="notes"
+                    children={(field) => {
+                      const isInvalid =
+                        field.state.meta.isTouched && !field.state.meta.isValid;
+                      return (
+                        <Field className="md:col-span-3">
+                          <FieldLabel htmlFor={field.name}>Notes</FieldLabel>
+                          <Textarea
+                            id={field.name}
+                            name={field.name}
+                            value={field.state.value!}
+                            onBlur={field.handleBlur}
+                            onChange={(e) => field.handleChange(e.target.value)}
+                            aria-invalid={isInvalid}
+                            className="min-h-24 resize-none rounded-xl"
+                            placeholder="Optional notes..."
+                          />
+                          {isInvalid && (
+                            <FieldError errors={field.state.meta.errors} />
+                          )}
+                        </Field>
+                      );
+                    }}
+                  />
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
+
+            <div className="flex w-full gap-4 border-y bg-secondary px-6 py-3 text-sm text-muted-foreground uppercase">
+              <span className="flex-1">item</span>
+              <span className="w-24 shrink-0 truncate text-right">price</span>
+              <span className="w-24 shrink-0 truncate text-right">
+                Quantity
+              </span>
+              <span className="w-24 shrink-0 text-right">Total</span>
+            </div>
+
+            <Table className="">
               <TableBody>
                 {lineItems.map((item) => (
-                  <TableRow key={item.id}>
-                    <TableCell className="pl-1">
-                      <div className="flex items-start gap-4">
+                  <div className="flex gap-4 px-6 py-2" key={item.id}>
+                    <div className="flex flex-1 items-start gap-3">
+                      <div className="shrink-0 pt-1">
                         <Avatar className="size-9 rounded-xl ring-2 ring-green-600/20 ring-offset-1 **:rounded-xl after:hidden">
-                          <AvatarImage src={item.image!} />
+                          <AvatarImage src={item?.image as string} />
                           <AvatarFallback>
-                            {getAvatarFallback(item.title)}
+                            {getAvatarFallback((item.title as string)?.[0])}
                           </AvatarFallback>
                         </Avatar>
-
-                        <h4 className="max-w-3xs truncate font-medium">
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <h4 className="leading-tight font-medium whitespace-normal">
                           {item.title}
                         </h4>
                       </div>
-                    </TableCell>
-                    <TableCell className="text-right">
+                    </div>
+                    <div className="self-center text-right">
                       {formatUSD(item.price!)}
-                    </TableCell>
-                    <TableCell className="text-right">
+                    </div>
+                    <div className="self-center text-right">
                       {item.quantity}
-                    </TableCell>
-                    <TableCell className="pr-0 text-right font-medium">
+                    </div>
+                    <div className="self-center text-right">
                       {formatUSD(item.total!)}
-                    </TableCell>
-                  </TableRow>
+                    </div>
+                  </div>
                 ))}
               </TableBody>
               <TableFooter className="bg-background">
