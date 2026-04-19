@@ -117,7 +117,7 @@ export function AppSidebar() {
                           >
                             <SidebarMenuSubButton
                               asChild
-                              className="rounded-xl px-3 hover:bg-muted hover:text-sidebar-foreground data-active:bg-sidebar-accent! data-active:text-sidebar-accent-foreground!"
+                              className="rounded-xl px-3 hover:bg-muted hover:text-sidebar-foreground data-active:bg-muted data-active:text-sidebar-foreground"
                               isActive={isSubItemActive(subItem.href)}
                             >
                               <Link href={subItem.href}>

@@ -4,9 +4,7 @@ import {
   Check,
   LayoutGrid,
   ListFilter,
-  Minus,
-  Plus,
-  SearchIcon,
+  Loader,
   Star,
   TextAlignJustify,
   X,
@@ -17,12 +15,7 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupButton,
-  InputGroupInput,
-} from "@/components/ui/input-group";
+
 import { format } from "date-fns/format";
 import { cn, formatUSD } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -30,9 +23,7 @@ import { formOpt } from "./order-form-options";
 import { withForm } from "@/hooks/form-context";
 import { useStore } from "@tanstack/react-form";
 import { Button } from "@/components/ui/button";
-import { useDebounce } from "@/hooks/use-debounce";
 import { Skeleton } from "@/components/ui/skeleton";
-
 import { type CustomerProductType } from "@/lib/types";
 import { PopoverXDrawer } from "@/components/popover-x-drawer";
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
@@ -43,6 +34,12 @@ import {
   LoadingSkeleton,
 } from "@/components/admin/placeholder-component";
 import { BlurFade } from "@/components/ui/blur-fade";
+import { QuantityInput } from "./order-form";
+import { Tooltip } from "@/components/tooltip";
+import { toast } from "sonner";
+import { createOrderGuideItem, deleteOrderGuideItem } from "@/server/order";
+import { useQueryClient } from "@tanstack/react-query";
+import { useRouterStuff } from "@/hooks/use-router-stuff";
 
 const LAYOUTS = [
   {
@@ -62,11 +59,17 @@ const LAYOUTS = [
 
 export const ItemList = withForm({
   ...formOpt,
-  props: { show: true as boolean },
-  render: function Render({ form, show }) {
+  props: {} as {
+    updateItem: (args: {
+      product: CustomerProductType;
+      qty: number | string;
+    }) => void;
+  },
+  render: function Render({ form, updateItem }) {
     const [filter, setFilter] = React.useState<Record<string, any>>({});
     const [layout, setLayout] = React.useState<"list" | "grid">("list");
-    const query = new URLSearchParams(filter);
+    const { searchParamsObj } = useRouterStuff();
+    const query = new URLSearchParams({ ...filter, ...searchParamsObj });
 
     const {
       data,
@@ -79,6 +82,8 @@ export const ItemList = withForm({
     } = useInfiniteProducts(query?.toString());
 
     const products = data?.pages.flatMap((page) => page.data) ?? [];
+
+    console.log(data);
 
     const loadMoreRef = useInfiniteScroll(() => {
       if (hasNextPage && !isFetchingNextPage) {
@@ -104,7 +109,7 @@ export const ItemList = withForm({
     return (
       <div
         data-layout={layout}
-        className="group/card @container min-w-0 flex-1 space-y-3"
+        className="group/card @container min-w-0 flex-1 space-y-3 min-h-svh"
       >
         <div className="sticky top-0 z-2 bg-background rounded-2xl p-4 border shadow-sm  flex flex-row gap-3">
           <CategoryPills filter={filter} setFilter={setFilter} />
@@ -132,27 +137,6 @@ export const ItemList = withForm({
               })}
             </TabsList>
           </Tabs>
-          <Button
-            variant="secondary"
-            type="button"
-            data-active={filter.guide}
-            className="group rounded-xl bg-yellow-500 transition hover:bg-yellow-500/80 data-[active=true]:bg-yellow-600 data-[active=true]:text-primary-foreground"
-            onClick={() => setFilter({ ...filter, guide: !filter.guide })}
-          >
-            <Star />
-            Order Guide
-            <Button
-              asChild
-              variant="ghost"
-              className="rounded-xl opacity-0 group-data-[active=true]:opacity-100"
-              size="icon-xs"
-              type="button"
-            >
-              <span>
-                <X />
-              </span>
-            </Button>
-          </Button>
         </div>
 
         {/* error component */}
@@ -179,6 +163,7 @@ export const ItemList = withForm({
                 <ProductItem
                   product={product as CustomerProductType}
                   form={form}
+                  updateItem={updateItem}
                   layout={layout}
                 />
               </BlurFade>
@@ -203,84 +188,33 @@ const ProductItem = withForm({
   props: {} as {
     product: CustomerProductType;
     layout: string;
+    updateItem: (args: {
+      product: CustomerProductType;
+      qty: number | string;
+    }) => void;
   },
-  render: function Render({ form, product, layout }) {
+  render: function Render({ form, product, layout, updateItem }) {
     const lineItems = useStore(form.store, (state) => state.values.lineItems);
     const index = lineItems.findIndex((i) => i.productId === product.id);
     const qty = index >= 0 ? Number(lineItems[index].quantity) || 0 : 0;
     const isCartItem = qty > 0;
 
-    const updateItem = (options: {
-      action?: "increase" | "decrease";
-      qty?: number;
-    }) => {
-      const { action, qty: inputQty } = options;
-
-      const updatedItems = [...lineItems];
-
-      const currentQty =
-        index >= 0 ? Number(updatedItems[index].quantity) || 0 : 0;
-
-      let newQty = currentQty;
-
-      if (typeof inputQty === "number") {
-        newQty = inputQty;
-      }
-
-      if (action === "increase") {
-        newQty = currentQty + 1;
-      }
-
-      if (action === "decrease") {
-        newQty = currentQty - 1;
-      }
-
-      if (newQty <= 0) {
-        if (index >= 0) {
-          updatedItems.splice(index, 1);
-          form.setFieldValue("lineItems", updatedItems);
-        }
-        return;
-      }
-
-      if (index >= 0) {
-        updatedItems[index] = {
-          ...updatedItems[index],
-          quantity: `${newQty}`,
-        };
-      } else {
-        updatedItems.push({
-          ...product,
-          productId: product.id,
-          image: product.image!,
-          quantity: `${newQty || 1}`,
-        });
-      }
-
-      form.setFieldValue(
-        "lineItems",
-        updatedItems.map((item) => {
-          return {
-            ...item,
-            total: `${Number(item.price) * Number(item.quantity)}`,
-          };
-        }),
-      );
-    };
-
     return (
       <div
         className={cn(
-          `flex animate-in cursor-pointer items-center gap-4 rounded-xl border py-2 transition fade-in-50 slide-in-from-bottom-10 group-data-[layout=grid]/card:h-full
+          `flex animate-in cursor-pointer items-center group-data-[layout=grid]/card:hover:-translate-y-1 gap-4 rounded-xl border py-2 transition fade-in-50 slide-in-from-bottom-10 group-data-[layout=grid]/card:h-full
           group-data-[layout=grid]/card:flex-col group-data-[layout=grid]/card:items-stretch group-data-[layout=grid]/card:gap-0
           group-data-[layout=grid]/card:p-0 group-data-[layout=list]/card:mb-1 group-data-[layout=list]/card:px-4 
           hover:shadow-md`,
-          isCartItem ? "bg-primary/6 shadow-sm" : "hover:bg-primary/6 ",
+          isCartItem ? "shadow-sm" : "",
         )}
-        onClick={() => updateItem({ action: "increase" })}
+        onClick={() => updateItem({ product, qty: qty + 1 || 1 })}
       >
-        <Thumbnail product={product} qty={qty} updateItem={updateItem} />
-
+        <Thumbnail
+          product={product}
+          qty={qty}
+          updateItem={(product, qty) => updateItem({ product, qty })}
+        />
         <div
           className="flex min-w-0 flex-1 items-start gap-4
              group-data-[layout=grid]/card:w-full
@@ -310,7 +244,11 @@ const ProductItem = withForm({
               />
             </div>
           </div>
-
+          <OrderGuideButton
+            id={product?.guide?.id}
+            productId={product?.id}
+            className="group-data-[layout=grid]/card:hidden self-center"
+          />
           <div className="ml-auto w-24 self-center text-xs text-muted-foreground group-data-[layout=grid]/card:hidden">
             {product.pack ?? null}
           </div>
@@ -321,8 +259,8 @@ const ProductItem = withForm({
           />
 
           <QuantityInput
-            qty={qty}
-            updateItem={updateItem}
+            value={qty}
+            onChange={(qty) => updateItem({ product, qty })}
             className="group-data-[layout=grid]/card:hidden"
           />
 
@@ -334,7 +272,10 @@ const ProductItem = withForm({
 
               <Price price={product.price ?? 0} className="w-auto self-start" />
             </div>
-            <QuantityInput qty={qty} updateItem={updateItem} />
+            <QuantityInput
+              value={qty}
+              onChange={(qty) => updateItem({ product, qty })}
+            />
           </div>
         </div>
       </div>
@@ -384,7 +325,7 @@ const Thumbnail = ({
 }: {
   product: CustomerProductType;
   qty: number;
-  updateItem: (t: Record<string, string | number>) => void;
+  updateItem: (product: CustomerProductType, qty: number) => void;
 }) => {
   return (
     <HoverCard openDelay={10} closeDelay={100}>
@@ -404,6 +345,12 @@ const Thumbnail = ({
           <LastPurchase
             product={product}
             className="absolute top-1 left-1 hidden group-data-[layout=grid]/card:inline-flex"
+          />
+
+          <OrderGuideButton
+            productId={product.id}
+            id={product.guide?.id}
+            className="absolute top-1 right-1 hidden group-data-[layout=grid]/card:inline-flex"
           />
         </div>
       </HoverCardTrigger>
@@ -455,7 +402,10 @@ const Thumbnail = ({
 
               <Price price={product.price ?? 0} className="w-auto self-start" />
             </div>
-            <QuantityInput qty={qty} updateItem={updateItem} />
+            <QuantityInput
+              value={qty}
+              onChange={(qty) => updateItem(product, qty)}
+            />
           </div>
         </div>
       </HoverCardContent>
@@ -463,51 +413,63 @@ const Thumbnail = ({
   );
 };
 
-const QuantityInput = ({
-  qty,
-  updateItem,
+const OrderGuideButton = ({
+  id,
+  productId,
   className,
 }: {
-  qty: number;
-  updateItem: (t: Record<string, string | number>) => void;
+  id?: number | undefined;
+  productId: number;
   className?: string;
 }) => {
+  const queryClient = useQueryClient();
+  const [loading, setLoading] = React.useState(false);
+
+  const handleClick = async () => {
+    setLoading(true);
+    if (id) {
+      const { success } = await deleteOrderGuideItem(id);
+      if (success) {
+        queryClient.invalidateQueries({ queryKey: ["customer-products"] });
+        toast.success("Removed from order guide");
+      } else {
+        toast.error("Failed to remove from order guide");
+      }
+    } else {
+      const { success } = await createOrderGuideItem(productId);
+      if (success) {
+        toast.success("Saved to order guide");
+        queryClient.invalidateQueries({ queryKey: ["customer-products"] });
+      } else {
+        toast.error("Failed to save to order guide");
+      }
+    }
+    setLoading(false);
+  };
+
   return (
-    <InputGroup
-      className={cn("h-8 w-24 shrink-0 self-center rounded-xl", className)}
-      onClick={(e) => e.stopPropagation()}
-    >
-      <InputGroupInput
-        value={qty}
-        className="px-0 text-center text-xs"
-        onChange={(e) => {
-          const value = Number(e.target.value);
-          if (!isNaN(value)) updateItem({ qty: value });
-        }}
-      />
-
-      <InputGroupAddon align="inline-start">
-        <InputGroupButton
-          type="button"
-          size="icon-xs"
-          className="rounded-xl bg-green-500 text-green-50 hover:bg-green-600 hover:text-green-50"
-          onClick={() => updateItem({ action: "decrease" })}
-        >
-          <Minus />
-        </InputGroupButton>
-      </InputGroupAddon>
-
-      <InputGroupAddon align="inline-end">
-        <InputGroupButton
-          type="button"
-          size="icon-xs"
-          className="rounded-xl bg-green-500 text-green-50 hover:bg-green-600 hover:text-green-50"
-          onClick={() => updateItem({ action: "increase" })}
-        >
-          <Plus className="size-3" />
-        </InputGroupButton>
-      </InputGroupAddon>
-    </InputGroup>
+    <Tooltip content={id ? "Remove from order guide" : "Add to order guide"}>
+      <Button
+        type="button"
+        variant="outline"
+        size="icon-xs"
+        onClick={handleClick}
+        className={className}
+        disabled={loading}
+      >
+        {loading ? (
+          <Loader className="animate-spin" />
+        ) : (
+          <Star
+            className={
+              id
+                ? "fill-yellow-500 stroke-yellow-500"
+                : "fill-foreground stroke-foreground"
+            }
+          />
+        )}
+      </Button>
+    </Tooltip>
   );
 };
 
@@ -601,7 +563,7 @@ const CategoryPills = ({
             type="button"
             data-active={filter.cat === cat}
             variant="secondary"
-            className="rounded-xl bg-primary/20 data-[active=true]:bg-primary data-[active=true]:text-primary-foreground"
+            className="rounded-xl data-[active=true]:bg-foreground data-[active=true]:text-primary-foreground"
             onClick={() => toggle(cat)}
           >
             {cat}

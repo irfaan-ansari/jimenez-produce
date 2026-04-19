@@ -73,7 +73,7 @@ export const DateFilter = () => {
 
 export const SearchBar = ({
   className,
-  placeholder,
+  placeholder = "Search...",
   ...props
 }: React.ComponentProps<"div"> & { placeholder?: string }) => {
   const { searchParamsObj, queryParams } = useRouterStuff();

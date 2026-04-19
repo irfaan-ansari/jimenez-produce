@@ -53,6 +53,7 @@ export type CustomerProductType = ProductSelectType & {
   stock: string | null;
 } & {
   lastPurchased: LineItemSelectType;
+  guide: { id: number; quantity: string | null } | null;
 };
 
 export type AdminProductType = ProductSelectType & {

@@ -5,6 +5,7 @@ import {
   lineItem,
   OrderInsertType,
   LineItemInsertType,
+  orderGuideItem,
 } from "@/lib/db/schema";
 import { db } from "@/lib/db";
 import { eq } from "drizzle-orm";
@@ -97,6 +98,59 @@ export const deleteOrder = handleAction(async (id: number) => {
   if (!existing) throw new Error("Resource not found.");
 
   const [res] = await db.delete(order).where(eq(order.id, id)).returning();
+
+  return res;
+});
+
+/**
+ * Create order guide item
+ * @param productId - ID of product to be added to order guide
+ * @returns ID of the created order guide item
+ */
+export const createOrderGuideItem = handleAction(async (productId: number) => {
+  const session = await getSession();
+  if (!session) throw new Error("Authentication required");
+  if (!session.user.customerId) {
+    throw new Error("Not authorized for this action.");
+  }
+  const existing = await db.query.orderGuideItem.findFirst({
+    where: eq(orderGuideItem.productId, productId),
+  });
+
+  if (existing) throw new Error("Item already added to order guide.");
+
+  const [result] = await db
+    .insert(orderGuideItem)
+    .values({ productId, customerId: session.user.customerId })
+    .returning();
+
+  return result;
+});
+
+/**
+ * Delete order guide item
+ * @param id - ID of order guide item to be deleted
+ * @returns ID of the deleted order guide item
+ */
+export const deleteOrderGuideItem = handleAction(async (id: number) => {
+  const session = await getSession();
+
+  if (!session) throw new Error("Authentication required");
+
+  if (!session.user.customerId) {
+    throw new Error("Not authorized for this action.");
+  }
+  const existing = await db.query.orderGuideItem.findFirst({
+    where: eq(orderGuideItem.id, id),
+  });
+
+  if (!existing || existing.customerId !== session.user.customerId)
+    throw new Error("Item not found in your order guide.");
+
+  const [res] = await db
+    .delete(orderGuideItem)
+    .where(eq(orderGuideItem.id, id))
+    .returning();
 
   return res;
 });

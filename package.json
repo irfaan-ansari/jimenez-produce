@@ -41,6 +41,7 @@
     "react-day-picker": "^9.13.0",
     "react-dom": "19.2.3",
     "react-easy-crop": "^5.5.7",
+    "react-inner-image-zoom": "^4.0.1",
     "react-markdown": "^10.1.0",
     "react-pdf-tailwind": "^3.0.0",
     "react-signature-canvas": "1.1.0-alpha.2",

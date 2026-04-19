@@ -16,7 +16,7 @@ const AuthLayout = async ({ children }: { children: React.ReactNode }) => {
   }
 
   return (
-    <div className="flex h-svh overflow-hidden">
+    <div className="flex overflow-hidden">
       <div className="relative hidden flex-1 flex-col bg-linear-to-br from-lime-950 to-primary px-6 pt-40 md:flex lg:px-16">
         <span className="absolute right-20 bottom-20 size-72 rounded-full border-2 opacity-50"></span>
         <span className="absolute right-44 bottom-44 size-40 rounded-full border-2 opacity-20"></span>
@@ -41,7 +41,7 @@ const AuthLayout = async ({ children }: { children: React.ReactNode }) => {
           </div>
         </div>
       </div>
-      {children}
+      <div className="h-svh overflow-auto">{children}</div>
     </div>
   );
 };

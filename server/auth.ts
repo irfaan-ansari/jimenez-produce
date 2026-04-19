@@ -3,7 +3,7 @@
 import { cache } from "react";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
-import { customer, UserInsertType } from "@/lib/db/schema";
+import { customer, user, UserInsertType } from "@/lib/db/schema";
 import { db } from "@/lib/db";
 import { eq, or } from "drizzle-orm";
 import { handleAction } from "@/lib/helper/error-handler";
@@ -33,7 +33,7 @@ export const signUp = handleAction(async (data: SignupProps) => {
   const customerRes = await db.query.customer.findFirst({
     where: or(
       eq(customer.companyEmail, email),
-      eq(customer.officerEmail, email)
+      eq(customer.officerEmail, email),
     ),
   });
 
@@ -45,13 +45,20 @@ export const signUp = handleAction(async (data: SignupProps) => {
     throw new Error("Your account is not active");
   }
 
-  const user = await auth.api.createUser({
+  if (customerRes.accountId) {
+    const userAccount = await db.query.user.findFirst({
+      where: eq(user.id, customerRes.accountId),
+    });
+    if (userAccount) throw new Error("Account is already exists");
+  }
+
+  const createdUser = await auth.api.createUser({
     body: {
       ...data,
       email,
       data: {
         image: `https://api.dicebear.com/9.x/identicon/svg?seed=${encodeURIComponent(
-          data.name
+          data.name,
         )}`,
         role: "customer",
       },
@@ -62,12 +69,12 @@ export const signUp = handleAction(async (data: SignupProps) => {
     db
       .update(customer)
       .set({
-        accountId: user.user.id,
+        accountId: createdUser.user.id,
       })
-      .where(eq(customer.id, customerRes.id))
+      .where(eq(customer.id, customerRes.id)),
   );
 
-  return user;
+  return createdUser;
 });
 
 /**
@@ -86,7 +93,7 @@ export const getUsers = async (query?: string) => {
 };
 
 export const createUser = async (
-  data: UserInsertType & { password: string }
+  data: UserInsertType & { password: string },
 ) => {
   return await auth.api.createUser({
     body: {

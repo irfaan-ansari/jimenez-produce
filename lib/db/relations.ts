@@ -13,6 +13,7 @@ import {
   jobInvite,
   order,
   lineItem,
+  orderGuideItem,
 } from "./schema";
 
 export const userRelations = relations(user, ({ many }) => ({
@@ -86,7 +87,7 @@ export const priceLevelItemsRelations = relations(
       fields: [priceLevelItem.productId],
       references: [product.id],
     }),
-  })
+  }),
 );
 export const applicantRelations = relations(jobApplications, ({ one }) => ({
   user: one(user, {
@@ -129,5 +130,16 @@ export const lineItemRelations = relations(lineItem, ({ one }) => ({
   customer: one(customer, {
     fields: [lineItem.customerId],
     references: [customer.id],
+  }),
+}));
+
+export const orderGuideItemRelations = relations(orderGuideItem, ({ one }) => ({
+  customer: one(customer, {
+    fields: [orderGuideItem.customerId],
+    references: [customer.id],
+  }),
+  product: one(product, {
+    fields: [orderGuideItem.productId],
+    references: [product.id],
   }),
 }));

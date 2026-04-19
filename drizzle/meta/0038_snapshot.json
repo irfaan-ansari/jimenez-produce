@@ -1,6 +1,6 @@
 {
-  "id": "f4d3416d-0668-4b05-862c-5c04c4297c43",
-  "prevId": "426bef09-0385-4cb3-bd31-e280b2f2a494",
+  "id": "c5d3fbb9-22af-450c-aef6-9cedf15b201f",
+  "prevId": "256b3c5d-ce62-49c1-a185-c32cc30810cf",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -110,8 +110,12 @@
           "name": "account_user_id_user_id_fk",
           "tableFrom": "account",
           "tableTo": "user",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -455,8 +459,12 @@
           "name": "customer_user_id_user_id_fk",
           "tableFrom": "customer",
           "tableTo": "user",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -623,8 +631,12 @@
           "name": "customer_invite_customer_id_customer_id_fk",
           "tableFrom": "customer_invite",
           "tableTo": "customer",
-          "columnsFrom": ["customer_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "customer_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -632,8 +644,12 @@
           "name": "customer_invite_reviewed_by_user_id_fk",
           "tableFrom": "customer_invite",
           "tableTo": "user",
-          "columnsFrom": ["reviewed_by"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "reviewed_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -641,8 +657,12 @@
           "name": "customer_invite_created_by_user_id_fk",
           "tableFrom": "customer_invite",
           "tableTo": "user",
-          "columnsFrom": ["created_by"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "created_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -745,8 +765,12 @@
           "name": "inventory_location_id_location_id_fk",
           "tableFrom": "inventory",
           "tableTo": "location",
-          "columnsFrom": ["location_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "location_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -754,8 +778,12 @@
           "name": "inventory_product_id_product_id_fk",
           "tableFrom": "inventory",
           "tableTo": "product",
-          "columnsFrom": ["product_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "product_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -765,7 +793,10 @@
         "inventory_product_location_unique": {
           "name": "inventory_product_location_unique",
           "nullsNotDistinct": false,
-          "columns": ["product_id", "location_id"]
+          "columns": [
+            "product_id",
+            "location_id"
+          ]
         }
       },
       "policies": {},
@@ -1100,8 +1131,12 @@
           "name": "job_applications_reviewed_id_user_id_fk",
           "tableFrom": "job_applications",
           "tableTo": "user",
-          "columnsFrom": ["reviewed_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "reviewed_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -1214,8 +1249,12 @@
           "name": "job_invite_application_id_job_applications_id_fk",
           "tableFrom": "job_invite",
           "tableTo": "job_applications",
-          "columnsFrom": ["application_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "application_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -1225,7 +1264,9 @@
         "job_invite_email_unique": {
           "name": "job_invite_email_unique",
           "nullsNotDistinct": false,
-          "columns": ["email"]
+          "columns": [
+            "email"
+          ]
         }
       },
       "policies": {},
@@ -1630,8 +1671,12 @@
           "name": "order_location_id_location_id_fk",
           "tableFrom": "order",
           "tableTo": "location",
-          "columnsFrom": ["location_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "location_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -1639,8 +1684,12 @@
           "name": "order_customer_id_customer_id_fk",
           "tableFrom": "order",
           "tableTo": "customer",
-          "columnsFrom": ["customer_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "customer_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -1648,14 +1697,109 @@
           "name": "order_driver_id_job_applications_id_fk",
           "tableFrom": "order",
           "tableTo": "job_applications",
-          "columnsFrom": ["driver_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "driver_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.order_guide_item": {
+      "name": "order_guide_item",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "customer_id": {
+          "name": "customer_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "product_id": {
+          "name": "product_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "quantity": {
+          "name": "quantity",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "order_guide_item_customerId_idx": {
+          "name": "order_guide_item_customerId_idx",
+          "columns": [
+            {
+              "expression": "customer_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "order_guide_item_productId_idx": {
+          "name": "order_guide_item_productId_idx",
+          "columns": [
+            {
+              "expression": "product_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "order_guide_item_customer_product_unique": {
+          "name": "order_guide_item_customer_product_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "customer_id",
+            "product_id"
+          ]
+        }
+      },
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
@@ -1681,6 +1825,13 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true
+        },
+        "scope": {
+          "name": "scope",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'all'"
         },
         "value": {
           "name": "value",
@@ -1805,7 +1956,10 @@
         "price_level_product_unique": {
           "name": "price_level_product_unique",
           "nullsNotDistinct": false,
-          "columns": ["price_level_id", "product_id"]
+          "columns": [
+            "price_level_id",
+            "product_id"
+          ]
         }
       },
       "policies": {},
@@ -1932,7 +2086,9 @@
         "product_identifier_unique": {
           "name": "product_identifier_unique",
           "nullsNotDistinct": false,
-          "columns": ["identifier"]
+          "columns": [
+            "identifier"
+          ]
         }
       },
       "policies": {},
@@ -2021,8 +2177,12 @@
           "name": "session_user_id_user_id_fk",
           "tableFrom": "session",
           "tableTo": "user",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -2032,7 +2192,9 @@
         "session_token_unique": {
           "name": "session_token_unique",
           "nullsNotDistinct": false,
-          "columns": ["token"]
+          "columns": [
+            "token"
+          ]
         }
       },
       "policies": {},
@@ -2121,7 +2283,9 @@
         "user_email_unique": {
           "name": "user_email_unique",
           "nullsNotDistinct": false,
-          "columns": ["email"]
+          "columns": [
+            "email"
+          ]
         }
       },
       "policies": {},
