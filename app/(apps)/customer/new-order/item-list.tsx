@@ -12,7 +12,6 @@ import {
   X,
 } from "lucide-react";
 import React from "react";
-import { motion } from "motion/react";
 import {
   HoverCard,
   HoverCardContent,
@@ -33,7 +32,7 @@ import { useStore } from "@tanstack/react-form";
 import { Button } from "@/components/ui/button";
 import { useDebounce } from "@/hooks/use-debounce";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useSidebar } from "@/components/ui/sidebar";
+
 import { type CustomerProductType } from "@/lib/types";
 import { PopoverXDrawer } from "@/components/popover-x-drawer";
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
@@ -49,14 +48,14 @@ const LAYOUTS = [
   {
     value: "list",
     icon: TextAlignJustify,
-    className: "grid-cols-1",
+    className: "grid-cols-1 bg-background p-4! rounded-xl border shadow-sm",
     itemClassName: "",
   },
   {
     value: "grid",
     icon: LayoutGrid,
     className:
-      "grid-cols-1 @md:grid-cols-2 @lg:grid-cols-3 @2xl:grid-cols-4 @5xl:grid-cols-5 @6xl:grid-cols-6 @8xl:grid-cols-8 gap-4",
+      "grid-cols-1 *:bg-background *:rounded-xl @md:grid-cols-2 @lg:grid-cols-3 @2xl:grid-cols-4 @5xl:grid-cols-5 @6xl:grid-cols-6 @8xl:grid-cols-8 gap-4",
     itemClassName: "",
   },
 ];
@@ -65,8 +64,6 @@ export const ItemList = withForm({
   ...formOpt,
   props: { show: true as boolean },
   render: function Render({ form, show }) {
-    const { open, setOpen } = useSidebar();
-
     const [filter, setFilter] = React.useState<Record<string, any>>({});
     const [layout, setLayout] = React.useState<"list" | "grid">("list");
     const query = new URLSearchParams(filter);
@@ -102,7 +99,6 @@ export const ItemList = withForm({
       if (savedLayout) {
         setLayout(savedLayout);
       }
-      if (open) setOpen(false);
     }, []);
 
     return (
@@ -110,63 +106,53 @@ export const ItemList = withForm({
         data-layout={layout}
         className="group/card @container min-w-0 flex-1 space-y-3"
       >
-        <div className="sticky top-0 z-2 bg-background">
-          <div className="relative flex flex-row gap-3 py-3">
-            {(isPending || isFetchingNextPage) && (
-              <div className="absolute inset-x-0 top-0 z-1 h-1 animate-pulse rounded-full bg-primary" />
-            )}
+        <div className="sticky top-0 z-2 bg-background rounded-2xl p-4 border shadow-sm  flex flex-row gap-3">
+          <CategoryPills filter={filter} setFilter={setFilter} />
+
+          <Tabs
+            value={layout}
+            onValueChange={(v) => handleLayoutChange(v)}
+            className="shrink-0"
+          >
+            <TabsList className="h-9 rounded-xl">
+              {LAYOUTS.map(({ value, icon }, i) => {
+                const Icon = icon;
+                return (
+                  <TabsTrigger value={value} key={i} asChild>
+                    <Button
+                      variant={layout === value ? "outline" : "secondary"}
+                      size="icon"
+                      type="button"
+                      className="size-8! rounded-xl p-0"
+                    >
+                      <Icon />
+                    </Button>
+                  </TabsTrigger>
+                );
+              })}
+            </TabsList>
+          </Tabs>
+          <Button
+            variant="secondary"
+            type="button"
+            data-active={filter.guide}
+            className="group rounded-xl bg-yellow-500 transition hover:bg-yellow-500/80 data-[active=true]:bg-yellow-600 data-[active=true]:text-primary-foreground"
+            onClick={() => setFilter({ ...filter, guide: !filter.guide })}
+          >
+            <Star />
+            Order Guide
             <Button
-              variant="secondary"
+              asChild
+              variant="ghost"
+              className="rounded-xl opacity-0 group-data-[active=true]:opacity-100"
+              size="icon-xs"
               type="button"
-              data-active={filter.guide}
-              className="group rounded-xl bg-yellow-500 transition hover:bg-yellow-500/80 data-[active=true]:bg-yellow-600 data-[active=true]:text-primary-foreground"
-              onClick={() => setFilter({ ...filter, guide: !filter.guide })}
             >
-              <Star />
-              Order Guide
-              <Button
-                asChild
-                variant="ghost"
-                className="rounded-xl opacity-0 group-data-[active=true]:opacity-100"
-                size="icon-xs"
-                type="button"
-              >
-                <span>
-                  <X />
-                </span>
-              </Button>
+              <span>
+                <X />
+              </span>
             </Button>
-
-            <CategoryPills filter={filter} setFilter={setFilter} />
-
-            <SearchBar filter={filter} setFilter={setFilter} />
-            <Tabs
-              value={layout}
-              onValueChange={(v) => handleLayoutChange(v)}
-              className="shrink-0"
-            >
-              <TabsList className="h-9 rounded-xl">
-                {LAYOUTS.map(({ value, icon }, i) => {
-                  const Icon = icon;
-                  return (
-                    <TabsTrigger value={value} key={i} asChild>
-                      <Button
-                        variant={layout === value ? "outline" : "secondary"}
-                        size="icon"
-                        type="button"
-                        className="size-8! rounded-xl p-0"
-                      >
-                        <Icon />
-                      </Button>
-                    </TabsTrigger>
-                  );
-                })}
-              </TabsList>
-            </Tabs>
-          </div>
-          {(isPending || isFetchingNextPage) && (
-            <div className="absolute inset-x-0 bottom-0 mb-36 h-1 animate-pulse rounded-full bg-primary" />
-          )}
+          </Button>
         </div>
 
         {/* error component */}
@@ -278,7 +264,7 @@ const ProductItem = withForm({
             ...item,
             total: `${Number(item.price) * Number(item.quantity)}`,
           };
-        })
+        }),
       );
     };
 
@@ -289,7 +275,7 @@ const ProductItem = withForm({
           group-data-[layout=grid]/card:flex-col group-data-[layout=grid]/card:items-stretch group-data-[layout=grid]/card:gap-0
           group-data-[layout=grid]/card:p-0 group-data-[layout=list]/card:mb-1 group-data-[layout=list]/card:px-4 
           hover:shadow-md`,
-          isCartItem ? "bg-primary/6" : "hover:bg-primary/6 "
+          isCartItem ? "bg-primary/6 shadow-sm" : "hover:bg-primary/6 ",
         )}
         onClick={() => updateItem({ action: "increase" })}
       >
@@ -303,7 +289,7 @@ const ProductItem = withForm({
              group-data-[layout=grid]/card:p-4"
         >
           <div className="w-full min-w-0 space-y-1 group-data-[layout=grid]/card:space-y-2">
-            <h4 className="leading-tight font-semibold">{product.title}</h4>
+            <h4 className="leading-tight font-medium">{product.title}</h4>
 
             <div className="flex w-full items-center gap-2">
               <div className="no-scrollbar flex min-w-0 flex-nowrap items-center gap-1 overflow-auto">
@@ -368,7 +354,7 @@ const LastPurchase = ({
     <Badge
       className={cn(
         "h-5 shrink-0 rounded-xl bg-primary whitespace-nowrap uppercase",
-        className
+        className,
       )}
     >
       {product.lastPurchased.quantity}cs •{" "}
@@ -438,7 +424,7 @@ const Thumbnail = ({
         </div>
 
         <div className="space-y-3 p-4">
-          <h4 className="text-base leading-tight font-semibold">
+          <h4 className="text-base leading-tight font-medium">
             {product.title}
           </h4>
 
@@ -488,7 +474,7 @@ const QuantityInput = ({
 }) => {
   return (
     <InputGroup
-      className={cn("h-9 w-24 shrink-0 self-center rounded-xl", className)}
+      className={cn("h-8 w-24 shrink-0 self-center rounded-xl", className)}
       onClick={(e) => e.stopPropagation()}
     >
       <InputGroupInput
@@ -504,7 +490,7 @@ const QuantityInput = ({
         <InputGroupButton
           type="button"
           size="icon-xs"
-          className="rounded-xl bg-green-50 text-green-600 hover:bg-green-600 hover:text-white"
+          className="rounded-xl bg-green-500 text-green-50 hover:bg-green-600 hover:text-green-50"
           onClick={() => updateItem({ action: "decrease" })}
         >
           <Minus />
@@ -515,7 +501,7 @@ const QuantityInput = ({
         <InputGroupButton
           type="button"
           size="icon-xs"
-          className="rounded-xl bg-green-50 text-green-600 hover:bg-green-600 hover:text-white"
+          className="rounded-xl bg-green-500 text-green-50 hover:bg-green-600 hover:text-green-50"
           onClick={() => updateItem({ action: "increase" })}
         >
           <Plus className="size-3" />
@@ -636,60 +622,5 @@ const CategoryPills = ({
         ))}
       </div>
     </>
-  );
-};
-
-const SearchBar = ({ filter, setFilter }: { filter: any; setFilter: any }) => {
-  const [val, setVal] = React.useState(filter.q || "");
-  const [open, setOpen] = React.useState(false);
-
-  const debounce = useDebounce(
-    (v: string) => setFilter((p: any) => ({ ...p, q: v, page: "1" })),
-    400
-  );
-
-  return (
-    <InputGroup
-      className="group h-9 w-9 max-w-64 rounded-xl transition-all duration-500 data-[open=true]:w-full"
-      data-open={open}
-    >
-      <InputGroupInput
-        autoFocus
-        placeholder="Search..."
-        value={val}
-        onFocus={() => setOpen(true)}
-        onChange={(e) => {
-          const value = e.target.value;
-          setVal(value);
-          debounce(value);
-        }}
-        onKeyDown={(e) => {
-          if (e.key === "Enter") {
-            e.preventDefault();
-          }
-        }}
-      />
-
-      <InputGroupAddon align="inline-start" onClick={() => setOpen(true)}>
-        <SearchIcon className="size-4 text-muted-foreground" />
-      </InputGroupAddon>
-
-      <InputGroupAddon
-        align={"inline-end"}
-        className="group-data-[open=false]:hidden"
-      >
-        <InputGroupButton
-          type="button"
-          size="icon-sm"
-          className="rounded-xl"
-          onClick={() => {
-            setVal("");
-            setOpen(false);
-          }}
-        >
-          <X />
-        </InputGroupButton>
-      </InputGroupAddon>
-    </InputGroup>
   );
 };

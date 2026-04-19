@@ -1,4 +1,3 @@
-import { Plus } from "lucide-react";
 import { PageClient } from "./page-client";
 import { Button } from "@/components/ui/button";
 import { FilterTabs } from "@/components/admin/filter-tabs";
@@ -19,24 +18,23 @@ const OPTIONS = [
 
 const OrdersPage = async () => {
   return (
-    <div className="flex flex-col h-full gap-5">
-      <h1 className="text-2xl font-semibold">Orders</h1>
-      <FilterTabs tabs={OPTIONS} queryKey="orders" />
-      <div className="flex gap-4 items-center">
-        <SearchBar />
-        <div className="flex gap-4 items-center justify-end flex-1">
-          <Button
-            size="xl"
-            className="rounded-xl size-12 md:w-auto md:px-8 md:min-w-32"
-            asChild
-          >
-            <Link href="/customer/orders/new">
-              <Plus />
-              New Order
-            </Link>
-          </Button>
+    <div className="flex flex-col h-full gap-6">
+      <div className="flex items-center gap-4 w-full **:data-[slot=input-group]:bg-background">
+        <div className="space-y-1 flex-1">
+          <h1 className="text-2xl font-bold">Track your orders</h1>
+          <p className="text-sm text-muted-foreground">
+            Clear delivery windows and live order status in one place.
+          </p>
         </div>
+        <SearchBar />
+        <Button size="xl" variant="outline">
+          Browse Catalog
+        </Button>
+        <Button size="xl" className="rounded-xl" asChild>
+          <Link href="/customer/orders/new">View Cart (4)</Link>
+        </Button>
       </div>
+      <FilterTabs tabs={OPTIONS} queryKey="orders" />
       {/* content */}
       <PageClient />
     </div>

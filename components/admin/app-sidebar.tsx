@@ -23,7 +23,6 @@ import {
 } from "@/components/ui/sidebar";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { SIDEBAR_MENU } from "@/lib/config";
 import { useSession } from "@/hooks/use-auth";
 import { authClient } from "@/lib/auth/client";
 import { getAvatarFallback } from "@/lib/utils";
@@ -32,13 +31,11 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useRouterStuff } from "@/hooks/use-router-stuff";
 import { ChangePasswordDialog } from "../change-password";
 import { ChevronRight, Lock, LogOut, User } from "lucide-react";
-import { SIDEBAR_MENU_CUSTOMER, SITE_CONFIG } from "@/lib/config";
+import { SIDEBAR_MENU, SITE_CONFIG } from "@/lib/config";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
-export function AppSidebar({ variant }: { variant: "admin" | "customer" }) {
+export function AppSidebar() {
   const { pathname, getQueryString } = useRouterStuff();
-
-  const MENU = variant === "customer" ? SIDEBAR_MENU_CUSTOMER : SIDEBAR_MENU;
 
   const isActive = (href: string) => {
     return pathname === href || (pathname.includes(href) && pathname !== "/");
@@ -56,7 +53,7 @@ export function AppSidebar({ variant }: { variant: "admin" | "customer" }) {
       <SidebarContent>
         <SidebarGroup>
           <SidebarMenu>
-            {MENU.map((item) => {
+            {SIDEBAR_MENU.map((item) => {
               if (item.items.length <= 0) {
                 return (
                   <SidebarMenuItem key={item.label}>
@@ -64,12 +61,10 @@ export function AppSidebar({ variant }: { variant: "admin" | "customer" }) {
                       asChild
                       isActive={isActive(item.href)}
                       tooltip={item.label}
-                      className="h-10 rounded-xl data-[state=open]:bg-sidebar-accent"
+                      className="h-10 rounded-xl px-3.5 transition duration-200 hover:bg-muted hover:text-sidebar-foreground data-active:hover:bg-sidebar-accent data-active:hover:text-sidebar-accent-foreground"
                     >
                       <Link href={item.href}>
-                        {item.icon && (
-                          <item.icon className="text-muted-foreground" />
-                        )}
+                        {item.icon && <item.icon className="opacity-80" />}
                         <span>{item.label}</span>
                       </Link>
                     </SidebarMenuButton>
@@ -89,11 +84,9 @@ export function AppSidebar({ variant }: { variant: "admin" | "customer" }) {
                       <SidebarMenuButton
                         tooltip={item.label}
                         isActive={isActive(item.href)}
-                        className="h-10"
+                        className="h-10 px-3.5 transition duration-200 hover:bg-muted hover:text-sidebar-foreground data-active:hover:bg-sidebar-accent data-active:hover:text-sidebar-accent-foreground data-open:hover:bg-muted data-open:hover:text-sidebar-foreground"
                       >
-                        {item.icon && (
-                          <item.icon className="text-muted-foreground" />
-                        )}
+                        {item.icon && <item.icon className="opacity-80" />}
                         <span>{item.label}</span>
                         <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                         {/* <SidebarMenuBadge className="rounded-full bg-red-500">
@@ -107,7 +100,7 @@ export function AppSidebar({ variant }: { variant: "admin" | "customer" }) {
                         {item.items?.map((subItem) => (
                           <SidebarMenuSubItem
                             key={subItem.href}
-                            className="after:absolute after:top-1/2 after:-left-3.5 after:size-2 after:-translate-y-1/2  after:rounded-full after:bg-(--color) after:opacity-0 after:transition group-data-[active=true]/collapsible:after:opacity-100"
+                            className="after:absolute  after:top-1/2 after:-left-3.5 after:size-2 after:-translate-y-1/2  after:rounded-full after:bg-(--color) after:opacity-0 after:transition group-data-[active=true]/collapsible:after:opacity-100"
                             style={
                               {
                                 "--color": subItem.color,
@@ -116,7 +109,7 @@ export function AppSidebar({ variant }: { variant: "admin" | "customer" }) {
                           >
                             <SidebarMenuSubButton
                               asChild
-                              className="rounded-xl"
+                              className="rounded-xl px-3 hover:bg-muted hover:text-sidebar-foreground data-active:bg-sidebar-accent! data-active:text-sidebar-accent-foreground!"
                               isActive={isSubItemActive(subItem.href)}
                             >
                               <Link href={subItem.href}>
@@ -143,7 +136,7 @@ export function AppSidebar({ variant }: { variant: "admin" | "customer" }) {
 export const SidebarLogo = () => {
   return (
     <SidebarHeader className="mb-4">
-      <SidebarMenuItem className="inline-flex items-center gap-4 rounded-xl bg-sidebar-accent  px-2.5 py-2">
+      <SidebarMenuItem className="inline-flex items-center gap-4 rounded-xl  px-2.5 py-2">
         <Avatar className="size-9 rounded-xl ring-2 ring-green-600/20 ring-offset-1 **:rounded-xl after:hidden">
           <AvatarImage src={SITE_CONFIG.logo} alt="profile image" asChild>
             <Image src={SITE_CONFIG.logo} alt="Logo" width={100} height={100} />

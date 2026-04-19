@@ -1,14 +1,11 @@
 import React from "react";
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar";
+import "@/app/globalsv2.css";
 import { getSession } from "@/server/auth";
 import { redirect } from "next/navigation";
 import { SITE_CONFIG } from "@/lib/config";
 import { Container } from "@/components/container";
-import { AppSidebar } from "@/components/admin/app-sidebar";
+import { AppSidebar } from "@/components/admin/customer-sidebar";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
 export const metadata = {
   metadataBase: new URL(SITE_CONFIG.url),
@@ -33,14 +30,13 @@ const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
     <SidebarProvider
       style={
         {
-          "--sidebar-width": "19rem",
+          "--sidebar-width": "16rem",
         } as React.CSSProperties
       }
     >
-      <AppSidebar variant="customer" />
-      <SidebarInset className="min-w-0">
-        <Container className="mx-0 pb-5 md:pb-8 pt-2 h-full max-w-full">
-          <SidebarTrigger className="-ml-1 rounded-xl" size="icon" />
+      <AppSidebar />
+      <SidebarInset className="min-w-0 bg-slate-50">
+        <Container className="mx-0 p-5 md:p-8 h-full max-w-full">
           {children}
         </Container>
       </SidebarInset>

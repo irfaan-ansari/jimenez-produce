@@ -19,6 +19,13 @@ import { Pagination } from "./pagination";
 import { useRouterStuff } from "@/hooks/use-router-stuff";
 import { type Pagination as PaginationMeta } from "@/lib/types";
 import { EmptyComponent } from "@/components/admin/placeholder-component";
+import { cn } from "@/lib/utils";
+
+declare module "@tanstack/react-table" {
+  interface ColumnMeta<TData, TValue> {
+    className?: string;
+  }
+}
 
 interface PaginatedResponse<T> {
   data: T[];
@@ -70,20 +77,22 @@ export function DataTable<TData, TValue>({
   return (
     <div className="flex flex-col h-full gap-3">
       <div className="overflow-hidden **:data-[slot=table-container]:no-scrollbar rounded-2xl border">
-        <Table className="text-base">
+        <Table className="text-base bg-background">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id} className="bg-sidebar">
+              <TableRow key={headerGroup.id} className="bg-muted/80">
                 {headerGroup.headers.map((header) => (
                   <TableHead
                     key={header.id}
-                    className="py-4 px-4 font-medium text-sm uppercase text-muted-foreground"
+                    className={cn(
+                      `py-4 px-4 font-medium text-sm uppercase text-muted-foreground ${header.column.columnDef.meta?.className}`,
+                    )}
                   >
                     {header.isPlaceholder
                       ? null
                       : flexRender(
                           header.column.columnDef.header,
-                          header.getContext()
+                          header.getContext(),
                         )}
                   </TableHead>
                 ))}
@@ -99,7 +108,7 @@ export function DataTable<TData, TValue>({
                     <TableCell key={cell.id} className="p-4">
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext()
+                        cell.getContext(),
                       )}
                     </TableCell>
                   ))}

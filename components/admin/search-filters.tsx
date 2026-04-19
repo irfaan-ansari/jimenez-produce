@@ -73,8 +73,9 @@ export const DateFilter = () => {
 
 export const SearchBar = ({
   className,
+  placeholder,
   ...props
-}: React.ComponentProps<"div">) => {
+}: React.ComponentProps<"div"> & { placeholder?: string }) => {
   const { searchParamsObj, queryParams } = useRouterStuff();
 
   const debouncedSetQuery = useDebounce((value: string) => {
@@ -96,7 +97,7 @@ export const SearchBar = ({
         value={searchParamsObj.q}
         onChange={(e) => debouncedSetQuery(e.target.value)}
         className="rounded-xl"
-        placeholder="Search..."
+        placeholder={placeholder}
       />
     </InputGroup>
   );

@@ -4,8 +4,6 @@ import { Inter, Oswald } from "next/font/google";
 import { Provider } from "@/components/provider";
 
 const body = Inter({
-  subsets: ["latin"],
-  weight: ["400"],
   variable: "--font-sans",
 });
 

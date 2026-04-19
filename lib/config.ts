@@ -3,6 +3,7 @@ import {
   Inbox,
   LayoutDashboard,
   Settings,
+  ShoppingCart,
   Tag,
   UserPlus,
   Users,
@@ -305,15 +306,16 @@ export const SIDEBAR_MENU_CUSTOMER = [
     items: [],
   },
   {
+    label: "New Order",
+    icon: ShoppingCart,
+    href: "/customer/new-order",
+    items: [],
+  },
+  {
     label: "Orders",
     icon: Inbox,
     href: "/customer/orders",
     items: [
-      {
-        label: "New",
-        href: "/customer/orders/new",
-        color: "#3B82F6",
-      },
       {
         label: "All",
         href: "/customer/orders",
