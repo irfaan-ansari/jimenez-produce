@@ -3,11 +3,10 @@
 import { cache } from "react";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
-import { customer, user, UserInsertType } from "@/lib/db/schema";
+import { customer, UserInsertType } from "@/lib/db/schema";
 import { db } from "@/lib/db";
 import { eq, or } from "drizzle-orm";
 import { handleAction } from "@/lib/helper/error-handler";
-import { waitUntil } from "@vercel/functions";
 
 type SignupProps = {
   name: string;
@@ -37,21 +36,6 @@ export const signUp = handleAction(async (data: SignupProps) => {
     ),
   });
 
-  if (!customerRes) {
-    throw new Error("You are not authorized to create an account.");
-  }
-
-  if (customerRes.status !== "active") {
-    throw new Error("Your account is not active");
-  }
-
-  if (customerRes.accountId) {
-    const userAccount = await db.query.user.findFirst({
-      where: eq(user.id, customerRes.accountId),
-    });
-    if (userAccount) throw new Error("Account is already exists");
-  }
-
   const createdUser = await auth.api.createUser({
     body: {
       ...data,
@@ -64,15 +48,6 @@ export const signUp = handleAction(async (data: SignupProps) => {
       },
     },
   });
-
-  waitUntil(
-    db
-      .update(customer)
-      .set({
-        accountId: createdUser.user.id,
-      })
-      .where(eq(customer.id, customerRes.id)),
-  );
 
   return createdUser;
 });

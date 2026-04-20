@@ -1,9 +1,8 @@
 import { db } from "@/lib/db";
-import { sql, eq } from "drizzle-orm";
+import { sql, eq, and } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { lineItem } from "@/lib/db/schema";
 import { getSession } from "@/server/auth";
-import { getCustomer } from "@/server/customer";
 
 export async function GET() {
   try {
@@ -12,8 +11,10 @@ export async function GET() {
     if (!session)
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
 
-    const { data: customer } = await getCustomer();
-    const isCustomer = session.user.role === "customer";
+    const { id: userId, locationId, role } = session.user;
+
+    const isCustomer = role === "customer";
+    const isUser = role === "user";
 
     const data = await db
       .select({
@@ -32,17 +33,16 @@ export async function GET() {
 
       .from(lineItem)
       .where(
-        isCustomer
-          ? customer
-            ? eq(lineItem.customerId, customer.id)
-            : undefined
-          : undefined
+        and(
+          isCustomer ? eq(lineItem.userId, userId) : undefined,
+          isUser ? eq(lineItem.locationId, locationId!) : undefined,
+        ),
       )
       .groupBy(lineItem.id)
       .orderBy(
         sql`
         SUM(CAST(${lineItem.quantity} AS NUMERIC)) DESC
-      `
+      `,
       )
       .limit(5);
 
@@ -50,7 +50,7 @@ export async function GET() {
       {
         data,
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error("Top items error:", error);
@@ -59,7 +59,7 @@ export async function GET() {
         success: false,
         message: "Failed to load data",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

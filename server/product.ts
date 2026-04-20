@@ -3,8 +3,6 @@
 import {
   customer,
   customerInvite,
-  inventory,
-  InventoryInsertType,
   product,
   ProductInsertType,
 } from "@/lib/db/schema";
@@ -12,7 +10,7 @@ import { db } from "@/lib/db";
 import { getSession } from "./auth";
 import { cookies } from "next/headers";
 import { handleAction } from "@/lib/helper/error-handler";
-import { and, eq, ilike, or, sql, desc } from "drizzle-orm";
+import { and, eq, ilike, or, desc } from "drizzle-orm";
 
 export const getProducts = handleAction(
   async (query: Record<string, string>) => {
@@ -83,36 +81,20 @@ export const getProducts = handleAction(
  * @param data - The product to be created
  * @returns ID of the created product
  */
-export const createProduct = handleAction(
-  async (
-    data: ProductInsertType & {
-      inventory: InventoryInsertType[];
-    },
-  ) => {
-    const session = await getSession();
+export const createProduct = handleAction(async (data: ProductInsertType) => {
+  const session = await getSession();
 
-    if (!session) throw new Error("Authentication required.");
+  if (!session) throw new Error("Authentication required.");
 
-    const { inventory: inventoryData = [], ...rest } = data;
+  const { status, ...rest } = data;
 
-    const [result] = await db
-      .insert(product)
-      .values({ ...rest, status: rest.status?.toLowerCase() })
-      .returning();
+  const [result] = await db
+    .insert(product)
+    .values({ ...rest, status: status?.toLowerCase() })
+    .returning();
 
-    const [inv] = await db
-      .insert(inventory)
-      .values(
-        inventoryData.map((inv) => ({
-          ...inv,
-          productId: result.id,
-        })),
-      )
-      .returning();
-
-    return { ...result, inventory: inv };
-  },
-);
+  return result;
+});
 
 /**
  * Upddate a product
@@ -121,12 +103,7 @@ export const createProduct = handleAction(
  * @returns
  */
 export const updateProduct = handleAction(
-  async (
-    id: number,
-    data: ProductInsertType & {
-      inventory: InventoryInsertType[];
-    },
-  ) => {
+  async (id: number, data: ProductInsertType) => {
     const session = await getSession();
     if (!session) throw new Error("Authentication required.");
 

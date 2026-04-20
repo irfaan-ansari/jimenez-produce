@@ -38,8 +38,8 @@ export async function GET(req: NextRequest) {
           ilike(customer.companyEin, `%${q}%`),
           ilike(customer.officerFirst, `%${q}%`),
           ilike(customer.officerEmail, `%${q}%`),
-          ilike(customer.officerMobile, `%${q}%`)
-        )
+          ilike(customer.officerMobile, `%${q}%`),
+        ),
       );
     }
 
@@ -65,14 +65,14 @@ export async function GET(req: NextRequest) {
           totalPages: Math.ceil(total / limit),
         },
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error("Customers API Error:", error);
 
     return NextResponse.json(
       { message: "Failed to load data" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -41,7 +41,7 @@ export const createOrder = handleAction(
           ...item,
           orderId: orderRes.id,
           locationId: orderRes.locationId,
-          customerId: orderRes.customerId,
+          userId: session.user.id,
         })),
       )
       .returning();
@@ -110,9 +110,11 @@ export const deleteOrder = handleAction(async (id: number) => {
 export const createOrderGuideItem = handleAction(async (productId: number) => {
   const session = await getSession();
   if (!session) throw new Error("Authentication required");
-  if (!session.user.customerId) {
+
+  if (session.user.role !== "customer") {
     throw new Error("Not authorized for this action.");
   }
+
   const existing = await db.query.orderGuideItem.findFirst({
     where: eq(orderGuideItem.productId, productId),
   });
@@ -121,7 +123,7 @@ export const createOrderGuideItem = handleAction(async (productId: number) => {
 
   const [result] = await db
     .insert(orderGuideItem)
-    .values({ productId, customerId: session.user.customerId })
+    .values({ productId, userId: session.user.id })
     .returning();
 
   return result;
@@ -137,14 +139,15 @@ export const deleteOrderGuideItem = handleAction(async (id: number) => {
 
   if (!session) throw new Error("Authentication required");
 
-  if (!session.user.customerId) {
+  if (session.user.role !== "customer") {
     throw new Error("Not authorized for this action.");
   }
+
   const existing = await db.query.orderGuideItem.findFirst({
     where: eq(orderGuideItem.id, id),
   });
 
-  if (!existing || existing.customerId !== session.user.customerId)
+  if (!existing || existing.userId !== session.user.id)
     throw new Error("Item not found in your order guide.");
 
   const [res] = await db

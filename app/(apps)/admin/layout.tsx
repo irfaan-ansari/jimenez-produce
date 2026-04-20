@@ -1,4 +1,5 @@
 import React from "react";
+import "@/app/globalsv2.css";
 import {
   SidebarInset,
   SidebarProvider,
@@ -33,13 +34,13 @@ const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
     <SidebarProvider
       style={
         {
-          "--sidebar-width": "19rem",
+          "--sidebar-width": "16rem",
         } as React.CSSProperties
       }
     >
       <AppSidebar />
       <SidebarInset className="min-w-0">
-        <Container className="mx-0 pb-5 md:pb-8 pt-2 h-full max-w-full">
+        <Container className="mx-0 h-full max-w-full pt-2 pb-5 md:pb-8">
           <SidebarTrigger className="-ml-1 rounded-xl" size="icon" />
           {children}
         </Container>

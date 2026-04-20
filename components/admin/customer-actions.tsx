@@ -11,7 +11,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { CustomerStatusDialog } from "./customer-status-dialog";
 import { deleteCustomer, updateCustomer } from "@/server/customer";
 import { Eye, FileText, MoreVertical, SquarePen, Trash2 } from "lucide-react";
-import { CustomerApproveDialog } from "./customer-approve-dialog";
+
 import { CUSTOMER_ACTIONS } from "@/lib/constants/status-map";
 
 type Status = keyof typeof CUSTOMER_ACTIONS;
@@ -23,7 +23,7 @@ interface Props {
 export const CustomerAction = ({ data, showView = true }: Props) => {
   const { status, id } = data as { status: Status; id: number };
   const [open, setOpen] = useState(false);
-  const [approveOpen, setApproveOpen] = useState(false);
+
   const confirm = useConfirm();
   const queryClient = useQueryClient();
   const [statusVariant, setStatusVariant] = useState("rejected");
@@ -34,7 +34,23 @@ export const CustomerAction = ({ data, showView = true }: Props) => {
   const handleAction = (action: string) => {
     switch (action) {
       case "active":
-        setApproveOpen(true);
+        confirm.info({
+          title: "Approve Application",
+          description:
+            "Approving this application will activate the customer account and send a notification to the customer.",
+          actionLabel: "Approve",
+          cancelLabel: "Cancel",
+          action: async () => {
+            const { success, error } = await updateCustomer(id, {
+              status: "active",
+            });
+
+            if (success) {
+              queryClient.invalidateQueries({ queryKey: ["customers"] });
+              toast.success("Application has been approved");
+            } else toast.error(error.message);
+          },
+        });
         break;
 
       case "under_review":
@@ -152,23 +168,6 @@ export const CustomerAction = ({ data, showView = true }: Props) => {
         showDialog={showStatusDialog}
         setShowDialog={setShowStatusDialog}
         id={id}
-      />
-      {/* customer approve dialog */}
-      <CustomerApproveDialog
-        open={approveOpen}
-        setOpen={setApproveOpen}
-        action={async (locationId) => {
-          const { success, error } = await updateCustomer(id, {
-            status: "active",
-            locationId,
-          });
-
-          if (success) {
-            queryClient.invalidateQueries({ queryKey: ["customers"] });
-            toast.success("Application has been approved");
-            setApproveOpen(false);
-          } else toast.error(error.message);
-        }}
       />
     </PopoverXDrawer>
   );

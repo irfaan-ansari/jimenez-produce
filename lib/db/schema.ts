@@ -32,6 +32,10 @@ export const user = pgTable("user", {
   banned: boolean("banned").default(false),
   banReason: text("ban_reason"),
   banExpires: timestamp("ban_expires"),
+  phoneNumber: text("phone_number").unique(),
+  phoneNumberVerified: boolean("phone_number_verified"),
+  locationId: integer("location_id"),
+  managerName: text("manager_name"),
 });
 
 export const session = pgTable(
@@ -124,9 +128,6 @@ export const customer = pgTable(
     id: serial("id").primaryKey(),
     status: text("status").notNull().default("new"),
     thumbnail: text("thumbnail"),
-    locationId: integer("location_id"),
-    priceLevelId: integer("price_level_id"),
-    accountId: text("account_id"),
     /* ---------------- Business Info ---------------- */
     companyName: text("company_name").notNull(),
     companyDBA: text("company_dba").notNull(),
@@ -207,7 +208,8 @@ export const product = pgTable(
   {
     id: serial("id").primaryKey(),
     title: text("title").notNull(),
-    identifier: text("identifier").unique().notNull(),
+    locationId: integer("location_id"),
+    identifier: text("identifier").notNull(),
     type: text("type"),
     pack: text("pack"),
     description: text("description"),
@@ -216,6 +218,8 @@ export const product = pgTable(
       .default(sql`'[]'::jsonb`),
     status: text("status").default("active"),
     image: text("image"),
+    basePrice: text("base_price").notNull().default("0"),
+    unit: text("unit"),
     images: jsonb("images")
       .$type<string[]>()
       .default(sql`'[]'::jsonb`),
@@ -234,34 +238,6 @@ export const product = pgTable(
 /* -----------------------------
    Inventory Table
 ----------------------------- */
-export const inventory = pgTable(
-  "inventory",
-  {
-    id: serial("id").primaryKey(),
-    locationId: integer("location_id")
-      .notNull()
-      .references(() => location.id, { onDelete: "cascade" }),
-    productId: integer("product_id")
-      .notNull()
-      .references(() => product.id, { onDelete: "cascade" }),
-    price: text("price"),
-    offerPrice: text("offer_price"),
-    stock: text("stock"),
-    createdAt: timestamp("created_at").defaultNow(),
-    updatedAt: timestamp("updated_at")
-      .defaultNow()
-      .$onUpdate(() => /* @__PURE__ */ new Date())
-      .notNull(),
-  },
-  (table) => [
-    index("product_locationId_idx").on(table.locationId),
-    index("product_productId_idx").on(table.productId),
-    unique("inventory_product_location_unique").on(
-      table.productId,
-      table.locationId,
-    ),
-  ],
-);
 
 export const priceLevel = pgTable("price_level", {
   id: serial("id").primaryKey(),
@@ -305,8 +281,10 @@ export const orderGuideItem = pgTable(
   "order_guide_item",
   {
     id: serial("id").primaryKey(),
-    customerId: integer("customer_id").notNull(),
     productId: integer("product_id").notNull(),
+    userId: text("user_id").references(() => user.id, {
+      onDelete: "set null",
+    }),
     quantity: text("quantity"),
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at")
@@ -315,10 +293,9 @@ export const orderGuideItem = pgTable(
       .notNull(),
   },
   (table) => [
-    index("order_guide_item_customerId_idx").on(table.customerId),
     index("order_guide_item_productId_idx").on(table.productId),
-    unique("order_guide_item_customer_product_unique").on(
-      table.customerId,
+    unique("order_guide_item_user_product_unique").on(
+      table.userId,
       table.productId,
     ),
   ],
@@ -579,10 +556,7 @@ export const order = pgTable(
     locationId: integer("location_id").references(() => location.id, {
       onDelete: "set null",
     }),
-    customerId: integer("customer_id").references(() => customer.id, {
-      onDelete: "set null",
-    }),
-    driverId: integer("driver_id").references(() => jobApplications.id, {
+    userId: text("user_id").references(() => user.id, {
       onDelete: "set null",
     }),
     shippingAddress: jsonb("shipping_address").$type<{
@@ -617,10 +591,7 @@ export const order = pgTable(
       .$onUpdate(() => /* @__PURE__ */ new Date())
       .notNull(),
   },
-  (table) => [
-    index("order_locationId_idx").on(table.locationId),
-    index("order_customerId_idx").on(table.customerId),
-  ],
+  (table) => [index("order_locationId_idx").on(table.locationId)],
 );
 
 export const lineItem = pgTable(
@@ -630,7 +601,9 @@ export const lineItem = pgTable(
     orderId: integer("order_id"),
     productId: integer("product_id"),
     locationId: integer("location_id"),
-    customerId: integer("customer_id"),
+    userId: text("user_id").references(() => user.id, {
+      onDelete: "set null",
+    }),
     title: text("title"),
     image: text("image"),
     type: text("type"),
@@ -651,12 +624,12 @@ export const lineItem = pgTable(
   },
   (table) => [
     index("lineItem_locationId_idx").on(table.locationId),
-    index("lineItem_customerId_idx").on(table.customerId),
+    index("lineItem_userId_idx").on(table.userId),
   ],
 );
 
-export type InventoryInsertType = InferInsertModel<typeof inventory>;
-export type InventorySelectType = InferSelectModel<typeof inventory>;
+// export type InventoryInsertType = InferInsertModel<typeof inventory>;
+// export type InventorySelectType = InferSelectModel<typeof inventory>;
 
 export type ProductInsertType = InferInsertModel<typeof product>;
 export type ProductSelectType = InferSelectModel<typeof product>;

@@ -1,9 +1,9 @@
+import { auth } from "./auth";
 import { inviteStatusMap } from "./constants/customer";
 import { jobApplicationStatusMap } from "./constants/job";
 import { STATUS_MAP } from "./constants/status-map";
 import {
   CustomerSelectType,
-  InventorySelectType,
   LineItemSelectType,
   LocationSelectType,
   OrderSelectType,
@@ -48,17 +48,11 @@ export type Pagination = {
 };
 
 export type CustomerProductType = ProductSelectType & {
-  price: string | null;
-  offerPrice: string | null;
-  stock: string | null;
-} & {
   lastPurchased: LineItemSelectType;
   guide: { id: number; quantity: string | null } | null;
 };
 
-export type AdminProductType = ProductSelectType & {
-  inventory: InventorySelectType[];
-};
+export type AdminProductType = ProductSelectType;
 
 export type AdminProductResponse = {
   data: AdminProductType[];
@@ -101,3 +95,4 @@ export type PriceLevelResponse = {
   data: PriceLevelType[];
   pagination: Pagination;
 };
+export type Session = typeof auth.$Infer.Session;

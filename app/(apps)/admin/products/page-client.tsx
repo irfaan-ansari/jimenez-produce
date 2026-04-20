@@ -63,13 +63,7 @@ export const PageClient = () => {
                   </Badge>
                 </div>
 
-                <ProductAction
-                  product={{
-                    ...product,
-                    inventory:
-                      product.inventory as AdminProductType["inventory"],
-                  }}
-                />
+                <ProductAction product={product} />
 
                 <div className="relative aspect-[1.6/1] overflow-hidden rounded-t-[0.5rem] bg-secondary">
                   {product.image && (
@@ -99,18 +93,9 @@ export const PageClient = () => {
                     {product.title}
                   </CardTitle>
                   <CardDescription className="text-base">
-                    {product.inventory.map((inv) => (
-                      <div
-                        key={inv.id}
-                        className="flex items-center justify-between gap-2"
-                      >
-                        {/* @ts-ignore */}
-                        <span>{inv?.location?.name}:</span>
-                        <span className="text-primary">
-                          {formatUSD(inv.price! ?? 0)}
-                        </span>
-                      </div>
-                    ))}
+                    <span className="text-primary">
+                      {formatUSD(product.basePrice)}:
+                    </span>
                   </CardDescription>
                 </CardContent>
               </Card>

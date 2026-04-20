@@ -19,6 +19,7 @@ import {
   SidebarMenuSub,
   SidebarMenuSubItem,
   SidebarMenuSubButton,
+  SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -56,7 +57,7 @@ export function AppSidebar() {
   };
 
   return (
-    <Sidebar>
+    <Sidebar collapsible="icon">
       <SidebarLogo />
       <SidebarContent>
         <SidebarGroup>
@@ -92,14 +93,17 @@ export function AppSidebar() {
                       <SidebarMenuButton
                         tooltip={item.label}
                         isActive={isActive(item.href)}
-                        className="h-10 px-3.5 transition duration-200 hover:bg-muted hover:text-sidebar-foreground data-active:hover:bg-sidebar-accent data-active:hover:text-sidebar-accent-foreground data-open:hover:bg-muted data-open:hover:text-sidebar-foreground"
+                        className="h-10 px-3.5 transition duration-200 hover:bg-muted hover:text-sidebar-foreground data-open:hover:bg-muted data-open:hover:text-sidebar-foreground data-active:hover:bg-sidebar-accent data-active:hover:text-sidebar-accent-foreground"
+                        asChild
                       >
-                        {item.icon && <item.icon className="opacity-80" />}
-                        <span>{item.label}</span>
-                        <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                        {/* <SidebarMenuBadge className="rounded-full bg-red-500">
+                        <Link href={item.href}>
+                          {item.icon && <item.icon className="opacity-80" />}
+                          <span>{item.label}</span>
+                          <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                          {/* <SidebarMenuBadge className="rounded-full bg-red-500">
                           4
                         </SidebarMenuBadge> */}
+                        </Link>
                       </SidebarMenuButton>
                     </CollapsibleTrigger>
 
@@ -134,11 +138,11 @@ export function AppSidebar() {
             })}
           </SidebarMenu>
         </SidebarGroup>
-        <SidebarGroup>
+        <SidebarGroup className="group-data-[state=collapsed]:hidden">
           <SidebarMenu className="mb-4">
             <SidebarMenuItem className="rounded-xl bg-linear-to-br from-lime-100 via-emerald-50 to-white p-4">
-              <div className="font-semibold mb-1">Reorder smarter</div>
-              <p className="text-muted-foreground text-sm mb-4">
+              <div className="mb-1 font-semibold">Reorder smarter</div>
+              <p className="mb-4 text-sm text-muted-foreground">
                 Your top items and recent purchases are ready to add in seconds.
               </p>
               <Button
@@ -161,22 +165,35 @@ export function AppSidebar() {
 export const SidebarLogo = () => {
   return (
     <SidebarHeader className="mb-4">
-      <SidebarMenuItem className="inline-flex items-center gap-4 rounded-xl px-2.5 py-2">
-        <Avatar className="size-10 rounded-md ring-2 ring-green-600/20 ring-offset-1 **:rounded-xl after:hidden">
-          <AvatarImage src={SITE_CONFIG.logo} alt="profile image" asChild>
-            <Image src={SITE_CONFIG.logo} alt="Logo" width={100} height={100} />
-          </AvatarImage>
-          <AvatarFallback className="bg-primary/40 text-xs font-medium">
-            {getAvatarFallback(SITE_CONFIG.name)}
-          </AvatarFallback>
-        </Avatar>
-        <div className="flex flex-col">
-          <span className="text-lg font-semibold">{SITE_CONFIG.name}</span>
-          <span className="text-muted-foreground text-xs">
-            Ordering Platform
-          </span>
-        </div>
-      </SidebarMenuItem>
+      <SidebarMenu>
+        <SidebarMenuItem className="rounded-xl group-data-[state=expanded]:absolute group-data-[state=expanded]:top-4 group-data-[state=expanded]:-right-4 group-data-[state=expanded]:z-1 group-data-[state=expanded]:bg-muted">
+          <SidebarTrigger />
+        </SidebarMenuItem>
+        <SidebarMenuItem>
+          <SidebarMenuButton
+            size="lg"
+            className="hover:bg-sidebar hover:text-sidebar-foreground"
+          >
+            <Avatar className="aspect-square size-8 rounded-md ring-2 ring-green-600/20 ring-offset-1 **:rounded-xl after:hidden">
+              <AvatarImage src={SITE_CONFIG.logo} alt="profile image" asChild>
+                <Image
+                  src={SITE_CONFIG.logo}
+                  alt="Logo"
+                  width={40}
+                  height={40}
+                />
+              </AvatarImage>
+              <AvatarFallback className="bg-primary/40 text-xs font-medium">
+                {getAvatarFallback(SITE_CONFIG.name)}
+              </AvatarFallback>
+            </Avatar>
+            <div className="grid flex-1 text-left text-sm leading-tight">
+              <span className="truncate font-medium">{SITE_CONFIG.name}</span>
+              <span className="truncate text-xs"> Ordering Platform</span>
+            </div>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      </SidebarMenu>
     </SidebarHeader>
   );
 };
@@ -208,11 +225,11 @@ const Profile = () => {
           <PopoverXDrawer
             open={open}
             setOpen={setOpen}
-            className="data-[slot=popover-content]:max-w-(--radix-popover-trigger-width) w-72 *:gap-0"
+            className="w-60 *:gap-0 data-[slot=popover-content]:max-w-60"
             trigger={
               <SidebarMenuButton
                 size="lg"
-                className="data-open:bg-muted! hover:bg-muted! hover:text-sidebar-foreground! data-active:hover:bg-muted data-open:hover:bg-muted data-open:hover:text-sidebar-foreground"
+                className="hover:bg-muted! hover:text-sidebar-foreground! data-open:bg-muted! data-open:hover:bg-muted data-open:hover:text-sidebar-foreground data-active:hover:bg-muted"
               >
                 <Avatar className="size-9 rounded-lg ring-2 ring-green-600/20 ring-offset-1 **:rounded-xl after:hidden">
                   <AvatarImage src={data?.user.image!} alt="profile image" />
@@ -220,7 +237,7 @@ const Profile = () => {
                     {getAvatarFallback(data?.user.name)}
                   </AvatarFallback>
                 </Avatar>
-                <div className="grid flex-1 text-left text-sm leading-tight min-w-0">
+                <div className="grid min-w-0 flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">
                     {data?.user.name}
                   </span>
@@ -238,13 +255,13 @@ const Profile = () => {
                 image: data?.user.image,
               }}
             >
-              <Button className="rounded-xl justify-start" variant="ghost">
+              <Button className="justify-start rounded-xl" variant="ghost">
                 <User />
                 Profile
               </Button>
             </ProfileDialog>
             <ChangePasswordDialog>
-              <Button className="rounded-xl justify-start" variant="ghost">
+              <Button className="justify-start rounded-xl" variant="ghost">
                 <Lock />
                 Change Password
               </Button>

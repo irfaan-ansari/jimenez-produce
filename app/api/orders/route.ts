@@ -1,7 +1,6 @@
 import { db } from "@/lib/db";
 import { order } from "@/lib/db/schema";
 import { getSession } from "@/server/auth";
-import { getCustomer } from "@/server/customer";
 import { or, and, ilike, eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -13,7 +12,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
 
     const isCustomer = session.user.role === "customer";
-    const { data: customer } = await getCustomer();
+    const isUser = session.user.role === "user";
 
     const searchParams = req.nextUrl.searchParams;
     const query = Object.fromEntries(searchParams.entries());
@@ -21,20 +20,27 @@ export async function GET(req: NextRequest) {
     const offset = ((page as number) - 1) * Number(limit);
 
     const filters = and(
-      isCustomer ? eq(order.customerId, customer?.id!) : undefined,
+      isCustomer ? eq(order.userId, session.user.id) : undefined,
+      isUser ? eq(order.locationId, session.user.locationId!) : undefined,
       status ? eq(order.status, status) : undefined,
       q
         ? or(
             ilike(order.receiverName, `%${q}%`),
             ilike(order.receiverPhone, `%${q}%`),
-            ilike(order.notes, `%${q}%`)
+            ilike(order.notes, `%${q}%`),
           )
-        : undefined
+        : undefined,
     );
 
     const response = await db.query.order.findMany({
       where: filters,
-      with: { lineItems: true, location: true, customer: true },
+      with: {
+        lineItems: true,
+        location: true,
+        user: {
+          columns: { name: true, id: true, email: true },
+        },
+      },
       limit: Number(limit),
       offset,
       orderBy: (order, { desc }) => [desc(order.createdAt)],
@@ -52,13 +58,13 @@ export async function GET(req: NextRequest) {
           totalPages: Math.ceil(total / (limit as number)),
         },
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error(error);
     return NextResponse.json(
       { message: "Failed to load data" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

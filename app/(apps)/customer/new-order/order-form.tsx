@@ -11,7 +11,6 @@ import { formOpt } from "./order-form-options";
 import { Button } from "@/components/ui/button";
 import { useConfirm } from "@/hooks/use-confirm";
 import { useAppForm } from "@/hooks/form-context";
-import { CustomerSelectType } from "@/lib/db/schema";
 import { useQueryClient } from "@tanstack/react-query";
 import { cn, formatUSD, getNextDayDate } from "@/lib/utils";
 import {
@@ -26,42 +25,35 @@ import { useStore } from "@tanstack/react-form";
 import { SearchBar } from "@/components/admin/search-filters";
 import Link from "next/link";
 import { useRouterStuff } from "@/hooks/use-router-stuff";
+import { useSidebar } from "@/components/ui/sidebar";
+import { type Session } from "@/lib/types";
 
-export const OrderForm = ({ customer }: { customer: CustomerSelectType }) => {
+export const OrderForm = ({ session }: { session: Session }) => {
   const router = useRouter();
   const confirm = useConfirm();
+  const { open, setOpen } = useSidebar();
   const [showSummary, setShowSummary] = React.useState(false);
   const queryClient = useQueryClient();
   const { queryParams, searchParamsObj } = useRouterStuff();
-  const {
-    deliverySchedule,
-    companyStreet,
-    companyCity,
-    companyState,
-    companyZip,
-  } = customer;
 
   const form = useAppForm({
     ...formOpt,
     defaultValues: {
       ...formOpt.defaultValues,
       shippingAddress: {
-        street: companyStreet,
-        city: companyCity,
-        state: companyState,
-        zip: companyZip,
+        street: "",
+        city: "",
+        state: "",
+        zip: "",
       },
       notes: "",
-      customerId: customer.id,
-      locationId: customer.locationId,
-      receiverName: deliverySchedule[0].receivingName,
-      receiverPhone: deliverySchedule[0].receivingPhone,
-      deliveryDate: format(
-        getNextDayDate(deliverySchedule[0].day),
-        "MM-dd-yyyy",
-      ),
-      deliveryWindow: deliverySchedule[0].window,
-      deliveryInstruction: deliverySchedule[0].instructions,
+      customerId: session.user.id,
+      locationId: session.user.locationId,
+      receiverName: "",
+      receiverPhone: "",
+      deliveryDate: "",
+      deliveryWindow: "",
+      deliveryInstruction: "",
     },
     onSubmit: async ({ value }) => {
       const { lineItems } = value;
@@ -120,6 +112,7 @@ export const OrderForm = ({ customer }: { customer: CustomerSelectType }) => {
         ...product,
         productId: product.id,
         image: product.image!,
+        price: product.basePrice,
         quantity: `${newQty || 1}`,
       });
     }
@@ -134,16 +127,22 @@ export const OrderForm = ({ customer }: { customer: CustomerSelectType }) => {
     form.setFieldValue("lineItems", updatedItemsWithTotal);
   };
 
+  React.useEffect(() => {
+    if (open) {
+      setOpen(false);
+    }
+  }, []);
+
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col items-start lg:items-center lg:flex-row gap-4 w-full **:data-[slot=input-group]:bg-background">
-        <div className="space-y-1 flex-1">
+      <div className="flex w-full flex-col items-start gap-4 **:data-[slot=input-group]:bg-background lg:flex-row lg:items-center">
+        <div className="flex-1 space-y-1">
           <h1 className="text-2xl font-bold">Build a new order</h1>
           <p className="text-sm text-muted-foreground">
             Search products, update quantities, and send an order faster.
           </p>
         </div>
-        <div className="flex gap-4 items-center justify-between lg:justify-end w-full lg:w-auto lg:flex-1">
+        <div className="flex w-full items-center justify-between gap-4 lg:w-auto lg:flex-1 lg:justify-end">
           <SearchBar placeholder="Search products..." />
           <Button
             size="xl"

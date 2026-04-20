@@ -1,5 +1,5 @@
+import { getSession } from "@/server/auth";
 import { OrderForm } from "./order-form";
-import { getCustomer } from "@/server/customer";
 
 export const metadata = {
   title: "New Order",
@@ -7,10 +7,9 @@ export const metadata = {
 export const dynamic = "force-dynamic";
 
 const NewOrderPage = async () => {
-  const { data: customer, success, error } = await getCustomer();
-  if (!success) throw new Error(error?.message);
+  const session = await getSession();
 
-  return <OrderForm customer={customer!} />;
+  return <OrderForm session={session!} />;
 };
 
 export default NewOrderPage;

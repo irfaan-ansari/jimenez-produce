@@ -19,24 +19,6 @@ import { sendApplicationStatusEmails, sendEmail } from "@/lib/email";
 import CatalogRequestNew from "@/components/email/catalog-request-new";
 import CatalogRequestUpdate from "@/components/email/catalog-request-update";
 
-export const getCustomer = handleAction(async (id?: number) => {
-  const session = await getSession();
-
-  if (!session) throw new Error("Authentication required.");
-
-  if (session?.user.role === "customer") {
-    return db.query.customer.findFirst({
-      where: eq(customer.accountId, session?.user.id!),
-    });
-  }
-
-  if (!id) throw new Error("Authentication required.");
-
-  return db.query.customer.findFirst({
-    where: eq(customer.id, id),
-  });
-});
-
 /**
  * create a customer - public
  * @param data - customer data to be created
@@ -66,7 +48,7 @@ export const createCustomer = handleAction(
     if (notify) waitUntil(sendApplicationStatusEmails(result));
 
     return result;
-  }
+  },
 );
 
 /**
@@ -86,8 +68,8 @@ const linkCustomerInvite = async ({
         eq(customerInvite.email, email),
         eq(customerInvite.email, accountPayableEmail),
         eq(customerInvite.email, officerEmail),
-        ne(customerInvite.status, "approved")
-      )
+        ne(customerInvite.status, "approved"),
+      ),
     ),
   });
 
@@ -136,7 +118,7 @@ export const updateCustomer = handleAction(
     }
 
     return result;
-  }
+  },
 );
 
 /**
@@ -204,7 +186,7 @@ export const createInvite = handleAction(
             company: result.companyName,
             message: result.message,
           },
-        })
+        }),
       );
     } else {
       // send customer invite email
@@ -217,11 +199,11 @@ export const createInvite = handleAction(
             name: result.firstName,
             message: result.message,
           },
-        })
+        }),
       );
     }
     return result;
-  }
+  },
 );
 
 /**
@@ -260,7 +242,7 @@ export const updateInvite = handleAction(
             reason: result.statusReason,
             message: result.statusDetails,
           },
-        })
+        }),
       );
     } else if (result.type === "request" && result.status === "approved") {
       waitUntil(
@@ -278,12 +260,12 @@ export const updateInvite = handleAction(
                 ? `${process.env.BETTER_AUTH_URL}/products?email=${result.email}`
                 : undefined,
           },
-        })
+        }),
       );
     }
 
     return result;
-  }
+  },
 );
 
 /**

@@ -2,12 +2,11 @@ import { db } from "@/lib/db";
 import { and, eq } from "drizzle-orm";
 import { order } from "@/lib/db/schema";
 import { getSession } from "@/server/auth";
-import { getCustomer } from "@/server/customer";
 import { NextRequest, NextResponse } from "next/server";
 
 export const GET = async (
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) => {
   try {
     const session = await getSession();
@@ -15,19 +14,31 @@ export const GET = async (
     if (!session)
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
 
-    const isCustomer = session.user.role === "customer";
-    const { data: customer } = await getCustomer();
+    const { id: userId, locationId, role } = session.user;
+
+    const isCustomer = role === "customer";
+    const isUser = role === "user";
 
     const { id } = await params;
 
     const filters = and(
-      isCustomer ? eq(order.customerId, customer?.id!) : undefined,
-      eq(order.id, Number(id))
+      isCustomer ? eq(order.userId, userId) : undefined,
+      isUser ? eq(order.locationId, locationId!) : undefined,
+      eq(order.id, Number(id)),
     );
 
     const response = await db.query.order.findFirst({
       where: filters,
-      with: { lineItems: true, location: true, customer: true },
+      with: {
+        lineItems: true,
+        location: true,
+        user: {
+          columns: {
+            id: true,
+            name: true,
+          },
+        },
+      },
     });
 
     if (!response)
@@ -45,13 +56,13 @@ export const GET = async (
 
     return NextResponse.json(
       { data: { ...response, lineItems } },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error("Order API Error:", error);
     return NextResponse.json(
       { message: "Failed to load data" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 };

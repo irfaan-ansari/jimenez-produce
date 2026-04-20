@@ -2,7 +2,6 @@ import { relations } from "drizzle-orm";
 import {
   account,
   customer,
-  inventory,
   session,
   user,
   location,
@@ -35,39 +34,16 @@ export const accountRelations = relations(account, ({ one }) => ({
   }),
 }));
 
-export const locationRelations = relations(location, ({ many }) => ({
-  inventory: many(inventory),
-}));
-
 export const customerRelations = relations(customer, ({ one }) => ({
   reviewer: one(user, {
     fields: [customer.reviewedBy],
     references: [user.id],
   }),
-  account: one(user, {
-    fields: [customer.accountId],
-    references: [user.id],
-  }),
-  location: one(location, {
-    fields: [customer.locationId],
-    references: [location.id],
-  }),
-  priceLevel: one(priceLevel, {
-    fields: [customer.priceLevelId],
-    references: [priceLevel.id],
-  }),
-}));
-export const productRelation = relations(product, ({ many }) => ({
-  inventory: many(inventory),
 }));
 
-export const inventoryRelations = relations(inventory, ({ one }) => ({
-  product: one(product, {
-    fields: [inventory.productId],
-    references: [product.id],
-  }),
+export const productRelations = relations(product, ({ one }) => ({
   location: one(location, {
-    fields: [inventory.locationId],
+    fields: [product.locationId],
     references: [location.id],
   }),
 }));
@@ -102,18 +78,15 @@ export const jobInviteRelations = relations(jobInvite, ({ one }) => ({
     references: [jobApplications.id],
   }),
 }));
+
 export const orderRelations = relations(order, ({ one, many }) => ({
-  driver: one(jobApplications, {
-    fields: [order.driverId],
-    references: [jobApplications.id],
-  }),
   location: one(location, {
     fields: [order.locationId],
     references: [location.id],
   }),
-  customer: one(customer, {
-    fields: [order.customerId],
-    references: [customer.id],
+  user: one(user, {
+    fields: [order.userId],
+    references: [user.id],
   }),
   lineItems: many(lineItem),
 }));
@@ -127,16 +100,16 @@ export const lineItemRelations = relations(lineItem, ({ one }) => ({
     fields: [lineItem.locationId],
     references: [location.id],
   }),
-  customer: one(customer, {
-    fields: [lineItem.customerId],
-    references: [customer.id],
+  user: one(user, {
+    fields: [lineItem.userId],
+    references: [user.id],
   }),
 }));
 
 export const orderGuideItemRelations = relations(orderGuideItem, ({ one }) => ({
-  customer: one(customer, {
-    fields: [orderGuideItem.customerId],
-    references: [customer.id],
+  user: one(user, {
+    fields: [orderGuideItem.userId],
+    references: [user.id],
   }),
   product: one(product, {
     fields: [orderGuideItem.productId],

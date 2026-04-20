@@ -1,0 +1,3 @@
+ALTER TABLE "order_guide_item" ADD COLUMN "user_id" text;--> statement-breakpoint
+ALTER TABLE "order_guide_item" ADD CONSTRAINT "order_guide_item_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "order_guide_item" ADD CONSTRAINT "order_guide_item_user_product_unique" UNIQUE("user_id","product_id");

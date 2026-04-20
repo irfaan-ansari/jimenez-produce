@@ -31,10 +31,9 @@ import { useAppForm } from "@/hooks/form-context";
 import { AnyFieldApi } from "@tanstack/react-form";
 import { useCategories } from "@/hooks/use-product";
 import { type AdminProductType } from "@/lib/types";
-import { createProduct, updateProduct } from "@/server/product";
-import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
-import { Check, Loader, Trash2, Warehouse, X } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
+import { Check, Loader, Trash2, X } from "lucide-react";
+import { createProduct, updateProduct } from "@/server/product";
 
 const schema = z.object({
   identifier: z.string(),
@@ -44,15 +43,6 @@ const schema = z.object({
   status: z.string().min(1, "Select status"),
   image: z.string(),
   imageObj: z.file().mime(["image/png", "image/jpeg"]).or(z.any()),
-  inventory: z
-    .object({
-      locationId: z.number(),
-      name: z.string(),
-      offerPrice: z.any(),
-      price: z.string(),
-      stock: z.string(),
-    })
-    .array(),
 });
 
 export const ProductDialog = ({
@@ -75,19 +65,6 @@ export const ProductDialog = ({
       status: product?.status ? capitalizeWords(product.status) : "",
       image: product?.image || "",
       imageObj: null as any,
-      inventory: product
-        ? (product.inventory.map((inv) => ({
-            ...inv,
-            name: locations?.data?.find((loc) => loc.id === inv.locationId)
-              ?.name,
-          })) ?? [])
-        : locations?.data?.map((loc) => ({
-            locationId: loc.id,
-            name: loc.name,
-            price: "",
-            offerPrice: "",
-            stock: "",
-          })),
     },
     validators: {
       onSubmit: schema,
@@ -108,7 +85,6 @@ export const ProductDialog = ({
       }
 
       if (product && product.id) {
-        // @ts-expect-error
         const { data, success, error } = await updateProduct(product.id, {
           ...rest,
           status,
@@ -120,7 +96,6 @@ export const ProductDialog = ({
           toast.error(error.message ?? "Failed to update product");
         }
       } else {
-        // @ts-expect-error
         const { success, error } = await createProduct({ ...rest, status });
         if (success) {
           toast.success("Product has been saved!");
@@ -314,30 +289,6 @@ export const ProductDialog = ({
                   );
                 }}
               />
-
-              <form.Field name="inventory" mode="array">
-                {(field) =>
-                  Array.isArray(field?.state?.value) &&
-                  field?.state?.value.map((subField, i) => {
-                    return (
-                      <div className="rounded-2xl border bg-muted p-4" key={i}>
-                        <div className="mb-3 font-semibold">
-                          Price at {subField.name}
-                        </div>
-                        <form.AppField
-                          name={`inventory[${i}].price`}
-                          children={(field) => (
-                            <field.TextField
-                              className="**:data-[slot=input]:rounded-xl"
-                              description={`Set price this product at ${subField.name}`}
-                            />
-                          )}
-                        />
-                      </div>
-                    );
-                  })
-                }
-              </form.Field>
             </FieldGroup>
           </div>
           <Field className="mt-4 flex flex-col-reverse gap-4 px-6 pt-4 sm:flex-row sm:justify-end  sm:[&>*]:w-28">

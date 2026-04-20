@@ -35,14 +35,10 @@ export async function GET(req: NextRequest) {
       offset,
       orderBy: (product, { desc }) => [desc(product.createdAt)],
       with: {
-        inventory: {
-          with: {
-            location: {
-              columns: {
-                id: true,
-                name: true,
-              },
-            },
+        location: {
+          columns: {
+            id: true,
+            name: true,
           },
         },
       },

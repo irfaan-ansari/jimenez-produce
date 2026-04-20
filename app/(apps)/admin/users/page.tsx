@@ -25,18 +25,21 @@ const TeamPage = async () => {
 
   return (
     <div className="flex h-full flex-col gap-5">
-      <h1 className="text-2xl font-semibold">Users</h1>
+      <div className="flex items-center gap-4 *:flex-1">
+        <h1 className="text-2xl font-semibold">Users</h1>
+
+        <div className="flex items-center justify-end gap-4">
+          <SearchBar />
+          <AddUserDialog>
+            <Button size="xl" className="rounded-xl" disabled={!success}>
+              <Plus /> Add New
+            </Button>
+          </AddUserDialog>
+        </div>
+      </div>
 
       <FilterTabs tabs={[{ label: "All", value: "" }]} queryKey="" />
 
-      <div className="flex items-center gap-4">
-        <SearchBar />
-        <AddUserDialog>
-          <Button size="xl" className="ml-auto rounded-xl" disabled={!success}>
-            <Plus /> Add New
-          </Button>
-        </AddUserDialog>
-      </div>
       <PageClient />
     </div>
   );

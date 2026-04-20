@@ -6,17 +6,17 @@ import {
   EmptyComponent,
   LoadingSkeleton,
 } from "@/components/admin/placeholder-component";
-import { useInfiniteProducts, useProducts } from "@/hooks/use-product";
-import { type CustomerProductType } from "@/lib/types";
+import { useInfiniteProducts } from "@/hooks/use-product";
+
 import { useRouterStuff } from "@/hooks/use-router-stuff";
-import { Pagination } from "@/components/admin/pagination";
+
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 
 export const PageClient = () => {
   const { searchParams, queryParams } = useRouterStuff();
 
   const { data, error, isPending, isError } = useInfiniteProducts(
-    searchParams.toString()
+    searchParams.toString(),
   );
 
   // loading
@@ -69,7 +69,7 @@ export const PageClient = () => {
                 </div>
                 <CardTitle className="font-semibold">{product.title}</CardTitle>
                 <CardTitle className="font-semibold text-primary">
-                  {formatUSD(product.price ?? 0)}
+                  {formatUSD(product.basePrice ?? 0)}
                 </CardTitle>
               </CardContent>
             </Card>

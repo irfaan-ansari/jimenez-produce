@@ -13,17 +13,17 @@ import {
 import { db } from "@/lib/db";
 import { getSession } from "@/server/auth";
 import { NextRequest, NextResponse } from "next/server";
-import { inventory, lineItem, orderGuideItem, product } from "@/lib/db/schema";
+import { lineItem, orderGuideItem, product } from "@/lib/db/schema";
 
 export async function GET(req: NextRequest) {
   try {
     const session = await getSession();
 
-    if (!session || !session.user.customerId) {
+    if (!session || !session.user.locationId) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    const { customerId, locationId } = session.user;
+    const { locationId, id: userId } = session.user;
 
     const searchParams = req.nextUrl.searchParams;
     const query = Object.fromEntries(searchParams.entries());
@@ -32,6 +32,7 @@ export async function GET(req: NextRequest) {
 
     const filters = and(
       ne(product.status, "archived"),
+      eq(product.locationId, locationId),
       cat ? arrayContains(product.categories, [cat]) : undefined,
       q
         ? or(
@@ -43,83 +44,12 @@ export async function GET(req: NextRequest) {
       guide === "true" ? isNotNull(orderGuideItem.id) : undefined,
     );
 
-    //   const products = await db
-    //     .selectDistinctOn([product.id], {
-    //       ...getTableColumns(product),
-    //       price: inventory.price,
-    //       stock: inventory.stock,
-    //       lastPurchased: {
-    //         id: lineItem.id,
-    //         quantity: lineItem.quantity,
-    //         createdAt: lineItem.createdAt,
-    //       },
-    //     })
-    //     .from(product)
-    //     .innerJoin(
-    //       lineItem,
-    //       and(
-    //         eq(product.id, lineItem.productId),
-    //         eq(lineItem.customerId, customerId!),
-    //       ),
-    //     )
-    //     .innerJoin(
-    //       inventory,
-    //       and(
-    //         eq(inventory.productId, product.id),
-    //         eq(inventory.locationId, locationId!),
-    //       ),
-    //     )
-    //     .where(filters)
-    //     .orderBy(product.id, desc(lineItem.createdAt), desc(lineItem.quantity))
-    //     .limit(Number(limit))
-    //     .offset(offset);
-
-    //   // get total products count
-    //   const [{ total }] = await db
-    //     .selectDistinct({
-    //       total: count(product.id),
-    //     })
-    //     .from(product)
-    //     .innerJoin(
-    //       lineItem,
-    //       and(
-    //         eq(product.id, lineItem.productId),
-    //         eq(lineItem.customerId, customerId!),
-    //       ),
-    //     )
-    //     .innerJoin(
-    //       inventory,
-    //       and(
-    //         eq(inventory.productId, product.id),
-    //         eq(inventory.locationId, locationId!),
-    //         and(isNotNull(inventory.price), ne(inventory.price, "0")),
-    //       ),
-    //     )
-    //     .where(filters);
-
-    //   return NextResponse.json(
-    //     {
-    //       data: products,
-    //       pagination: {
-    //         page,
-    //         limit,
-    //         total: total,
-    //         totalPages: Math.ceil(total / (limit as number)),
-    //       },
-    //     },
-    //     { status: 200 },
-    //   );
-    // }
-
     // get all products
     const distinctOn = guide === "true" ? orderGuideItem.id : product.id;
 
     const products = await db
       .selectDistinctOn([distinctOn], {
         ...getTableColumns(product),
-        price: inventory.price,
-        offerPrice: inventory.offerPrice,
-        stock: inventory.stock,
         lastPurchased: {
           id: lineItem.id,
           orderId: lineItem.orderId,
@@ -134,24 +64,13 @@ export async function GET(req: NextRequest) {
       .from(product)
       .leftJoin(
         lineItem,
-        and(
-          eq(lineItem.productId, product.id),
-          eq(lineItem.customerId, customerId!),
-        ),
-      )
-      .innerJoin(
-        inventory,
-        and(
-          eq(inventory.productId, product.id),
-          eq(inventory.locationId, locationId!),
-          and(isNotNull(inventory.price), ne(inventory.price, "0")),
-        ),
+        and(eq(lineItem.productId, product.id), eq(lineItem.userId, userId)),
       )
       .leftJoin(
         orderGuideItem,
         and(
           eq(orderGuideItem.productId, product.id),
-          eq(orderGuideItem.customerId, customerId!),
+          eq(orderGuideItem.userId, userId!),
         ),
       )
       .where(filters)
@@ -167,23 +86,13 @@ export async function GET(req: NextRequest) {
       .from(product)
       .leftJoin(
         lineItem,
-        and(
-          eq(lineItem.productId, product.id),
-          eq(lineItem.customerId, customerId!),
-        ),
-      )
-      .innerJoin(
-        inventory,
-        and(
-          eq(inventory.productId, product.id),
-          eq(inventory.locationId, locationId!),
-        ),
+        and(eq(lineItem.productId, product.id), eq(lineItem.userId, userId!)),
       )
       .leftJoin(
         orderGuideItem,
         and(
           eq(orderGuideItem.productId, product.id),
-          eq(orderGuideItem.customerId, customerId!),
+          eq(orderGuideItem.userId, userId!),
         ),
       )
       .where(filters)

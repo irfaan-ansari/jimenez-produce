@@ -127,20 +127,20 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
               <TableBody>
                 {data.lineItems.map((line) => (
                   <TableRow key={line.id}>
-                    <TableCell className="pl-6 w-9 align-top pt-3">
+                    <TableCell className="w-9 pt-3 pl-6 align-top">
                       <Avatar className="size-9 rounded-xl ring-2 ring-green-600/20 ring-offset-1 **:rounded-xl after:hidden">
                         <AvatarImage src={line?.image!} />
                         <AvatarFallback>{line.title?.charAt(0)}</AvatarFallback>
                       </Avatar>
                     </TableCell>
                     <TableCell>
-                      <div className="max-w-2xs w-full">
+                      <div className="w-full max-w-2xs">
                         <h4 className="leading-tight font-medium whitespace-normal">
                           {line.title}
                         </h4>
                         <Badge
                           variant="secondary"
-                          className="border border-border rounded-xl"
+                          className="rounded-xl border border-border"
                         >
                           {line.identifier}
                         </Badge>
@@ -191,7 +191,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
       </div>
 
       {/* order summary */}
-      <Card className="col-span-2 rounded-2xl bg-secondary">
+      <Card className="col-span-2 rounded-2xl">
         <CardHeader>
           <CardTitle className="text-xl font-semibold">Order Summary</CardTitle>
         </CardHeader>

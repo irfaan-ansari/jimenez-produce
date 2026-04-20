@@ -254,7 +254,7 @@ const ProductItem = withForm({
           </div>
 
           <Price
-            price={product.price ?? 0}
+            price={product.basePrice ?? 0}
             className="group-data-[layout=grid]/card:hidden"
           />
 
@@ -270,7 +270,10 @@ const ProductItem = withForm({
                 {product.pack ?? null}
               </div>
 
-              <Price price={product.price ?? 0} className="w-auto self-start" />
+              <Price
+                price={product.basePrice ?? 0}
+                className="w-auto self-start"
+              />
             </div>
             <QuantityInput
               value={qty}
@@ -400,7 +403,10 @@ const Thumbnail = ({
                 {product.pack ?? null}
               </div>
 
-              <Price price={product.price ?? 0} className="w-auto self-start" />
+              <Price
+                price={product.basePrice ?? 0}
+                className="w-auto self-start"
+              />
             </div>
             <QuantityInput
               value={qty}

@@ -25,18 +25,18 @@ export const PageClient = () => {
   const { searchParamsObj } = useRouterStuff();
 
   const { data: session } = useSession();
+
   const { data, isPending, isError, error } = useListUsers(searchParamsObj?.q);
 
   return (
     <div className="flex-1 space-y-3">
       <div className="flex h-full flex-col gap-3">
         <div className="overflow-hidden rounded-2xl border **:data-[slot=table-container]:no-scrollbar">
-          <Table className="text-base">
+          <Table>
             <TableHeader>
               <TableRow className="bg-secondary text-sm uppercase **:text-muted-foreground">
                 <TableHead className="px-4 py-4 font-medium">Name</TableHead>
                 <TableHead className="px-4 py-4 font-medium">Email</TableHead>
-                <TableHead className="px-4 py-4 font-medium">Role</TableHead>
                 <TableHead className="px-4 py-4 font-medium">STATUS</TableHead>
                 <TableHead className="px-4 py-4 font-medium">
                   Created At
@@ -55,7 +55,7 @@ export const PageClient = () => {
                     <TableRow key={row.id}>
                       <TableCell className="p-4">
                         <div className="flex items-center gap-3">
-                          <Avatar className="size-9 rounded-xl ring-2 ring-green-600/20 ring-offset-1 after:hidden">
+                          <Avatar className="size-9 rounded-lg ring-2 ring-green-600/20 ring-offset-1 after:hidden">
                             <AvatarImage
                               src={row.image ?? undefined}
                               alt="profile image"
@@ -64,38 +64,43 @@ export const PageClient = () => {
                               {row.name?.[0]?.toUpperCase()}
                             </AvatarFallback>
                           </Avatar>
+                          <div className="flex flex-col items-start justify-start gap-1">
+                            <span className="font-medium">{row.name}</span>
 
-                          <span className="font-medium">{row.name}</span>
-                          {isCurrentUser && (
-                            <Badge
-                              variant="secondary"
-                              className="rounded-xl font-medium uppercase"
-                            >
-                              You
-                            </Badge>
-                          )}
+                            {isCurrentUser ? (
+                              <Badge
+                                variant="secondary"
+                                className="rounded-xl font-medium uppercase"
+                              >
+                                You
+                              </Badge>
+                            ) : (
+                              <Badge
+                                variant="outline"
+                                style={
+                                  {
+                                    "--color": map.color,
+                                  } as React.CSSProperties
+                                }
+                                className="h-5 gap-1 rounded-xl border-(--color)/10 bg-(--color)/10 pr-2.5 pl-1.5 text-xs [&>svg]:size-3.5"
+                              >
+                                <map.icon className="text-(--color)" />
+                                {map.label}
+                              </Badge>
+                            )}
+                          </div>
                         </div>
                       </TableCell>
                       <TableCell className="p-4">
                         <div className="grid">
                           <span>{row.email}</span>
                           <span className="text-sm text-muted-foreground">
-                            ###-###-####
+                            {/* @ts-ignore */}
+                            {row.phoneNumber || "###-###-####"}
                           </span>
                         </div>
                       </TableCell>
-                      <TableCell className="p-4">
-                        <Badge
-                          variant="outline"
-                          style={
-                            { "--color": map.color } as React.CSSProperties
-                          }
-                          className="h-7 gap-1.5 rounded-xl border-(--color)/10 bg-(--color)/10 pr-2.5 pl-1.5 text-sm [&>svg]:size-3.5"
-                        >
-                          <map.icon className="text-(--color)" />
-                          {map.label}
-                        </Badge>
-                      </TableCell>
+
                       <TableCell className="p-4">
                         <Badge
                           variant="outline"
