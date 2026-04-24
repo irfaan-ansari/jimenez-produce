@@ -8,17 +8,18 @@ import { OrderType } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
 import { useOrders } from "@/hooks/use-customer";
 import { ColumnDef } from "@tanstack/react-table";
+import { STATUS_MAP } from "@/lib/constants/status-map";
 import { useRouterStuff } from "@/hooks/use-router-stuff";
 import { DataTable } from "@/components/admin/data-table";
 import { OrderActions } from "@/components/admin/order-actions";
-import { STATUS_MAP } from "@/lib/constants/status-map";
 
 export const PageClient = () => {
   const { searchParams } = useRouterStuff();
 
-  const { data, error, isPending, isError } = useOrders(
-    searchParams.toString(),
-  );
+  const { data, error, isPending, isError } = useOrders({
+    path: "/api/orders",
+    query: searchParams.toString(),
+  });
 
   // data
   return (
