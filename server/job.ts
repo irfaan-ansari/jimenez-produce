@@ -54,7 +54,7 @@ export const submitAgreement = handleAction(async (token: string) => {
   const buffer = await renderToBuffer(
     JobAgreementPDF({
       data: { ...res, agreementDate },
-    })
+    }),
   );
 
   const blob = await put(`job-application/agreement.pdf`, buffer, {
@@ -85,7 +85,7 @@ export const submitAgreement = handleAction(async (token: string) => {
         submittedAt: result.agreementDate,
         agreementUrl: result.agreementUrl,
       },
-    })
+    }),
   );
 
   return result;
@@ -124,7 +124,7 @@ export const createJobApplication = handleAction(
     waitUntil(sendJobStatusEmail(result));
 
     return result;
-  }
+  },
 );
 
 /**
@@ -168,7 +168,7 @@ export const updateJobApplication = handleAction(
     }
 
     return result;
-  }
+  },
 );
 
 /**
@@ -223,10 +223,10 @@ export const inviteCandidate = handleAction(
           position: res.position,
           positionSlug: res.positionSlug,
         },
-      })
+      }),
     );
     return res;
-  }
+  },
 );
 
 export const updateInvite = handleAction(
@@ -247,7 +247,7 @@ export const updateInvite = handleAction(
       .returning();
 
     return result;
-  }
+  },
 );
 
 export const deleteInvite = handleAction(async (id: number) => {

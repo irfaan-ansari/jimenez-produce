@@ -1,7 +1,7 @@
 import {
   OrderSelectType,
   LineItemSelectType,
-  LocationSelectType,
+  OrganizationSelectType,
 } from "@/lib/db/schema";
 import { format } from "date-fns";
 import { styles } from "./styles";
@@ -10,11 +10,12 @@ import { Document, Page, Text, View, Image } from "@react-pdf/renderer";
 interface OrderInvoiceProps {
   data: OrderSelectType & {
     lineItems: LineItemSelectType[];
-    location: LocationSelectType | null;
+    organization: OrganizationSelectType;
   };
 }
 
 export const PackingSlip = ({ data }: OrderInvoiceProps) => {
+  const metadata = JSON.parse(data.organization.metadata!);
   return (
     <Document title={`Packing Slip - ${data.id}`}>
       <Page size="A4" style={[styles.page]}>
@@ -29,15 +30,14 @@ export const PackingSlip = ({ data }: OrderInvoiceProps) => {
               <View>
                 <View style={styles.headerContactText}>
                   <Text>
-                    {data.location?.address?.street}
-                    {data.location?.address?.city}
+                    {metadata?.street} {metadata?.city}
                   </Text>
                   <Text>
-                    {data.location?.address?.state}
-                    {data.location?.address?.zip}
+                    {metadata?.state}
+                    {metadata?.zip}
                   </Text>
-                  <Text>Phone: {data.location?.phone}</Text>
-                  <Text>Email: {data.location?.email}</Text>
+                  <Text>Phone: {data.organization?.phone}</Text>
+                  <Text>Email: {data.organization?.email}</Text>
                   <Text>Website: https://jimenezproduce.com/</Text>
                 </View>
               </View>
@@ -96,13 +96,13 @@ export const PackingSlip = ({ data }: OrderInvoiceProps) => {
               </View>
               <View style={styles.tableRow}>
                 <View style={[styles.tableCell]}>
-                  <Text>{data.receiverName}</Text>
+                  {/* <Text>{data.receiverName}</Text>
                   <Text>{data.shippingAddress?.street}</Text>
                   <Text>
                     {data.shippingAddress?.city} {data.shippingAddress?.state}
                     {data.shippingAddress?.zip}
                   </Text>
-                  <Text>{data.receiverPhone}</Text>
+                  <Text>{data.receiverPhone}</Text> */}
                 </View>
               </View>
             </View>

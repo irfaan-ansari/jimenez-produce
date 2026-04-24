@@ -82,7 +82,7 @@ export const columns: ColumnDef<OrderType>[] = [
       const { deliveryDate, deliveryWindow, status } = row.original;
       return (
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <span>{format(deliveryDate!, "MMMM dd")}</span>
+          <span>{format(deliveryDate || new Date(), "MMMM dd")}</span>
           <span>•</span>
           <span>{status === "completed" ? "Delivered" : deliveryWindow}</span>
         </div>

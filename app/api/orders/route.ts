@@ -6,40 +6,34 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   try {
-    const session = await getSession();
+    const auth = await getSession();
 
-    if (!session)
+    if (!auth)
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    const { userId, activeOrganizationId, activeTeamId } = auth.session;
 
-    const isCustomer = session.user.role === "customer";
-    const isUser = session.user.role === "user";
+    if (!activeOrganizationId)
+      return NextResponse.json(
+        { message: "Not authorized to perform this action" },
+        { status: 403 },
+      );
 
     const searchParams = req.nextUrl.searchParams;
     const query = Object.fromEntries(searchParams.entries());
-    const { page = 1, limit = 10, q, status } = query;
-    const offset = ((page as number) - 1) * Number(limit);
 
+    const { page = 1, limit = 24, q, status } = query;
+    const offset = (Number(page) - 1) * Number(limit);
+    console.log(activeTeamId);
     const filters = and(
-      isCustomer ? eq(order.userId, session.user.id) : undefined,
-      isUser ? eq(order.locationId, session.user.locationId!) : undefined,
+      eq(order.organizationId, activeOrganizationId),
       status ? eq(order.status, status) : undefined,
-      q
-        ? or(
-            ilike(order.receiverName, `%${q}%`),
-            ilike(order.receiverPhone, `%${q}%`),
-            ilike(order.notes, `%${q}%`),
-          )
-        : undefined,
+      q ? or(ilike(order.deliveryInstruction, `%${q}%`)) : undefined,
     );
 
     const response = await db.query.order.findMany({
       where: filters,
       with: {
         lineItems: true,
-        location: true,
-        user: {
-          columns: { name: true, id: true, email: true },
-        },
       },
       limit: Number(limit),
       offset,
@@ -47,6 +41,7 @@ export async function GET(req: NextRequest) {
     });
 
     const total = await db.$count(order, filters);
+    console.log(total, response);
 
     return NextResponse.json(
       {

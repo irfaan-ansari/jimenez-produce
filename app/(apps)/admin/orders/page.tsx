@@ -1,5 +1,5 @@
 import { PageClient } from "./page-client";
-import { FilterTabs } from "@/components/admin/filter-tabs";
+import { FilterTab } from "@/components/admin/filter-tabs";
 import { SearchBar } from "@/components/admin/search-filters";
 
 export const metadata = {
@@ -15,12 +15,12 @@ const OPTIONS = [
 
 const OrdersPage = async () => {
   return (
-    <div className="flex flex-col h-full gap-5">
-      <h1 className="text-2xl font-semibold">Orders</h1>
-      <FilterTabs tabs={OPTIONS} queryKey="orders" />
-      <div className="flex gap-4 items-center">
+    <div className="flex h-full flex-col gap-5">
+      <div className="flex items-center justify-between gap-4">
+        <h1 className="text-2xl font-bold">Orders</h1>
         <SearchBar />
       </div>
+      <FilterTab tabs={OPTIONS} path="/api/orders/count" />
       {/* content */}
       <PageClient />
     </div>

@@ -11,7 +11,6 @@ import {
   Sidebar,
   SidebarMenu,
   SidebarGroup,
-  SidebarFooter,
   SidebarHeader,
   SidebarContent,
   SidebarMenuItem,
@@ -19,22 +18,25 @@ import {
   SidebarMenuSub,
   SidebarMenuSubItem,
   SidebarMenuSubButton,
-  SidebarMenuBadge,
 } from "@/components/ui/sidebar";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { useSession } from "@/hooks/use-auth";
+import { toast } from "sonner";
+import { Button } from "../ui/button";
+import { Session } from "@/lib/types";
+import { Skeleton } from "../ui/skeleton";
+import { Separator } from "../ui/separator";
 import { authClient } from "@/lib/auth/client";
 import { getAvatarFallback } from "@/lib/utils";
-import { ProfileDialog } from "../profile-dialog";
+import { SidebarProfile } from "./sidebar-profile";
+import { PopoverXDrawer } from "../popover-x-drawer";
+import { WarehouseDialog } from "./warehouse-dialog";
 import { useQueryClient } from "@tanstack/react-query";
-import { useRouterStuff } from "@/hooks/use-router-stuff";
-import { ChangePasswordDialog } from "../change-password";
-import { ChevronRight, Lock, LogOut, User } from "lucide-react";
 import { SIDEBAR_MENU, SITE_CONFIG } from "@/lib/config";
+import { useRouterStuff } from "@/hooks/use-router-stuff";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { Check, ChevronRight, ChevronsUpDown, Plus } from "lucide-react";
 
-export function AppSidebar() {
+export function AppSidebar({ session }: { session: Session }) {
   const { pathname, getQueryString } = useRouterStuff();
 
   const isActive = (href: string) => {
@@ -49,7 +51,7 @@ export function AppSidebar() {
 
   return (
     <Sidebar>
-      <SidebarLogo />
+      <SidebarOrganization />
       <SidebarContent>
         <SidebarGroup>
           <SidebarMenu>
@@ -84,14 +86,14 @@ export function AppSidebar() {
                       <SidebarMenuButton
                         tooltip={item.label}
                         isActive={isActive(item.href)}
-                        className="h-10 px-3.5 transition duration-200 hover:bg-muted hover:text-sidebar-foreground data-active:hover:bg-sidebar-accent data-active:hover:text-sidebar-accent-foreground data-open:hover:bg-muted data-open:hover:text-sidebar-foreground"
+                        asChild
+                        className="h-10 px-3.5 transition duration-200 hover:bg-muted hover:text-sidebar-foreground data-open:hover:bg-muted data-open:hover:text-sidebar-foreground data-active:hover:bg-sidebar-accent data-active:hover:text-sidebar-accent-foreground"
                       >
-                        {item.icon && <item.icon className="opacity-80" />}
-                        <span>{item.label}</span>
-                        <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                        {/* <SidebarMenuBadge className="rounded-full bg-red-500">
-                          4
-                        </SidebarMenuBadge> */}
+                        <Link href={item.href}>
+                          {item.icon && <item.icon className="opacity-80" />}
+                          <span>{item.label}</span>
+                          <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                        </Link>
                       </SidebarMenuButton>
                     </CollapsibleTrigger>
 
@@ -109,7 +111,7 @@ export function AppSidebar() {
                           >
                             <SidebarMenuSubButton
                               asChild
-                              className="rounded-xl px-3 hover:bg-muted hover:text-sidebar-foreground data-active:bg-sidebar-accent! data-active:text-sidebar-accent-foreground!"
+                              className="rounded-xl px-3 hover:bg-muted hover:text-sidebar-foreground data-active:bg-muted data-active:text-sidebar-foreground"
                               isActive={isSubItemActive(subItem.href)}
                             >
                               <Link href={subItem.href}>
@@ -128,99 +130,117 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      {/* footer/profile */}
-      <Profile />
+      {/* footer/ */}
+      <SidebarProfile session={session} />
     </Sidebar>
   );
 }
-export const SidebarLogo = () => {
-  return (
-    <SidebarHeader className="mb-4">
-      <SidebarMenuItem className="inline-flex items-center gap-4 rounded-xl  px-2.5 py-2">
-        <Avatar className="size-9 rounded-xl ring-2 ring-green-600/20 ring-offset-1 **:rounded-xl after:hidden">
-          <AvatarImage src={SITE_CONFIG.logo} alt="profile image" asChild>
-            <Image src={SITE_CONFIG.logo} alt="Logo" width={100} height={100} />
-          </AvatarImage>
-          <AvatarFallback className="bg-primary/40 text-xs font-medium">
-            {getAvatarFallback(SITE_CONFIG.name)}
-          </AvatarFallback>
-        </Avatar>
 
-        <span className="text-base font-semibold">{SITE_CONFIG.name}</span>
+const SidebarOrganization = () => {
+  const [open, setOpen] = useState(false);
+
+  const queryClient = useQueryClient();
+  const { data, isPending } = authClient.useListOrganizations();
+
+  const { data: activeOrganization } = authClient.useActiveOrganization();
+
+  const handleChange = async (organizationId: string) => {
+    setOpen(false);
+
+    const toastId = toast.loading("Switching warehouse...");
+
+    const { error } = await authClient.organization.setActive({
+      organizationId,
+    });
+
+    if (error) {
+      toast.error(error.message, { id: toastId });
+      return;
+    }
+
+    toast.success("Warehouse changed successfully.", {
+      id: toastId,
+    });
+
+    queryClient.invalidateQueries();
+  };
+
+  return (
+    <SidebarHeader>
+      <SidebarMenuItem>
+        <PopoverXDrawer
+          open={open}
+          setOpen={setOpen}
+          className="w-60 px-0 *:gap-0 data-[slot=popover-content]:max-w-60"
+          trigger={
+            <SidebarMenuButton
+              size="lg"
+              className="hover:bg-muted! hover:text-sidebar-foreground! data-open:bg-muted! data-open:hover:bg-muted data-open:hover:text-sidebar-foreground data-active:hover:bg-muted"
+            >
+              <Avatar className="size-9 rounded-lg ring-2 ring-green-600/20 ring-offset-1 **:rounded-xl after:hidden">
+                <AvatarImage src={SITE_CONFIG.logo} alt="Logo" asChild>
+                  <Image
+                    src={SITE_CONFIG.logo}
+                    alt="Logo"
+                    width={100}
+                    height={100}
+                  />
+                </AvatarImage>
+                <AvatarFallback className="rounded-xl bg-primary/40 text-xs font-semibold text-primary">
+                  {getAvatarFallback(SITE_CONFIG.name)}
+                </AvatarFallback>
+              </Avatar>
+              <div className="grid min-w-0 flex-1">
+                <span className="truncate text-base leading-tight font-bold">
+                  {SITE_CONFIG.name}
+                </span>
+                <span className="truncate text-sm leading-tight text-muted-foreground">
+                  {activeOrganization?.name}
+                </span>
+              </div>
+              <ChevronsUpDown className="ml-auto size-4" />
+            </SidebarMenuButton>
+          }
+        >
+          <div className="flex flex-col gap-0.5 px-2">
+            {isPending ? (
+              <Skeleton className="h-9 w-full" />
+            ) : (
+              data?.map((org) => (
+                <Button
+                  key={org.id}
+                  variant={
+                    org.id === activeOrganization?.id ? "secondary" : "ghost"
+                  }
+                  onClick={() => handleChange(org.id)}
+                  className="rounded-lg!"
+                >
+                  <Avatar className="size-6 rounded-md **:rounded-md">
+                    <AvatarImage src={org.logo!} alt={org.name} />
+                    <AvatarFallback>{org.name[0]}</AvatarFallback>
+                  </Avatar>
+                  {org.name}
+
+                  <Check
+                    className={`ml-auto ${org.id === activeOrganization?.id ? "opacity-100" : "opacity-0"}`}
+                  />
+                </Button>
+              ))
+            )}
+          </div>
+          <Separator className="my-1" />
+          <div className="px-2">
+            <WarehouseDialog>
+              <Button variant="ghost" className="w-full justify-start">
+                <span className="rounded-md border p-1">
+                  <Plus />
+                </span>
+                Add New
+              </Button>
+            </WarehouseDialog>
+          </div>
+        </PopoverXDrawer>
       </SidebarMenuItem>
     </SidebarHeader>
-  );
-};
-
-const Profile = () => {
-  const { data } = useSession();
-  const router = useRouter();
-  const [loading, setLoading] = useState(false);
-  const queryClient = useQueryClient();
-  const handleLogout = async () => {
-    await authClient.signOut({
-      fetchOptions: {
-        onSuccess: () => {
-          queryClient.clear();
-          router.push("/signin");
-        },
-        onRequest: () => setLoading(true),
-        onResponse: () => setLoading(false),
-      },
-    });
-  };
-  return (
-    <SidebarFooter>
-      <SidebarMenu className="gap-0 rounded-2xl border">
-        <SidebarMenuItem>
-          <div className="flex items-center gap-2 px-2.5 py-2">
-            <Avatar className="size-9 rounded-xl ring-2 ring-green-600/20 ring-offset-1 **:rounded-xl after:hidden">
-              <AvatarImage src={data?.user.image!} alt="profile image" />
-              <AvatarFallback className="rounded-xl bg-primary/40 text-xs font-semibold text-primary">
-                {getAvatarFallback(data?.user.name)}
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex flex-col">
-              <span className="truncate text-sm font-medium">
-                {data?.user.name}
-              </span>
-              <span className="text-xs text-muted-foreground">
-                {data?.user.email}
-              </span>
-            </div>
-          </div>
-        </SidebarMenuItem>
-        <SidebarMenuItem className="border-t p-1">
-          <ProfileDialog
-            user={{
-              id: data?.user.id,
-              name: data?.user.name,
-              email: data?.user.email,
-              image: data?.user.image,
-            }}
-          >
-            <SidebarMenuButton className="rounded-xl">
-              <User />
-              Profile
-            </SidebarMenuButton>
-          </ProfileDialog>
-          <ChangePasswordDialog>
-            <SidebarMenuButton className="rounded-xl">
-              <Lock />
-              Change Password
-            </SidebarMenuButton>
-          </ChangePasswordDialog>
-        </SidebarMenuItem>
-        <SidebarMenuItem className="border-t p-1">
-          <SidebarMenuButton
-            onClick={handleLogout}
-            className="rounded-xl hover:bg-destructive/10 hover:text-destructive"
-          >
-            <LogOut />
-            {loading ? "Please wait..." : "Logout"}
-          </SidebarMenuButton>
-        </SidebarMenuItem>
-      </SidebarMenu>
-    </SidebarFooter>
   );
 };

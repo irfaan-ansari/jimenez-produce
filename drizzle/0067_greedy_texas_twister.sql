@@ -1,0 +1,1 @@
+ALTER TABLE "price_level" ALTER COLUMN "value" SET DATA TYPE text;

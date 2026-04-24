@@ -8,7 +8,7 @@ export const GET = async () => {
   try {
     const session = await getSession();
 
-    if (!session)
+    if (!session || !session.session.activeOrganizationId)
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
 
     const response = await db

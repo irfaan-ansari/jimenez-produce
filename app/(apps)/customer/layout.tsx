@@ -1,5 +1,5 @@
 import React from "react";
-import "@/app/globalsv2.css";
+
 import { getSession } from "@/server/auth";
 import { redirect } from "next/navigation";
 import { SITE_CONFIG } from "@/lib/config";
@@ -18,14 +18,13 @@ export const metadata = {
 };
 
 const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
-  const session = await getSession();
+  const auth = await getSession();
+  const { session, user } = auth || {};
 
-  if (!session) redirect("/signin");
-
-  if (session.user.role !== "customer") {
-    redirect("/admin/overview");
-  }
-
+  // unauthorised redirect to signin
+  if (!session?.activeOrganizationId || !user) redirect("/signin");
+  // customer user - redirect to customer dashboard
+  if (user.accountType !== "customer") redirect("/admin/overview");
   return (
     <SidebarProvider
       style={
@@ -34,7 +33,7 @@ const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
         } as React.CSSProperties
       }
     >
-      <AppSidebar />
+      <AppSidebar session={{ session, user }} />
       <SidebarInset className="min-w-0 bg-slate-50">
         <Container className="mx-0 h-full max-w-full p-5 md:p-8">
           {children}

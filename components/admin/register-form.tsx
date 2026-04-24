@@ -23,7 +23,7 @@ import { Button } from "@/components/ui/button";
 import { useAppForm } from "@/hooks/form-context";
 import { AlertCircleIcon, Eye, EyeOff, Loader, X } from "lucide-react";
 import { Alert, AlertAction, AlertDescription, AlertTitle } from "../ui/alert";
-import { signUp } from "@/server/auth";
+
 import { toast } from "sonner";
 
 const schema = z
@@ -58,17 +58,17 @@ export function RegisterForm({
       onChange: schema,
     },
     onSubmit: async ({ value }) => {
-      const { data, success, error } = await signUp(value);
-      if (success) {
-        toast.success("Account created successfully!");
-        router.push("/signin");
-      } else {
-        form.setFieldValue(
-          "error",
-          error.message ?? "You are not authorized to create an account.",
-        );
-        toast.error(error.message);
-      }
+      // const { data, success, error } = await signUp(value);
+      // if (success) {
+      //   toast.success("Account created successfully!");
+      //   router.push("/signin");
+      // } else {
+      //   form.setFieldValue(
+      //     "error",
+      //     error.message ?? "You are not authorized to create an account.",
+      //   );
+      //   toast.error(error.message);
+      // }
     },
   });
 

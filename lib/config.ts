@@ -1,4 +1,5 @@
 import {
+  Building2,
   ClipboardList,
   Inbox,
   LayoutDashboard,
@@ -115,48 +116,48 @@ export const SIDEBAR_MENU = [
     ],
   },
   {
-    label: "Customers",
+    label: "Applications",
     icon: UserPlus,
-    href: "/admin/customers",
+    href: "/admin/applications",
     items: [
       {
         label: "All",
-        href: "/admin/customers",
+        href: "/admin/applications",
         color: "#A1A1AA",
       },
       {
         label: "New",
-        href: "/admin/customers?status=new",
+        href: "/admin/applications?status=new",
         color: "#F59E0B",
       },
       {
         label: "Under Review",
-        href: "/admin/customers?status=under_review",
+        href: "/admin/applications?status=under_review",
         color: "#8B5CF6",
       },
       {
         label: "Approved",
-        href: "/admin/customers?status=active",
+        href: "/admin/applications?status=active",
         color: "#22C55E",
       },
       {
         label: "On Hold",
-        href: "/admin/customers?status=on_hold",
+        href: "/admin/applications?status=on_hold",
         color: "#3B82F6",
       },
       {
         label: "Rejected",
-        href: "/admin/customers?status=rejected",
+        href: "/admin/applications?status=rejected",
         color: "#EF4444",
       },
       {
         label: "Data Submitted",
-        href: "/admin/customers?status=submitted",
+        href: "/admin/applications?status=submitted",
         color: "#A1A1AA",
       },
       {
         label: "Invites",
-        href: "/admin/customers/invites",
+        href: "/admin/applications/invites",
         color: "#A1A1AA",
       },
     ],
@@ -203,93 +204,19 @@ export const SIDEBAR_MENU = [
       },
     ],
   },
-  // {
-  //   label: "Catalog Requests",
-  //   icon: Shield,
-  //   href: "/admin/catalog-requests",
-  //   items: [
-  //     {
-  //       label: "All",
-  //       href: "/admin/catalog-requests",
-  //       color: "#A1A1AA",
-  //     },
-  //     {
-  //       label: "New",
-  //       href: "/admin/catalog-requests?status=new",
-  //       color: "#F59E0B",
-  //     },
-  //     {
-  //       label: "Approved",
-  //       href: "/admin/catalog-requests?status=approved",
-  //       color: "#22C55E",
-  //     },
-  //     {
-  //       label: "Rejected",
-  //       href: "/admin/catalog-requests?status=rejected",
-  //       color: "#EF4444",
-  //     },
-  //     {
-  //       label: "Revoked",
-  //       href: "/admin/catalog-requests?status=revoked",
-  //       color: "#71717A",
-  //     },
-  //   ],
-  // },
-  // {
-  //   label: "Candidate Invitations",
-  //   icon: ClipboardClock,
-  //   href: "/admin/job-invites",
-  //   items: [
-  //     {
-  //       label: "All",
-  //       href: "/admin/job-invites",
-  //       color: "#71717A",
-  //     },
-  //     {
-  //       label: "Invited",
-  //       href: "/admin/job-invites?status=invited",
-  //       color: "#F59E0B",
-  //     },
-  //     {
-  //       label: "Applied",
-  //       href: "/admin/job-invites?status=applied",
-  //       color: "#3B82F6",
-  //     },
-  //     {
-  //       label: "Hired",
-  //       href: "/admin/job-invites?status=hired",
-  //       color: "#22C55E",
-  //     },
-  //   ],
-  // },
-  // {
-  //   label: "Customer Invitations",
-  //   icon: MailPlus,
-  //   href: "/admin/invites",
-  //   items: [
-  //     {
-  //       label: "All",
-  //       href: "/admin/invites",
-  //       color: "#71717A",
-  //     },
-  //     {
-  //       label: "Invited",
-  //       href: "/admin/invites?status=invited",
-  //       color: "#F59E0B",
-  //     },
-  //     {
-  //       label: "Applied",
-  //       href: "/admin/invites?status=applied",
-  //       color: "#3B82F6",
-  //     },
-  //     {
-  //       label: "Approved",
-  //       href: "/admin/invites?status=converted",
-  //       color: "#22C55E",
-  //     },
-  //   ],
-  // },
 
+  {
+    label: "Warehouses",
+    icon: Building2,
+    href: "/admin/warehouses",
+    items: [],
+  },
+  {
+    label: "Customers",
+    icon: Users,
+    href: "/admin/customers",
+    items: [],
+  },
   {
     label: "Users",
     icon: Users,

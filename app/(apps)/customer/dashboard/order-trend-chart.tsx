@@ -33,7 +33,7 @@ const chartConfig = {
 
 export function OrderTrendChart() {
   return (
-    <Card className="rounded-2xl border shadow-none ring-0 col-span-4">
+    <Card className="col-span-6 rounded-2xl border shadow-none ring-0 @4xl:col-span-4">
       <CardHeader>
         <CardTitle className="text-xl font-semibold">
           Order Trend (Demo)

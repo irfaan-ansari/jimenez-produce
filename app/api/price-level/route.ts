@@ -8,7 +8,7 @@ export const GET = async (req: NextRequest) => {
   try {
     const session = await getSession();
 
-    if (!session || session.user.role === "customer")
+    if (!session || !session.session.activeOrganizationId)
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
 
     const searchParams = req.nextUrl.searchParams;
@@ -16,7 +16,9 @@ export const GET = async (req: NextRequest) => {
     const { page = 1, limit = 10, q, status } = query;
     const offset = ((page as number) - 1) * Number(limit);
 
-    const conditions = [];
+    const conditions = [
+      eq(priceLevel.organizationId, session.session.activeOrganizationId),
+    ];
 
     if (status) conditions.push(eq(priceLevel.status, status));
     if (q) conditions.push(ilike(priceLevel.name, `%${q}%`));
@@ -25,17 +27,32 @@ export const GET = async (req: NextRequest) => {
 
     const response = await db.query.priceLevel.findMany({
       where: filters,
-      with: { priceLevelItem: true },
+      with: { priceLevelItem: { with: { product: true } } },
       limit: Number(limit),
       offset,
       orderBy: (order, { desc }) => [desc(order.createdAt)],
     });
 
+    const updated = response.map((item) => {
+      return {
+        ...item,
+        priceLevelItem: item.priceLevelItem.map((priceItem) => {
+          const { title, identifier, image, basePrice } = priceItem.product;
+          return {
+            ...priceItem,
+            image,
+            title,
+            identifier,
+            basePrice,
+          };
+        }),
+      };
+    });
     const total = await db.$count(priceLevel, filters);
 
     return NextResponse.json(
       {
-        data: response,
+        data: updated,
         pagination: {
           page,
           limit,

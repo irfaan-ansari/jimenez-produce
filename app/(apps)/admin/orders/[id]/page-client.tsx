@@ -204,8 +204,6 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
               <h4 className="mb-4 text-sm font-medium text-muted-foreground uppercase">
                 Recipient
               </h4>
-              <div>{data.receiverName}</div>
-              <div>{data.receiverPhone}</div>
             </div>
             <div>
               <div className="flex items-start justify-between gap-4">

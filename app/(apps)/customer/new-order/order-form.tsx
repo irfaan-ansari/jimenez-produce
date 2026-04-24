@@ -19,7 +19,7 @@ import {
   InputGroupButton,
   InputGroupInput,
 } from "@/components/ui/input-group";
-import { Minus, Plus, Star, X } from "lucide-react";
+import { Loader, Minus, Plus, Star, X } from "lucide-react";
 import { CustomerProductType } from "@/lib/types";
 import { useStore } from "@tanstack/react-form";
 import { SearchBar } from "@/components/admin/search-filters";
@@ -47,10 +47,6 @@ export const OrderForm = ({ session }: { session: Session }) => {
         zip: "",
       },
       notes: "",
-      customerId: session.user.id,
-      locationId: session.user.locationId,
-      receiverName: "",
-      receiverPhone: "",
       deliveryDate: "",
       deliveryWindow: "",
       deliveryInstruction: "",
@@ -63,12 +59,14 @@ export const OrderForm = ({ session }: { session: Session }) => {
         return { ...rest };
       });
 
+      const toastId = toast.loading("Submitting your order...");
       const { success, error, data } = await createOrder({
         ...value,
         lineItems: orderLineItems,
       });
 
       if (success) {
+        toast.success("Order submitted successfully!", { id: toastId });
         confirm.success({
           title: "Order Confirmed!",
           description: `Thanks for your purchase! Your order is confirmed and we're getting it ready for you.`,
@@ -80,7 +78,7 @@ export const OrderForm = ({ session }: { session: Session }) => {
         queryClient.invalidateQueries({
           queryKey: ["products"],
         });
-      } else toast.error(error.message);
+      } else toast.error(error.message, { id: toastId });
     },
   });
 
@@ -153,14 +151,14 @@ export const OrderForm = ({ session }: { session: Session }) => {
               href={
                 queryParams({
                   set: {
-                    guide: searchParamsObj.guide === "true" ? "" : "true",
+                    saved: searchParamsObj.saved === "true" ? "" : "true",
                   },
                   getNewPath: true,
                 }) as string
               }
             >
               <Star />
-              {searchParamsObj.guide ? "Hide" : "View"} Order Guide
+              {searchParamsObj.saved ? "Hide" : "View"} Order Guide
             </Link>
           </Button>
         </div>
@@ -203,9 +201,27 @@ export const OrderForm = ({ session }: { session: Session }) => {
               >
                 {showSummary ? "Hide Cart" : "View Cart"}
               </Button>
-              <Button className="rounded-xl px-6" size="lg" type="submit">
-                Submit Order
-              </Button>
+
+              <form.Subscribe
+                selector={({ isSubmitting, canSubmit }) => ({
+                  isSubmitting,
+                  canSubmit,
+                })}
+                children={({ isSubmitting, canSubmit }) => (
+                  <Button
+                    type="submit"
+                    size="lg"
+                    className="w-32 rounded-xl"
+                    disabled={isSubmitting || !canSubmit}
+                  >
+                    {isSubmitting ? (
+                      <Loader className="animate-spin" />
+                    ) : (
+                      "Submit Order"
+                    )}
+                  </Button>
+                )}
+              />
             </div>
           </div>
         )}

@@ -9,8 +9,8 @@ import {
 import { db } from "@/lib/db";
 import { getSession } from "./auth";
 import { cookies } from "next/headers";
-import { handleAction } from "@/lib/helper/error-handler";
 import { and, eq, ilike, or, desc } from "drizzle-orm";
+import { handleAction } from "@/lib/helper/error-handler";
 
 export const getProducts = handleAction(
   async (query: Record<string, string>) => {
@@ -86,11 +86,16 @@ export const createProduct = handleAction(async (data: ProductInsertType) => {
 
   if (!session) throw new Error("Authentication required.");
 
+  const { activeOrganizationId } = session.session;
   const { status, ...rest } = data;
 
   const [result] = await db
     .insert(product)
-    .values({ ...rest, status: status?.toLowerCase() })
+    .values({
+      ...rest,
+      status: status?.toLowerCase(),
+      organizationId: activeOrganizationId,
+    })
     .returning();
 
   return result;

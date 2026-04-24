@@ -175,13 +175,13 @@ export const OrderCart = withForm({
               />
 
               <form.AppField
-                name="notes"
+                name="deliveryInstruction"
                 children={(field) => {
                   const isInvalid =
                     field.state.meta.isTouched && !field.state.meta.isValid;
                   return (
                     <Field>
-                      <FieldLabel htmlFor={field.name}>Notes</FieldLabel>
+                      <FieldLabel htmlFor={field.name}>Instructions</FieldLabel>
                       <Textarea
                         id={field.name}
                         name={field.name}

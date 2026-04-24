@@ -16,6 +16,7 @@ import {
   Translations,
   useTranslation,
 } from "../ui/language-selector";
+import { phoneSchema } from "@/lib/form-schema/common";
 
 const translations = {
   en: {
@@ -60,12 +61,6 @@ const translations = {
     },
   },
 } as const;
-const phoneSchema = z
-  .string()
-  .transform((val) => val.replace(/\D/g, "")) // keep digits only
-  .refine((val) => val.length === 10, {
-    message: "Phone must be 10 digits",
-  });
 
 const schema = z.object({
   companyName: z.string().min(1, "Company name is required"),
@@ -84,7 +79,7 @@ const schema = z.object({
       receivingName: z.string().min(1, "Receiving contact name is required"),
       receivingPhone: phoneSchema,
       instructions: z.string(),
-    })
+    }),
   ),
   certificate: fileSchema,
   status: z.string(),
@@ -95,7 +90,7 @@ export const CustomerDataForm = ({ name }: { name: string }) => {
 
   const { t, dir, setLanguage, language } = useTranslation(
     translations as Translations,
-    "en"
+    "en",
   );
 
   const form = useAppForm({
@@ -135,7 +130,7 @@ export const CustomerDataForm = ({ name }: { name: string }) => {
       // @ts-ignore
       const { success, error } = await createCustomer(
         { ...defaultValues, ...rest, certificateUrl: blob.url },
-        false
+        false,
       );
 
       if (success) {

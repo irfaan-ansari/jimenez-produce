@@ -87,7 +87,7 @@ export const SearchBar = ({
 
   return (
     <InputGroup
-      className={cn("h-11 w-full max-w-sm rounded-xl", className)}
+      className={cn("h-11 w-full max-w-sm rounded-xl bg-background", className)}
       {...props}
     >
       <InputGroupAddon className="pl-3">

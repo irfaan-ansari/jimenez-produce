@@ -10,6 +10,7 @@ import {
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -26,7 +27,6 @@ import React, { useRef } from "react";
 import { Textarea } from "../ui/textarea";
 import { upload } from "@vercel/blob/client";
 import { capitalizeWords } from "@/lib/utils";
-import { useLocations } from "@/hooks/use-config";
 import { useAppForm } from "@/hooks/form-context";
 import { AnyFieldApi } from "@tanstack/react-form";
 import { useCategories } from "@/hooks/use-product";
@@ -39,9 +39,13 @@ const schema = z.object({
   identifier: z.string(),
   title: z.string().min(1, "Enter title"),
   description: z.string(),
-  categories: z.array(z.string()),
+  categories: z.array(z.string()).min(1, "Select at least one category"),
   status: z.string().min(1, "Select status"),
   image: z.string(),
+  basePrice: z.string().min(1, "Enter base price"),
+  type: z.string(),
+  pack: z.string(),
+  unit: z.string(),
   imageObj: z.file().mime(["image/png", "image/jpeg"]).or(z.any()),
 });
 
@@ -54,7 +58,6 @@ export const ProductDialog = ({
 }) => {
   const [open, setOpen] = useState(false);
   const queryClient = useQueryClient();
-  const { data: locations } = useLocations();
 
   const form = useAppForm({
     defaultValues: {
@@ -63,6 +66,10 @@ export const ProductDialog = ({
       description: product?.description || "",
       categories: product?.categories || ([] as any),
       status: product?.status ? capitalizeWords(product.status) : "",
+      type: product?.type || "",
+      pack: product?.pack || "",
+      unit: product?.unit || "",
+      basePrice: product?.basePrice || "",
       image: product?.image || "",
       imageObj: null as any,
     },
@@ -122,9 +129,14 @@ export const ProductDialog = ({
       <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent className="rounded-2xl px-0 ring-ring/10 sm:max-w-2xl">
         <DialogHeader className="px-6">
-          <DialogTitle className="text-xl font-semibold">
+          <DialogTitle className="text-2xl font-bold">
             {product ? "Edit Product" : "Create Product"}
           </DialogTitle>
+          <DialogDescription>
+            {product
+              ? "Update the product details."
+              : "Add a new product with all required details"}
+          </DialogDescription>
         </DialogHeader>
         <form
           onSubmit={(e) => {
@@ -134,99 +146,96 @@ export const ProductDialog = ({
           className="flex h-[calc(100svh-200px)] flex-col"
         >
           <div className="no-scrollbar flex-1 overflow-y-auto px-6">
-            <FieldGroup>
-              <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-                <div className="flex flex-col gap-6">
-                  <form.AppField
-                    name="title"
-                    children={(field) => (
-                      <field.TextField
-                        label="Title"
-                        className="**:data-[slot=input]:rounded-xl"
-                      />
-                    )}
-                  />
+            <FieldGroup className="grid grid-cols-1 lg:grid-cols-2">
+              <form.Field
+                name="image"
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid;
 
-                  <form.AppField
-                    name="identifier"
-                    children={(field) => (
-                      <field.TextField
-                        label="Product Code"
-                        className="**:data-[slot=input]:rounded-xl"
-                      />
-                    )}
-                  />
-                  <form.AppField
-                    name="status"
-                    children={(field) => (
-                      <field.SelectField
-                        label="Status"
-                        className="**:data-[slot=select-trigger]:rounded-xl"
-                        options={["Active", "Private", "Archived"]}
-                      />
-                    )}
-                  />
-                </div>
-                <form.Field
-                  name="image"
-                  children={(field) => {
-                    const isInvalid =
-                      field.state.meta.isTouched && !field.state.meta.isValid;
-
-                    return (
-                      <Field aria-invalid={isInvalid}>
-                        {field.state.value ? (
-                          <div className="relative z-1 flex h-full w-full justify-center rounded-xl border border-dashed bg-sidebar p-2">
-                            <Image
-                              src={field.state.value}
-                              width={112}
-                              height={112}
-                              alt="Product Image"
-                              className="h-full w-auto"
-                            />
-                            <Button
-                              type="button"
-                              size="icon-sm"
-                              variant="outline"
-                              className="absolute top-2 right-2 rounded-xl"
-                              onClick={handleDeleteImage}
-                            >
-                              <Trash2 />
-                            </Button>
-                          </div>
-                        ) : (
-                          <FieldLabel
-                            htmlFor={field.name}
-                            className="h-full justify-center rounded-xl border border-dashed bg-sidebar transition hover:border-solid hover:ring-1 hover:ring-ring/50"
+                  return (
+                    <Field aria-invalid={isInvalid} className="lg:col-span-2">
+                      {field.state.value ? (
+                        <div className="relative z-1 flex h-28 w-full justify-center rounded-xl border border-dashed bg-secondary p-2">
+                          <Image
+                            src={field.state.value}
+                            width={112}
+                            height={112}
+                            alt="Product Image"
+                            className="h-full w-auto"
+                          />
+                          <Button
+                            type="button"
+                            size="icon-sm"
+                            variant="outline"
+                            className="absolute top-2 right-2 rounded-xl"
+                            onClick={handleDeleteImage}
                           >
-                            <FieldLegend>Upload Image</FieldLegend>
+                            <Trash2 />
+                          </Button>
+                        </div>
+                      ) : (
+                        <FieldLabel
+                          htmlFor={field.name}
+                          className="h-28 justify-center rounded-xl border border-dashed bg-secondary transition hover:border-solid hover:ring-1 hover:ring-ring/50"
+                        >
+                          <FieldLegend>Upload Image</FieldLegend>
 
-                            <Input
-                              className="sr-only"
-                              type="file"
-                              accept="image/*"
-                              id={field.name}
-                              onChange={(e) => {
-                                form.setFieldValue(
-                                  "imageObj",
-                                  e.target.files?.[0],
-                                );
-                                const url = URL.createObjectURL(
-                                  e.target.files?.[0]!,
-                                );
-                                form.setFieldValue("image", url);
-                              }}
-                            />
-                          </FieldLabel>
-                        )}
-                        {isInvalid && (
-                          <FieldError errors={field.state.meta.errors} />
-                        )}
-                      </Field>
-                    );
-                  }}
-                />
-              </div>
+                          <Input
+                            className="sr-only"
+                            type="file"
+                            accept="image/*"
+                            id={field.name}
+                            onChange={(e) => {
+                              form.setFieldValue(
+                                "imageObj",
+                                e.target.files?.[0],
+                              );
+                              const url = URL.createObjectURL(
+                                e.target.files?.[0]!,
+                              );
+                              form.setFieldValue("image", url);
+                            }}
+                          />
+                        </FieldLabel>
+                      )}
+                      {isInvalid && (
+                        <FieldError errors={field.state.meta.errors} />
+                      )}
+                    </Field>
+                  );
+                }}
+              />
+
+              <form.AppField
+                name="title"
+                children={(field) => (
+                  <field.TextField
+                    label="Title"
+                    className="**:data-[slot=input]:rounded-xl lg:col-span-2"
+                  />
+                )}
+              />
+
+              <form.AppField
+                name="identifier"
+                children={(field) => (
+                  <field.TextField
+                    label="Product Code"
+                    className="**:data-[slot=input]:rounded-xl"
+                  />
+                )}
+              />
+              <form.AppField
+                name="status"
+                children={(field) => (
+                  <field.SelectField
+                    label="Status"
+                    className="**:data-[slot=select-trigger]:rounded-xl"
+                    options={["Active", "Private", "Archived"]}
+                  />
+                )}
+              />
 
               <form.Field
                 name="categories"
@@ -234,7 +243,10 @@ export const ProductDialog = ({
                   const isInvalid =
                     field.state.meta.isTouched && !field.state.meta.isValid;
                   return (
-                    <Field aria-invalid={isInvalid} className="gap-2">
+                    <Field
+                      aria-invalid={isInvalid}
+                      className="gap-2 lg:col-span-2"
+                    >
                       <FieldLabel htmlFor={field.name}>Categories</FieldLabel>
                       <CategorySelector field={field} />
                       {field.state.value.length > 0 && (
@@ -248,6 +260,7 @@ export const ProductDialog = ({
                               {v}
                               <Button
                                 size="icon-xs"
+                                type="button"
                                 variant="destructive"
                                 className="size-5 rounded-xl"
                                 onClick={() => field.removeValue(i)}
@@ -271,7 +284,7 @@ export const ProductDialog = ({
                   const isInvalid =
                     field.state.meta.isTouched && !field.state.meta.isValid;
                   return (
-                    <Field>
+                    <Field className="lg:col-span-2">
                       <FieldLabel htmlFor={field.name}>Description</FieldLabel>
                       <Textarea
                         id={field.name}
@@ -289,9 +302,48 @@ export const ProductDialog = ({
                   );
                 }}
               />
+
+              <form.AppField
+                name="type"
+                children={(field) => (
+                  <field.TextField
+                    label="Product Type"
+                    className="**:data-[slot=input]:rounded-xl"
+                  />
+                )}
+              />
+
+              <form.AppField
+                name="pack"
+                children={(field) => (
+                  <field.TextField
+                    label="Pack"
+                    className="**:data-[slot=input]:rounded-xl"
+                  />
+                )}
+              />
+
+              <form.AppField
+                name="unit"
+                children={(field) => (
+                  <field.TextField
+                    label="Unit"
+                    className="**:data-[slot=input]:rounded-xl"
+                  />
+                )}
+              />
+              <form.AppField
+                name="basePrice"
+                children={(field) => (
+                  <field.TextField
+                    label="Base Price"
+                    className="**:data-[slot=input]:rounded-xl"
+                  />
+                )}
+              />
             </FieldGroup>
           </div>
-          <Field className="mt-4 flex flex-col-reverse gap-4 px-6 pt-4 sm:flex-row sm:justify-end  sm:[&>*]:w-28">
+          <Field className="flex flex-col-reverse gap-4 px-6 pt-4 sm:flex-row sm:justify-end  sm:[&>*]:w-28">
             <Button
               variant="outline"
               size="xl"

@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import {
   Popover,
   PopoverContent,
@@ -26,6 +26,8 @@ import {
   Paperclip,
   Trash2,
   Upload,
+  EyeOff,
+  Eye,
 } from "lucide-react";
 import { cn, formatPhone } from "@/lib/utils";
 import {
@@ -40,6 +42,12 @@ import { useRef } from "react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import SignatureCanvas from "react-signature-canvas";
 import { addYears, format } from "date-fns";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupInput,
+} from "./ui/input-group";
 
 interface FieldProps {
   label?: string;
@@ -76,6 +84,48 @@ const TextField = ({
         type={props?.type ? props.type : "text"}
       />
       {description && <FieldDescription>{description}</FieldDescription>}
+      {isInvalid && <FieldError errors={field.state.meta.errors} />}
+    </Field>
+  );
+};
+const PasswordField = ({
+  label,
+  description,
+  placeholder,
+  className,
+  ...props
+}: FieldProps) => {
+  const field = useFieldContext<string>();
+  const [show, setShow] = useState(false);
+  const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
+
+  return (
+    <Field className={cn("gap-2", className)} {...props}>
+      {label && <FieldLabel htmlFor={field.name}>{label}</FieldLabel>}
+
+      <InputGroup className="rounded-xl">
+        <InputGroupInput
+          id={field.name}
+          name={field.name}
+          value={field.state.value}
+          onBlur={field.handleBlur}
+          onChange={(e) => field.handleChange(e.target.value)}
+          aria-invalid={isInvalid}
+          placeholder={placeholder}
+          autoComplete="off"
+          type={show ? "text" : "password"}
+        />
+        <InputGroupAddon align="inline-end">
+          <InputGroupButton
+            size="icon-sm"
+            className="rounded-2xl"
+            type="button"
+            onClick={() => setShow(!show)}
+          >
+            {show ? <EyeOff /> : <Eye />}
+          </InputGroupButton>
+        </InputGroupAddon>
+      </InputGroup>
       {isInvalid && <FieldError errors={field.state.meta.errors} />}
     </Field>
   );
@@ -230,7 +280,7 @@ const SignatureField = ({
 
   const handleChange = async () => {
     const file = await canvasToFile(
-      canvasRef.current?.getTrimmedCanvas() as HTMLCanvasElement
+      canvasRef.current?.getTrimmedCanvas() as HTMLCanvasElement,
     );
 
     field.handleChange(file);
@@ -377,4 +427,5 @@ export {
   RadioField,
   FileField,
   PhoneField,
+  PasswordField,
 };

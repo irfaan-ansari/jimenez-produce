@@ -120,3 +120,7 @@ export const formatPhone = (value: string) => {
   if (a) return a;
   return "";
 };
+
+export const getInitialsAvatar = (name: string) => {
+  return `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(name)}`;
+};

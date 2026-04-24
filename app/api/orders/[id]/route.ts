@@ -14,16 +14,13 @@ export const GET = async (
     if (!session)
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
 
-    const { id: userId, locationId, role } = session.user;
-
-    const isCustomer = role === "customer";
-    const isUser = role === "user";
+    const { activeTeamId, activeOrganizationId, userId } = session.session;
 
     const { id } = await params;
 
     const filters = and(
-      isCustomer ? eq(order.userId, userId) : undefined,
-      isUser ? eq(order.locationId, locationId!) : undefined,
+      eq(order.organizationId, activeOrganizationId!),
+      eq(order.teamId, activeTeamId!),
       eq(order.id, Number(id)),
     );
 
@@ -31,13 +28,6 @@ export const GET = async (
       where: filters,
       with: {
         lineItems: true,
-        location: true,
-        user: {
-          columns: {
-            id: true,
-            name: true,
-          },
-        },
       },
     });
 

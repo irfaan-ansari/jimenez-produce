@@ -16,7 +16,6 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { toast } from "sonner";
-
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth/client";
 import { useStore } from "@tanstack/react-form";
@@ -48,23 +47,18 @@ export function LoginForm({
       onChange: schema,
     },
     onSubmit: async ({ value }) => {
-      await authClient.signIn.email({
-        ...value,
-        fetchOptions: {
-          onError: ({ error }) => {
-            form.setFieldValue("error", error.message ?? "Login failed!");
-            toast.error(error.message ?? "Login failed");
-          },
-          onSuccess: ({ data }) => {
-            router.replace(
-              data.user.role === "customer"
-                ? "/customer/dashboard"
-                : "/admin/overview",
-            );
-            toast.success("Login successfull, redirecting...");
-          },
-        },
-      });
+      const { email, password } = value;
+      const toastId = toast.loading("Logging in...");
+
+      const { error } = await authClient.signIn.email({ email, password });
+
+      if (error) {
+        toast.error(error.message, { id: toastId });
+        form.setFieldValue("error", error.message ?? "Login failed!");
+      } else {
+        toast.success("Login successfull, redirecting...", { id: toastId });
+        window.location.reload();
+      }
     },
   });
 
@@ -91,7 +85,7 @@ export function LoginForm({
             <field.TextField
               label="Email"
               placeholder="me@email.com"
-              className="*:data-[slot=input]:rounded-xl"
+              className="*:data-[slot=input]:rounded-xl *:data-[slot=input]:bg-background"
             />
           )}
         />
@@ -113,7 +107,7 @@ export function LoginForm({
                     Forgot your password?
                   </Link>
                 </div>
-                <InputGroup className="rounded-xl">
+                <InputGroup className="rounded-xl bg-background">
                   <InputGroupInput
                     id={field.name}
                     name={field.name}
@@ -173,7 +167,7 @@ export function LoginForm({
               <Button
                 type="submit"
                 size="xl"
-                className="rounded-xl"
+                className="rounded-xl bg-sidebar-accent"
                 disabled={isSubmitting || !canSubmit}
               >
                 {isSubmitting ? <Loader className="animate-spin" /> : "Login"}
@@ -184,18 +178,12 @@ export function LoginForm({
 
         <div className="flex flex-row items-center justify-center gap-4">
           <div className="flex-[1_1_0] border-b "></div>
-          <span className="shrink-0 bg-background">OR</span>
+          <span className="shrink-0">OR</span>
           <span className="flex-[1_1_0] border-b"></span>
         </div>
 
         <Field className="text-center">
-          <Button
-            variant="outline"
-            type="button"
-            size="xl"
-            className="rounded-xl"
-            disabled
-          >
+          <Button type="button" size="xl" className="rounded-xl">
             Login with OTP
           </Button>
         </Field>

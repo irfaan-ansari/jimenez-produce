@@ -17,8 +17,8 @@ import { useProducts } from "@/hooks/use-product";
 import { STATUS_MAP } from "@/lib/constants/product";
 import { useRouterStuff } from "@/hooks/use-router-stuff";
 import { Pagination } from "@/components/admin/pagination";
-import { ProductAction } from "@/components/admin/product-actions";
-import { AdminProductResponse, AdminProductType } from "@/lib/types";
+import { ProductAction } from "@/app/(apps)/admin/products/product-actions";
+import { AdminProductResponse } from "@/lib/types";
 import { formatUSD } from "@/lib/utils";
 
 export const PageClient = () => {
@@ -82,7 +82,7 @@ export const PageClient = () => {
                     {product.categories?.map((cat) => (
                       <Badge
                         key={cat}
-                        className="h-6 rounded-xl bg-primary/10 text-sm"
+                        className="h-6 rounded-lg text-sm"
                         variant="secondary"
                       >
                         {cat}
@@ -92,11 +92,10 @@ export const PageClient = () => {
                   <CardTitle className="font-semibold">
                     {product.title}
                   </CardTitle>
-                  <CardDescription className="text-base">
-                    <span className="text-primary">
-                      {formatUSD(product.basePrice)}:
-                    </span>
-                  </CardDescription>
+
+                  <span className="text-base font-semibold text-primary">
+                    {formatUSD(product.basePrice)}:
+                  </span>
                 </CardContent>
               </Card>
             );

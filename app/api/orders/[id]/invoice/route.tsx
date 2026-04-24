@@ -8,31 +8,43 @@ import { OrderInvoice } from "@/components/pdf/order-invoice";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
-  const session = await getSession();
+  try {
+    const session = await getSession();
 
-  if (!session)
-    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    if (!session)
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
 
-  const { id } = await params;
+    const { activeTeamId } = session.session;
 
-  const data = await db.query.order.findFirst({
-    where: eq(order.id, Number(id)),
-    with: {
-      lineItems: true,
-      location: true,
-    },
-  });
+    const { id } = await params;
 
-  if (!data) return NextResponse.json({ message: "Failed" }, { status: 400 });
+    const data = await db.query.order.findFirst({
+      where: eq(order.id, Number(id)),
+      with: {
+        lineItems: true,
+        organization: true,
+      },
+    });
 
-  const stream = await renderToStream(<OrderInvoice data={data} />);
+    if (!data) return NextResponse.json({ message: "Failed" }, { status: 400 });
 
-  return new NextResponse(stream as any, {
-    headers: {
-      "Content-Type": "application/pdf",
-      "Content-Disposition": `inline; filename="order-${id}.pdf"`,
-    },
-  });
+    const stream = await renderToStream(
+      <OrderInvoice data={{ ...data, organization: data.organization! }} />,
+    );
+
+    return new NextResponse(stream as any, {
+      headers: {
+        "Content-Type": "application/pdf",
+        "Content-Disposition": `inline; filename="order-${id}.pdf"`,
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      { message: "Failed to generate invoice." },
+      { status: 400 },
+    );
+  }
 }

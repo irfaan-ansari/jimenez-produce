@@ -12,7 +12,7 @@ export const metadata = {
 export const dynamic = "force-dynamic";
 const DashboardPage = async () => {
   return (
-    <div className="mt-4 flex h-full flex-col gap-8">
+    <div className="@container mt-4 flex h-full flex-col gap-8">
       {/* header */}
       <div className="flex items-center gap-4">
         <div>

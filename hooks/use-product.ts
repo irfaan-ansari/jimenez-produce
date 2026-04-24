@@ -4,6 +4,7 @@ import {
   type AdminProductResponse,
   type CustomerProductResponse,
   type ProductCategoriesResponse,
+  PriceLevelDetailResponse,
 } from "@/lib/types";
 import { fetcher } from "@/lib/helper/fetcher";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
@@ -28,10 +29,11 @@ export const useInfiniteProducts = (query: string) => {
       params.set("page", String(pageParam));
 
       return fetcher<CustomerProductResponse>(
-        `/api/products/customer?${params.toString()}`
+        `/api/products/customer?${params.toString()}`,
       );
     },
     getNextPageParam: ({ pagination }) => {
+      console.log(pagination);
       const { page, totalPages } = pagination;
 
       return page < totalPages ? Number(page) + 1 : undefined;
@@ -46,7 +48,7 @@ export const useCategories = (query?: string) => {
     queryKey: ["product_categories", query],
     queryFn: () => {
       return fetcher<ProductCategoriesResponse>(
-        `/api/products/categories?${query}`
+        `/api/products/categories?${query}`,
       );
     },
     staleTime: 1000 * 60 * 5,
@@ -63,7 +65,7 @@ export const useTopProducts = (query?: string) => {
   });
 };
 
-export const usePriceLevel = (query?: string) => {
+export const usePriceLevels = (query?: string) => {
   return useQuery({
     queryKey: ["price-level", query],
     queryFn: () => {

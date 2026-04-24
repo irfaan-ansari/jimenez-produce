@@ -34,12 +34,12 @@ export async function GET(req: NextRequest) {
           totalPages: Math.ceil(categories.length / (limit as number)),
         },
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     return NextResponse.json(
       { message: "Failed to load data" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

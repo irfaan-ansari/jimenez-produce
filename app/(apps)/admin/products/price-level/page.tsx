@@ -1,9 +1,9 @@
 import { Plus } from "lucide-react";
 import { PageClient } from "./page-client";
 import { Button } from "@/components/ui/button";
-import { FilterTabs } from "@/components/admin/filter-tabs";
+import { FilterTab } from "@/components/admin/filter-tabs";
 import { SearchBar } from "@/components/admin/search-filters";
-import { PriceLevelDialog } from "@/components/admin/price-level-dialog";
+import { PriceLevelDialog } from "@/app/(apps)/admin/products/price-level/price-level-dialog";
 
 export const metadata = {
   title: "Price Level",
@@ -17,20 +17,27 @@ const OPTIONS = [
 
 const PriceLevelPage = async () => {
   return (
-    <div className="flex flex-col h-full gap-5">
-      <h1 className="text-2xl font-semibold">Price Level</h1>
+    <div className="flex h-full flex-col gap-5">
+      <div className="flex items-center justify-between">
+        <div className="flex-1 space-y-1">
+          <h1 className="text-2xl font-bold">Price level</h1>
+          <p className="text-sm text-muted-foreground">
+            Manage price level settings.
+          </p>
+        </div>
 
-      <FilterTabs tabs={OPTIONS} queryKey="products" />
-
-      <div className="flex gap-4 items-center">
-        <SearchBar />
-
-        <PriceLevelDialog>
-          <Button size="xl" className="rounded-xl min-w-28 ml-auto">
-            <Plus /> Add New
-          </Button>
-        </PriceLevelDialog>
+        <div className="flex flex-1 justify-end items-center gap-4">
+          <SearchBar />
+          <PriceLevelDialog>
+            <Button size="xl" className="min-w-28 rounded-xl">
+              <Plus /> Add New
+            </Button>
+          </PriceLevelDialog>
+        </div>
       </div>
+
+      <FilterTab tabs={OPTIONS} path="/api/price-level/count" />
+
       {/* content */}
       <PageClient />
     </div>

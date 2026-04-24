@@ -1,19 +1,30 @@
 "use client";
 
 import { SITE_URL } from "../config";
-import { ac, admin, customer } from "./permissions";
+import { ac, owner, sales, manager, member } from "./permissions";
+import { auth } from ".";
+import {
+  phoneNumberClient,
+  organizationClient,
+  inferOrgAdditionalFields,
+} from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
-import { adminClient, phoneNumberClient } from "better-auth/client/plugins";
 
 export const authClient = createAuthClient({
   baseURL: SITE_URL,
   plugins: [
-    adminClient({
+    organizationClient({
+      teams: {
+        enabled: true,
+      },
       ac,
       roles: {
-        admin,
-        customer,
+        owner,
+        sales,
+        manager,
+        member,
       },
+      schema: inferOrgAdditionalFields<typeof auth>(),
     }),
     phoneNumberClient(),
   ],

@@ -1,17 +1,17 @@
 import { db } from "@/lib/db/index";
 import { sendEmail } from "../email";
+import { APIError, betterAuth } from "better-auth";
 import { nextCookies } from "better-auth/next-js";
-import { ac, admin, customer } from "./permissions";
-import { betterAuth, BetterAuthOptions } from "better-auth";
+import { owner, ac, sales, manager, member } from "./permissions";
+import { getActiveUser, getActiveTeam } from "@/server/auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { admin as adminPlugin, phoneNumber } from "better-auth/plugins";
+import { organization, phoneNumber } from "better-auth/plugins";
 import PasswordResetTemplate from "@/components/email/password-reset-email";
 
-const options = {
+export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: "pg",
   }),
-
   emailAndPassword: {
     sendResetPassword: async ({ user, url, token }) => {
       sendEmail({
@@ -25,6 +25,7 @@ const options = {
       });
     },
     enabled: true,
+    autoSignIn: false,
   },
   user: {
     changeEmail: {
@@ -32,37 +33,132 @@ const options = {
       updateEmailWithoutVerification: true,
     },
     additionalFields: {
-      locationId: {
-        type: "number",
+      isSuperAdmin: {
+        type: "boolean",
+        required: false,
+        input: false,
+        defaultValue: false,
+      },
+      phoneNumber: {
+        type: "string",
         required: false,
         input: true,
       },
-      managerName: {
+      accountType: {
         type: "string",
-        required: false,
+        required: true,
+        defaultValue: "admin",
         input: true,
       },
     },
   },
   plugins: [
-    adminPlugin({
+    organization({
+      allowUserToCreateOrganization: async (user) => {
+        return user.isSuperAdmin;
+      },
       ac,
       roles: {
-        admin,
-        customer,
+        owner,
+        member,
+        sales,
+        manager,
+      },
+      teams: {
+        enabled: true,
+      },
+      schema: {
+        organization: {
+          additionalFields: {
+            phone: {
+              type: "string",
+              required: true,
+              input: true,
+            },
+            email: {
+              type: "string",
+              required: true,
+              input: true,
+            },
+          },
+        },
+        team: {
+          additionalFields: {
+            managerName: {
+              type: "string",
+              required: true,
+              input: true,
+            },
+            phone: {
+              type: "string",
+              required: true,
+              input: true,
+            },
+            email: {
+              type: "string",
+              required: true,
+              input: true,
+            },
+            logo: {
+              type: "string",
+              required: false,
+              input: true,
+            },
+            priceLevelId: {
+              type: "number",
+              required: false,
+              input: true,
+            },
+          },
+        },
       },
     }),
-    nextCookies(),
     phoneNumber({
       sendOTP: ({ phoneNumber, code }, ctx) => {
-        // Implement sending OTP code via SMS
         console.log("sending", phoneNumber, code);
       },
     }),
+    nextCookies(),
   ],
-} satisfies BetterAuthOptions;
+  databaseHooks: {
+    session: {
+      create: {
+        before: async (session) => {
+          const [activeUser, activeTeam] = await Promise.all([
+            getActiveUser(session.userId),
+            getActiveTeam(session.userId),
+          ]);
 
-export const auth = betterAuth({
-  ...options,
-  plugins: [...options.plugins],
+          if (!activeUser?.organizationId) {
+            throw new Error(
+              "Access denied. Please contact your administrator.",
+            );
+          }
+          return {
+            data: {
+              ...session,
+              activeOrganizationId: activeUser?.organizationId,
+              activeTeamId: activeTeam?.id,
+            },
+          };
+        },
+      },
+    },
+    user: {
+      create: {
+        before: async (user, ctx) => {
+          if (!ctx?.context.session)
+            throw new APIError("BAD_REQUEST", {
+              message: "You are not allowed to create account.",
+            });
+          return {
+            data: {
+              ...user,
+              firstName: user.name.split(" ")[0],
+            },
+          };
+        },
+      },
+    },
+  },
 });

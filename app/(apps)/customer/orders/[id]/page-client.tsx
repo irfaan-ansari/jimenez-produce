@@ -66,7 +66,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
     {
       icon: Home,
       label: data.status === "completed" ? "Delivered" : "Delivery",
-      date: data.status === "completed" ? data.updatedAt : data.deliveryDate,
+      date: data.status === "completed" ? data.updatedAt : data.updatedAt,
       active: data.status === "completed",
     },
   ];
@@ -173,13 +173,6 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
             </div>
             <div>
               <h4 className="mb-4 text-sm font-medium text-muted-foreground uppercase">
-                Recipient
-              </h4>
-              <div>{data.receiverName}</div>
-              <div>{data.receiverPhone}</div>
-            </div>
-            <div>
-              <h4 className="mb-4 text-sm font-medium text-muted-foreground uppercase">
                 Schedule
               </h4>
               <div>{data.deliveryWindow}</div>
@@ -221,7 +214,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
               <span>Total</span> <span>{formatUSD(data.total)}</span>
             </div>
           </div>
-          <Button className="w-full rounded-xl" size="xl" asChild>
+          <Button className="w-full rounded-xl " size="xl" asChild>
             <a href={`/api/orders/${data.id}/invoice`} target="_blank">
               <Download />
               Download Invoice
@@ -229,14 +222,13 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
           </Button>
 
           <Button
-            className="w-full rounded-xl"
+            className="w-full rounded-xl bg-sidebar-accent "
             size="xl"
-            variant="outline"
             asChild
           >
             <Link href={`/customer/orders/new?orderId=${data.id}`}>
               <Copy />
-              Order Again
+              Reorder
             </Link>
           </Button>
         </CardContent>

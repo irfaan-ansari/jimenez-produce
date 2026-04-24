@@ -1,0 +1,1 @@
+ALTER TABLE "team" ADD COLUMN "price_level_id" integer;

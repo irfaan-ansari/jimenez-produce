@@ -11,6 +11,14 @@ export async function GET(req: NextRequest) {
     if (!session) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
+    const { activeOrganizationId } = session.session;
+
+    if (!activeOrganizationId) {
+      return NextResponse.json(
+        { message: "No active organization." },
+        { status: 403 },
+      );
+    }
 
     const searchParams = req.nextUrl.searchParams;
     const query = Object.fromEntries(searchParams.entries());
@@ -18,6 +26,7 @@ export async function GET(req: NextRequest) {
     const offset = ((page as number) - 1) * Number(limit);
 
     const filters = and(
+      eq(product.organizationId, activeOrganizationId),
       status ? eq(product.status, status) : undefined,
       cat ? arrayContains(product.categories, [cat]) : undefined,
       q
@@ -34,14 +43,6 @@ export async function GET(req: NextRequest) {
       limit: Number(limit),
       offset,
       orderBy: (product, { desc }) => [desc(product.createdAt)],
-      with: {
-        location: {
-          columns: {
-            id: true,
-            name: true,
-          },
-        },
-      },
     });
 
     const total = await db.$count(product, filters);

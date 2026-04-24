@@ -5,7 +5,6 @@ import { STATUS_MAP } from "./constants/status-map";
 import {
   CustomerSelectType,
   LineItemSelectType,
-  LocationSelectType,
   OrderSelectType,
   PriceLevelItemSelectType,
   PriceLevelSelectType,
@@ -71,7 +70,6 @@ export type ProductCategoriesResponse = {
 
 export type OrderType = OrderSelectType & {
   lineItems: LineItemSelectType[];
-  location: LocationSelectType;
   customer: CustomerSelectType;
 };
 
@@ -87,12 +85,48 @@ export interface TopProduct {
   lastPurchasedAt: Date | string;
 }
 
+interface PriceLevelItem {
+  id: number;
+  basePrice: string;
+  price: string;
+  productId: number;
+  title: string;
+  identifier: string;
+  image: string | undefined;
+}
+
 export type PriceLevelType = PriceLevelSelectType & {
-  priceLevelItem: PriceLevelItemSelectType;
+  priceLevelItem: PriceLevelItem[];
 };
 
 export type PriceLevelResponse = {
   data: PriceLevelType[];
   pagination: Pagination;
 };
+
+export type PriceLevelDetailResponse = {
+  data: PriceLevelSelectType & {
+    priceLevelItem: PriceLevelItem[];
+  };
+};
+
+export type Role = "owner" | "sales" | "manager" | "member";
+
 export type Session = typeof auth.$Infer.Session;
+export type Warehouse = typeof auth.$Infer.Organization;
+
+export type Team = typeof auth.$Infer.Team & {
+  managerName: string;
+  phone: string;
+  email: string;
+  logo?: string | undefined;
+};
+
+type BaseMember = typeof auth.$Infer.Member;
+
+export type Member = Omit<BaseMember, "user"> & {
+  user: BaseMember["user"] & {
+    phoneNumber: string;
+  };
+  lastLogin: string | null;
+};

@@ -1,0 +1,1 @@
+ALTER TABLE "price_level_item" ADD CONSTRAINT "price_level_item_product_id_product_id_fk" FOREIGN KEY ("product_id") REFERENCES "public"."product"("id") ON DELETE cascade ON UPDATE no action;

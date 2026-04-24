@@ -1,0 +1,1 @@
+ALTER TABLE "user" ALTER COLUMN "account_type" SET DEFAULT 'sales';

@@ -91,10 +91,13 @@ export async function GET(req: NextRequest) {
 
     const grouped = await handler();
 
-    const dbCountsMap = grouped.reduce((acc, curr) => {
-      acc[curr.status!] = Number(curr.value);
-      return acc;
-    }, {} as Record<string, number>);
+    const dbCountsMap = grouped.reduce(
+      (acc, curr) => {
+        acc[curr.status!] = Number(curr.value);
+        return acc;
+      },
+      {} as Record<string, number>,
+    );
 
     const totalAll = Object.values(dbCountsMap).reduce((a, b) => a + b, 0);
 
@@ -109,7 +112,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json(
       { message: "Failed to load data" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

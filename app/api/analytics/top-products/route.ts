@@ -11,10 +11,7 @@ export async function GET() {
     if (!session)
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
 
-    const { id: userId, locationId, role } = session.user;
-
-    const isCustomer = role === "customer";
-    const isUser = role === "user";
+    const { activeOrganizationId, activeTeamId } = session.session;
 
     const data = await db
       .select({
@@ -32,12 +29,7 @@ export async function GET() {
       })
 
       .from(lineItem)
-      .where(
-        and(
-          isCustomer ? eq(lineItem.userId, userId) : undefined,
-          isUser ? eq(lineItem.locationId, locationId!) : undefined,
-        ),
-      )
+      .where(and(activeTeamId ? eq(lineItem.teamId, activeTeamId) : undefined))
       .groupBy(lineItem.id)
       .orderBy(
         sql`

@@ -16,7 +16,7 @@ export function TopProducts() {
   }));
 
   return (
-    <Card className="rounded-2xl ring-0 shadow-none border col-span-2">
+    <Card className="col-span-6 rounded-2xl border shadow-none ring-0 @4xl:col-span-2">
       <CardHeader>
         <CardTitle className="text-xl font-semibold">Most Ordered</CardTitle>
       </CardHeader>
@@ -30,7 +30,7 @@ export function TopProducts() {
                 className="group cursor-pointer"
                 style={{ "--color": product.color } as React.CSSProperties}
               >
-                <div className="flex items-center justify-between mb-2">
+                <div className="mb-2 flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div
                       className={`h-10 w-10 rounded-xl bg-(--color)/20 text-(--color) flex items-center justify-center font-bold`}
@@ -38,7 +38,7 @@ export function TopProducts() {
                       {product.title[0]}
                     </div>
                     <div>
-                      <p className="font-semibold text-sm">{product.title}</p>
+                      <p className="text-sm font-semibold">{product.title}</p>
                       <p className="text-xs text-muted-foreground">
                         Last Ordered:{" "}
                         {format(product.lastPurchasedAt, "dd MMM")}
@@ -46,13 +46,13 @@ export function TopProducts() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="font-bold text-sm">
+                    <p className="text-sm font-bold">
                       {formatUSD(product.totalRevenue)}
                     </p>
                   </div>
                 </div>
                 {/* The "Relative" Bar */}
-                <div className="h-1.5 w-full bg-secondary rounded-full overflow-hidden">
+                <div className="h-1.5 w-full overflow-hidden rounded-full bg-secondary">
                   <div
                     className={`h-full bg-(--color) opacity-80 group-hover:opacity-100 transition-all`}
                     style={{

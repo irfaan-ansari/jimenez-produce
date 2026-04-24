@@ -1,26 +1,45 @@
 import {
   AlertCircle,
+  Briefcase,
   CircleDashed,
   Crown,
   PackageCheck,
   Shield,
+  ShieldCheck,
+  Star,
   User,
+  Users,
 } from "lucide-react";
 
 export const roleMap = {
-  user: {
-    label: "User",
-    icon: Shield,
-    color: "#1D4ED8",
+  owner: {
+    label: "Owner",
+    icon: Crown,
+    color: "#F59E0B",
   },
   admin: {
     label: "Admin",
-    icon: Crown,
-    color: "#6D28D9",
+    icon: ShieldCheck,
+    color: "#7C3AED",
+  },
+  manager: {
+    label: "Manager",
+    icon: Briefcase,
+    color: "#2563EB",
+  },
+  member: {
+    label: "Member",
+    icon: Users,
+    color: "#059669",
+  },
+  user: {
+    label: "User",
+    icon: User,
+    color: "#6B7280",
   },
   customer: {
     label: "Customer",
-    icon: User,
-    color: "#000000",
+    icon: Star,
+    color: "#EC4899",
   },
 };

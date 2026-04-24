@@ -8,7 +8,7 @@ import { PackingSlip } from "@/components/pdf/packing-slip";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const session = await getSession();
 
@@ -21,13 +21,15 @@ export async function GET(
     where: eq(order.id, Number(id)),
     with: {
       lineItems: true,
-      location: true,
+      organization: true,
     },
   });
 
   if (!data) return NextResponse.json({ message: "Failed" }, { status: 400 });
 
-  const stream = await renderToStream(<PackingSlip data={data} />);
+  const stream = await renderToStream(
+    <PackingSlip data={{ ...data, organization: data.organization! }} />,
+  );
 
   return new NextResponse(stream as any, {
     headers: {

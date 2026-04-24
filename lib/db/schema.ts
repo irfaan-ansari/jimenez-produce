@@ -1,9 +1,4 @@
-import {
-  InferInsertModel,
-  InferSelectModel,
-  relations,
-  sql,
-} from "drizzle-orm";
+import { sql, InferInsertModel, InferSelectModel } from "drizzle-orm";
 import {
   pgTable,
   text,
@@ -16,108 +11,7 @@ import {
   date,
   unique,
 } from "drizzle-orm/pg-core";
-
-export const user = pgTable("user", {
-  id: text("id").primaryKey(),
-  name: text("name").notNull(),
-  email: text("email").notNull().unique(),
-  emailVerified: boolean("email_verified").default(false).notNull(),
-  image: text("image"),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at")
-    .defaultNow()
-    .$onUpdate(() => /* @__PURE__ */ new Date())
-    .notNull(),
-  role: text("role"),
-  banned: boolean("banned").default(false),
-  banReason: text("ban_reason"),
-  banExpires: timestamp("ban_expires"),
-  phoneNumber: text("phone_number").unique(),
-  phoneNumberVerified: boolean("phone_number_verified"),
-  locationId: integer("location_id"),
-  managerName: text("manager_name"),
-});
-
-export const session = pgTable(
-  "session",
-  {
-    id: text("id").primaryKey(),
-    expiresAt: timestamp("expires_at").notNull(),
-    token: text("token").notNull().unique(),
-    createdAt: timestamp("created_at").defaultNow().notNull(),
-    updatedAt: timestamp("updated_at")
-      .$onUpdate(() => /* @__PURE__ */ new Date())
-      .notNull(),
-    ipAddress: text("ip_address"),
-    userAgent: text("user_agent"),
-    userId: text("user_id")
-      .notNull()
-      .references(() => user.id, { onDelete: "cascade" }),
-    impersonatedBy: text("impersonated_by"),
-  },
-  (table) => [index("session_userId_idx").on(table.userId)],
-);
-
-export const account = pgTable(
-  "account",
-  {
-    id: text("id").primaryKey(),
-    accountId: text("account_id").notNull(),
-    providerId: text("provider_id").notNull(),
-    userId: text("user_id")
-      .notNull()
-      .references(() => user.id, { onDelete: "cascade" }),
-    accessToken: text("access_token"),
-    refreshToken: text("refresh_token"),
-    idToken: text("id_token"),
-    accessTokenExpiresAt: timestamp("access_token_expires_at"),
-    refreshTokenExpiresAt: timestamp("refresh_token_expires_at"),
-    scope: text("scope"),
-    password: text("password"),
-    createdAt: timestamp("created_at").defaultNow().notNull(),
-    updatedAt: timestamp("updated_at")
-      .$onUpdate(() => /* @__PURE__ */ new Date())
-      .notNull(),
-  },
-  (table) => [index("account_userId_idx").on(table.userId)],
-);
-
-export const verification = pgTable(
-  "verification",
-  {
-    id: text("id").primaryKey(),
-    identifier: text("identifier").notNull(),
-    value: text("value").notNull(),
-    expiresAt: timestamp("expires_at").notNull(),
-    createdAt: timestamp("created_at").defaultNow().notNull(),
-    updatedAt: timestamp("updated_at")
-      .defaultNow()
-      .$onUpdate(() => /* @__PURE__ */ new Date())
-      .notNull(),
-  },
-  (table) => [index("verification_identifier_idx").on(table.identifier)],
-);
-
-/* -----------------------------
-   Location Table
------------------------------ */
-export const location = pgTable("location", {
-  id: serial("id").primaryKey(),
-  name: text("name").notNull(),
-  phone: text("phone").notNull(),
-  email: text("email").notNull(),
-  address: jsonb("address").$type<{
-    street: string;
-    city: string;
-    state: string;
-    zip: string;
-  }>(),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at")
-    .defaultNow()
-    .$onUpdate(() => /* @__PURE__ */ new Date())
-    .notNull(),
-});
+import { organization, session, user } from "./auth-schema";
 
 /* -----------------------------
    Customers Table
@@ -180,9 +74,7 @@ export const customer = pgTable(
 
     /* ---------------- Meta ---------------- */
     reviewedAt: timestamp("reviewed_at"),
-    reviewedBy: text("user_id").references(() => user.id, {
-      onDelete: "set null",
-    }),
+    reviewedBy: text("user_id"),
     statusReason: text("status_reason"),
     statusDetails: text("status_details"),
     internalNotes: text("internal_notes"),
@@ -199,108 +91,6 @@ export const customer = pgTable(
     index("customer_created_at_idx").on(table.createdAt),
   ],
 );
-
-/* -----------------------------
-   Product Table
------------------------------ */
-export const product = pgTable(
-  "product",
-  {
-    id: serial("id").primaryKey(),
-    title: text("title").notNull(),
-    locationId: integer("location_id"),
-    identifier: text("identifier").notNull(),
-    type: text("type"),
-    pack: text("pack"),
-    description: text("description"),
-    categories: jsonb("categories")
-      .$type<string[]>()
-      .default(sql`'[]'::jsonb`),
-    status: text("status").default("active"),
-    image: text("image"),
-    basePrice: text("base_price").notNull().default("0"),
-    unit: text("unit"),
-    images: jsonb("images")
-      .$type<string[]>()
-      .default(sql`'[]'::jsonb`),
-    createdAt: timestamp("created_at").defaultNow(),
-    updatedAt: timestamp("updated_at")
-      .defaultNow()
-      .$onUpdate(() => /* @__PURE__ */ new Date())
-      .notNull(),
-  },
-  (table) => [
-    index("products_status_idx").on(table.status),
-    index("products_category_idx").on(table.categories),
-  ],
-);
-
-/* -----------------------------
-   Inventory Table
------------------------------ */
-
-export const priceLevel = pgTable("price_level", {
-  id: serial("id").primaryKey(),
-  name: text("name").notNull(),
-  type: text("type").notNull(), // "fixed" | "percentage"
-  scope: text("scope").default("all").notNull(), // "all" | "items"
-  value: integer("value"), // -10, 5, 80
-  status: text("status").default("active") /** active | inactive */,
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at")
-    .defaultNow()
-    .$onUpdate(() => /* @__PURE__ */ new Date())
-    .notNull(),
-});
-
-export const priceLevelItem = pgTable(
-  "price_level_item",
-  {
-    id: serial("id").primaryKey(),
-    priceLevelId: integer("price_level_id").notNull(),
-    productId: integer("product_id").notNull(),
-    type: text("type").notNull(), // "fixed" | "percentage"
-    value: integer("value").notNull(),
-    createdAt: timestamp("created_at").defaultNow(),
-    updatedAt: timestamp("updated_at")
-      .defaultNow()
-      .$onUpdate(() => /* @__PURE__ */ new Date())
-      .notNull(),
-  },
-  (table) => [
-    index("price_level_item_priceLevelId_idx").on(table.priceLevelId),
-    index("price_level_item_productId_idx").on(table.productId),
-    unique("price_level_product_unique").on(
-      table.priceLevelId,
-      table.productId,
-    ),
-  ],
-);
-
-export const orderGuideItem = pgTable(
-  "order_guide_item",
-  {
-    id: serial("id").primaryKey(),
-    productId: integer("product_id").notNull(),
-    userId: text("user_id").references(() => user.id, {
-      onDelete: "set null",
-    }),
-    quantity: text("quantity"),
-    createdAt: timestamp("created_at").defaultNow(),
-    updatedAt: timestamp("updated_at")
-      .defaultNow()
-      .$onUpdate(() => /* @__PURE__ */ new Date())
-      .notNull(),
-  },
-  (table) => [
-    index("order_guide_item_productId_idx").on(table.productId),
-    unique("order_guide_item_user_product_unique").on(
-      table.userId,
-      table.productId,
-    ),
-  ],
-);
-
 export const customerInvite = pgTable(
   "customer_invite",
   {
@@ -318,17 +108,13 @@ export const customerInvite = pgTable(
       onDelete: "set null",
     }),
     reviewedAt: timestamp("reviewed_at"),
-    reviewedBy: text("reviewed_by").references(() => user.id, {
-      onDelete: "set null",
-    }),
+    reviewedBy: text("reviewed_by"),
     statusReason: text("status_reason"),
     statusDetails: text("status_details"),
     internalNotes: text("internal_notes"),
     ipAddress: text("ip_address"),
     userAgent: text("user_agent"),
-    createdBy: text("created_by").references(() => user.id, {
-      onDelete: "set null",
-    }),
+    createdBy: text("created_by"),
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at")
       .defaultNow()
@@ -337,13 +123,6 @@ export const customerInvite = pgTable(
   },
   (table) => [index("customer_invite_status_idx").on(table.status)],
 );
-
-export const customerInviteRelations = relations(customerInvite, ({ one }) => ({
-  user: one(customer, {
-    fields: [customerInvite.customerId],
-    references: [customer.id],
-  }),
-}));
 
 export const jobApplications = pgTable(
   "job_applications",
@@ -505,9 +284,7 @@ export const jobApplications = pgTable(
     userAgent: text("user_agent"),
     statusReason: text("status_reason"),
     statusDetails: text("status_details"),
-    reviewedBy: text("reviewed_id").references(() => user.id, {
-      onDelete: "set null",
-    }),
+    reviewedBy: text("reviewed_id"),
     reviewedAt: timestamp("reviewed_at"),
     internalNotes: text("internal_notes"),
     createdAt: timestamp("created_at").defaultNow(),
@@ -549,24 +326,129 @@ export const jobInvite = pgTable(
   (table) => [index("job_invite_status_idx").on(table.status)],
 );
 
+/* -----------------------------
+   Product Table
+----------------------------- */
+export const product = pgTable(
+  "product",
+  {
+    id: serial("id").primaryKey(),
+    title: text("title").notNull(),
+    organizationId: text("organization_id").references(() => organization.id, {
+      onDelete: "cascade",
+    }),
+    identifier: text("identifier").notNull(),
+    type: text("type"),
+    pack: text("pack"),
+    description: text("description"),
+    categories: jsonb("categories")
+      .$type<string[]>()
+      .default(sql`'[]'::jsonb`),
+    status: text("status").default("active"),
+    image: text("image"),
+    basePrice: text("base_price").notNull().default("0"),
+    unit: text("unit"),
+    images: jsonb("images")
+      .$type<string[]>()
+      .default(sql`'[]'::jsonb`),
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at")
+      .defaultNow()
+      .$onUpdate(() => /* @__PURE__ */ new Date())
+      .notNull(),
+  },
+  (table) => [
+    index("products_status_idx").on(table.status),
+    index("products_organization_id_idx").on(table.organizationId),
+    index("products_category_idx").on(table.categories),
+    unique("products_organization_id_identifier_idx").on(
+      table.organizationId,
+      table.identifier,
+    ),
+  ],
+);
+
+/* -----------------------------
+   Inventory Table
+----------------------------- */
+
+export const priceLevel = pgTable("price_level", {
+  id: serial("id").primaryKey(),
+  organizationId: text("organization_id"),
+  name: text("name").notNull(),
+  adjustmentType: text("adjustment_type").notNull(), // "fixed" | "percentage"
+  appliesTo: text("applies_to").default("all").notNull(), // "all" | "products"
+  adjustmentValue: text("adjustment_value"), // +10, -10, 50 etc
+  status: text("status").default("active"), // "active" | "inactive"
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at")
+    .defaultNow()
+    .$onUpdate(() => /* @__PURE__ */ new Date())
+    .notNull(),
+});
+
+export const priceLevelItem = pgTable(
+  "price_level_item",
+  {
+    id: serial("id").primaryKey(),
+    priceLevelId: integer("price_level_id").notNull(),
+    productId: integer("product_id")
+      .notNull()
+      .references(() => product.id, {
+        onDelete: "cascade",
+      }),
+    price: text("price").notNull(),
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at")
+      .defaultNow()
+      .$onUpdate(() => /* @__PURE__ */ new Date())
+      .notNull(),
+  },
+  (table) => [
+    index("price_level_item_priceLevelId_idx").on(table.priceLevelId),
+    index("price_level_item_productId_idx").on(table.productId),
+    unique("price_level_product_unique").on(
+      table.priceLevelId,
+      table.productId,
+    ),
+  ],
+);
+
+export const orderGuideItem = pgTable(
+  "order_guide_item",
+  {
+    id: serial("id").primaryKey(),
+    productId: integer("product_id").notNull(),
+    teamId: text("team_id"),
+    quantity: text("quantity"),
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at")
+      .defaultNow()
+      .$onUpdate(() => /* @__PURE__ */ new Date())
+      .notNull(),
+  },
+  (table) => [
+    index("order_guide_item_productId_idx").on(table.productId),
+    unique("order_guide_item_team_product_unique").on(
+      table.teamId,
+      table.productId,
+    ),
+  ],
+);
+
 export const order = pgTable(
   "order",
   {
     id: serial("id").primaryKey(),
-    locationId: integer("location_id").references(() => location.id, {
-      onDelete: "set null",
-    }),
-    userId: text("user_id").references(() => user.id, {
-      onDelete: "set null",
-    }),
+    organizationId: text("organization_id"),
+    teamId: text("team_id"),
+    userId: text("user_id"),
     shippingAddress: jsonb("shipping_address").$type<{
       street: string;
       city: string;
       state: string;
       zip: string;
     }>(),
-    receiverName: text("receiver_name"),
-    receiverPhone: text("receiver_phone"),
     lineItemCount: text("line_item_count"),
     lineItemQuantity: text("line_item_quantity"),
     lineItemTotal: text("line_item_total"),
@@ -591,19 +473,22 @@ export const order = pgTable(
       .$onUpdate(() => /* @__PURE__ */ new Date())
       .notNull(),
   },
-  (table) => [index("order_locationId_idx").on(table.locationId)],
+  (table) => [
+    index("order_organizationId_idx").on(table.organizationId),
+    index("order_teamId_idx").on(table.teamId),
+    index("order_status_idx").on(table.status),
+    index("order_userId_idx").on(table.userId),
+  ],
 );
 
 export const lineItem = pgTable(
   "line_item",
   {
     id: serial("id").primaryKey(),
+    organizationId: text("organization_id"),
+    teamId: text("team_id"),
     orderId: integer("order_id"),
     productId: integer("product_id"),
-    locationId: integer("location_id"),
-    userId: text("user_id").references(() => user.id, {
-      onDelete: "set null",
-    }),
     title: text("title"),
     image: text("image"),
     type: text("type"),
@@ -623,32 +508,20 @@ export const lineItem = pgTable(
       .notNull(),
   },
   (table) => [
-    index("lineItem_locationId_idx").on(table.locationId),
-    index("lineItem_userId_idx").on(table.userId),
+    index("lineItem_organizationId_idx").on(table.organizationId),
+    index("lineItem_teamId_idx").on(table.teamId),
   ],
 );
-
-// export type InventoryInsertType = InferInsertModel<typeof inventory>;
-// export type InventorySelectType = InferSelectModel<typeof inventory>;
 
 export type ProductInsertType = InferInsertModel<typeof product>;
 export type ProductSelectType = InferSelectModel<typeof product>;
 export type CustomerSelectType = InferSelectModel<typeof customer>;
 export type CustomerInsertType = InferInsertModel<typeof customer>;
 
-export type LocationSelectType = InferSelectModel<typeof location>;
-export type LocationInsertType = InferInsertModel<typeof location>;
-
 export type UserInsertType = InferInsertModel<typeof user>;
 export type UserSelectType = InferSelectModel<typeof user>;
 export type SessionInsertType = InferInsertModel<typeof session>;
 export type SessionSelectType = InferSelectModel<typeof session>;
-
-export type PriceLevelInsertType = InferInsertModel<typeof priceLevel>;
-export type PriceLevelSelectType = InferSelectModel<typeof priceLevel>;
-
-export type PriceLevelItemInsertType = InferInsertModel<typeof priceLevelItem>;
-export type PriceLevelItemSelectType = InferSelectModel<typeof priceLevelItem>;
 
 export type CustomerInviteInsertType = InferInsertModel<typeof customerInvite>;
 export type CustomerInviteSelectType = InferSelectModel<typeof customerInvite>;
@@ -659,6 +532,12 @@ export type JobApplicationSelectType = InferSelectModel<typeof jobApplications>;
 export type JobInviteInsertType = InferInsertModel<typeof jobInvite>;
 export type JobInviteSelectType = InferSelectModel<typeof jobInvite>;
 
+export type PriceLevelInsertType = InferInsertModel<typeof priceLevel>;
+export type PriceLevelSelectType = InferSelectModel<typeof priceLevel>;
+
+export type PriceLevelItemInsertType = InferInsertModel<typeof priceLevelItem>;
+export type PriceLevelItemSelectType = InferSelectModel<typeof priceLevelItem>;
+
 export type OrderSelectType = InferSelectModel<typeof order>;
 export type OrderInsertType = InferInsertModel<typeof order>;
 export type LineItemSelectType = InferSelectModel<typeof lineItem>;
@@ -666,3 +545,6 @@ export type LineItemInsertType = InferInsertModel<typeof lineItem>;
 
 export type OrderGuideItemInsertType = InferInsertModel<typeof orderGuideItem>;
 export type OrderGuideItemSelectType = InferSelectModel<typeof orderGuideItem>;
+
+export type OrganizationSelectType = InferSelectModel<typeof organization>;
+export type OrganizationInsertType = InferInsertModel<typeof organization>;

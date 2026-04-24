@@ -1,10 +1,6 @@
 import { relations } from "drizzle-orm";
 import {
-  account,
   customer,
-  session,
-  user,
-  location,
   priceLevel,
   product,
   priceLevelItem,
@@ -12,12 +8,25 @@ import {
   jobInvite,
   order,
   lineItem,
-  orderGuideItem,
+  customerInvite,
 } from "./schema";
 
+import {
+  account,
+  session,
+  user,
+  invitation,
+  organization,
+  member,
+  teamMember,
+  team,
+} from "./auth-schema";
 export const userRelations = relations(user, ({ many }) => ({
   sessions: many(session),
   accounts: many(account),
+  teamMembers: many(teamMember),
+  members: many(member),
+  invitations: many(invitation),
 }));
 
 export const sessionRelations = relations(session, ({ one }) => ({
@@ -34,6 +43,62 @@ export const accountRelations = relations(account, ({ one }) => ({
   }),
 }));
 
+export const organizationRelations = relations(organization, ({ many }) => ({
+  teams: many(team),
+  members: many(member),
+  invitations: many(invitation),
+}));
+
+export const teamRelations = relations(team, ({ one, many }) => ({
+  organization: one(organization, {
+    fields: [team.organizationId],
+    references: [organization.id],
+  }),
+  teamMembers: many(teamMember),
+  priceLevel: one(priceLevel, {
+    fields: [team.priceLevelId],
+    references: [priceLevel.id],
+  }),
+}));
+
+export const teamMemberRelations = relations(teamMember, ({ one }) => ({
+  team: one(team, {
+    fields: [teamMember.teamId],
+    references: [team.id],
+  }),
+  user: one(user, {
+    fields: [teamMember.userId],
+    references: [user.id],
+  }),
+}));
+
+export const memberRelations = relations(member, ({ one }) => ({
+  organization: one(organization, {
+    fields: [member.organizationId],
+    references: [organization.id],
+  }),
+  user: one(user, {
+    fields: [member.userId],
+    references: [user.id],
+  }),
+}));
+
+export const invitationRelations = relations(invitation, ({ one }) => ({
+  organization: one(organization, {
+    fields: [invitation.organizationId],
+    references: [organization.id],
+  }),
+  user: one(user, {
+    fields: [invitation.inviterId],
+    references: [user.id],
+  }),
+}));
+
+/**
+ * app relations
+ *
+ */
+
 export const customerRelations = relations(customer, ({ one }) => ({
   reviewer: one(user, {
     fields: [customer.reviewedBy],
@@ -41,15 +106,20 @@ export const customerRelations = relations(customer, ({ one }) => ({
   }),
 }));
 
-export const productRelations = relations(product, ({ one }) => ({
-  location: one(location, {
-    fields: [product.locationId],
-    references: [location.id],
+export const customerInviteRelations = relations(customerInvite, ({ one }) => ({
+  user: one(customer, {
+    fields: [customerInvite.customerId],
+    references: [customer.id],
   }),
 }));
 
-export const productLevelRelation = relations(priceLevel, ({ many }) => ({
+export const priceLevelRelation = relations(priceLevel, ({ one, many }) => ({
   priceLevelItem: many(priceLevelItem),
+  organization: one(organization, {
+    fields: [priceLevel.organizationId],
+    references: [organization.id],
+  }),
+  team: many(team),
 }));
 
 export const priceLevelItemsRelations = relations(
@@ -65,6 +135,7 @@ export const priceLevelItemsRelations = relations(
     }),
   }),
 );
+
 export const applicantRelations = relations(jobApplications, ({ one }) => ({
   user: one(user, {
     fields: [jobApplications.reviewedBy],
@@ -80,13 +151,17 @@ export const jobInviteRelations = relations(jobInvite, ({ one }) => ({
 }));
 
 export const orderRelations = relations(order, ({ one, many }) => ({
-  location: one(location, {
-    fields: [order.locationId],
-    references: [location.id],
-  }),
   user: one(user, {
     fields: [order.userId],
     references: [user.id],
+  }),
+  organization: one(organization, {
+    fields: [order.organizationId],
+    references: [organization.id],
+  }),
+  team: one(team, {
+    fields: [order.teamId],
+    references: [team.id],
   }),
   lineItems: many(lineItem),
 }));
@@ -96,23 +171,23 @@ export const lineItemRelations = relations(lineItem, ({ one }) => ({
     fields: [lineItem.orderId],
     references: [order.id],
   }),
-  location: one(location, {
-    fields: [lineItem.locationId],
-    references: [location.id],
+  organization: one(organization, {
+    fields: [lineItem.organizationId],
+    references: [organization.id],
   }),
-  user: one(user, {
-    fields: [lineItem.userId],
-    references: [user.id],
+  team: one(team, {
+    fields: [lineItem.teamId],
+    references: [team.id],
   }),
 }));
 
-export const orderGuideItemRelations = relations(orderGuideItem, ({ one }) => ({
-  user: one(user, {
-    fields: [orderGuideItem.userId],
-    references: [user.id],
-  }),
-  product: one(product, {
-    fields: [orderGuideItem.productId],
-    references: [product.id],
-  }),
-}));
+// export const orderGuideItemRelations = relations(orderGuideItem, ({ one }) => ({
+//   user: one(user, {
+//     fields: [orderGuideItem.userId],
+//     references: [user.id],
+//   }),
+//   product: one(product, {
+//     fields: [orderGuideItem.productId],
+//     references: [product.id],
+//   }),
+// }));

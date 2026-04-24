@@ -7,54 +7,95 @@ import {
   ilike,
   arrayContains,
   getTableColumns,
-  count,
+  inArray,
+  SQL,
   isNotNull,
+  countDistinct,
 } from "drizzle-orm";
+import {
+  lineItem,
+  orderGuideItem,
+  priceLevelItem,
+  product,
+} from "@/lib/db/schema";
 import { db } from "@/lib/db";
+import { team } from "@/auth-schema";
 import { getSession } from "@/server/auth";
+import { getQueryObject } from "@/lib/helper/api";
 import { NextRequest, NextResponse } from "next/server";
-import { lineItem, orderGuideItem, product } from "@/lib/db/schema";
 
 export async function GET(req: NextRequest) {
   try {
     const session = await getSession();
 
-    if (!session || !session.user.locationId) {
+    if (!session?.session?.activeOrganizationId) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    const { locationId, id: userId } = session.user;
+    const { activeOrganizationId, activeTeamId } = session.session;
 
-    const searchParams = req.nextUrl.searchParams;
-    const query = Object.fromEntries(searchParams.entries());
-    const { page = 1, limit = 24, q, cat, guide = "false" } = query;
-    const offset = ((page as number) - 1) * Number(limit);
+    const {
+      page,
+      limit,
+      q,
+      cat,
+      offset = 0,
+      saved = false,
+    } = getQueryObject(req.nextUrl.searchParams);
 
-    const filters = and(
+    // 🔹 Filters
+    const conditions = [
       ne(product.status, "archived"),
-      eq(product.locationId, locationId),
-      cat ? arrayContains(product.categories, [cat]) : undefined,
-      q
-        ? or(
-            ilike(product.title, `%${q}%`),
-            ilike(product.description, `%${q}%`),
-            ilike(product.identifier, `%${q}%`),
-          )
-        : undefined,
-      guide === "true" ? isNotNull(orderGuideItem.id) : undefined,
-    );
+      eq(product.organizationId, activeOrganizationId),
+    ];
 
-    // get all products
-    const distinctOn = guide === "true" ? orderGuideItem.id : product.id;
+    if (cat) {
+      conditions.push(arrayContains(product.categories, [cat]));
+    }
+
+    if (saved) {
+      conditions.push(isNotNull(orderGuideItem.id));
+    }
+
+    if (q) {
+      const searchCondition = or(
+        ilike(product.title, `%${q}%`),
+        ilike(product.description, `%${q}%`),
+        ilike(product.identifier, `%${q}%`),
+      ) as SQL<unknown>;
+
+      conditions.push(searchCondition);
+    }
+
+    const filters = and(...conditions);
+
+    const teamData = await db.query.team.findFirst({
+      where: eq(team.id, activeTeamId!),
+      with: { priceLevel: true },
+    });
+
+    const lastLineItem = db
+      .select({
+        productId: lineItem.productId,
+        id: lineItem.id,
+        orderId: lineItem.orderId,
+        quantity: lineItem.quantity,
+        createdAt: lineItem.createdAt,
+      })
+      .from(lineItem)
+      .where(eq(lineItem.teamId, activeTeamId!))
+      .orderBy(desc(lineItem.createdAt))
+      .limit(1)
+      .as("lastLineItem");
 
     const products = await db
-      .selectDistinctOn([distinctOn], {
+      .select({
         ...getTableColumns(product),
         lastPurchased: {
-          id: lineItem.id,
-          orderId: lineItem.orderId,
-          quantity: lineItem.quantity,
-          createdAt: lineItem.createdAt,
+          id: lastLineItem.id,
+          orderId: lastLineItem.orderId,
+          quantity: lastLineItem.quantity,
+          createdAt: lastLineItem.createdAt,
         },
         guide: {
           id: orderGuideItem.id,
@@ -62,50 +103,85 @@ export async function GET(req: NextRequest) {
         },
       })
       .from(product)
-      .leftJoin(
-        lineItem,
-        and(eq(lineItem.productId, product.id), eq(lineItem.userId, userId)),
-      )
+      .leftJoin(lastLineItem, eq(lastLineItem.productId, product.id))
       .leftJoin(
         orderGuideItem,
         and(
           eq(orderGuideItem.productId, product.id),
-          eq(orderGuideItem.userId, userId!),
+          eq(orderGuideItem.teamId, activeTeamId!),
         ),
       )
       .where(filters)
-      .orderBy(distinctOn, desc(lineItem.createdAt), desc(lineItem.quantity))
-      .limit(Number(limit))
+      .limit(limit)
       .offset(offset);
 
-    // get total products count
+    // get total count for pagination
     const [{ total }] = await db
-      .selectDistinctOn([distinctOn], {
-        total: count(product.id),
-      })
+      .select({ total: countDistinct(product.id) })
       .from(product)
-      .leftJoin(
-        lineItem,
-        and(eq(lineItem.productId, product.id), eq(lineItem.userId, userId!)),
-      )
       .leftJoin(
         orderGuideItem,
         and(
           eq(orderGuideItem.productId, product.id),
-          eq(orderGuideItem.userId, userId!),
+          eq(orderGuideItem.teamId, activeTeamId!),
         ),
       )
-      .where(filters)
-      .groupBy(distinctOn);
+      .where(filters);
+
+    const priceLevel = teamData?.priceLevel;
+
+    let updatedProducts = products;
+
+    if (priceLevel) {
+      if (priceLevel.appliesTo === "all") {
+        const { adjustmentType, adjustmentValue } = priceLevel;
+
+        updatedProducts = products.map((p) => {
+          let price = Number(p.basePrice);
+
+          if (adjustmentType === "percentage") {
+            price = price * (1 + Number(adjustmentValue) / 100);
+          } else {
+            price = price - Number(adjustmentValue);
+          }
+
+          return { ...p, basePrice: String(price) };
+        });
+      }
+
+      if (priceLevel.appliesTo === "per_item") {
+        const productIds = products.map((p) => p.id);
+
+        const prices = await db.query.priceLevelItem.findMany({
+          where: and(
+            inArray(priceLevelItem.productId, productIds),
+            eq(priceLevelItem.priceLevelId, priceLevel.id),
+          ),
+        });
+        const ids = prices.map((p) => p.productId);
+        const p = await db.query.product.findMany({
+          where: inArray(product.id, ids),
+        });
+
+        console.log(prices, p);
+
+        const priceMap = new Map(prices.map((p) => [p.productId, p.price]));
+
+        updatedProducts = products.map((p) => ({
+          ...p,
+          basePrice: priceMap.get(p.id) ?? p.basePrice,
+        }));
+      }
+    }
 
     return NextResponse.json(
       {
-        data: products,
+        data: updatedProducts,
         pagination: {
           page,
           limit,
-          total: total,
-          totalPages: Math.ceil(total / (limit as number)),
+          total,
+          totalPages: Math.ceil(total / limit),
         },
       },
       { status: 200 },

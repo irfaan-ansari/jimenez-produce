@@ -1,6 +1,6 @@
 import { PageClient } from "./page-client";
 import { Button } from "@/components/ui/button";
-import { FilterTabs } from "@/components/admin/filter-tabs";
+import { FilterTab, FilterTabs } from "@/components/admin/filter-tabs";
 import { SearchBar } from "@/components/admin/search-filters";
 
 import Link from "next/link";
@@ -18,9 +18,9 @@ const OPTIONS = [
 
 const OrdersPage = async () => {
   return (
-    <div className="flex flex-col h-full gap-6">
-      <div className="flex items-center gap-4 w-full **:data-[slot=input-group]:bg-background">
-        <div className="space-y-1 flex-1">
+    <div className="flex h-full flex-col gap-6">
+      <div className="flex w-full items-center gap-4 **:data-[slot=input-group]:bg-background">
+        <div className="flex-1 space-y-1">
           <h1 className="text-2xl font-bold">Track your orders</h1>
           <p className="text-sm text-muted-foreground">
             Clear delivery windows and live order status in one place.
@@ -34,7 +34,7 @@ const OrdersPage = async () => {
           <Link href="/customer/orders/new">View Cart (4)</Link>
         </Button>
       </div>
-      <FilterTabs tabs={OPTIONS} queryKey="orders" />
+      <FilterTab tabs={OPTIONS} path="/api/orders/count" />
       {/* content */}
       <PageClient />
     </div>

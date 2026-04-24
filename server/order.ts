@@ -25,13 +25,27 @@ export const createOrder = handleAction(
     },
   ) => {
     const session = await getSession();
-    if (!session) throw new Error("Authentication required");
+
+    if (
+      !session ||
+      !session.session.activeOrganizationId ||
+      !session.session.activeTeamId
+    )
+      throw new Error("Authentication required");
+
+    const { activeTeamId, activeOrganizationId, userId } = session.session;
 
     const { lineItems, ...rest } = data;
 
     const [orderRes] = await db
       .insert(order)
-      .values({ ...rest, status: "in_progress" })
+      .values({
+        ...rest,
+        status: "in_progress",
+        organizationId: activeOrganizationId,
+        teamId: activeTeamId,
+        userId,
+      })
       .returning();
 
     const [lineItemsres] = await db
@@ -40,8 +54,8 @@ export const createOrder = handleAction(
         lineItems.map((item) => ({
           ...item,
           orderId: orderRes.id,
-          locationId: orderRes.locationId,
-          userId: session.user.id,
+          organizationId: activeOrganizationId,
+          teamId: activeTeamId,
         })),
       )
       .returning();
@@ -111,7 +125,7 @@ export const createOrderGuideItem = handleAction(async (productId: number) => {
   const session = await getSession();
   if (!session) throw new Error("Authentication required");
 
-  if (session.user.role !== "customer") {
+  if (session.user.accountType !== "customer") {
     throw new Error("Not authorized for this action.");
   }
 
@@ -123,7 +137,7 @@ export const createOrderGuideItem = handleAction(async (productId: number) => {
 
   const [result] = await db
     .insert(orderGuideItem)
-    .values({ productId, userId: session.user.id })
+    .values({ productId, teamId: session.session.activeTeamId! })
     .returning();
 
   return result;
@@ -139,7 +153,7 @@ export const deleteOrderGuideItem = handleAction(async (id: number) => {
 
   if (!session) throw new Error("Authentication required");
 
-  if (session.user.role !== "customer") {
+  if (session.user.accountType !== "customer") {
     throw new Error("Not authorized for this action.");
   }
 
@@ -147,7 +161,7 @@ export const deleteOrderGuideItem = handleAction(async (id: number) => {
     where: eq(orderGuideItem.id, id),
   });
 
-  if (!existing || existing.userId !== session.user.id)
+  if (!existing || existing.teamId !== session.session.activeTeamId)
     throw new Error("Item not found in your order guide.");
 
   const [res] = await db

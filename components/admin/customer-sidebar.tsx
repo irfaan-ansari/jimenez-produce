@@ -11,7 +11,6 @@ import {
   Sidebar,
   SidebarMenu,
   SidebarGroup,
-  SidebarFooter,
   SidebarHeader,
   SidebarContent,
   SidebarMenuItem,
@@ -21,29 +20,17 @@ import {
   SidebarMenuSubButton,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { useSession } from "@/hooks/use-auth";
-import { authClient } from "@/lib/auth/client";
+import { Button } from "../ui/button";
+import { Session } from "@/lib/types";
+import { ChevronRight } from "lucide-react";
 import { getAvatarFallback } from "@/lib/utils";
-import { ProfileDialog } from "../profile-dialog";
-import { useQueryClient } from "@tanstack/react-query";
 import { useRouterStuff } from "@/hooks/use-router-stuff";
-import { ChangePasswordDialog } from "../change-password";
-import {
-  ChevronRight,
-  ChevronsUpDown,
-  Lock,
-  LogOut,
-  Package,
-  User,
-} from "lucide-react";
 import { SIDEBAR_MENU_CUSTOMER, SITE_CONFIG } from "@/lib/config";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { PopoverXDrawer } from "../popover-x-drawer";
-import { Button } from "../ui/button";
 
-export function AppSidebar() {
+import { SidebarProfile } from "./sidebar-profile";
+
+export function AppSidebar({ session }: { session: Session }) {
   const { pathname, getQueryString } = useRouterStuff();
 
   const isActive = (href: string) => {
@@ -100,9 +87,6 @@ export function AppSidebar() {
                           {item.icon && <item.icon className="opacity-80" />}
                           <span>{item.label}</span>
                           <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                          {/* <SidebarMenuBadge className="rounded-full bg-red-500">
-                          4
-                        </SidebarMenuBadge> */}
                         </Link>
                       </SidebarMenuButton>
                     </CollapsibleTrigger>
@@ -158,7 +142,7 @@ export function AppSidebar() {
       </SidebarContent>
 
       {/* footer/profile */}
-      <Profile />
+      <SidebarProfile session={session} />
     </Sidebar>
   );
 }
@@ -195,89 +179,5 @@ export const SidebarLogo = () => {
         </SidebarMenuItem>
       </SidebarMenu>
     </SidebarHeader>
-  );
-};
-
-const Profile = () => {
-  const { data } = useSession();
-  const router = useRouter();
-  const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
-
-  const queryClient = useQueryClient();
-
-  const handleLogout = async () => {
-    await authClient.signOut({
-      fetchOptions: {
-        onSuccess: () => {
-          queryClient.clear();
-          router.push("/signin");
-        },
-        onRequest: () => setLoading(true),
-        onResponse: () => setLoading(false),
-      },
-    });
-  };
-  return (
-    <SidebarFooter>
-      <SidebarMenu className="">
-        <SidebarMenuItem>
-          <PopoverXDrawer
-            open={open}
-            setOpen={setOpen}
-            className="w-60 *:gap-0 data-[slot=popover-content]:max-w-60"
-            trigger={
-              <SidebarMenuButton
-                size="lg"
-                className="hover:bg-muted! hover:text-sidebar-foreground! data-open:bg-muted! data-open:hover:bg-muted data-open:hover:text-sidebar-foreground data-active:hover:bg-muted"
-              >
-                <Avatar className="size-9 rounded-lg ring-2 ring-green-600/20 ring-offset-1 **:rounded-xl after:hidden">
-                  <AvatarImage src={data?.user.image!} alt="profile image" />
-                  <AvatarFallback className="rounded-xl bg-primary/40 text-xs font-semibold text-primary">
-                    {getAvatarFallback(data?.user.name)}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="grid min-w-0 flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">
-                    {data?.user.name}
-                  </span>
-                  <span className="truncate text-xs">{data?.user.email}</span>
-                </div>
-                <ChevronsUpDown className="ml-auto size-4" />
-              </SidebarMenuButton>
-            }
-          >
-            <ProfileDialog
-              user={{
-                id: data?.user.id,
-                name: data?.user.name,
-                email: data?.user.email,
-                image: data?.user.image,
-              }}
-            >
-              <Button className="justify-start rounded-xl" variant="ghost">
-                <User />
-                Profile
-              </Button>
-            </ProfileDialog>
-            <ChangePasswordDialog>
-              <Button className="justify-start rounded-xl" variant="ghost">
-                <Lock />
-                Change Password
-              </Button>
-            </ChangePasswordDialog>
-
-            <Button
-              onClick={handleLogout}
-              variant="destructive"
-              className="rounded-lg"
-            >
-              <LogOut />
-              {loading ? "Please wait..." : "Logout"}
-            </Button>
-          </PopoverXDrawer>
-        </SidebarMenuItem>
-      </SidebarMenu>
-    </SidebarFooter>
   );
 };

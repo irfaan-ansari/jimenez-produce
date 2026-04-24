@@ -13,3 +13,12 @@ export const useStatusCount = (key: string) => {
     refetchOnWindowFocus: false,
   });
 };
+
+export const useCountsByStatus = (path: string) => {
+  return useQuery<unknown, Error, StatusCounts>({
+    queryKey: ["status-counts", path],
+    queryFn: () => fetcher(path),
+    staleTime: 1000 * 60 * 10,
+    refetchOnWindowFocus: false,
+  });
+};

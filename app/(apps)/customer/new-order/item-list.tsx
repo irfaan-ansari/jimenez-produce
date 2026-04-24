@@ -109,9 +109,9 @@ export const ItemList = withForm({
     return (
       <div
         data-layout={layout}
-        className="group/card @container min-w-0 flex-1 space-y-3 min-h-svh"
+        className="group/card @container min-h-svh min-w-0 flex-1 space-y-3"
       >
-        <div className="sticky top-0 z-2 bg-background rounded-2xl p-4 border shadow-sm  flex flex-row gap-3">
+        <div className="sticky top-0 z-2 flex flex-row gap-3 rounded-2xl border  bg-background p-4 shadow-sm">
           <CategoryPills filter={filter} setFilter={setFilter} />
 
           <Tabs
@@ -202,10 +202,10 @@ const ProductItem = withForm({
     return (
       <div
         className={cn(
-          `flex animate-in cursor-pointer items-center group-data-[layout=grid]/card:hover:-translate-y-1 gap-4 rounded-xl border py-2 transition fade-in-50 slide-in-from-bottom-10 group-data-[layout=grid]/card:h-full
-          group-data-[layout=grid]/card:flex-col group-data-[layout=grid]/card:items-stretch group-data-[layout=grid]/card:gap-0
-          group-data-[layout=grid]/card:p-0 group-data-[layout=list]/card:mb-1 group-data-[layout=list]/card:px-4 
-          hover:shadow-md`,
+          `flex animate-in cursor-pointer items-center gap-4 rounded-xl border py-2 transition fade-in-50 slide-in-from-bottom-10 group-data-[layout=grid]/card:h-full group-data-[layout=grid]/card:flex-col
+          group-data-[layout=grid]/card:items-stretch group-data-[layout=grid]/card:gap-0 group-data-[layout=grid]/card:p-0
+          group-data-[layout=list]/card:mb-1 group-data-[layout=list]/card:px-4 hover:shadow-md 
+          group-data-[layout=grid]/card:hover:-translate-y-1`,
           isCartItem ? "shadow-sm" : "",
         )}
         onClick={() => updateItem({ product, qty: qty + 1 || 1 })}
@@ -215,6 +215,7 @@ const ProductItem = withForm({
           qty={qty}
           updateItem={(product, qty) => updateItem({ product, qty })}
         />
+
         <div
           className="flex min-w-0 flex-1 items-start gap-4
              group-data-[layout=grid]/card:w-full
@@ -247,7 +248,7 @@ const ProductItem = withForm({
           <OrderGuideButton
             id={product?.guide?.id}
             productId={product?.id}
-            className="group-data-[layout=grid]/card:hidden self-center"
+            className="self-center group-data-[layout=grid]/card:hidden"
           />
           <div className="ml-auto w-24 self-center text-xs text-muted-foreground group-data-[layout=grid]/card:hidden">
             {product.pack ?? null}

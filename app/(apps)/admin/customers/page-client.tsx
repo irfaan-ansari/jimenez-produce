@@ -1,164 +1,117 @@
 "use client";
 
-import React from "react";
-import Link from "next/link";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { format } from "date-fns";
-import { Badge } from "@/components/ui/badge";
-import { ColumnDef } from "@tanstack/react-table";
-import { useCustomers } from "@/hooks/use-customer";
-import { CustomerSelectType } from "@/lib/db/schema";
 import { useRouterStuff } from "@/hooks/use-router-stuff";
-import { DataTable } from "@/components/admin/data-table";
-import { CustomerAction } from "@/components/admin/customer-actions";
+
+import { EmptyComponent } from "@/components/admin/placeholder-component";
+import { useTeamMembers, useTeams } from "@/hooks/use-teams";
+import { CustomerActions } from "./customer-actions";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { STATUS_MAP } from "@/lib/constants/status-map";
 
 export const PageClient = () => {
-  const { searchParams } = useRouterStuff();
+  const { searchParamsObj } = useRouterStuff();
+  const { data: teams, isPending, error } = useTeams();
 
-  const { data, error, isPending, isError } = useCustomers(
-    searchParams.toString()
-  );
-
-  // data
   return (
-    <DataTable
-      columns={columns}
-      data={data}
-      isPending={isPending}
-      isError={isError}
-      error={error}
-    />
+    <div className="flex h-full flex-col gap-3">
+      <div className="overflow-hidden rounded-2xl border **:data-[slot=table-container]:no-scrollbar">
+        <Table className="bg-background">
+          <TableHeader>
+            <TableRow className="bg-secondary text-sm uppercase **:text-muted-foreground">
+              <TableHead className="px-4 py-4 font-medium">Name</TableHead>
+              <TableHead className="px-4 py-4 font-medium">Manager</TableHead>
+              <TableHead className="px-4 py-4 font-medium">Contact</TableHead>
+              <TableHead className="px-4 py-4 font-medium">Members</TableHead>
+              <TableHead className="px-4 py-4 font-medium">
+                Created At
+              </TableHead>
+              <TableHead className="px-4 py-4 font-medium"></TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {teams?.length ? (
+              teams.map((team) => {
+                return (
+                  <TableRow key={team.id}>
+                    <TableCell className="p-4 font-medium">
+                      <div className="flex items-center gap-3">
+                        <Avatar className="size-9 rounded-lg ring-2 ring-green-600/20 ring-offset-1 **:rounded-lg after:hidden">
+                          <AvatarImage
+                            src={team.logo ?? undefined}
+                            alt="profile image"
+                          />
+                          <AvatarFallback className="rounded-xl bg-primary/40 text-xs font-semibold text-primary">
+                            {team.name?.[0]?.toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
+                        <span className="font-medium">{team.name}</span>
+                      </div>
+                    </TableCell>
+
+                    <TableCell className="p-4">{team.managerName}</TableCell>
+                    <TableCell className="p-4">
+                      <div className="flex flex-col gap-1 text-muted-foreground">
+                        <span>{team.email}</span>
+                        <span>{team.phone}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="p-4">
+                      <Members teamId={team.id} />
+                    </TableCell>
+                    <TableCell className="w-28 p-4 font-medium text-muted-foreground">
+                      {format(new Date(team.createdAt), "MMM dd • hh:mm:ss a")}
+                    </TableCell>
+                    <TableCell className="w-20 p-4">
+                      <CustomerActions data={team} showView={true} />
+                    </TableCell>
+                  </TableRow>
+                );
+              })
+            ) : (
+              <TableRow>
+                <TableCell colSpan={6} className="h-24 p-0 text-center">
+                  {isPending ? (
+                    <div className="mb-36 h-1 animate-pulse rounded-full bg-primary"></div>
+                  ) : error ? (
+                    <EmptyComponent variant="error" title={error?.message} />
+                  ) : (
+                    <EmptyComponent variant="empty" />
+                  )}
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+    </div>
   );
 };
 
-export const columns: ColumnDef<CustomerSelectType>[] = [
-  {
-    accessorKey: "companyName",
-    header: "Company",
-    cell: ({ row }) => {
-      const {
-        thumbnail,
-        companyName,
-        companyStreet,
-        companyState,
-        companyZip,
-        id,
-      } = row.original;
-      return (
-        <Link
-          href={`/admin/customers/${id}`}
-          className="flex gap-4 transition hover:underline"
-        >
-          <div className="shrink-0 pt-1.5">
-            <Avatar className="relative size-8 shrink-0 rounded-xl ring-2 ring-ring/30 **:rounded-xl">
-              <AvatarImage src={thumbnail!} />
-              <AvatarFallback>A</AvatarFallback>
-            </Avatar>
-          </div>
-          <div className="w-full max-w-3xs space-y-1 overflow-hidden">
-            <h4 className="text-base font-medium ">{companyName}</h4>
-            <div className="flex flex-col text-muted-foreground">
-              <span className="line-clamp-1 text-sm">{companyStreet}</span>
-              <span className="text-sm">
-                {companyState} - {companyZip}
-              </span>
-            </div>
-          </div>
-        </Link>
-      );
-    },
-  },
-  {
-    accessorKey: "officerFirst",
-    header: "Primary Contact",
-    cell: ({ row }) => {
-      const { officerFirst, officerLast, officerMobile, officerEmail } =
-        row.original;
-      return (
-        <div className="space-y-1">
-          <h4 className="text-[15px] font-medium">
-            {officerFirst} {officerLast}
-          </h4>
-          <div className="flex flex-col text-muted-foreground">
-            <span className="text-sm">{officerMobile}</span>
-            <span className="text-sm">{officerEmail}</span>
-          </div>
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "deliverySchedule",
-    header: "Delivery",
-    cell: ({ row }) => {
-      const { deliverySchedule } = row.original;
-      return (
-        <div className="flex items-start gap-2">
-          {deliverySchedule.length > 0 ? (
-            <div className="space-y-1">
-              <h4 className="text-[15px] font-medium">
-                {deliverySchedule?.[0]?.day}
-              </h4>
-              <div className="flex flex-col text-muted-foreground">
-                <span className="text-sm">{deliverySchedule?.[0]?.window}</span>
-                <span className="text-sm">
-                  {deliverySchedule?.[0]?.receivingName}
-                </span>
-              </div>
-            </div>
-          ) : (
-            "Not specified"
-          )}
-          {deliverySchedule.length > 1 && (
-            <Badge className="size-7 rounded-full" variant="secondary">
-              +{deliverySchedule.length - 1}
-            </Badge>
-          )}
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "createdAt",
-    header: "Date Applied",
-    cell: ({ row }) => {
-      return (
-        <div className="flex flex-col">
-          <span className="font-medium">
-            {format(row.original.createdAt!, "MMMM dd, yyyy")}
-          </span>
-          <span className="text-muted-foreground">
-            {format(row.original.createdAt!, "hh:mm:ss a")}
-          </span>
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => {
-      const map = STATUS_MAP[row.original.status as keyof typeof STATUS_MAP];
-
-      return (
-        <Badge
-          variant="outline"
-          style={{ "--color": map.color } as React.CSSProperties}
-          className="h-7 gap-1.5 rounded-xl border-(--color)/10 bg-(--color)/10 pr-2.5 pl-1.5 text-sm [&>svg]:size-3.5!"
-        >
-          <map.icon className="text-(--color)" />
-
-          {map.label}
-        </Badge>
-      );
-    },
-  },
-  {
-    id: "action",
-    header: "Action",
-    cell: ({ row }) => {
-      return <CustomerAction data={row.original} />;
-    },
-  },
-];
+const Members = ({ teamId }: { teamId: string }) => {
+  const { data: members, isPending, error } = useTeamMembers(teamId);
+  console.log(error);
+  return (
+    <div className="flex items-center">
+      {members?.map((member) => {
+        return (
+          <Avatar
+            className="size-9 rounded-lg ring-2 ring-green-600/20 ring-offset-1 **:rounded-lg after:hidden"
+            key={member.id}
+          >
+            <AvatarFallback className="rounded-xl bg-primary/40 text-xs font-semibold text-primary">
+              {member.id?.[0]?.toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
+        );
+      })}
+    </div>
+  );
+};
