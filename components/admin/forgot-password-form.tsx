@@ -8,12 +8,24 @@ import { authClient } from "@/lib/auth/client";
 import { useStore } from "@tanstack/react-form";
 import { Button } from "@/components/ui/button";
 import { useAppForm } from "@/hooks/form-context";
-import { AlertCircleIcon, Loader, X } from "lucide-react";
+import {
+  AlertCircleIcon,
+  CheckCircle,
+  CircleCheck,
+  Loader,
+  X,
+} from "lucide-react";
 import { Field, FieldGroup } from "@/components/ui/field";
-import { Alert, AlertAction, AlertDescription } from "../ui/alert";
+import { Alert, AlertAction, AlertDescription, AlertTitle } from "../ui/alert";
 
 const schema = z.object({
-  email: z.email("Enter valid email"),
+  username: z.union(
+    [
+      z.string().regex(/^[6-9]\d{9}$/, "Enter a valid phone number"),
+      z.email("Enter valid email"),
+    ],
+    "Enter valid email or phone number",
+  ),
   error: z.string(),
   success: z.boolean(),
 });
@@ -24,9 +36,9 @@ export function ForgotPasswordForm({
 }: React.ComponentProps<"div">) {
   const form = useAppForm({
     defaultValues: {
-      email: "",
+      username: "",
       error: "",
-      success: false,
+      success: true,
     },
     validators: {
       onChange: schema,
@@ -36,7 +48,7 @@ export function ForgotPasswordForm({
       form.setFieldValue("success", false);
       await authClient.requestPasswordReset(
         {
-          email: value.email,
+          email: value.username,
           redirectTo: process.env.NEXT_PUBLIC_SITE_URL + "/reset-password",
         },
         {
@@ -64,18 +76,20 @@ export function ForgotPasswordForm({
         e.preventDefault();
         form.handleSubmit();
       }}
-      className="flex flex-1 flex-col items-start justify-center gap-4 px-6 py-20 lg:max-w-xl lg:px-16"
+      className="flex flex-1 flex-col w-full items-start justify-center gap-4 px-6 py-20 lg:max-w-xl lg:px-16"
     >
       <h2 className="font-heading text-3xl font-bold">Forgot Password</h2>
-      <p className="mb-10">Enter your email to reset your password</p>
+      <p className="mb-10 text-muted-foreground">
+        Enter your email or phone number to reset your password.
+      </p>
       <FieldGroup>
         <form.AppField
-          name="email"
+          name="username"
           children={(field) => (
             <field.TextField
               label="Email"
-              placeholder="me@email.com"
-              className="*:data-[slot=input]:rounded-xl"
+              placeholder="email or phone number"
+              className="*:data-[slot=input]:rounded-lg"
             />
           )}
         />
@@ -84,12 +98,13 @@ export function ForgotPasswordForm({
         {success && (
           <Alert
             variant="default"
-            className="rounded-xl border-green-500/5 bg-green-500/5 text-green-500 has-data-[slot=alert-action]:pr-8"
+            className="rounded-xl border-green-500/5 bg-green-500/5 text-green-600 has-data-[slot=alert-action]:pr-8"
           >
-            <AlertCircleIcon />
-            <AlertDescription className="text-green-500">
-              Password reset instructions have been sent to your email. If not
-              received, please try again.
+            <CircleCheck />
+            <AlertTitle>Check your email or phone</AlertTitle>
+            <AlertDescription>
+              If an account exists with the provided details, you will receive
+              password reset instructions via email and phone.
             </AlertDescription>
           </Alert>
         )}
@@ -106,7 +121,7 @@ export function ForgotPasswordForm({
                 type="button"
                 size="icon-xs"
                 variant="outline"
-                className="rounded-xl"
+                className="rounded-lg bg-sidebar-accent hover:bg-sidebar-accent/80"
                 onClick={() => {
                   form.setFieldValue("error", "");
                 }}
@@ -127,7 +142,7 @@ export function ForgotPasswordForm({
               <Button
                 type="submit"
                 size="xl"
-                className="rounded-xl"
+                className="rounded-xl bg-sidebar-accent hover:bg-sidebar-accent/80"
                 disabled={isSubmitting || !canSubmit}
               >
                 {isSubmitting ? (

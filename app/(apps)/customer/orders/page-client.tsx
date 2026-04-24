@@ -121,14 +121,14 @@ export const columns: ColumnDef<OrderType>[] = [
           }
         >
           <Button type="button" variant="ghost" asChild>
-            <Link href={`/admin/orders/${id}`}>
+            <Link href={`/customer/orders/${id}`}>
               <Eye />
               View
             </Link>
           </Button>
           <Button type="button" variant="ghost" asChild>
             {/* set items to localstorage */}
-            <Link href={`/admin/orders/new?orderId=${id}`}>
+            <Link href={`/customer/orders/new?orderId=${id}`}>
               <Copy />
               Order Again
             </Link>

@@ -1,33 +1,22 @@
 "use client";
 
 import z from "zod";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupButton,
-  InputGroupInput,
-} from "../ui/input-group";
 import React from "react";
 import Link from "next/link";
-import {
-  Field,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field";
+import { Field, FieldGroup } from "@/components/ui/field";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth/client";
 import { useStore } from "@tanstack/react-form";
 import { Button } from "@/components/ui/button";
 import { useAppForm } from "@/hooks/form-context";
-import { Eye, EyeOff, Loader } from "lucide-react";
+import { Loader } from "lucide-react";
 import { useRouterStuff } from "@/hooks/use-router-stuff";
 
 const schema = z
   .object({
-    password: z.string().min(2, "Enter password"),
-    confirmPassword: z.string().min(2, "Enter password"),
+    password: z.string().min(2, "Enter new password"),
+    confirmPassword: z.string().min(2, "Confirm new password"),
     showPass: z.boolean(),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -85,80 +74,29 @@ export function ResetPasswordForm({
       className="flex flex-1 flex-col items-start justify-center gap-4 px-6 py-20 lg:max-w-xl lg:px-16"
     >
       <h2 className="font-heading text-3xl font-bold">Create Password</h2>
-      <p className="mb-10">
+      <p className="mb-10 text-muted-foreground">
         Enter your new password below. Make sure it’s strong and secure.
       </p>
       <FieldGroup>
-        <form.Field
+        <form.AppField
           name="password"
-          children={(field) => {
-            const isInvalid =
-              field.state.meta.isTouched && !field.state.meta.isValid;
-
-            return (
-              <Field>
-                <FieldLabel htmlFor={field.name}>Password</FieldLabel>
-                <InputGroup className="rounded-xl">
-                  <InputGroupInput
-                    id={field.name}
-                    name={field.name}
-                    value={field.state.value}
-                    onBlur={field.handleBlur}
-                    onChange={(e) => field.handleChange(e.target.value)}
-                    aria-invalid={isInvalid}
-                    autoComplete="off"
-                    type={showPass ? "text" : "password"}
-                  />
-                  <InputGroupAddon align="inline-end">
-                    <InputGroupButton
-                      size="icon-sm"
-                      className="rounded-2xl"
-                      onClick={() => form.setFieldValue("showPass", !showPass)}
-                    >
-                      {showPass ? <EyeOff /> : <Eye />}
-                    </InputGroupButton>
-                  </InputGroupAddon>
-                </InputGroup>
-                {isInvalid && <FieldError errors={field.state.meta.errors} />}
-              </Field>
-            );
-          }}
+          children={(field) => (
+            <field.PasswordField
+              label="New Password"
+              placeholder="••••••"
+              className="*:data-[slot=input-group]:bg-background"
+            />
+          )}
         />
-
-        <form.Field
+        <form.AppField
           name="confirmPassword"
-          children={(field) => {
-            const isInvalid =
-              field.state.meta.isTouched && !field.state.meta.isValid;
-
-            return (
-              <Field>
-                <FieldLabel htmlFor={field.name}>Re-enter Password</FieldLabel>
-                <InputGroup className="rounded-xl">
-                  <InputGroupInput
-                    id={field.name}
-                    name={field.name}
-                    value={field.state.value}
-                    onBlur={field.handleBlur}
-                    onChange={(e) => field.handleChange(e.target.value)}
-                    aria-invalid={isInvalid}
-                    autoComplete="off"
-                    type={showPass ? "text" : "password"}
-                  />
-                  <InputGroupAddon align="inline-end">
-                    <InputGroupButton
-                      size="icon-sm"
-                      className="rounded-2xl"
-                      onClick={() => form.setFieldValue("showPass", !showPass)}
-                    >
-                      {showPass ? <EyeOff /> : <Eye />}
-                    </InputGroupButton>
-                  </InputGroupAddon>
-                </InputGroup>
-                {isInvalid && <FieldError errors={field.state.meta.errors} />}
-              </Field>
-            );
-          }}
+          children={(field) => (
+            <field.PasswordField
+              label="Confirm Password"
+              placeholder="••••••"
+              className="*:data-[slot=input-group]:bg-background"
+            />
+          )}
         />
 
         <Field>
@@ -171,7 +109,7 @@ export function ResetPasswordForm({
               <Button
                 type="submit"
                 size="xl"
-                className="rounded-xl"
+                className="rounded-xl bg-sidebar-accent hover:bg-sidebar-accent/80"
                 disabled={isSubmitting || !canSubmit}
               >
                 {isSubmitting ? (
