@@ -1,10 +1,9 @@
 "use client";
 
+import { Member } from "@/lib/types";
 import { authClient } from "@/lib/auth/client";
 import { fetcher } from "@/lib/helper/fetcher";
-import { Member } from "@/lib/types";
 import { useQuery } from "@tanstack/react-query";
-import { User } from "better-auth/types";
 
 export const useTeams = () => {
   return useQuery({

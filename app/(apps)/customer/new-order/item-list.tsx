@@ -10,36 +10,35 @@ import {
   X,
 } from "lucide-react";
 import React from "react";
+import { toast } from "sonner";
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
-
 import { format } from "date-fns/format";
-import { cn, formatUSD } from "@/lib/utils";
+import { cn, formatUSD, getInitialsAvatar } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { QuantityInput } from "./order-form";
 import { formOpt } from "./order-form-options";
 import { withForm } from "@/hooks/form-context";
 import { useStore } from "@tanstack/react-form";
+import { Tooltip } from "@/components/tooltip";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { type CustomerProductType } from "@/lib/types";
-import { PopoverXDrawer } from "@/components/popover-x-drawer";
-import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useCategories, useInfiniteProducts } from "@/hooks/use-product";
 import {
   EmptyComponent,
   LoadingSkeleton,
 } from "@/components/admin/placeholder-component";
 import { BlurFade } from "@/components/ui/blur-fade";
-import { QuantityInput } from "./order-form";
-import { Tooltip } from "@/components/tooltip";
-import { toast } from "sonner";
-import { createOrderGuideItem, deleteOrderGuideItem } from "@/server/order";
+import { Skeleton } from "@/components/ui/skeleton";
+import { type CustomerProductType } from "@/lib/types";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouterStuff } from "@/hooks/use-router-stuff";
+import { PopoverXDrawer } from "@/components/popover-x-drawer";
+import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useCategories, useInfiniteProducts } from "@/hooks/use-product";
+import { createOrderGuideItem, deleteOrderGuideItem } from "@/server/order";
 
 const LAYOUTS = [
   {
@@ -194,6 +193,7 @@ const ProductItem = withForm({
     }) => void;
   },
   render: function Render({ form, product, layout, updateItem }) {
+    product.image = product.image || getInitialsAvatar(product.title);
     const lineItems = useStore(form.store, (state) => state.values.lineItems);
     const index = lineItems.findIndex((i) => i.productId === product.id);
     const qty = index >= 0 ? Number(lineItems[index].quantity) || 0 : 0;
@@ -332,7 +332,7 @@ const Thumbnail = ({
   updateItem: (product: CustomerProductType, qty: number) => void;
 }) => {
   return (
-    <HoverCard openDelay={10} closeDelay={100}>
+    <HoverCard openDelay={1000} closeDelay={10}>
       <HoverCardTrigger asChild>
         <div
           className="relative aspect-square w-12 shrink-0 overflow-hidden rounded-xl bg-secondary
@@ -432,7 +432,7 @@ const OrderGuideButton = ({
   const queryClient = useQueryClient();
   const [loading, setLoading] = React.useState(false);
 
-  const handleClick = async () => {
+  const handleSave = async () => {
     setLoading(true);
     if (id) {
       const { success } = await deleteOrderGuideItem(id);
@@ -460,7 +460,10 @@ const OrderGuideButton = ({
         type="button"
         variant="outline"
         size="icon-xs"
-        onClick={handleClick}
+        onClick={(e) => {
+          e.stopPropagation();
+          handleSave();
+        }}
         className={className}
         disabled={loading}
       >

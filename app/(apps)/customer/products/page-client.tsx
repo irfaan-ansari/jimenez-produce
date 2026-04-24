@@ -7,9 +7,7 @@ import {
   LoadingSkeleton,
 } from "@/components/admin/placeholder-component";
 import { useInfiniteProducts } from "@/hooks/use-product";
-
 import { useRouterStuff } from "@/hooks/use-router-stuff";
-
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 
 export const PageClient = () => {
@@ -43,7 +41,7 @@ export const PageClient = () => {
               key={i}
               className="rounded-2xl pt-0! hover:ring-2 hover:ring-offset-1 relative hover:ring-offset-background transition ease-out"
             >
-              <div className="rounded-t-[0.5rem] overflow-hidden relative aspect-square bg-secondary">
+              <div className="rounded-t-[0.5rem] overflow-hidden relative aspect-[1.6/1] bg-secondary">
                 {product.image && (
                   <img
                     width={400}
@@ -51,16 +49,16 @@ export const PageClient = () => {
                     src={product.image!}
                     alt={product.title}
                     loading={i <= 10 ? "eager" : "lazy"}
-                    className="relative z-1 w-full object-cover transition ease-out aspect-square rounded-lg"
+                    className="relative z-1 w-full object-contain transition ease-out aspect-[1.6/1] rounded-lg"
                   />
                 )}
               </div>
-              <CardContent className="mt-auto space-y-1">
+              <CardContent className="mt-auto space-y-2">
                 <div className="flex gap-x-2 gap-y-1 flex-wrap">
                   {product.categories?.map((cat) => (
                     <Badge
                       key={cat}
-                      className="rounded-xl h-6 text-sm bg-blue-100 text-blue-600"
+                      className="rounded-lg h-6 text-sm"
                       variant="secondary"
                     >
                       {cat}
@@ -68,7 +66,7 @@ export const PageClient = () => {
                   ))}
                 </div>
                 <CardTitle className="font-semibold">{product.title}</CardTitle>
-                <CardTitle className="font-semibold text-primary">
+                <CardTitle className="font-bold text-primary text-base!">
                   {formatUSD(product.basePrice ?? 0)}
                 </CardTitle>
               </CardContent>

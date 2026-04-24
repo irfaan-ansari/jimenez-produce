@@ -12,7 +12,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Loader } from "lucide-react";
 import { QuantityInput } from "./order-form";
 import { formOpt } from "./order-form-options";
 import { Button } from "@/components/ui/button";
@@ -88,7 +88,7 @@ export const OrderCart = withForm({
                     key={subField.productId}
                   >
                     <div className="flex items-start justify-start gap-3">
-                      <Avatar className="size-10 shrink-0 rounded-lg ring-2 ring-green-600/20 ring-offset-1 **:rounded-xl after:hidden">
+                      <Avatar className="size-10 shrink-0 rounded-lg ring-2 ring-green-600/20 ring-offset-1 **:rounded-lg after:hidden">
                         <AvatarImage src={subField?.image!} />
                         <AvatarFallback>
                           {getAvatarFallback(subField.title)}
@@ -218,9 +218,28 @@ export const OrderCart = withForm({
                 <span>{formatUSD(Number(values.total))}</span>
               </div>
             </div>
-            <Button size="xl" className="rounded-xl">
-              Submit Order • {formatUSD(Number(values.total))}
-            </Button>
+
+            <form.Subscribe
+              selector={({ isSubmitting, canSubmit }) => ({
+                isSubmitting,
+                canSubmit,
+              })}
+              children={({ isSubmitting, canSubmit }) => (
+                <Button
+                  type="submit"
+                  size="lg"
+                  className="rounded-xl"
+                  disabled={isSubmitting || !canSubmit}
+                  onClick={() => form.handleSubmit()}
+                >
+                  {isSubmitting ? (
+                    <Loader className="animate-spin" />
+                  ) : (
+                    `Submit Order • ${formatUSD(Number(values.total))}`
+                  )}
+                </Button>
+              )}
+            />
           </SheetFooter>
         </SheetContent>
       </Sheet>

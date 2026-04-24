@@ -19,6 +19,7 @@ import { JobApplicationAction } from "@/components/admin/job-application-actions
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { updateJobApplication } from "@/server/job";
 import { useQueryClient } from "@tanstack/react-query";
+import { getInitialsAvatar } from "@/lib/utils";
 
 export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
   const param = use(params);
@@ -41,7 +42,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
 
   const status = jobApplicationStatusMap[data?.status as JobApplicationStatus];
 
-  const thumbnail = `https://api.dicebear.com/9.x/initials/svg?seed=${data.firstName}`;
+  const thumbnail = getInitialsAvatar(data.firstName);
   return (
     <div
       className="grid grid-cols-6 gap-8"

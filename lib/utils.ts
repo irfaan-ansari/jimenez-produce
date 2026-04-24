@@ -122,5 +122,5 @@ export const formatPhone = (value: string) => {
 };
 
 export const getInitialsAvatar = (name: string) => {
-  return `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(name)}`;
+  return `https://api.dicebear.com/9.x/glass/svg?seed=${encodeURIComponent(name)}`;
 };

@@ -33,7 +33,7 @@ export function TopProducts() {
                 <div className="mb-2 flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div
-                      className={`h-10 w-10 rounded-xl bg-(--color)/20 text-(--color) flex items-center justify-center font-bold`}
+                      className={`h-10 w-10 rounded-xl shrink-0 bg-(--color)/20 text-(--color) flex items-center justify-center font-bold`}
                     >
                       {product.title[0]}
                     </div>

@@ -40,8 +40,7 @@ const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
     >
       <AppSidebar session={{ session, user }} />
       <SidebarInset className="min-w-0 bg-slate-50">
-        <Container className="mx-0 h-full max-w-full pt-2 pb-5 md:pb-8">
-          <SidebarTrigger className="-ml-1 rounded-xl" size="icon" />
+        <Container className="mx-0 h-full max-w-full p-5 md:p-8">
           {children}
         </Container>
       </SidebarInset>

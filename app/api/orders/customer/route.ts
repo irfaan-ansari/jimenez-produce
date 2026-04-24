@@ -10,7 +10,8 @@ export async function GET(req: NextRequest) {
 
     if (!auth)
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-    const { userId, activeOrganizationId, activeTeamId } = auth.session;
+
+    const { activeOrganizationId, activeTeamId } = auth.session;
 
     if (!activeOrganizationId)
       return NextResponse.json(
@@ -27,7 +28,14 @@ export async function GET(req: NextRequest) {
     const filters = and(
       eq(order.organizationId, activeOrganizationId),
       status ? eq(order.status, status) : undefined,
-      q ? or(ilike(order.deliveryInstruction, `%${q}%`)) : undefined,
+      q
+        ? or(
+            ilike(order.deliveryInstruction, `%${q}%`),
+            ilike(order.status, `%${q}%`),
+            ilike(order.id, `%${q}%`),
+          )
+        : undefined,
+      eq(order.teamId, activeTeamId!),
     );
 
     const response = await db.query.order.findMany({

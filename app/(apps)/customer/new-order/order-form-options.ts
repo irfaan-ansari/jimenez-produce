@@ -14,7 +14,7 @@ export const defaultValues = {
   charges: { type: "Fuel Charge", amount: "15" },
   po: "",
   notes: "",
-  deliveryDate: "",
+  deliveryDate: new Date().toISOString().split("T")[0],
   deliveryWindow: "",
   deliveryInstruction: "",
 };

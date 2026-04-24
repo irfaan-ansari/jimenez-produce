@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { useConfirm } from "@/hooks/use-confirm";
 import { useAppForm } from "@/hooks/form-context";
 import { useQueryClient } from "@tanstack/react-query";
-import { cn, formatUSD, getNextDayDate } from "@/lib/utils";
+import { cn, formatUSD } from "@/lib/utils";
 import {
   InputGroup,
   InputGroupAddon,
@@ -158,7 +158,7 @@ export const OrderForm = ({ session }: { session: Session }) => {
               }
             >
               <Star />
-              {searchParamsObj.saved ? "Hide" : "View"} Order Guide
+              Reorder List
             </Link>
           </Button>
         </div>

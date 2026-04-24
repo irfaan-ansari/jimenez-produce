@@ -187,12 +187,6 @@ export function LoginForm({
             Login with OTP
           </Button>
         </Field>
-        <div className="flex flex-row items-center justify-center gap-2 ">
-          Don’t have an account?
-          <Link href="/register" className="underline-offset-4 hover:underline">
-            Register here.
-          </Link>
-        </div>
       </FieldGroup>
     </form>
   );

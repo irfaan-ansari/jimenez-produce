@@ -14,17 +14,6 @@ export const GET = async (req: NextRequest) => {
     const { accountType } = session.user;
     const { activeOrganizationId, activeTeamId } = session.session;
 
-    if (!activeOrganizationId) {
-      return NextResponse.json(
-        { message: "No active organization." },
-        { status: 403 },
-      );
-    }
-
-    if (accountType === "customer" && !activeTeamId) {
-      return NextResponse.json({ message: "No active team." }, { status: 403 });
-    }
-
     const result = await db
       .select({
         status: order.status,
@@ -33,7 +22,7 @@ export const GET = async (req: NextRequest) => {
       .from(order)
       .where(
         and(
-          eq(order.organizationId, activeOrganizationId),
+          eq(order.organizationId, activeOrganizationId!),
           accountType === "customer"
             ? eq(order.teamId, activeTeamId!)
             : undefined,

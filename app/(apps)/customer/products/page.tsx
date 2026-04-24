@@ -8,12 +8,18 @@ export const metadata = {
 const ProductsPage = async () => {
   return (
     <div className="flex flex-col h-full gap-5">
-      <h1 className="text-2xl font-semibold">Products</h1>
-
-      <div className="flex gap-4 items-center">
-        <SearchBar />
-        {/* add category filter */}
+      <div className="flex justify-between *:flex-1">
+        <div className="space-y-1">
+          <h1 className="text-2xl font-bold">Products</h1>
+          <p className="text-muted-foreground">
+            Browse our wide range of products
+          </p>
+        </div>
+        <div className="flex gap-4 items-center justify-end">
+          <SearchBar />
+        </div>
       </div>
+
       {/* content */}
       <PageClient />
     </div>

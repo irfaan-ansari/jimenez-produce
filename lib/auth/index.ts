@@ -130,31 +130,15 @@ export const auth = betterAuth({
           ]);
 
           if (!activeUser?.organizationId) {
-            throw new Error(
-              "Access denied. Please contact your administrator.",
-            );
+            throw new APIError("BAD_REQUEST", {
+              message: "Access denied. Please contact your administrator.",
+            });
           }
           return {
             data: {
               ...session,
               activeOrganizationId: activeUser?.organizationId,
               activeTeamId: activeTeam?.id,
-            },
-          };
-        },
-      },
-    },
-    user: {
-      create: {
-        before: async (user, ctx) => {
-          if (!ctx?.context.session)
-            throw new APIError("BAD_REQUEST", {
-              message: "You are not allowed to create account.",
-            });
-          return {
-            data: {
-              ...user,
-              firstName: user.name.split(" ")[0],
             },
           };
         },

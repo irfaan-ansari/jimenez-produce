@@ -11,6 +11,7 @@ import {
   Percent,
   Plus,
   Search,
+  Trash2,
   X,
 } from "lucide-react";
 import {
@@ -453,6 +454,7 @@ const ItemList = withForm({
                       price
                     </span>
                     <span className="w-24 shrink-0 text-right">New Price</span>
+                    <span className="w-10 shrink-0 text-right" />
                   </div>
                 )}
                 <div className="divide-y">
@@ -508,6 +510,17 @@ const ItemList = withForm({
                               <DollarSign />
                             </InputGroupAddon>
                           </InputGroup>
+                        </div>
+                        <div className="w-10 text-right">
+                          <Button
+                            size="icon-sm"
+                            variant="outline"
+                            onClick={() => {
+                              field.removeValue(i);
+                            }}
+                          >
+                            <Trash2 />
+                          </Button>
                         </div>
                       </div>
                     );
@@ -627,82 +640,75 @@ const SelectItemDialog = withForm({
             {isPending && (
               <div className="h-1 animate-pulse rounded-full bg-primary" />
             )}
-            {data?.data?.map((line, i) => {
-              const isAdded =
-                items?.findIndex((i) => i.productId === line.id) >= 0;
-              return (
-                <div
-                  className={`flex gap-4 px-6 py-2 ${
-                    isAdded ? "bg-primary/10" : ""
-                  }`}
-                  key={line.id}
-                >
-                  <div className="flex flex-1 items-start gap-3">
-                    <div className="shrink-0 pt-1">
-                      <Avatar className="size-9 rounded-lg ring-2 ring-green-600/40 ring-offset-1 **:rounded-xl after:hidden">
-                        <AvatarImage src={line?.image!} />
-                        <AvatarFallback>
-                          {getAvatarFallback(line.title)}
-                        </AvatarFallback>
-                      </Avatar>
+            <form.Field
+              name="items"
+              children={(field) =>
+                data?.data?.map((line, i) => {
+                  const isAdded =
+                    items?.findIndex((i) => i.productId === line.id) >= 0;
+                  return (
+                    <div
+                      className={`flex gap-4 px-6 py-2 ${
+                        isAdded ? "bg-primary/10" : ""
+                      }`}
+                      key={line.id}
+                    >
+                      <div className="flex flex-1 items-start gap-3">
+                        <div className="shrink-0 pt-1">
+                          <Avatar className="size-9 rounded-lg ring-2 ring-green-600/40 ring-offset-1 **:rounded-xl after:hidden">
+                            <AvatarImage src={line?.image!} />
+                            <AvatarFallback>
+                              {getAvatarFallback(line.title)}
+                            </AvatarFallback>
+                          </Avatar>
+                        </div>
+                        <div className="min-w-0">
+                          <h4 className="line-clamp-2 leading-tight font-medium whitespace-normal">
+                            {line.title}
+                          </h4>
+                          <Badge
+                            variant="secondary"
+                            className="rounded-xl border border-border uppercase"
+                          >
+                            {line.identifier}
+                          </Badge>
+                        </div>
+                      </div>
+                      <div className="w-28 self-center text-right">
+                        {formatUSD(15)}
+                      </div>
+                      <div className="w-28 self-center text-right">
+                        <Button
+                          type="button"
+                          variant={isAdded ? "outline" : "default"}
+                          className="rounded-lg"
+                          size="icon-sm"
+                          onClick={() => {
+                            if (isAdded) {
+                              const filtered = items?.filter(
+                                (i) => i.productId !== line.id,
+                              );
+                              form.setFieldValue("items", filtered);
+                            } else {
+                              field.pushValue({
+                                title: line.title,
+                                identifier: line.identifier,
+                                image: line.image as string,
+                                basePrice: line.basePrice,
+                                productId: line.id,
+                                price: line.basePrice,
+                              });
+                            }
+                          }}
+                        >
+                          {isAdded ? <X /> : <Plus />}
+                        </Button>
+                      </div>
                     </div>
-                    <div className="min-w-0">
-                      <h4 className="line-clamp-2 leading-tight font-medium whitespace-normal">
-                        {line.title}
-                      </h4>
-                      <Badge
-                        variant="secondary"
-                        className="rounded-xl border border-border uppercase"
-                      >
-                        {line.identifier}
-                      </Badge>
-                    </div>
-                  </div>
-                  <div className="w-28 self-center text-right">
-                    {formatUSD(15)}
-                  </div>
-                  <div className="w-28 self-center text-right">
-                    {isAdded ? (
-                      <Button
-                        type="button"
-                        variant="outline"
-                        className="rounded-lg"
-                        size="icon-sm"
-                        onClick={() => {
-                          const filtered = items?.filter(
-                            (i) => i.productId !== line.id,
-                          );
-                          form.setFieldValue("items", filtered);
-                        }}
-                      >
-                        <X />
-                      </Button>
-                    ) : (
-                      <Button
-                        type="button"
-                        className="rounded-lg"
-                        size="icon-sm"
-                        onClick={() => {
-                          const updatedItems = [...items!];
-                          updatedItems.push({
-                            title: line.title,
-                            identifier: line.identifier,
-                            image: line.image as string,
-                            basePrice: line.basePrice,
-                            productId: line.id,
-                            price: line.basePrice,
-                          });
-
-                          form.setFieldValue("items", updatedItems);
-                        }}
-                      >
-                        <Plus />
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
+                  );
+                })
+              }
+            />
           </div>
 
           <Field className="flex flex-col-reverse gap-4 px-6 sm:flex-row sm:justify-start">

@@ -22,13 +22,19 @@ import {
 } from "@/components/ui/sidebar";
 import { Button } from "../ui/button";
 import { Session } from "@/lib/types";
-import { ChevronRight } from "lucide-react";
-import { getAvatarFallback } from "@/lib/utils";
+import { Check, ChevronRight, ChevronsUpDown } from "lucide-react";
+import { getAvatarFallback, getInitialsAvatar } from "@/lib/utils";
 import { useRouterStuff } from "@/hooks/use-router-stuff";
 import { SIDEBAR_MENU_CUSTOMER, SITE_CONFIG } from "@/lib/config";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-
 import { SidebarProfile } from "./sidebar-profile";
+import { PopoverXDrawer } from "../popover-x-drawer";
+import { Skeleton } from "../ui/skeleton";
+import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { authClient } from "@/lib/auth/client";
+import { useTeams } from "@/hooks/use-teams";
 
 export function AppSidebar({ session }: { session: Session }) {
   const { pathname, getQueryString } = useRouterStuff();
@@ -45,7 +51,8 @@ export function AppSidebar({ session }: { session: Session }) {
 
   return (
     <Sidebar collapsible="icon">
-      <SidebarLogo />
+      {/* <SidebarLogo /> */}
+      <SidebarTeam session={session} />
       <SidebarContent>
         <SidebarGroup>
           <SidebarMenu>
@@ -146,36 +153,108 @@ export function AppSidebar({ session }: { session: Session }) {
     </Sidebar>
   );
 }
-export const SidebarLogo = () => {
+
+const SidebarTeam = ({ session: auth }: { session: Session }) => {
+  const [open, setOpen] = useState(false);
+  const { session } = auth;
+  const queryClient = useQueryClient();
+  const { data, isPending } = useTeams();
+
+  const activeTeam = data?.find((team) => team.id === session.activeTeamId);
+
+  const handleChange = async (teamId: string) => {
+    setOpen(false);
+
+    const toastId = toast.loading("Please wait...");
+
+    const { error } = await authClient.organization.setActiveTeam({
+      teamId,
+    });
+
+    if (error) {
+      toast.error(error.message, { id: toastId });
+      return;
+    }
+
+    toast.success("Account changed successfully.", {
+      id: toastId,
+    });
+
+    queryClient.invalidateQueries();
+  };
+
   return (
-    <SidebarHeader className="mb-4">
+    <SidebarHeader>
       <SidebarMenu>
         <SidebarMenuItem className="rounded-xl group-data-[state=expanded]:absolute group-data-[state=expanded]:top-4 group-data-[state=expanded]:-right-4 group-data-[state=expanded]:z-1 group-data-[state=expanded]:bg-muted">
           <SidebarTrigger />
         </SidebarMenuItem>
+
         <SidebarMenuItem>
-          <SidebarMenuButton
-            size="lg"
-            className="hover:bg-sidebar hover:text-sidebar-foreground"
+          <PopoverXDrawer
+            open={open}
+            setOpen={setOpen}
+            className="w-60 px-0 *:gap-0 data-[slot=popover-content]:max-w-60"
+            trigger={
+              <SidebarMenuButton
+                size="lg"
+                className="hover:bg-muted! hover:text-sidebar-foreground! data-open:bg-muted! data-open:hover:bg-muted data-open:hover:text-sidebar-foreground data-active:hover:bg-muted"
+              >
+                <Avatar className="size-9 rounded-lg ring-2 ring-green-600/20 ring-offset-1 **:rounded-xl after:hidden">
+                  <AvatarImage src={SITE_CONFIG.logo} alt="Logo" asChild>
+                    <Image
+                      src={SITE_CONFIG.logo}
+                      alt="Logo"
+                      width={40}
+                      height={40}
+                    />
+                  </AvatarImage>
+                  <AvatarFallback className="rounded-xl bg-primary/40 text-xs font-semibold text-primary">
+                    {getAvatarFallback(SITE_CONFIG.name)}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="grid min-w-0 flex-1">
+                  <span className="truncate text-base leading-tight font-bold">
+                    {SITE_CONFIG.name}
+                  </span>
+                  <span className="truncate text-sm leading-tight text-muted-foreground">
+                    {activeTeam?.name}
+                  </span>
+                </div>
+                <ChevronsUpDown className="ml-auto size-4" />
+              </SidebarMenuButton>
+            }
           >
-            <Avatar className="aspect-square size-8 rounded-md ring-2 ring-green-600/20 ring-offset-1 **:rounded-xl after:hidden">
-              <AvatarImage src={SITE_CONFIG.logo} alt="profile image" asChild>
-                <Image
-                  src={SITE_CONFIG.logo}
-                  alt="Logo"
-                  width={40}
-                  height={40}
-                />
-              </AvatarImage>
-              <AvatarFallback className="bg-primary/40 text-xs font-medium">
-                {getAvatarFallback(SITE_CONFIG.name)}
-              </AvatarFallback>
-            </Avatar>
-            <div className="grid flex-1 text-left text-sm leading-tight">
-              <span className="truncate font-medium">{SITE_CONFIG.name}</span>
-              <span className="truncate text-xs"> Ordering Platform</span>
+            <div className="flex flex-col gap-0.5 px-2">
+              <span className="text-xs text-muted-foreground font-medium pb-2 pt-1 px-2">
+                ACCOUNTS
+              </span>
+              {isPending ? (
+                <Skeleton className="h-9 w-full" />
+              ) : (
+                data?.map((team) => (
+                  <Button
+                    key={team.id}
+                    variant={team.id === activeTeam?.id ? "secondary" : "ghost"}
+                    onClick={() => handleChange(team.id)}
+                    className="rounded-lg!"
+                  >
+                    <Avatar className="size-6 rounded-md **:rounded-md">
+                      <AvatarImage src={team.logo!} alt={team.name} />
+                      <AvatarFallback>
+                        {getInitialsAvatar(team.name)}
+                      </AvatarFallback>
+                    </Avatar>
+                    {team.name}
+
+                    <Check
+                      className={`ml-auto ${team.id === activeTeam?.id ? "opacity-100" : "opacity-0"}`}
+                    />
+                  </Button>
+                ))
+              )}
             </div>
-          </SidebarMenuButton>
+          </PopoverXDrawer>
         </SidebarMenuItem>
       </SidebarMenu>
     </SidebarHeader>

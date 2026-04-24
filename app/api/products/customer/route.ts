@@ -19,7 +19,7 @@ import {
   product,
 } from "@/lib/db/schema";
 import { db } from "@/lib/db";
-import { team } from "@/auth-schema";
+import { team } from "@/lib/db/auth-schema";
 import { getSession } from "@/server/auth";
 import { getQueryObject } from "@/lib/helper/api";
 import { NextRequest, NextResponse } from "next/server";

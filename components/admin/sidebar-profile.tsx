@@ -58,8 +58,9 @@ export const SidebarProfile = ({ session }: { session: Session }) => {
                   <Image
                     src={user.image!}
                     alt="Logo"
-                    width={100}
-                    height={100}
+                    width={40}
+                    height={40}
+                    unoptimized
                   />
                 </AvatarImage>
                 <AvatarFallback className="bg-foreground text-xs font-semibold text-primary-foreground">
@@ -79,13 +80,14 @@ export const SidebarProfile = ({ session }: { session: Session }) => {
           }
         >
           <div className="flex items-center gap-3 border-b bg-secondary px-4 py-2">
-            <Avatar className="size-8 rounded-lg ring-2 ring-green-600/20 ring-offset-1 **:rounded-xl after:hidden">
+            <Avatar className="size-8 rounded-lg ring-2 ring-primary/40 ring-offset-1 **:rounded-lg after:hidden">
               <AvatarImage src={user.image!} alt="Profile" asChild>
                 <Image
                   src={user.image!}
                   alt="profile"
-                  width={100}
-                  height={100}
+                  width={40}
+                  height={40}
+                  unoptimized
                 />
               </AvatarImage>
               <AvatarFallback className="bg-foreground text-xs font-semibold text-primary-foreground">

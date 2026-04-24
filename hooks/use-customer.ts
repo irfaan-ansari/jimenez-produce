@@ -45,21 +45,28 @@ export const useInvites = (query?: string) => {
   });
 };
 
-export const useOrders = (query?: string) => {
+export const useOrders = ({
+  path = "/api/orders",
+  query,
+}: {
+  path?: string;
+  query?: string;
+}) => {
   return useQuery({
     queryKey: ["orders", query],
     queryFn: () => {
-      return fetcher<OrderResponse>(`/api/orders?${query}`);
+      return fetcher<OrderResponse>(`${path}?${query}`);
     },
     staleTime: 1000 * 60 * 5,
   });
 };
+
 export const useOrder = (id: number) => {
   return useQuery({
     queryKey: ["orders", id],
     queryFn: () => {
       return fetcher<{ data: OrderResponse["data"][number] }>(
-        `/api/orders/${id}`
+        `/api/orders/${id}`,
       );
     },
     staleTime: 1000 * 60 * 5,

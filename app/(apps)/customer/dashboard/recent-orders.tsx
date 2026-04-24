@@ -18,7 +18,10 @@ import { EmptyComponent } from "@/components/admin/placeholder-component";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export const RecentOrders = () => {
-  const { data, isPending, isError, error } = useOrders("limit=5");
+  const { data, isPending, isError, error } = useOrders({
+    path: "/api/orders/customer",
+    query: "limit=5",
+  });
   return (
     <Card className="col-span-6 rounded-2xl border shadow-none ring-0">
       <CardHeader className="flex flex-row items-center justify-between">
@@ -27,17 +30,14 @@ export const RecentOrders = () => {
           <Link href="/customer/orders">View All</Link>
         </Button>
       </CardHeader>
-      <CardContent className="overflow-hidden">
+      <CardContent className="overflow-hidden px-0">
         <Table className="text-base">
           <TableHeader>
-            <TableRow className="rounded-xl bg-secondary text-sm font-medium text-muted-foreground uppercase">
-              <TableHead className="rounded-l-2xl p-4">Order Placed</TableHead>
-              <TableHead className="p-4">Order ID</TableHead>
-              <TableHead className="p-4">Items</TableHead>
-              <TableHead className="p-4">Status</TableHead>
-              <TableHead className="rounded-r-2xl p-4 text-right">
-                Total
-              </TableHead>
+            <TableRow className="bg-secondary text-sm font-medium text-muted-foreground uppercase">
+              <TableHead className="p-4">Order</TableHead>
+              <TableHead className="p-4">Placed</TableHead>
+              <TableHead className="p-4">Delivery</TableHead>
+              <TableHead className="p-4 text-right w-24">Total</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -48,36 +48,57 @@ export const RecentOrders = () => {
                 return (
                   <TableRow key={order.id}>
                     <TableCell className="p-4">
-                      {format(order.createdAt!, "MMMM dd, yyyy")}
+                      <Link
+                        href={`/customer/orders/${order.id}`}
+                        className="flex flex-col gap-1.5"
+                      >
+                        <div className="flex items-center gap-2">
+                          #{order.id}
+                          <Badge
+                            variant="outline"
+                            style={
+                              { "--color": map.color } as React.CSSProperties
+                            }
+                            className="h-7 gap-1.5 rounded-xl border-(--color)/10 bg-(--color)/10 pr-2.5 pl-1.5 text-sm [&>svg]:size-3.5!"
+                          >
+                            <map.icon className="text-(--color)" />
+                            {map.label}
+                          </Badge>
+                        </div>
+                        <span className="text-sm font-medium text-muted-foreground">
+                          Tap to view order details
+                        </span>
+                      </Link>
                     </TableCell>
                     <TableCell className="p-4 font-medium">
-                      {order.id}
+                      <span className="text-sm text-muted-foreground">
+                        {format(order.createdAt!, "MMM dd • hh:mm a")}
+                      </span>
                     </TableCell>
                     <TableCell className="p-4">
-                      {order.lineItems?.[0]?.title}{" "}
-                      {order.lineItems.length > 1
-                        ? `+ ${order.lineItems.length - 1} Items`
-                        : null}
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <span>
+                          {format(order.deliveryDate || new Date(), "MMMM dd")}
+                        </span>
+                        <span>•</span>
+                        <span>
+                          {order.status === "completed"
+                            ? "Delivered"
+                            : (order.deliveryWindow ?? "Anytime")}
+                        </span>
+                      </div>
                     </TableCell>
                     <TableCell className="p-4">
-                      <Badge
-                        variant="outline"
-                        style={{ "--color": map.color } as React.CSSProperties}
-                        className="h-7 gap-1.5 rounded-xl border-(--color)/10 bg-(--color)/10 pr-2.5 pl-1.5 text-sm [&>svg]:size-3.5!"
-                      >
-                        <map.icon className="text-(--color)" />
-                        {map.label}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="p-4 text-right">
-                      {formatUSD(order.total)}
+                      <span className="font-medium">
+                        {formatUSD(order.total)}
+                      </span>
                     </TableCell>
                   </TableRow>
                 );
               })
             ) : (
               <TableRow>
-                <TableCell colSpan={5} className="p-0 text-center">
+                <TableCell colSpan={4} className="p-0 text-center">
                   {isPending ? (
                     <div className="mb-36 h-1 animate-pulse rounded-full bg-primary"></div>
                   ) : isError ? (

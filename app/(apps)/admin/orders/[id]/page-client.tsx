@@ -11,33 +11,26 @@ import {
   Receipt,
   Package,
 } from "lucide-react";
-import {
-  Table,
-  TableHead,
-  TableCell,
-  TableBody,
-  TableRow,
-  TableHeader,
-} from "@/components/ui/table";
 import Link from "next/link";
+import { toast } from "sonner";
 import React, { use } from "react";
 import { formatUSD } from "@/lib/utils";
 import { format } from "date-fns";
+import { updateOrder } from "@/server/order";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useOrder } from "@/hooks/use-customer";
+import { useConfirm } from "@/hooks/use-confirm";
 import {
   EmptyComponent,
   LoadingSkeleton,
 } from "@/components/admin/placeholder-component";
-import { OrderActions } from "@/components/admin/order-actions";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { toast } from "sonner";
-import { useConfirm } from "@/hooks/use-confirm";
-import { updateOrder } from "@/server/order";
 import { useQueryClient } from "@tanstack/react-query";
 import { STATUS_MAP } from "@/lib/constants/status-map";
+import { OrderActions } from "@/components/admin/order-actions";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Table, TableCell, TableBody, TableRow } from "@/components/ui/table";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = use(params);

@@ -97,6 +97,7 @@ export const signupWithOrganization = handleAction(
     password,
     phoneNumber,
     role,
+    accountType,
   }: SignupProps & { role?: Role }) => {
     const session = await getSession();
 
@@ -113,6 +114,7 @@ export const signupWithOrganization = handleAction(
       email,
       password,
       phoneNumber,
+      accountType,
     });
 
     const data = await auth.api.addMember({

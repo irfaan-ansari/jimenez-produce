@@ -18,9 +18,10 @@ import { STATUS_MAP } from "@/lib/constants/status-map";
 export const PageClient = () => {
   const { searchParams } = useRouterStuff();
 
-  const { data, error, isPending, isError } = useOrders(
-    searchParams.toString(),
-  );
+  const { data, error, isPending, isError } = useOrders({
+    path: "/api/orders/customer",
+    query: searchParams.toString(),
+  });
 
   return (
     <DataTable

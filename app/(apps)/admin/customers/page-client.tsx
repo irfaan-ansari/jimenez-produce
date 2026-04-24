@@ -15,6 +15,7 @@ import { EmptyComponent } from "@/components/admin/placeholder-component";
 import { useTeamMembers, useTeams } from "@/hooks/use-teams";
 import { CustomerActions } from "./customer-actions";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import Link from "next/link";
 
 export const PageClient = () => {
   const { searchParamsObj } = useRouterStuff();
@@ -42,7 +43,10 @@ export const PageClient = () => {
                 return (
                   <TableRow key={team.id}>
                     <TableCell className="p-4 font-medium">
-                      <div className="flex items-center gap-3">
+                      <Link
+                        href={`/admin/customers/${team.id}`}
+                        className="flex items-center gap-3"
+                      >
                         <Avatar className="size-9 rounded-lg ring-2 ring-green-600/20 ring-offset-1 **:rounded-lg after:hidden">
                           <AvatarImage
                             src={team.logo ?? undefined}
@@ -52,8 +56,13 @@ export const PageClient = () => {
                             {team.name?.[0]?.toUpperCase()}
                           </AvatarFallback>
                         </Avatar>
-                        <span className="font-medium">{team.name}</span>
-                      </div>
+                        <div className="flex flex-col gap-1">
+                          <span className="font-medium">{team.name}</span>
+                          <span className="text-xs font-medium text-muted-foreground">
+                            Click to view details.
+                          </span>
+                        </div>
+                      </Link>
                     </TableCell>
 
                     <TableCell className="p-4">{team.managerName}</TableCell>

@@ -8,7 +8,7 @@ import {
   orderGuideItem,
 } from "@/lib/db/schema";
 import { db } from "@/lib/db";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { getSession } from "./auth";
 import { handleAction } from "@/lib/helper/error-handler";
 import { isBefore } from "date-fns";
@@ -125,19 +125,23 @@ export const createOrderGuideItem = handleAction(async (productId: number) => {
   const session = await getSession();
   if (!session) throw new Error("Authentication required");
 
-  if (session.user.accountType !== "customer") {
+  const { activeTeamId } = session.session;
+
+  if (!activeTeamId || session.user.accountType !== "customer")
     throw new Error("Not authorized for this action.");
-  }
 
   const existing = await db.query.orderGuideItem.findFirst({
-    where: eq(orderGuideItem.productId, productId),
+    where: and(
+      eq(orderGuideItem.productId, productId),
+      eq(orderGuideItem.teamId, activeTeamId!),
+    ),
   });
 
   if (existing) throw new Error("Item already added to order guide.");
 
   const [result] = await db
     .insert(orderGuideItem)
-    .values({ productId, teamId: session.session.activeTeamId! })
+    .values({ productId, teamId: activeTeamId })
     .returning();
 
   return result;
@@ -153,16 +157,19 @@ export const deleteOrderGuideItem = handleAction(async (id: number) => {
 
   if (!session) throw new Error("Authentication required");
 
-  if (session.user.accountType !== "customer") {
+  const { activeTeamId } = session.session;
+
+  if (!activeTeamId || session.user.accountType !== "customer")
     throw new Error("Not authorized for this action.");
-  }
 
   const existing = await db.query.orderGuideItem.findFirst({
-    where: eq(orderGuideItem.id, id),
+    where: and(
+      eq(orderGuideItem.id, id),
+      eq(orderGuideItem.teamId, activeTeamId),
+    ),
   });
 
-  if (!existing || existing.teamId !== session.session.activeTeamId)
-    throw new Error("Item not found in your order guide.");
+  if (!existing) throw new Error("Item not found in your order guide.");
 
   const [res] = await db
     .delete(orderGuideItem)

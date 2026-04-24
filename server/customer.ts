@@ -10,11 +10,11 @@ import { db } from "@/lib/db";
 import { getSession } from "./auth";
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
-import { capitalizeWords } from "@/lib/utils";
 import { and, eq, ne, or } from "drizzle-orm";
 import { waitUntil } from "@vercel/functions";
 import { handleAction } from "@/lib/helper/error-handler";
 import CustomerInvite from "@/components/email/customer-invite";
+import { capitalizeWords, getInitialsAvatar } from "@/lib/utils";
 import { sendApplicationStatusEmails, sendEmail } from "@/lib/email";
 import CatalogRequestNew from "@/components/email/catalog-request-new";
 import CatalogRequestUpdate from "@/components/email/catalog-request-update";
@@ -40,7 +40,7 @@ export const createCustomer = handleAction(
       officerEmail: data.officerEmail.toLowerCase(),
       ipAddress: ip,
       userAgent: headersList.get("user-agent"),
-      thumbnail: `https://api.dicebear.com/9.x/initials/svg?seed=${data.companyName}&scale=80`,
+      thumbnail: getInitialsAvatar(data.companyName),
     };
 
     const [result] = await db.insert(customer).values(values).returning();

@@ -18,6 +18,7 @@ import {
   SidebarMenuSub,
   SidebarMenuSubItem,
   SidebarMenuSubButton,
+  SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -167,80 +168,86 @@ const SidebarOrganization = () => {
 
   return (
     <SidebarHeader>
-      <SidebarMenuItem>
-        <PopoverXDrawer
-          open={open}
-          setOpen={setOpen}
-          className="w-60 px-0 *:gap-0 data-[slot=popover-content]:max-w-60"
-          trigger={
-            <SidebarMenuButton
-              size="lg"
-              className="hover:bg-muted! hover:text-sidebar-foreground! data-open:bg-muted! data-open:hover:bg-muted data-open:hover:text-sidebar-foreground data-active:hover:bg-muted"
-            >
-              <Avatar className="size-9 rounded-lg ring-2 ring-green-600/20 ring-offset-1 **:rounded-xl after:hidden">
-                <AvatarImage src={SITE_CONFIG.logo} alt="Logo" asChild>
-                  <Image
-                    src={SITE_CONFIG.logo}
-                    alt="Logo"
-                    width={100}
-                    height={100}
-                  />
-                </AvatarImage>
-                <AvatarFallback className="rounded-xl bg-primary/40 text-xs font-semibold text-primary">
-                  {getAvatarFallback(SITE_CONFIG.name)}
-                </AvatarFallback>
-              </Avatar>
-              <div className="grid min-w-0 flex-1">
-                <span className="truncate text-base leading-tight font-bold">
-                  {SITE_CONFIG.name}
-                </span>
-                <span className="truncate text-sm leading-tight text-muted-foreground">
-                  {activeOrganization?.name}
-                </span>
-              </div>
-              <ChevronsUpDown className="ml-auto size-4" />
-            </SidebarMenuButton>
-          }
-        >
-          <div className="flex flex-col gap-0.5 px-2">
-            {isPending ? (
-              <Skeleton className="h-9 w-full" />
-            ) : (
-              data?.map((org) => (
-                <Button
-                  key={org.id}
-                  variant={
-                    org.id === activeOrganization?.id ? "secondary" : "ghost"
-                  }
-                  onClick={() => handleChange(org.id)}
-                  className="rounded-lg!"
-                >
-                  <Avatar className="size-6 rounded-md **:rounded-md">
-                    <AvatarImage src={org.logo!} alt={org.name} />
-                    <AvatarFallback>{org.name[0]}</AvatarFallback>
-                  </Avatar>
-                  {org.name}
+      <SidebarMenu>
+        <SidebarMenuItem className="rounded-xl group-data-[state=expanded]:absolute group-data-[state=expanded]:top-4 group-data-[state=expanded]:-right-4 group-data-[state=expanded]:z-1 group-data-[state=expanded]:bg-muted">
+          <SidebarTrigger />
+        </SidebarMenuItem>
 
-                  <Check
-                    className={`ml-auto ${org.id === activeOrganization?.id ? "opacity-100" : "opacity-0"}`}
-                  />
+        <SidebarMenuItem>
+          <PopoverXDrawer
+            open={open}
+            setOpen={setOpen}
+            className="w-60 px-0 *:gap-0 data-[slot=popover-content]:max-w-60"
+            trigger={
+              <SidebarMenuButton
+                size="lg"
+                className="hover:bg-muted! hover:text-sidebar-foreground! data-open:bg-muted! data-open:hover:bg-muted data-open:hover:text-sidebar-foreground data-active:hover:bg-muted"
+              >
+                <Avatar className="size-9 rounded-lg ring-2 ring-green-600/20 ring-offset-1 **:rounded-xl after:hidden">
+                  <AvatarImage src={SITE_CONFIG.logo} alt="Logo" asChild>
+                    <Image
+                      src={SITE_CONFIG.logo}
+                      alt="Logo"
+                      width={100}
+                      height={100}
+                    />
+                  </AvatarImage>
+                  <AvatarFallback className="rounded-xl bg-primary/40 text-xs font-semibold text-primary">
+                    {getAvatarFallback(SITE_CONFIG.name)}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="grid min-w-0 flex-1">
+                  <span className="truncate text-base leading-tight font-bold">
+                    {SITE_CONFIG.name}
+                  </span>
+                  <span className="truncate text-sm leading-tight text-muted-foreground">
+                    {activeOrganization?.name}
+                  </span>
+                </div>
+                <ChevronsUpDown className="ml-auto size-4" />
+              </SidebarMenuButton>
+            }
+          >
+            <div className="flex flex-col gap-0.5 px-2">
+              {isPending ? (
+                <Skeleton className="h-9 w-full" />
+              ) : (
+                data?.map((org) => (
+                  <Button
+                    key={org.id}
+                    variant={
+                      org.id === activeOrganization?.id ? "secondary" : "ghost"
+                    }
+                    onClick={() => handleChange(org.id)}
+                    className="rounded-lg!"
+                  >
+                    <Avatar className="size-6 rounded-md **:rounded-md">
+                      <AvatarImage src={org.logo!} alt={org.name} />
+                      <AvatarFallback>{org.name[0]}</AvatarFallback>
+                    </Avatar>
+                    {org.name}
+
+                    <Check
+                      className={`ml-auto ${org.id === activeOrganization?.id ? "opacity-100" : "opacity-0"}`}
+                    />
+                  </Button>
+                ))
+              )}
+            </div>
+            <Separator className="my-1" />
+            <div className="px-2">
+              <WarehouseDialog>
+                <Button variant="ghost" className="w-full justify-start">
+                  <span className="rounded-md border p-1">
+                    <Plus />
+                  </span>
+                  Add New
                 </Button>
-              ))
-            )}
-          </div>
-          <Separator className="my-1" />
-          <div className="px-2">
-            <WarehouseDialog>
-              <Button variant="ghost" className="w-full justify-start">
-                <span className="rounded-md border p-1">
-                  <Plus />
-                </span>
-                Add New
-              </Button>
-            </WarehouseDialog>
-          </div>
-        </PopoverXDrawer>
-      </SidebarMenuItem>
+              </WarehouseDialog>
+            </div>
+          </PopoverXDrawer>
+        </SidebarMenuItem>
+      </SidebarMenu>
     </SidebarHeader>
   );
 };
