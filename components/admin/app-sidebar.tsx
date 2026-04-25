@@ -51,7 +51,7 @@ export function AppSidebar({ session }: { session: Session }) {
   };
 
   return (
-    <Sidebar>
+    <Sidebar collapsible="icon">
       <SidebarOrganization />
       <SidebarContent>
         <SidebarGroup>
@@ -183,7 +183,7 @@ const SidebarOrganization = () => {
                 size="lg"
                 className="hover:bg-muted! hover:text-sidebar-foreground! data-open:bg-muted! data-open:hover:bg-muted data-open:hover:text-sidebar-foreground data-active:hover:bg-muted"
               >
-                <Avatar className="size-9 rounded-lg ring-2 ring-green-600/20 ring-offset-1 **:rounded-xl after:hidden">
+                <Avatar className="size-9 rounded-lg ring-2 ring-green-600/20 ring-offset-1 **:rounded-lg after:hidden">
                   <AvatarImage src={SITE_CONFIG.logo} alt="Logo" asChild>
                     <Image
                       src={SITE_CONFIG.logo}
@@ -197,7 +197,7 @@ const SidebarOrganization = () => {
                   </AvatarFallback>
                 </Avatar>
                 <div className="grid min-w-0 flex-1">
-                  <span className="truncate text-base leading-tight font-bold">
+                  <span className="truncate text-sm leading-tight font-semibold">
                     {SITE_CONFIG.name}
                   </span>
                   <span className="truncate text-sm leading-tight text-muted-foreground">

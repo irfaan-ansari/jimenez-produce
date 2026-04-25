@@ -1,7 +1,7 @@
 "use client";
 
 import { SITE_URL } from "../config";
-import { ac, owner, sales, manager, member } from "./permissions";
+import { ac, owner, sales, manager, member, customer } from "./permissions";
 import { auth } from ".";
 import {
   phoneNumberClient,
@@ -23,6 +23,7 @@ export const authClient = createAuthClient({
         sales,
         manager,
         member,
+        customer,
       },
       schema: inferOrgAdditionalFields<typeof auth>(),
     }),

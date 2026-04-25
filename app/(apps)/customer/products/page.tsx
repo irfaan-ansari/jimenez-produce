@@ -7,15 +7,16 @@ export const metadata = {
 
 const ProductsPage = async () => {
   return (
-    <div className="flex flex-col h-full gap-5">
+    <div className="flex h-full flex-col gap-5">
       <div className="flex justify-between *:flex-1">
         <div className="space-y-1">
-          <h1 className="text-2xl font-bold">Products</h1>
-          <p className="text-muted-foreground">
-            Browse our wide range of products
+          <h1 className="text-2xl font-bold">Explore all products</h1>
+          <p className="text-sm text-muted-foreground">
+            A centralized view of your entire inventory and product
+            specifications.
           </p>
         </div>
-        <div className="flex gap-4 items-center justify-end">
+        <div className="flex items-center justify-end gap-4">
           <SearchBar />
         </div>
       </div>

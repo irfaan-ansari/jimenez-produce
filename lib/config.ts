@@ -9,6 +9,13 @@ import {
   UserPlus,
   Users,
 } from "lucide-react";
+import {
+  Dashboard,
+  FolderOpen,
+  ShoppingBag,
+  Settings as SettingsDuo,
+  CoinStack,
+} from "@duo-icons/react";
 
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL!;
 
@@ -228,19 +235,19 @@ export const SIDEBAR_MENU = [
 export const SIDEBAR_MENU_CUSTOMER = [
   {
     label: "Dashboard",
-    icon: LayoutDashboard,
+    icon: Dashboard,
     href: "/customer/dashboard",
     items: [],
   },
   {
     label: "New Order",
-    icon: ShoppingCart,
+    icon: ShoppingBag,
     href: "/customer/new-order",
     items: [],
   },
   {
     label: "Orders",
-    icon: Inbox,
+    icon: FolderOpen,
     href: "/customer/orders",
     items: [
       {
@@ -262,13 +269,13 @@ export const SIDEBAR_MENU_CUSTOMER = [
   },
   {
     label: "Products",
-    icon: Tag,
+    icon: CoinStack,
     href: "/customer/products",
     items: [],
   },
   {
     label: "Settings",
-    icon: Settings,
+    icon: SettingsDuo,
     href: "/customer/settings",
     items: [],
   },

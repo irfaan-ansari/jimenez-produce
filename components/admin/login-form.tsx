@@ -89,7 +89,7 @@ export function LoginForm({
           name="username"
           children={(field) => (
             <field.TextField
-              label="Email"
+              label="Email or phone"
               placeholder="email or phone"
               className="*:data-[slot=input]:rounded-xl *:data-[slot=input]:bg-background"
             />

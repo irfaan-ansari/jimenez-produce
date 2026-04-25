@@ -11,7 +11,7 @@ import {
   date,
   unique,
 } from "drizzle-orm/pg-core";
-import { organization, session, user } from "./auth-schema";
+import { organization, session, team, user } from "./auth-schema";
 
 /* -----------------------------
    Customers Table
@@ -548,3 +548,5 @@ export type OrderGuideItemSelectType = InferSelectModel<typeof orderGuideItem>;
 
 export type OrganizationSelectType = InferSelectModel<typeof organization>;
 export type OrganizationInsertType = InferInsertModel<typeof organization>;
+export type TeamSelectType = InferSelectModel<typeof team>;
+export type TeamInsertType = InferInsertModel<typeof team>;

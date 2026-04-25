@@ -37,3 +37,31 @@ export const sales = ac.newRole({
   ...adminAc.statements,
   admin: ["view"],
 });
+
+export const customer = ac.newRole({
+  team: ["create"],
+});
+
+export const access = {
+  admin: [
+    "team:create",
+    "team:read",
+    "team:update",
+    "team:delete",
+    "teamMember:create",
+    "teamMember:update",
+    "teamMember:delete",
+    "teamMember:read",
+  ],
+  manager: ["team:read", "team:update", "team:delete"],
+  member: ["team:read:own"],
+  sales: ["team:read"],
+  customer: ["teamMember:create", "teamMember:read"],
+} as const;
+
+export type Role = keyof typeof access;
+export type Permission = (typeof access)[keyof typeof access][number];
+
+export function hasPermission(role: Role, permission: Permission) {
+  return access[role].includes(permission as never);
+}

@@ -3,12 +3,11 @@ import { inviteStatusMap } from "./constants/customer";
 import { jobApplicationStatusMap } from "./constants/job";
 import { STATUS_MAP } from "./constants/status-map";
 import {
-  CustomerSelectType,
   LineItemSelectType,
   OrderSelectType,
-  PriceLevelItemSelectType,
   PriceLevelSelectType,
   ProductSelectType,
+  TeamSelectType,
 } from "./db/schema";
 
 export type JobApplicationStatus = keyof typeof jobApplicationStatusMap;
@@ -70,7 +69,7 @@ export type ProductCategoriesResponse = {
 
 export type OrderType = OrderSelectType & {
   lineItems: LineItemSelectType[];
-  customer: CustomerSelectType;
+  team: TeamSelectType;
 };
 
 export type OrderResponse = {
@@ -116,10 +115,13 @@ export type Session = typeof auth.$Infer.Session;
 export type Warehouse = typeof auth.$Infer.Organization;
 
 export type Team = typeof auth.$Infer.Team & {
-  managerName: string;
-  phone: string;
-  email: string;
-  logo?: string | undefined;
+  members: {
+    id: string;
+    name: string;
+    email: string;
+    phoneNumber: string;
+    image?: string | undefined;
+  }[];
 };
 
 type BaseMember = typeof auth.$Infer.Member;

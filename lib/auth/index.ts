@@ -2,7 +2,7 @@ import { db } from "@/lib/db/index";
 import { sendEmail } from "../email";
 import { APIError, betterAuth } from "better-auth";
 import { nextCookies } from "better-auth/next-js";
-import { owner, ac, sales, manager, member } from "./permissions";
+import { owner, ac, sales, manager, member, customer } from "./permissions";
 import { getActiveUser, getActiveTeam } from "@/server/auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { organization, phoneNumber } from "better-auth/plugins";
@@ -14,6 +14,7 @@ export const auth = betterAuth({
   }),
   emailAndPassword: {
     sendResetPassword: async ({ user, url, token }) => {
+      console.log("sending reset password email", url);
       sendEmail({
         to: [user.email],
         subject: "Reset your password",
@@ -52,6 +53,15 @@ export const auth = betterAuth({
       },
     },
   },
+  session: {
+    additionalFields: {
+      role: {
+        type: "string",
+        required: false,
+        input: false,
+      },
+    },
+  },
   plugins: [
     organization({
       allowUserToCreateOrganization: async (user) => {
@@ -63,6 +73,7 @@ export const auth = betterAuth({
         member,
         sales,
         manager,
+        customer,
       },
       teams: {
         enabled: true,
@@ -139,6 +150,7 @@ export const auth = betterAuth({
               ...session,
               activeOrganizationId: activeUser?.organizationId,
               activeTeamId: activeTeam?.id,
+              role: activeUser?.role,
             },
           };
         },

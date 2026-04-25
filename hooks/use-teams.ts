@@ -1,21 +1,22 @@
 "use client";
 
-import { Member } from "@/lib/types";
+import { Member, Pagination, Team } from "@/lib/types";
 import { authClient } from "@/lib/auth/client";
 import { fetcher } from "@/lib/helper/fetcher";
 import { useQuery } from "@tanstack/react-query";
 
-export const useTeams = () => {
+// list teams
+export const useTeams = (q?: string) => {
   return useQuery({
-    queryKey: ["teams"],
-    queryFn: async () => {
-      const { data, error } = await authClient.organization.listTeams();
-      if (error) throw error;
-      return data;
-    },
+    queryKey: ["teams", q],
+    queryFn: () =>
+      fetcher<{ data: Team[]; pagination: Pagination }>(
+        `/api/teams${q ? "?" + q : ""}`,
+      ),
   });
 };
 
+// list users
 export const useOrganizationMembers = (q: string | undefined) => {
   return useQuery({
     queryKey: ["members", q],
@@ -25,6 +26,7 @@ export const useOrganizationMembers = (q: string | undefined) => {
   });
 };
 
+// get active user
 export const useActiveOrganizationMember = () => {
   return useQuery({
     queryKey: ["active-member"],
@@ -33,21 +35,5 @@ export const useActiveOrganizationMember = () => {
       if (error) throw error;
       return data;
     },
-  });
-};
-
-export const useTeamMembers = (teamId: string) => {
-  return useQuery({
-    queryKey: ["team-members", teamId],
-    queryFn: async () => {
-      const { data, error } = await authClient.organization.listTeamMembers({
-        query: { teamId },
-      });
-
-      if (error) throw error;
-      return data;
-    },
-    enabled: !!teamId,
-    retry: 0,
   });
 };

@@ -34,6 +34,7 @@ export async function GET(req: NextRequest) {
       where: filters,
       with: {
         lineItems: true,
+        team: true,
       },
       limit: Number(limit),
       offset,

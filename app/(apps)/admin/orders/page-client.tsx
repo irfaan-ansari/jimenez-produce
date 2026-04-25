@@ -8,6 +8,7 @@ import { OrderType } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
 import { useOrders } from "@/hooks/use-customer";
 import { ColumnDef } from "@tanstack/react-table";
+import { CopyButton } from "@/components/copy-button";
 import { STATUS_MAP } from "@/lib/constants/status-map";
 import { useRouterStuff } from "@/hooks/use-router-stuff";
 import { DataTable } from "@/components/admin/data-table";
@@ -74,6 +75,18 @@ export const columns: ColumnDef<OrderType>[] = [
       );
     },
   },
+  {
+    id: "team",
+    header: "Customer",
+    cell: ({ row }) => {
+      return (
+        <div className="flex flex-col gap-1">
+          <span className="text-sm font-medium">{row.original.team?.name}</span>
+          <CopyButton value={row.original.team?.phone} />
+        </div>
+      );
+    },
+  },
 
   {
     id: "deliveryDate",
@@ -84,7 +97,11 @@ export const columns: ColumnDef<OrderType>[] = [
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <span>{format(deliveryDate || new Date(), "MMMM dd")}</span>
           <span>•</span>
-          <span>{status === "completed" ? "Delivered" : deliveryWindow}</span>
+          <span>
+            {status === "completed"
+              ? "Delivered"
+              : (deliveryWindow ?? "Anytime")}
+          </span>
         </div>
       );
     },
@@ -102,6 +119,9 @@ export const columns: ColumnDef<OrderType>[] = [
 
   {
     id: "action",
+    meta: {
+      className: "w-10",
+    },
     cell: ({ row }) => {
       return <OrderActions data={row.original} />;
     },

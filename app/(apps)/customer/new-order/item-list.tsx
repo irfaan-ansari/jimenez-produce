@@ -17,7 +17,7 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import { format } from "date-fns/format";
-import { cn, formatUSD, getInitialsAvatar } from "@/lib/utils";
+import { cn, formatUSD } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { QuantityInput } from "./order-form";
 import { formOpt } from "./order-form-options";
@@ -58,13 +58,8 @@ const LAYOUTS = [
 
 export const ItemList = withForm({
   ...formOpt,
-  props: {} as {
-    updateItem: (args: {
-      product: CustomerProductType;
-      qty: number | string;
-    }) => void;
-  },
-  render: function Render({ form, updateItem }) {
+
+  render: function Render({ form }) {
     const [filter, setFilter] = React.useState<Record<string, any>>({});
     const [layout, setLayout] = React.useState<"list" | "grid">("list");
     const { searchParamsObj } = useRouterStuff();
@@ -81,8 +76,6 @@ export const ItemList = withForm({
     } = useInfiniteProducts(query?.toString());
 
     const products = data?.pages.flatMap((page) => page.data) ?? [];
-
-    console.log(data);
 
     const loadMoreRef = useInfiniteScroll(() => {
       if (hasNextPage && !isFetchingNextPage) {
@@ -152,20 +145,11 @@ export const ItemList = withForm({
             `}
           >
             {products?.map((product, idx) => (
-              <BlurFade
+              <ProductItem
                 key={product.id}
-                className="h-full"
-                delay={idx * 0.01}
-                direction="up"
-                offset={10}
-              >
-                <ProductItem
-                  product={product as CustomerProductType}
-                  form={form}
-                  updateItem={updateItem}
-                  layout={layout}
-                />
-              </BlurFade>
+                product={product as CustomerProductType}
+                form={form}
+              />
             ))}
           </div>
         )}
@@ -186,35 +170,61 @@ const ProductItem = withForm({
   ...formOpt,
   props: {} as {
     product: CustomerProductType;
-    layout: string;
-    updateItem: (args: {
-      product: CustomerProductType;
-      qty: number | string;
-    }) => void;
   },
-  render: function Render({ form, product, layout, updateItem }) {
-    product.image = product.image || getInitialsAvatar(product.title);
-    const lineItems = useStore(form.store, (state) => state.values.lineItems);
-    const index = lineItems.findIndex((i) => i.productId === product.id);
-    const qty = index >= 0 ? Number(lineItems[index].quantity) || 0 : 0;
+  render: function Render({ form, product }) {
+    const productId = product.id;
+
+    const qty = useStore(form.store, (state) => {
+      const item = state.values.lineItems.find(
+        (i) => i.productId === productId,
+      );
+      return Number(item?.quantity) || 0;
+    });
+
     const isCartItem = qty > 0;
+
+    const updateQty = React.useCallback(
+      (qty: number | string) => {
+        const nextQty = Number(qty);
+        const lineItems = form.getFieldValue("lineItems") || [];
+
+        const index = lineItems.findIndex((i) => i.productId === productId);
+
+        if (nextQty <= 0) {
+          if (index >= 0) {
+            form.removeFieldValue("lineItems", index);
+          }
+          return;
+        }
+
+        if (index >= 0) {
+          form.setFieldValue(`lineItems[${index}].quantity`, String(nextQty));
+        } else {
+          form.pushFieldValue("lineItems", {
+            quantity: String(nextQty),
+            productId,
+            title: product.title,
+            price: product.basePrice,
+            total: product.basePrice,
+            image: product.image!,
+          });
+        }
+      },
+      [form, productId, product, qty],
+    );
 
     return (
       <div
         className={cn(
-          `flex animate-in cursor-pointer items-center gap-4 rounded-xl border py-2 transition fade-in-50 slide-in-from-bottom-10 group-data-[layout=grid]/card:h-full group-data-[layout=grid]/card:flex-col
+          `flex animate-in cursor-pointer items-center gap-4 rounded-xl border py-2 transition fade-in-50 select-none slide-in-from-bottom-10 group-data-[layout=grid]/card:h-full group-data-[layout=grid]/card:flex-col
           group-data-[layout=grid]/card:items-stretch group-data-[layout=grid]/card:gap-0 group-data-[layout=grid]/card:p-0
           group-data-[layout=list]/card:mb-1 group-data-[layout=list]/card:px-4 hover:shadow-md 
           group-data-[layout=grid]/card:hover:-translate-y-1`,
           isCartItem ? "shadow-sm" : "",
         )}
-        onClick={() => updateItem({ product, qty: qty + 1 || 1 })}
+        onClick={() => updateQty(qty + 1)}
       >
-        <Thumbnail
-          product={product}
-          qty={qty}
-          updateItem={(product, qty) => updateItem({ product, qty })}
-        />
+        <Thumbnail product={product} qty={qty} onChange={updateQty} />
 
         <div
           className="flex min-w-0 flex-1 items-start gap-4
@@ -261,7 +271,7 @@ const ProductItem = withForm({
 
           <QuantityInput
             value={qty}
-            onChange={(qty) => updateItem({ product, qty })}
+            onChange={updateQty}
             className="group-data-[layout=grid]/card:hidden"
           />
 
@@ -276,10 +286,7 @@ const ProductItem = withForm({
                 className="w-auto self-start"
               />
             </div>
-            <QuantityInput
-              value={qty}
-              onChange={(qty) => updateItem({ product, qty })}
-            />
+            <QuantityInput value={qty} onChange={updateQty} />
           </div>
         </div>
       </div>
@@ -323,16 +330,16 @@ const Price = ({
 };
 
 const Thumbnail = ({
-  product,
   qty,
-  updateItem,
+  product,
+  onChange,
 }: {
   product: CustomerProductType;
   qty: number;
-  updateItem: (product: CustomerProductType, qty: number) => void;
+  onChange: (qty: number) => void;
 }) => {
   return (
-    <HoverCard openDelay={1000} closeDelay={10}>
+    <HoverCard openDelay={500} closeDelay={10}>
       <HoverCardTrigger asChild>
         <div
           className="relative aspect-square w-12 shrink-0 overflow-hidden rounded-xl bg-secondary
@@ -409,10 +416,7 @@ const Thumbnail = ({
                 className="w-auto self-start"
               />
             </div>
-            <QuantityInput
-              value={qty}
-              onChange={(qty) => updateItem(product, qty)}
-            />
+            <QuantityInput value={qty} onChange={onChange} />
           </div>
         </div>
       </HoverCardContent>

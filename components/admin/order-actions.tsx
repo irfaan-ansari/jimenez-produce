@@ -1,12 +1,13 @@
 "use client";
 
 import {
-  CheckCircle,
-  Download,
   Eye,
-  MoreVertical,
-  SquarePen,
   Trash2,
+  Package,
+  SquarePen,
+  FileCheck,
+  CheckCircle,
+  MoreVertical,
 } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -76,7 +77,7 @@ export const OrderActions = ({
       open={open}
       setOpen={setOpen}
       trigger={
-        <Button size="icon" variant="outline" className="rounded-xl">
+        <Button size="icon" variant="outline" className="rounded-lg">
           <MoreVertical className="size-5" />
         </Button>
       }
@@ -112,8 +113,13 @@ export const OrderActions = ({
       )}
 
       <Button variant="ghost" asChild>
-        <a href={`/api/orders/${id}/pdf`} target="_blank">
-          <Download /> Packing Slip
+        <a href={`/api/orders/${id}/invoice`} target="_blank">
+          <FileCheck /> Invoice
+        </a>
+      </Button>
+      <Button variant="ghost" asChild>
+        <a href={`/api/orders/${id}/packing-slip`} target="_blank">
+          <Package /> Packing Slip
         </a>
       </Button>
 

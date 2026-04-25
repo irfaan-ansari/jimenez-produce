@@ -57,6 +57,7 @@ export function AppSidebar({ session }: { session: Session }) {
         <SidebarGroup>
           <SidebarMenu>
             {SIDEBAR_MENU_CUSTOMER.map((item) => {
+              const Icon = item.icon;
               if (item.items.length <= 0) {
                 return (
                   <SidebarMenuItem key={item.label}>
@@ -64,10 +65,10 @@ export function AppSidebar({ session }: { session: Session }) {
                       asChild
                       isActive={isActive(item.href)}
                       tooltip={item.label}
-                      className="h-10 rounded-xl px-3.5 transition duration-200 hover:bg-muted hover:text-sidebar-foreground data-active:hover:bg-sidebar-accent data-active:hover:text-sidebar-accent-foreground"
+                      className="h-10 rounded-xl px-3.5 font-medium transition duration-200 group-data-[collapsible=icon]:px-1.5! hover:bg-muted hover:text-sidebar-foreground data-active:hover:bg-sidebar-accent data-active:hover:text-sidebar-accent-foreground [&>svg]:size-5!"
                     >
                       <Link href={item.href}>
-                        {item.icon && <item.icon className="opacity-80" />}
+                        {item.icon && <item.icon />}
                         <span>{item.label}</span>
                       </Link>
                     </SidebarMenuButton>
@@ -87,11 +88,11 @@ export function AppSidebar({ session }: { session: Session }) {
                       <SidebarMenuButton
                         tooltip={item.label}
                         isActive={isActive(item.href)}
-                        className="h-10 px-3.5 transition duration-200 hover:bg-muted hover:text-sidebar-foreground data-open:hover:bg-muted data-open:hover:text-sidebar-foreground data-active:hover:bg-sidebar-accent data-active:hover:text-sidebar-accent-foreground"
+                        className="h-10 px-3.5 transition duration-200 group-data-[collapsible=icon]:px-1.5! hover:bg-muted hover:text-sidebar-foreground data-open:hover:bg-muted data-open:hover:text-sidebar-foreground data-active:hover:bg-sidebar-accent data-active:hover:text-sidebar-accent-foreground [&>svg]:size-5!"
                         asChild
                       >
                         <Link href={item.href}>
-                          {item.icon && <item.icon className="opacity-80" />}
+                          {item.icon && <item.icon />}
                           <span>{item.label}</span>
                           <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                         </Link>
@@ -99,7 +100,7 @@ export function AppSidebar({ session }: { session: Session }) {
                     </CollapsibleTrigger>
 
                     <CollapsibleContent>
-                      <SidebarMenuSub>
+                      <SidebarMenuSub className="ml-5">
                         {item.items?.map((subItem) => (
                           <SidebarMenuSubItem
                             key={subItem.href}
@@ -112,7 +113,7 @@ export function AppSidebar({ session }: { session: Session }) {
                           >
                             <SidebarMenuSubButton
                               asChild
-                              className="rounded-xl px-3 hover:bg-muted hover:text-sidebar-foreground data-active:bg-muted data-active:text-sidebar-foreground"
+                              className="rounded-xl px-3  hover:bg-muted hover:text-sidebar-foreground data-active:bg-muted data-active:text-sidebar-foreground"
                               isActive={isSubItemActive(subItem.href)}
                             >
                               <Link href={subItem.href}>
@@ -155,30 +156,30 @@ export function AppSidebar({ session }: { session: Session }) {
 }
 
 const SidebarTeam = ({ session: auth }: { session: Session }) => {
-  const [open, setOpen] = useState(false);
   const { session } = auth;
+
   const queryClient = useQueryClient();
+  const [open, setOpen] = useState(false);
   const { data, isPending } = useTeams();
 
-  const activeTeam = data?.find((team) => team.id === session.activeTeamId);
+  const activeTeam = data?.data?.find(
+    (team) => team.id === session.activeTeamId,
+  );
 
   const handleChange = async (teamId: string) => {
     setOpen(false);
 
     const toastId = toast.loading("Please wait...");
-
     const { error } = await authClient.organization.setActiveTeam({
       teamId,
     });
-
     if (error) {
       toast.error(error.message, { id: toastId });
-      return;
+    } else {
+      toast.success("Account changed successfully.", {
+        id: toastId,
+      });
     }
-
-    toast.success("Account changed successfully.", {
-      id: toastId,
-    });
 
     queryClient.invalidateQueries();
   };
@@ -217,8 +218,9 @@ const SidebarTeam = ({ session: auth }: { session: Session }) => {
                   <span className="truncate text-base leading-tight font-bold">
                     {SITE_CONFIG.name}
                   </span>
+
                   <span className="truncate text-sm leading-tight text-muted-foreground">
-                    {activeTeam?.name}
+                    {activeTeam?.name ?? "Loading..."}
                   </span>
                 </div>
                 <ChevronsUpDown className="ml-auto size-4" />
@@ -226,13 +228,13 @@ const SidebarTeam = ({ session: auth }: { session: Session }) => {
             }
           >
             <div className="flex flex-col gap-0.5 px-2">
-              <span className="text-xs text-muted-foreground font-medium pb-2 pt-1 px-2">
+              <span className="px-2 pt-1 pb-2 text-xs font-medium text-muted-foreground">
                 ACCOUNTS
               </span>
               {isPending ? (
                 <Skeleton className="h-9 w-full" />
               ) : (
-                data?.map((team) => (
+                data?.data?.map((team) => (
                   <Button
                     key={team.id}
                     variant={team.id === activeTeam?.id ? "secondary" : "ghost"}

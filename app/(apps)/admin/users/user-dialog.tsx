@@ -107,7 +107,7 @@ export const UserDialog = ({ children }: { children: React.ReactNode }) => {
 
   const role = useStore(form.store, (state) => state.values.role);
   const access = useStore(form.store, (state) => state.values.teams);
-  console.log(access);
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
@@ -182,7 +182,7 @@ export const UserDialog = ({ children }: { children: React.ReactNode }) => {
                       Select accounts
                     </FieldLabel>
                     <Combobox
-                      items={teams ?? []}
+                      items={teams?.data ?? []}
                       multiple
                       value={field.state.value}
                       onValueChange={(value) => field.handleChange(value)}

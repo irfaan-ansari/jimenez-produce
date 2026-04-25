@@ -248,7 +248,7 @@ export const CustomerDialog = ({
                           {levels?.data?.map((level) => (
                             <SelectItem
                               key={level.id}
-                              className="h-10 rounded-lg"
+                              className="h-8 rounded-lg"
                               value={String(level.id)}
                             >
                               {level.name}

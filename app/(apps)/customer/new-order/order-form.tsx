@@ -7,7 +7,7 @@ import { ItemList } from "./item-list";
 import { OrderCart } from "./order-cart";
 import { useRouter } from "next/navigation";
 import { createOrder } from "@/server/order";
-import { formOpt } from "./order-form-options";
+import { formOpt, getTotals } from "./order-form-options";
 import { Button } from "@/components/ui/button";
 import { useConfirm } from "@/hooks/use-confirm";
 import { useAppForm } from "@/hooks/form-context";
@@ -19,9 +19,8 @@ import {
   InputGroupButton,
   InputGroupInput,
 } from "@/components/ui/input-group";
-import { Loader, Minus, Plus, Star, X } from "lucide-react";
-import { CustomerProductType } from "@/lib/types";
-import { useStore } from "@tanstack/react-form";
+import { Loader, Minus, Plus, Star } from "lucide-react";
+
 import { SearchBar } from "@/components/admin/search-filters";
 import Link from "next/link";
 import { useRouterStuff } from "@/hooks/use-router-stuff";
@@ -32,7 +31,7 @@ export const OrderForm = ({ session }: { session: Session }) => {
   const router = useRouter();
   const confirm = useConfirm();
   const { open, setOpen } = useSidebar();
-  const [showSummary, setShowSummary] = React.useState(false);
+
   const queryClient = useQueryClient();
   const { queryParams, searchParamsObj } = useRouterStuff();
 
@@ -82,49 +81,6 @@ export const OrderForm = ({ session }: { session: Session }) => {
     },
   });
 
-  const { lineItemCount, total, lineItems } = useStore(
-    form.store,
-    (state) => state.values,
-  );
-
-  const updateItem = (args: {
-    product: CustomerProductType;
-    qty: number | string;
-  }) => {
-    const { product, qty } = args;
-    const updatedItems = [...lineItems];
-
-    const index = updatedItems.findIndex((i) => i.id === product.id);
-
-    const newQty = Number(qty);
-
-    if (newQty <= 0) {
-      updatedItems.splice(index, 1);
-    } else if (index >= 0) {
-      updatedItems[index] = {
-        ...updatedItems[index],
-        quantity: String(newQty),
-      };
-    } else {
-      updatedItems.push({
-        ...product,
-        productId: product.id,
-        image: product.image!,
-        price: product.basePrice,
-        quantity: `${newQty || 1}`,
-      });
-    }
-
-    const updatedItemsWithTotal = updatedItems.map((item) => {
-      return {
-        ...item,
-        total: String(Number(item.price) * Number(item.quantity)),
-      };
-    });
-
-    form.setFieldValue("lineItems", updatedItemsWithTotal);
-  };
-
   React.useEffect(() => {
     if (open) {
       setOpen(false);
@@ -172,66 +128,62 @@ export const OrderForm = ({ session }: { session: Session }) => {
         }}
         className="relative"
       >
-        <ItemList form={form} updateItem={updateItem} />
+        <ItemList form={form} />
 
-        <OrderCart
-          form={form}
-          open={showSummary}
-          setOpen={setShowSummary}
-          updateItem={updateItem}
-        />
+        <form.Subscribe
+          selector={({ values }) => ({
+            lineItems: values.lineItems,
+          })}
+          children={({ lineItems }) => {
+            const totals = getTotals(lineItems);
 
-        {Number(lineItemCount ?? 0) > 0 && (
-          <div className="sticky bottom-6 mx-auto h-16 w-full max-w-xl rounded-2xl bg-secondary px-6  py-4 shadow-lg ring-2 ring-primary/50 ring-offset-2 backdrop-blur-2xl">
-            <div className="flex h-full items-center gap-4">
-              <div className="gap-0.5e flex flex-col">
-                <span className="text-xs uppercase">
-                  {lineItemCount ?? 0} items in cart
-                </span>
-                <span className="text-base font-bold text-primary">
-                  {formatUSD(total)}
-                </span>
-              </div>
-              <Button
-                className="ml-auto rounded-xl text-foreground"
-                size="lg"
-                variant="link"
-                type="button"
-                onClick={() => setShowSummary(!showSummary)}
+            return (
+              <div
+                className={`sticky bottom-6 mx-auto h-16 w-full max-w-xl rounded-2xl bg-secondary px-6  py-4 shadow-lg ring-2 ring-primary/50 ring-offset-2 backdrop-blur-2xl ${totals.count <= 0 ? "hidden" : ""}`}
               >
-                {showSummary ? "Hide Cart" : "View Cart"}
-              </Button>
+                <div className="flex h-full items-center gap-4">
+                  <div className="gap-0.5e flex flex-col">
+                    <span className="text-xs uppercase">
+                      {totals.count} items in cart
+                    </span>
+                    <span className="text-base font-bold text-primary">
+                      {formatUSD(totals.total)}
+                    </span>
+                  </div>
+                  <OrderCart form={form} />
 
-              <form.Subscribe
-                selector={({ isSubmitting, canSubmit }) => ({
-                  isSubmitting,
-                  canSubmit,
-                })}
-                children={({ isSubmitting, canSubmit }) => (
-                  <Button
-                    type="submit"
-                    size="lg"
-                    className="w-32 rounded-xl"
-                    disabled={isSubmitting || !canSubmit}
-                  >
-                    {isSubmitting ? (
-                      <Loader className="animate-spin" />
-                    ) : (
-                      "Submit Order"
+                  <form.Subscribe
+                    selector={({ isSubmitting, canSubmit }) => ({
+                      isSubmitting,
+                      canSubmit,
+                    })}
+                    children={({ isSubmitting, canSubmit }) => (
+                      <Button
+                        type="submit"
+                        size="lg"
+                        className="w-32 rounded-xl"
+                        disabled={isSubmitting || !canSubmit}
+                      >
+                        {isSubmitting ? (
+                          <Loader className="animate-spin" />
+                        ) : (
+                          "Submit Order"
+                        )}
+                      </Button>
                     )}
-                  </Button>
-                )}
-              />
-            </div>
-          </div>
-        )}
+                  />
+                </div>
+              </div>
+            );
+          }}
+        />
       </form>
     </div>
   );
 };
 
 export const QuantityInput = ({
-  value,
+  value = 0,
   onChange,
   className,
 }: {
@@ -247,10 +199,7 @@ export const QuantityInput = ({
       <InputGroupInput
         value={value}
         className="px-0 text-center text-xs"
-        onChange={(e) => {
-          const value = Number(e.target.value);
-          if (!isNaN(value)) onChange(value);
-        }}
+        onChange={(e) => onChange?.(Number(e.target.value))}
       />
 
       <InputGroupAddon align="inline-start">
@@ -258,7 +207,7 @@ export const QuantityInput = ({
           type="button"
           size="icon-xs"
           className="rounded-xl bg-secondary"
-          onClick={() => onChange(value - 1)}
+          onClick={() => onChange(Math.max(0, value - 1))}
         >
           <Minus />
         </InputGroupButton>
@@ -270,7 +219,7 @@ export const QuantityInput = ({
           size="icon-xs"
           variant="default"
           className="rounded-xl bg-foreground hover:bg-foreground/80"
-          onClick={() => onChange(Number(value) + 1)}
+          onClick={() => onChange(value + 1)}
         >
           <Plus className="size-3" />
         </InputGroupButton>

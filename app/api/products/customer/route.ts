@@ -21,7 +21,7 @@ import {
 import { db } from "@/lib/db";
 import { team } from "@/lib/db/auth-schema";
 import { getSession } from "@/server/auth";
-import { getQueryObject } from "@/lib/helper/api";
+import { getQueryObject } from "@/lib/helper/query";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -159,11 +159,6 @@ export async function GET(req: NextRequest) {
           ),
         });
         const ids = prices.map((p) => p.productId);
-        const p = await db.query.product.findMany({
-          where: inArray(product.id, ids),
-        });
-
-        console.log(prices, p);
 
         const priceMap = new Map(prices.map((p) => [p.productId, p.price]));
 

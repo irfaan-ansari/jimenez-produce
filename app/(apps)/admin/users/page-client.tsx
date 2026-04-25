@@ -19,6 +19,7 @@ import { roleMap } from "@/lib/constants/user";
 import { useRouterStuff } from "@/hooks/use-router-stuff";
 import { EmptyComponent } from "@/components/admin/placeholder-component";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { CopyButton } from "@/components/copy-button";
 
 export const PageClient = () => {
   const { searchParamsObj } = useRouterStuff();
@@ -89,9 +90,9 @@ export const PageClient = () => {
                         </Badge>
                       </TableCell>
                       <TableCell className="p-4">
-                        <div className="flex flex-col gap-1 text-muted-foreground">
-                          <span>{row.user.phoneNumber}</span>
-                          <span>{row.user.email}</span>
+                        <div className="flex flex-col text-muted-foreground">
+                          <CopyButton value={row.user.phoneNumber} />
+                          <CopyButton value={row.user.email} />
                         </div>
                       </TableCell>
                       <TableCell className="p-4 text-muted-foreground">
