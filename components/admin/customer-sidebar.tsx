@@ -133,7 +133,9 @@ export function AppSidebar({ session }: { session: Session }) {
         <SidebarGroup className="group-data-[state=collapsed]:hidden">
           <SidebarMenu className="mb-4">
             <SidebarMenuItem className="rounded-xl bg-linear-to-br from-lime-100 via-emerald-50 to-white p-4">
-              <div className="mb-1 font-semibold">Reorder smarter</div>
+              <div className="mb-1 font-semibold dark:text-background">
+                Reorder smarter
+              </div>
               <p className="mb-4 text-sm text-muted-foreground">
                 Your top items and recent purchases are ready to add in seconds.
               </p>

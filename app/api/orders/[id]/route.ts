@@ -20,7 +20,6 @@ export const GET = async (
 
     const filters = and(
       eq(order.organizationId, activeOrganizationId!),
-      eq(order.teamId, activeTeamId!),
       eq(order.id, Number(id)),
     );
 

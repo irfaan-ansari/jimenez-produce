@@ -24,23 +24,51 @@ export const createOrder = handleAction(
       lineItems: LineItemInsertType[];
     },
   ) => {
-    const session = await getSession();
+    const auth = await getSession();
 
-    if (
-      !session ||
-      !session.session.activeOrganizationId ||
-      !session.session.activeTeamId
-    )
-      throw new Error("Authentication required");
+    if (!auth) throw new Error("Authentication required");
 
-    const { activeTeamId, activeOrganizationId, userId } = session.session;
+    const { activeTeamId, activeOrganizationId, userId } = auth.session;
 
     const { lineItems, ...rest } = data;
+    const charges = { type: "Fuel Charge", amount: 15 };
+
+    // calculate totals
+    const totals = {
+      lineItemCount: 0,
+      lineItemQuantity: 0,
+      lineItemTotal: 0,
+      subtotal: 0,
+      discount: 0,
+      tax: 0,
+      total: 0,
+    };
+
+    for (const [index, item] of lineItems.entries()) {
+      const qty = Number(item.quantity) || 0;
+      const price = Number(item.price) || 0;
+
+      const lineTotal = qty * price;
+      lineItems[index].total = String(lineTotal);
+
+      totals.lineItemCount++;
+      totals.lineItemQuantity += qty;
+      totals.lineItemTotal += lineTotal;
+      totals.subtotal += lineTotal;
+    }
+
+    totals.total =
+      totals.subtotal - totals.discount + totals.tax + charges.amount;
+
+    const stringTotals = Object.fromEntries(
+      Object.entries(totals).map(([key, value]) => [key, String(value)]),
+    );
 
     const [orderRes] = await db
       .insert(order)
       .values({
         ...rest,
+        ...stringTotals,
         status: "in_progress",
         organizationId: activeOrganizationId,
         teamId: activeTeamId,

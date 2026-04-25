@@ -27,6 +27,7 @@ export default function RootLayout({
       lang="en"
       dir="ltr"
       className={`${body.variable} ${heading.variable} scroll-pt-32`}
+      suppressHydrationWarning
     >
       <body className={`antialiased`}>
         <Provider>{children}</Provider>

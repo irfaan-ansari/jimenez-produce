@@ -465,8 +465,9 @@ export const order = pgTable(
     deliveryDate: text("delivery_date"),
     deliveryWindow: text("delivery_window"),
     deliveryInstruction: text("delivery_instruction"),
-    status: text("status").default("active") /* active | completed */,
+    status: text("status").default("in_progress") /* active | completed */,
     paymentStatus: text("payment_status"),
+    deliveredAt: timestamp("delivered_at"),
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at")
       .defaultNow()

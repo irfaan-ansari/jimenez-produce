@@ -21,7 +21,6 @@ import {
   LoadingSkeleton,
 } from "@/components/admin/placeholder-component";
 import { STATUS_MAP } from "@/lib/constants/status-map";
-import { Table, TableCell, TableBody, TableRow } from "@/components/ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -157,30 +156,6 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
             ))}
           </CardContent>
         </Card>
-
-        {/* delivery */}
-        <Card className="rounded-2xl">
-          <CardHeader className="border-b">
-            <CardTitle className="text-lg font-semibold">Delivery</CardTitle>
-          </CardHeader>
-          <CardContent className="grid grid-cols-3 gap-4 text-base">
-            <div>
-              <h4 className="mb-4 text-sm font-medium text-muted-foreground uppercase">
-                Shipping Address
-              </h4>
-              {data.shippingAddress?.street} {data.shippingAddress?.city}{" "}
-              {data.shippingAddress?.state} {data.shippingAddress?.zip}
-            </div>
-            <div>
-              <h4 className="mb-4 text-sm font-medium text-muted-foreground uppercase">
-                Schedule
-              </h4>
-              <div>{data.deliveryWindow}</div>
-              <div>{format(data.createdAt!, "MMMM dd, hh:mm a")}</div>
-              <div>{data.deliveryInstruction}</div>
-            </div>
-          </CardContent>
-        </Card>
       </div>
 
       {/* order summary */}
@@ -222,24 +197,46 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
           </Button>
 
           <Button
-            className="w-full rounded-xl bg-sidebar-accent "
+            className="w-full rounded-xl bg-sidebar-accent hover:bg-sidebar-accent/80"
             size="xl"
             asChild
           >
-            <Link href={`/customer/orders/new?orderId=${data.id}`}>
+            <Link href={`/customer/new-order?id=${data.id}`}>
               <Copy />
               Reorder
             </Link>
           </Button>
         </CardContent>
-        {data.po && (
-          <>
-            <CardHeader>
-              <CardTitle className="text-xl font-semibold">Po</CardTitle>
-            </CardHeader>
-            <CardContent>{data.po}</CardContent>
-          </>
-        )}
+        <CardHeader>
+          <CardTitle className="text-xl font-semibold">Delivery</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div>
+            <h4 className="mb-4 text-sm font-medium text-muted-foreground uppercase">
+              Shipping Address
+            </h4>
+            <div>{data.shippingAddress?.street}</div>
+            <div>
+              {data.shippingAddress?.city} {data.shippingAddress?.state}{" "}
+              {data.shippingAddress?.zip}
+            </div>
+          </div>
+          <div>
+            <h4 className="mb-4 text-sm font-medium text-muted-foreground uppercase">
+              Schedule
+            </h4>
+            <div>{data.deliveryWindow}</div>
+            <div>{format(data.createdAt!, "MMMM dd, hh:mm a")}</div>
+            <div>{data.deliveryInstruction}</div>
+          </div>
+          <div>
+            <h4 className="mb-4 text-sm font-medium text-muted-foreground uppercase">
+              Instructions
+            </h4>
+            <div>{data.deliveryInstruction}</div>
+          </div>
+        </CardContent>
+
         {data.notes && (
           <>
             <CardHeader>
@@ -268,7 +265,7 @@ const StepItem = ({
 }) => (
   <div className="flex flex-col items-center self-center">
     <span
-      className={`size-10 mb-2 rounded-xl inline-flex items-center justify-center ${
+      className={`size-10 mb-2 rounded-lg inline-flex items-center justify-center ${
         active ? "bg-primary text-primary-foreground" : "bg-secondary"
       }`}
     >

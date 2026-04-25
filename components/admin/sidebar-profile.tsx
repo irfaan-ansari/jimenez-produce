@@ -4,6 +4,7 @@ import Image from "next/image";
 import { toast } from "sonner";
 import { authClient } from "@/lib/auth/client";
 import {
+  SidebarFooter,
   SidebarHeader,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -17,14 +18,15 @@ import { ProfileDialog } from "../profile-dialog";
 import { PopoverXDrawer } from "../popover-x-drawer";
 import { useQueryClient } from "@tanstack/react-query";
 import { ChangePasswordDialog } from "../change-password";
-import { ChevronsUpDown, Lock, LogOut, User } from "lucide-react";
+import { ChevronsUpDown, Lock, LogOut, Moon, Sun, User } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { useTheme } from "next-themes";
 
 export const SidebarProfile = ({ session }: { session: Session }) => {
   const user = session?.user;
   const [open, setOpen] = useState(false);
   const router = useRouter();
-
+  const { setTheme, theme } = useTheme();
   const queryClient = useQueryClient();
 
   const handleLogout = async () => {
@@ -42,7 +44,21 @@ export const SidebarProfile = ({ session }: { session: Session }) => {
   };
 
   return (
-    <SidebarHeader>
+    <SidebarFooter>
+      <SidebarMenuItem>
+        <SidebarMenuButton asChild>
+          <Button
+            variant="ghost"
+            size="xl"
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            className="justify-start rounded-xl"
+          >
+            <Sun className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
+            <Moon className="absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0 left-2.5" />
+            <span>Toggle theme</span>
+          </Button>
+        </SidebarMenuButton>
+      </SidebarMenuItem>
       <SidebarMenuItem>
         <PopoverXDrawer
           open={open}
@@ -130,6 +146,6 @@ export const SidebarProfile = ({ session }: { session: Session }) => {
           </div>
         </PopoverXDrawer>
       </SidebarMenuItem>
-    </SidebarHeader>
+    </SidebarFooter>
   );
 };

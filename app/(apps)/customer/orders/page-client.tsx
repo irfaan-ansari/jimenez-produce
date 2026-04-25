@@ -98,14 +98,16 @@ export const columns: ColumnDef<OrderType>[] = [
     },
     cell: ({ row }) => {
       return (
-        <span className="font-medium">{formatUSD(row.original.total)}</span>
+        <span className="font-medium text-right block">
+          {formatUSD(row.original.total)}
+        </span>
       );
     },
   },
   {
     id: "action",
     meta: {
-      className: "text-right w-9",
+      className: "text-right w-10",
     },
     cell: ({ row }) => {
       const [open, setOpen] = React.useState(false);
@@ -128,14 +130,14 @@ export const columns: ColumnDef<OrderType>[] = [
           </Button>
           <Button type="button" variant="ghost" asChild>
             {/* set items to localstorage */}
-            <Link href={`/customer/orders/new-order?orderId=${id}`}>
+            <Link href={`/customer/new-order?id=${id}`}>
               <Copy />
               Order Again
             </Link>
           </Button>
 
           <Button variant="ghost" asChild>
-            <a href={`/api/orders/${id}/pdf`} target="_blank">
+            <a href={`/api/orders/${id}/invoice`} target="_blank">
               <Download /> Download Invoice
             </a>
           </Button>

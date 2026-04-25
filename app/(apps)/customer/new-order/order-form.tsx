@@ -2,32 +2,30 @@
 
 import React from "react";
 import { toast } from "sonner";
-import { format } from "date-fns";
-import { ItemList } from "./item-list";
-import { OrderCart } from "./order-cart";
-import { useRouter } from "next/navigation";
-import { createOrder } from "@/server/order";
-import { formOpt, getTotals } from "./order-form-options";
-import { Button } from "@/components/ui/button";
-import { useConfirm } from "@/hooks/use-confirm";
-import { useAppForm } from "@/hooks/form-context";
-import { useQueryClient } from "@tanstack/react-query";
-import { cn, formatUSD } from "@/lib/utils";
+import Link from "next/link";
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupButton,
   InputGroupInput,
 } from "@/components/ui/input-group";
-import { Loader, Minus, Plus, Star } from "lucide-react";
-
-import { SearchBar } from "@/components/admin/search-filters";
-import Link from "next/link";
-import { useRouterStuff } from "@/hooks/use-router-stuff";
-import { useSidebar } from "@/components/ui/sidebar";
+import { ItemList } from "./item-list";
+import { OrderCart } from "./order-cart";
 import { type Session } from "@/lib/types";
+import { cn, formatUSD } from "@/lib/utils";
+import { useRouter } from "next/navigation";
+import { createOrder } from "@/server/order";
+import { Button } from "@/components/ui/button";
+import { useConfirm } from "@/hooks/use-confirm";
+import { useAppForm } from "@/hooks/form-context";
+import { useSidebar } from "@/components/ui/sidebar";
+import { useQueryClient } from "@tanstack/react-query";
+import { Loader, Minus, Plus, Star } from "lucide-react";
+import { formOpt, getTotals } from "./order-form-options";
+import { useRouterStuff } from "@/hooks/use-router-stuff";
+import { SearchBar } from "@/components/admin/search-filters";
 
-export const OrderForm = ({ session }: { session: Session }) => {
+export const OrderForm = ({ session }: { session?: Session }) => {
   const router = useRouter();
   const confirm = useConfirm();
   const { open, setOpen } = useSidebar();

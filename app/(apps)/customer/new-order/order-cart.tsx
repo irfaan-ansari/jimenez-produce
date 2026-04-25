@@ -102,7 +102,10 @@ export const OrderCart = withForm({
                             </div>
                             <div className="flex flex-col items-end justify-between self-stretch">
                               <span className="text-base font-semibold">
-                                {formatUSD(subField.total!)}
+                                {formatUSD(
+                                  Number(subField.price) *
+                                    Number(subField.quantity),
+                                )}
                               </span>
                               <Button
                                 size="sm"

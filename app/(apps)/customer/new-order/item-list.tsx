@@ -17,7 +17,6 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import { format } from "date-fns/format";
-import { cn, formatUSD } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { QuantityInput } from "./order-form";
 import { formOpt } from "./order-form-options";
@@ -29,16 +28,17 @@ import {
   EmptyComponent,
   LoadingSkeleton,
 } from "@/components/admin/placeholder-component";
-import { BlurFade } from "@/components/ui/blur-fade";
 import { Skeleton } from "@/components/ui/skeleton";
 import { type CustomerProductType } from "@/lib/types";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouterStuff } from "@/hooks/use-router-stuff";
+import { cn, formatUSD, getInitialsAvatar } from "@/lib/utils";
 import { PopoverXDrawer } from "@/components/popover-x-drawer";
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useCategories, useInfiniteProducts } from "@/hooks/use-product";
 import { createOrderGuideItem, deleteOrderGuideItem } from "@/server/order";
+import { ImageZoom } from "@/components/animate-ui/primitives/effects/image-zoom";
 
 const LAYOUTS = [
   {
@@ -207,6 +207,10 @@ const ProductItem = withForm({
             price: product.basePrice,
             total: product.basePrice,
             image: product.image!,
+            type: product.type,
+            identifier: product.identifier,
+            pack: product.pack,
+            categories: product.categories,
           });
         }
       },
@@ -224,8 +228,26 @@ const ProductItem = withForm({
         )}
         onClick={() => updateQty(qty + 1)}
       >
-        <Thumbnail product={product} qty={qty} onChange={updateQty} />
-
+        <div
+          className="relative aspect-square w-12 shrink-0 overflow-hidden rounded-xl bg-secondary
+             group-data-[layout=grid]/card:aspect-video group-data-[layout=grid]/card:w-full"
+        >
+          {product.image ? (
+            <ImageZoom>
+              <img
+                src={product.image!}
+                alt={product.title}
+                className="h-full w-full object-contain"
+              />
+            </ImageZoom>
+          ) : (
+            <img
+              src={getInitialsAvatar(product.title)}
+              alt={product.title}
+              className="h-full w-full object-cover"
+            />
+          )}
+        </div>
         <div
           className="flex min-w-0 flex-1 items-start gap-4
              group-data-[layout=grid]/card:w-full

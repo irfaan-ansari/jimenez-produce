@@ -39,7 +39,7 @@ const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
       }
     >
       <AppSidebar session={{ session, user }} />
-      <SidebarInset className="min-w-0 bg-slate-50">
+      <SidebarInset className="min-w-0 bg-slate-50 dark:bg-zinc-950">
         <Container className="mx-0 h-full max-w-full p-5 md:p-8">
           {children}
         </Container>

@@ -29,7 +29,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import { STATUS_MAP } from "@/lib/constants/status-map";
 import { OrderActions } from "@/components/admin/order-actions";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Table, TableCell, TableBody, TableRow } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
@@ -66,7 +65,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
     {
       icon: Home,
       label: data.status === "completed" ? "Delivered" : "Delivery",
-      date: data.status === "completed" ? data.updatedAt : data.deliveryDate,
+      date: data.status === "completed" ? data.updatedAt : data.updatedAt,
       active: data.status === "completed",
     },
   ];
@@ -144,39 +143,46 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
               Purchased Items ({data?.lineItemCount})
             </CardTitle>
           </CardHeader>
-          <CardContent className="px-0 text-base">
-            <Table className="text-base break-all">
-              <TableBody>
-                {data.lineItems.map((line) => (
-                  <TableRow key={line.id}>
-                    <TableCell className="w-9 pt-3 pl-6 align-top">
-                      <Avatar className="size-9 rounded-xl ring-2 ring-green-600/20 ring-offset-1 **:rounded-xl after:hidden">
-                        <AvatarImage src={line?.image!} />
-                        <AvatarFallback>{line.title?.charAt(0)}</AvatarFallback>
-                      </Avatar>
-                    </TableCell>
-                    <TableCell>
-                      <div className="w-full max-w-2xs">
-                        <h4 className="leading-tight font-medium whitespace-normal">
-                          {line.title}
-                        </h4>
-                        <Badge
-                          variant="secondary"
-                          className="rounded-xl border border-border uppercase"
-                        >
-                          {line.identifier}
-                        </Badge>
-                      </div>
-                    </TableCell>
-                    <TableCell>{formatUSD(line.price!)}</TableCell>
-                    <TableCell>{line.quantity}</TableCell>
-                    <TableCell className="pr-6 text-right">
-                      {formatUSD(line.total!)}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+          <CardContent className="divide-y px-0">
+            <div className="flex items-center justify-between gap-4 bg-muted px-6 py-4 font-medium text-muted-foreground uppercase">
+              <div className="flex-1">Item</div>
+              <div className="w-20 text-right">Price</div>
+              <div className="w-20 text-right">Quantity</div>
+              <div className="w-20 text-right">Total</div>
+            </div>
+
+            {data.lineItems.map((line) => (
+              <div className="flex items-center justify-between gap-4 px-6 py-2">
+                <div className="flex flex-1 items-center gap-3">
+                  <Avatar className="size-9 rounded-lg ring-2 ring-green-600/20 ring-offset-1 **:rounded-lg after:hidden">
+                    <AvatarImage src={line?.image!} />
+                    <AvatarFallback>{line.title?.charAt(0)}</AvatarFallback>
+                  </Avatar>
+                  <div className="space-y-1">
+                    <h4 className="leading-tight font-medium whitespace-normal">
+                      {line.title}
+                    </h4>
+                    {line.identifier && (
+                      <Badge
+                        variant="secondary"
+                        className="rounded-xl border border-border"
+                      >
+                        {line.identifier}
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+                <div className="w-20 text-right text-muted-foreground">
+                  {formatUSD(line.price!)}
+                </div>
+                <div className="w-20 text-right text-muted-foreground">
+                  {line.quantity}
+                </div>
+                <div className="w-20 text-right font-semibold">
+                  {formatUSD(line.total!)}
+                </div>
+              </div>
+            ))}
           </CardContent>
         </Card>
 
