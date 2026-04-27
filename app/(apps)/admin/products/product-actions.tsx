@@ -45,7 +45,7 @@ export const ProductAction = ({ product }: { product: AdminProductType }) => {
         <Button
           size="icon-sm"
           variant="outline"
-          className="absolute top-2 right-2 z-2 rounded-xl"
+          className="absolute top-2 right-2 z-2 rounded-lg"
         >
           <MoreVertical className="size-5" />
         </Button>

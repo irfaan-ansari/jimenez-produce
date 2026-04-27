@@ -56,8 +56,8 @@ export const PageClient = () => {
                 className="relative rounded-2xl pt-0! transition ease-out hover:ring-2 hover:ring-offset-1 hover:ring-offset-background"
                 style={{ "--color": map.color } as React.CSSProperties}
               >
-                <div className="absolute top-2 left-2 z-2 rounded-xl bg-background">
-                  <Badge className="h-6 rounded-xl bg-(--color)/10 text-sm text-(--color)">
+                <div className="absolute top-2 left-2 z-2 rounded-lg bg-background">
+                  <Badge className="h-6 rounded-lg bg-(--color)/10 border border-(--color)/20 text-sm text-(--color)">
                     <map.icon className="size-3.5" />
                     {map.label}
                   </Badge>
