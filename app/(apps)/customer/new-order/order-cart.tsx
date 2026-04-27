@@ -27,22 +27,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export const OrderCart = withForm({
   ...formOpt,
-
-  render: function Render({ form }) {
-    const [open, setOpen] = React.useState(false);
-
+  props: {} as { showCart?: boolean; setShowCart?: (value: boolean) => void },
+  render: function Render({ form, showCart, setShowCart }) {
     return (
-      <Sheet open={open} onOpenChange={setOpen}>
-        <SheetTrigger asChild>
-          <Button
-            className="ml-auto rounded-xl text-foreground"
-            size="lg"
-            variant="link"
-            type="button"
-          >
-            {open ? "Hide Cart" : "View Cart"}
-          </Button>
-        </SheetTrigger>
+      <Sheet open={showCart} onOpenChange={setShowCart}>
         <form.Subscribe
           selector={({ values }) => ({
             lineItems: values.lineItems,
@@ -209,14 +197,26 @@ export const OrderCart = withForm({
                   </div>
 
                   <SheetClose asChild>
-                    <Button
-                      type="submit"
-                      size="lg"
-                      className="rounded-xl"
-                      onClick={() => form.handleSubmit()}
-                    >
-                      Submit Order • ${formatUSD(Number(totals.total))}
-                    </Button>
+                    <form.Subscribe
+                      selector={({ isSubmitting, canSubmit }) => ({
+                        isSubmitting,
+                        canSubmit,
+                      })}
+                      children={({ isSubmitting, canSubmit }) => (
+                        <Button
+                          type="submit"
+                          size="lg"
+                          className="rounded-xl"
+                          onClick={() => form.handleSubmit()}
+                        >
+                          {isSubmitting ? (
+                            <Loader className="animate-spin" />
+                          ) : (
+                            `Submit Order • ${formatUSD(Number(totals.total))}`
+                          )}
+                        </Button>
+                      )}
+                    />
                   </SheetClose>
                 </SheetFooter>
               </SheetContent>

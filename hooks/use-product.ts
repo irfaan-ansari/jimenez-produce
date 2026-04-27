@@ -1,10 +1,10 @@
 import {
-  TopProduct,
-  PriceLevelResponse,
+  type TopProduct,
+  type PriceLevelResponse,
   type AdminProductResponse,
   type CustomerProductResponse,
   type ProductCategoriesResponse,
-  PriceLevelDetailResponse,
+  TaxRuleResponse,
 } from "@/lib/types";
 import { fetcher } from "@/lib/helper/fetcher";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
@@ -70,6 +70,16 @@ export const usePriceLevels = (query?: string) => {
     queryKey: ["price-level", query],
     queryFn: () => {
       return fetcher<PriceLevelResponse>(`/api/price-level`);
+    },
+    staleTime: 1000 * 60 * 5,
+  });
+};
+
+export const useTaxRules = (query?: string) => {
+  return useQuery({
+    queryKey: ["tax-rules", query],
+    queryFn: () => {
+      return fetcher<TaxRuleResponse>(`/api/tax-rules`);
     },
     staleTime: 1000 * 60 * 5,
   });

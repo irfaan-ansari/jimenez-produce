@@ -25,6 +25,7 @@ import {
   FieldSet,
   FieldTitle,
 } from "@/components/ui/field";
+import { toast } from "sonner";
 import {
   Dialog,
   DialogClose,
@@ -40,20 +41,19 @@ import {
   InputGroupInput,
 } from "@/components/ui/input-group";
 import React, { useState } from "react";
+import { PriceLevelType } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip } from "@/components/tooltip";
 import { Button } from "@/components/ui/button";
 import { useStore } from "@tanstack/react-form";
 import { useQueryClient } from "@tanstack/react-query";
-import { createPriceLevel, updatePriceLevel } from "@/server/price-level";
 import { formatUSD, getAvatarFallback } from "@/lib/utils";
 import { useAppForm, withForm } from "@/hooks/form-context";
 import { PopoverXDrawer } from "@/components/popover-x-drawer";
 import { useCategories, useProducts } from "@/hooks/use-product";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { createPriceLevel, updatePriceLevel } from "@/server/price-level";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { toast } from "sonner";
-import { PriceLevelType } from "@/lib/types";
 
 const numberString = z
   .string()
@@ -206,11 +206,11 @@ export const PriceLevelDialog = ({
         >
           <DialogHeader className="mb-4 px-6">
             <DialogTitle className="text-2xl font-bold">
-              Create Price Level
+              {isEdit ? "Update" : "Create"} price level
             </DialogTitle>
             <DialogDescription>
-              Create price levels for specific customer groups to offer
-              specialized pricing.
+              {isEdit ? "Update" : "Create"} price levels for specific customer
+              groups to offer specialized pricing.
             </DialogDescription>
           </DialogHeader>
           <div className="no-scrollbar flex-1 overflow-auto">

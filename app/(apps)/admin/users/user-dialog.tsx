@@ -117,10 +117,10 @@ export const UserDialog = ({ children }: { children: React.ReactNode }) => {
             e.preventDefault();
             form.handleSubmit();
           }}
-          className="flex flex-col"
+          className="flex flex-col gap-6"
         >
-          <DialogHeader className="mb-4">
-            <DialogTitle className="text-xl font-semibold">Add New</DialogTitle>
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold">Create user</DialogTitle>
             <DialogDescription>
               Enter user details to add them to the system.
             </DialogDescription>
@@ -204,7 +204,10 @@ export const UserDialog = ({ children }: { children: React.ReactNode }) => {
                         </ComboboxValue>
                         <ComboboxChipsInput placeholder="Select accounts" />
                       </ComboboxChips>
-                      <ComboboxContent anchor={anchor}>
+                      <ComboboxContent
+                        anchor={anchor}
+                        className="pointer-events-auto"
+                      >
                         <ComboboxEmpty>No items found.</ComboboxEmpty>
                         <ComboboxList>
                           {(team) => (
@@ -248,7 +251,7 @@ export const UserDialog = ({ children }: { children: React.ReactNode }) => {
             />
           </FieldGroup>
 
-          <Field className="mt-10 flex flex-col-reverse gap-4 sm:flex-row sm:justify-end sm:[&>button]:w-32">
+          <Field className="flex flex-col-reverse gap-4 sm:flex-row sm:justify-end sm:[&>button]:w-32">
             <DialogClose asChild>
               <Button
                 variant="outline"

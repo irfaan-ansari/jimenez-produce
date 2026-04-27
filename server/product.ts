@@ -9,7 +9,7 @@ import {
 import { db } from "@/lib/db";
 import { getSession } from "./auth";
 import { cookies } from "next/headers";
-import { and, eq, ilike, or, desc } from "drizzle-orm";
+import { and, eq, ilike, or, desc, sql } from "drizzle-orm";
 import { handleAction } from "@/lib/helper/error-handler";
 
 export const getProducts = handleAction(
@@ -100,6 +100,46 @@ export const createProduct = handleAction(async (data: ProductInsertType) => {
 
   return result;
 });
+
+/**
+ * Import products
+ *
+ */
+export const importProducts = handleAction(
+  async (data: Partial<ProductInsertType>[]) => {
+    const session = await getSession();
+
+    if (!session) throw new Error("Authentication required.");
+
+    const { activeOrganizationId } = session.session;
+
+    const mappedData = data
+      .filter((i) => i.identifier)
+      .map((item) => {
+        return {
+          ...item,
+          organizationId: activeOrganizationId,
+        };
+      });
+
+    const result = await db
+      .insert(product)
+      .values(mappedData as ProductInsertType[])
+      .onConflictDoUpdate({
+        target: [product.identifier, product.organizationId],
+        set: {
+          title: sql`COALESCE(excluded.title, ${product.title})`,
+          unit: sql`COALESCE(excluded.unit, ${product.unit})`,
+          description: sql`COALESCE(excluded.description, ${product.description})`,
+          categories: sql`COALESCE(excluded.categories, ${product.categories})`,
+          basePrice: sql`COALESCE(excluded.basePrice, ${product.basePrice})`,
+        },
+      })
+      .returning({ id: product.id });
+
+    return result.length;
+  },
+);
 
 /**
  * Upddate a product

@@ -232,22 +232,13 @@ const ProductItem = withForm({
           className="relative aspect-square w-12 shrink-0 overflow-hidden rounded-xl bg-secondary
              group-data-[layout=grid]/card:aspect-video group-data-[layout=grid]/card:w-full"
         >
-          {product.image ? (
-            <ImageZoom>
-              <img
-                src={product.image!}
-                alt={product.title}
-                className="h-full w-full object-contain"
-              />
-            </ImageZoom>
-          ) : (
-            <img
-              src={getInitialsAvatar(product.title)}
-              alt={product.title}
-              className="h-full w-full object-cover"
-            />
-          )}
+          <Thumbnail
+            product={product}
+            qty={qty}
+            onChange={(newValue) => updateQty(newValue)}
+          />
         </div>
+
         <div
           className="flex min-w-0 flex-1 items-start gap-4
              group-data-[layout=grid]/card:w-full

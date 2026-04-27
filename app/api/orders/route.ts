@@ -1,5 +1,6 @@
 import { db } from "@/lib/db";
 import { order } from "@/lib/db/schema";
+import { getQueryObject } from "@/lib/helper/query";
 import { getSession } from "@/server/auth";
 import { or, and, ilike, eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
@@ -18,12 +19,14 @@ export async function GET(req: NextRequest) {
         { status: 403 },
       );
 
-    const searchParams = req.nextUrl.searchParams;
-    const query = Object.fromEntries(searchParams.entries());
+    const {
+      page = 1,
+      limit = 24,
+      q,
+      status,
+      offset = 0,
+    } = getQueryObject(req.nextUrl.searchParams);
 
-    const { page = 1, limit = 24, q, status } = query;
-    const offset = (Number(page) - 1) * Number(limit);
-    console.log(activeTeamId);
     const filters = and(
       eq(order.organizationId, activeOrganizationId),
       status ? eq(order.status, status) : undefined,

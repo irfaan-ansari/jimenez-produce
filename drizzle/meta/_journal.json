@@ -547,6 +547,34 @@
       "when": 1777129604414,
       "tag": "0077_silky_madame_hydra",
       "breakpoints": true
+    },
+    {
+      "idx": 78,
+      "version": "7",
+      "when": 1777233764999,
+      "tag": "0078_absent_kang",
+      "breakpoints": true
+    },
+    {
+      "idx": 79,
+      "version": "7",
+      "when": 1777235977593,
+      "tag": "0079_equal_wolverine",
+      "breakpoints": true
+    },
+    {
+      "idx": 80,
+      "version": "7",
+      "when": 1777238757689,
+      "tag": "0080_overconfident_absorbing_man",
+      "breakpoints": true
+    },
+    {
+      "idx": 81,
+      "version": "7",
+      "when": 1777238812626,
+      "tag": "0081_past_giant_man",
+      "breakpoints": true
     }
   ]
 }

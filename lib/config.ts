@@ -116,6 +116,11 @@ export const SIDEBAR_MENU = [
         color: "#A1A1AA",
       },
       {
+        label: "Tax Rules",
+        href: "/admin/products/tax-rules",
+        color: "#A1A1AA",
+      },
+      {
         label: "Catalog Requests",
         href: "/admin/products/catalog-requests",
         color: "#A1A1AA",

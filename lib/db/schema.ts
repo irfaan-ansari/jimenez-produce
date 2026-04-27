@@ -351,6 +351,7 @@ export const product = pgTable(
     images: jsonb("images")
       .$type<string[]>()
       .default(sql`'[]'::jsonb`),
+    isTaxable: boolean("is_taxable").default(true),
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at")
       .defaultNow()
@@ -368,13 +369,11 @@ export const product = pgTable(
   ],
 );
 
-/* -----------------------------
-   Inventory Table
------------------------------ */
-
 export const priceLevel = pgTable("price_level", {
   id: serial("id").primaryKey(),
-  organizationId: text("organization_id"),
+  organizationId: text("organization_id").references(() => organization.id, {
+    onDelete: "cascade",
+  }),
   name: text("name").notNull(),
   adjustmentType: text("adjustment_type").notNull(), // "fixed" | "percentage"
   appliesTo: text("applies_to").default("all").notNull(), // "all" | "products"
@@ -387,6 +386,9 @@ export const priceLevel = pgTable("price_level", {
     .notNull(),
 });
 
+/* -----------------------------
+   price level items
+----------------------------- */
 export const priceLevelItem = pgTable(
   "price_level_item",
   {
@@ -414,6 +416,56 @@ export const priceLevelItem = pgTable(
   ],
 );
 
+/* -----------------------------
+   Tax Rules
+----------------------------- */
+export const taxRule = pgTable("tax_rule", {
+  id: serial("id").primaryKey(),
+  organizationId: text("organization_id").references(() => organization.id, {
+    onDelete: "cascade",
+  }),
+  name: text("name").notNull(),
+  rate: text("rate").notNull(),
+  priority: integer("priority").notNull().default(1),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at")
+    .defaultNow()
+    .$onUpdate(() => /* @__PURE__ */ new Date())
+    .notNull(),
+});
+
+/* -----------------------------
+   Tax Rules Items
+----------------------------- */
+export const taxRuleItem = pgTable(
+  "tax_rule_item",
+  {
+    id: serial("id").primaryKey(),
+    taxRuleId: integer("tax_rule_id").references(() => taxRule.id, {
+      onDelete: "cascade",
+    }),
+    teamId: text("team_id").references(() => team.id, {
+      onDelete: "cascade",
+    }),
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at")
+      .defaultNow()
+      .$onUpdate(() => /* @__PURE__ */ new Date())
+      .notNull(),
+  },
+  (table) => [
+    index("tax_rule_item_taxRuleId_idx").on(table.taxRuleId),
+    index("tax_rule_item_teamId_idx").on(table.teamId),
+    unique("tax_rule_item_team_tax_rule_unique").on(
+      table.teamId,
+      table.taxRuleId,
+    ),
+  ],
+);
+
+/* -----------------------------
+   order guide
+----------------------------- */
 export const orderGuideItem = pgTable(
   "order_guide_item",
   {
@@ -549,5 +601,12 @@ export type OrderGuideItemSelectType = InferSelectModel<typeof orderGuideItem>;
 
 export type OrganizationSelectType = InferSelectModel<typeof organization>;
 export type OrganizationInsertType = InferInsertModel<typeof organization>;
+
 export type TeamSelectType = InferSelectModel<typeof team>;
 export type TeamInsertType = InferInsertModel<typeof team>;
+
+export type TaxRuleSelectType = InferSelectModel<typeof taxRule>;
+export type TaxRuleInsertType = InferInsertModel<typeof taxRule>;
+
+export type TaxRuleItemSelectType = InferSelectModel<typeof taxRuleItem>;
+export type TaxRuleItemInsertType = InferInsertModel<typeof taxRuleItem>;

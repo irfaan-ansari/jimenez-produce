@@ -7,6 +7,7 @@ import {
   OrderSelectType,
   PriceLevelSelectType,
   ProductSelectType,
+  TaxRuleSelectType,
   TeamSelectType,
 } from "./db/schema";
 
@@ -107,6 +108,11 @@ export type PriceLevelDetailResponse = {
   data: PriceLevelSelectType & {
     priceLevelItem: PriceLevelItem[];
   };
+};
+
+export type TaxRuleResponse = {
+  data: TaxRuleSelectType[];
+  pagination: Pagination;
 };
 
 export type Role = "owner" | "sales" | "manager" | "member";
