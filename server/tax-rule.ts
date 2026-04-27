@@ -1,10 +1,42 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { and, eq } from "drizzle-orm";
+import { and, eq, isNotNull } from "drizzle-orm";
 import { getSession } from "./auth";
-import { taxRule, TaxRuleInsertType } from "@/lib/db/schema";
+import { taxRule, TaxRuleInsertType, taxRuleItem } from "@/lib/db/schema";
 import { handleAction } from "@/lib/helper/error-handler";
+
+/**
+ * get team tax rules
+ * @returns data
+ */
+export const getTeamTaxRules = handleAction(async () => {
+  const session = await getSession();
+
+  if (!session) throw new Error("Authentication required.");
+
+  const { activeOrganizationId, activeTeamId } = session.session;
+
+  if (!activeTeamId || !activeOrganizationId)
+    throw new Error("No active organization or team found.");
+
+  const data = await db
+    .select({
+      id: taxRule.id,
+      name: taxRule.name,
+      rate: taxRule.rate,
+    })
+    .from(taxRule)
+    .innerJoin(taxRuleItem, eq(taxRuleItem.taxRuleId, taxRule.id))
+    .where(
+      and(
+        eq(taxRule.organizationId, activeOrganizationId),
+        eq(taxRuleItem.teamId, activeTeamId),
+      ),
+    );
+
+  return data;
+});
 
 /**
  * Create a new tax rule

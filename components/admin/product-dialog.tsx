@@ -2,6 +2,7 @@
 
 import {
   Field,
+  FieldDescription,
   FieldError,
   FieldGroup,
   FieldLabel,
@@ -34,11 +35,13 @@ import { type AdminProductType } from "@/lib/types";
 import { useQueryClient } from "@tanstack/react-query";
 import { Check, Loader, Trash2, X } from "lucide-react";
 import { createProduct, updateProduct } from "@/server/product";
+import { Checkbox } from "../ui/checkbox";
 
 const schema = z.object({
   identifier: z.string(),
   title: z.string().min(1, "Enter title"),
   description: z.string(),
+  isTaxable: z.boolean(),
   categories: z.array(z.string()).min(1, "Select at least one category"),
   status: z.string().min(1, "Select status"),
   image: z.string(),
@@ -64,8 +67,9 @@ export const ProductDialog = ({
       title: product?.title || "",
       identifier: product?.identifier || "",
       description: product?.description || "",
+      isTaxable: product?.isTaxable ?? true,
       categories: product?.categories || ([] as any),
-      status: product?.status ? capitalizeWords(product.status) : "",
+      status: product?.status ? capitalizeWords(product.status) : "Active",
       type: product?.type || "",
       pack: product?.pack || "",
       unit: product?.unit || "",
@@ -236,6 +240,52 @@ export const ProductDialog = ({
                   />
                 )}
               />
+              <form.AppField
+                name="basePrice"
+                children={(field) => (
+                  <field.TextField
+                    label="Price"
+                    className="**:data-[slot=input]:rounded-xl lg:col-span-2"
+                  />
+                )}
+              />
+              <form.Field
+                name="isTaxable"
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid;
+                  return (
+                    <div className="lg:col-span-2">
+                      <Field
+                        orientation="horizontal"
+                        data-invalid={isInvalid}
+                        className="items-start pt-0.5"
+                      >
+                        <Checkbox
+                          id={field.name}
+                          name={field.name}
+                          checked={field.state.value}
+                          onCheckedChange={(checked) =>
+                            field.handleChange(checked === true)
+                          }
+                        />
+                        <div className="flex flex-col gap-2 -mt-0.5">
+                          <FieldLabel htmlFor={field.name}>
+                            Is this product taxable?
+                          </FieldLabel>
+                          <FieldDescription>
+                            Enable if tax should be applied on this product.
+                          </FieldDescription>
+                        </div>
+                      </Field>
+
+                      {isInvalid && (
+                        <FieldError errors={field.state.meta.errors} />
+                      )}
+                    </div>
+                  );
+                }}
+              />
 
               <form.Field
                 name="categories"
@@ -304,16 +354,6 @@ export const ProductDialog = ({
               />
 
               <form.AppField
-                name="type"
-                children={(field) => (
-                  <field.TextField
-                    label="Product Type"
-                    className="**:data-[slot=input]:rounded-xl"
-                  />
-                )}
-              />
-
-              <form.AppField
                 name="pack"
                 children={(field) => (
                   <field.TextField
@@ -328,15 +368,6 @@ export const ProductDialog = ({
                 children={(field) => (
                   <field.TextField
                     label="Unit"
-                    className="**:data-[slot=input]:rounded-xl"
-                  />
-                )}
-              />
-              <form.AppField
-                name="basePrice"
-                children={(field) => (
-                  <field.TextField
-                    label="Base Price"
                     className="**:data-[slot=input]:rounded-xl"
                   />
                 )}

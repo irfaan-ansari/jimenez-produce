@@ -115,6 +115,11 @@ export type TaxRuleResponse = {
   pagination: Pagination;
 };
 
+export interface TaxRule {
+  id: number;
+  name: string;
+  rate: string;
+}
 export type Role = "owner" | "sales" | "manager" | "member";
 
 export type Session = typeof auth.$Infer.Session;

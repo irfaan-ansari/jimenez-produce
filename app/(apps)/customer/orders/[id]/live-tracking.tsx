@@ -22,7 +22,7 @@ const stops = [
 
 export function LiveTracking() {
   return (
-    <div className="h-full min-h-[420px] w-full">
+    <div className="h-[340px] w-full">
       <Map center={[-73.98, 40.75]} zoom={11.2} theme="light">
         <MapRoute coordinates={route} color="#3b82f6" width={4} opacity={0.8} />
 

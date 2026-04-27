@@ -26,16 +26,11 @@ import {
 } from "@/components/ui/table";
 import React from "react";
 import * as XLSX from "xlsx";
+import { toast } from "sonner";
 import { Download, Loader } from "lucide-react";
 import { useAppForm } from "@/hooks/form-context";
 import { useStore } from "@tanstack/react-form";
-import { toast } from "sonner";
 import { importProducts } from "@/server/product";
-
-const SAMPLE_DATE = `
-code,title,unit,description,categories,unit,price
-367398,Chips,Pcs,product description,"Tortilla,something",100
-`;
 
 const HEADER_MAP = {
   identifier: "Code",
@@ -44,12 +39,42 @@ const HEADER_MAP = {
   description: "Description",
   categories: "Categories",
   basePrice: "Price",
+  isTaxable: "Is Taxable",
 };
 
 const HEADER = Object.entries(HEADER_MAP);
 
+type SpecialFields = {
+  categories: string[];
+  isTaxable: boolean;
+};
+
 type Item = {
-  [K in keyof typeof HEADER_MAP]: K extends "categories" ? string[] : string;
+  [K in keyof typeof HEADER_MAP]: K extends keyof SpecialFields
+    ? SpecialFields[K]
+    : string;
+};
+
+const mapRow = (row: any[]): Item => {
+  const obj = {} as Item;
+
+  for (let i = 0; i < HEADER.length; i++) {
+    const key = HEADER[i][0] as keyof Item;
+    let val = row[i] ?? "";
+
+    if (key === "categories") {
+      val = String(val)
+        .split(",")
+        .map((c) => c.trim())
+        .filter(Boolean);
+    } else if (key === "isTaxable") {
+      val = String(val).toLowerCase() === "true";
+    }
+
+    (obj as any)[key] = val;
+  }
+
+  return obj;
 };
 
 export const ImportDialog = ({ children }: { children: React.ReactNode }) => {
@@ -73,26 +98,7 @@ export const ImportDialog = ({ children }: { children: React.ReactNode }) => {
       },
     },
     onSubmit: async ({ value }) => {
-      console.log({ value });
-      const items: Item[] = value.rows.map((row) => {
-        const obj = {} as Item;
-
-        for (let i = 0; i < HEADER.length; i++) {
-          const key = HEADER[i][0];
-          let val: any = row[i] ?? "";
-
-          if (key === "categories") {
-            val = String(val)
-              .split(",")
-              .map((c) => c.trim())
-              .filter(Boolean);
-          }
-
-          obj[key as keyof Item] = val;
-        }
-        return obj;
-      });
-
+      const items: Item[] = value.rows.map(mapRow);
       const { error } = await importProducts(items);
       const toastId = toast.loading("Please wait...");
 
@@ -144,19 +150,7 @@ export const ImportDialog = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  //   download sample csv file
-  const downloadSample = () => {
-    const blob = new Blob([SAMPLE_DATE], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "sample-products.csv";
-    a.click();
-    URL.revokeObjectURL(url);
-  };
-
-  const { rows, loading, file } = useStore(form.store, ({ values }) => values);
+  const { rows, loading } = useStore(form.store, ({ values }) => values);
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
@@ -166,9 +160,12 @@ export const ImportDialog = ({ children }: { children: React.ReactNode }) => {
             Import products
           </DialogTitle>
           <DialogDescription className="flex gap-2 items-end">
-            Download a sample file and fill it and upload to import.
-            <Button onClick={downloadSample} variant="link" size="xs">
-              <Download /> Download Sample
+            Download product list, fill it and upload to create or update
+            products.
+            <Button variant="link" size="xs" asChild>
+              <a href="/api/products/export" target="_blank">
+                <Download /> Download
+              </a>
             </Button>
           </DialogDescription>
         </DialogHeader>

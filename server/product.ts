@@ -133,6 +133,7 @@ export const importProducts = handleAction(
           description: sql`COALESCE(excluded.description, ${product.description})`,
           categories: sql`COALESCE(excluded.categories, ${product.categories})`,
           basePrice: sql`COALESCE(excluded.basePrice, ${product.basePrice})`,
+          isTaxable: sql`COALESCE(excluded.isTaxable, ${product.isTaxable})`,
         },
       })
       .returning({ id: product.id });

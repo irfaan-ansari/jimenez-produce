@@ -230,8 +230,7 @@ export const OrderInvoice = ({ data }: OrderInvoiceProps) => {
               Tax
             </Text>
             <Text style={[styles.tableCell, { textAlign: "right" }]}>
-              {/* {formatUSD(data.tax)} */}
-              TBD
+              {formatUSD(data.tax)}
             </Text>
           </View>
           <View style={[styles.tableRow]}>

@@ -211,6 +211,7 @@ const ProductItem = withForm({
             identifier: product.identifier,
             pack: product.pack,
             categories: product.categories,
+            isTaxable: product.isTaxable,
           });
         }
       },

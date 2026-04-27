@@ -27,6 +27,7 @@ const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
   if (user.accountType !== "customer") redirect("/admin/overview");
   return (
     <SidebarProvider
+      className="bg-slate-50"
       style={
         {
           "--sidebar-width": "16rem",
@@ -34,7 +35,7 @@ const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
       }
     >
       <AppSidebar session={{ session, user }} />
-      <SidebarInset className="min-w-0 bg-slate-50 dark:bg-zinc-950">
+      <SidebarInset className="min-w-0 bg-slate-50">
         <Container className="mx-0 h-full max-w-full p-5 md:p-8">
           {children}
         </Container>

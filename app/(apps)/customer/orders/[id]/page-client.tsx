@@ -26,50 +26,6 @@ import { Separator } from "@/components/ui/separator";
 import { LiveTracking } from "./live-tracking";
 
 import { Badge } from "@/components/reui/badge";
-import {
-  Timeline,
-  TimelineContent,
-  TimelineDate,
-  TimelineHeader,
-  TimelineIndicator,
-  TimelineItem,
-  TimelineSeparator,
-  TimelineTitle,
-} from "@/components/reui/timeline";
-
-import { cn } from "@/lib/utils";
-import { CheckIcon, PlayIcon, CircleIcon } from "lucide-react";
-
-const releases = [
-  {
-    id: 1,
-    version: "v1.0",
-    date: "Jan 2025",
-    title: "Initial Release",
-    status: "released",
-  },
-  {
-    id: 2,
-    version: "v1.1",
-    date: "Mar 2025",
-    title: "Bug Fixes",
-    status: "released",
-  },
-  {
-    id: 3,
-    version: "v2.0",
-    date: "Jun 2025",
-    title: "Major Update",
-    status: "current",
-  },
-  {
-    id: 4,
-    version: "v2.1",
-    date: "Sep 2025",
-    title: "Improvements",
-    status: "upcoming",
-  },
-];
 
 type StatusIndex = keyof typeof STATUS_MAP;
 
@@ -88,27 +44,6 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
   const { data } = result;
 
   const status = STATUS_MAP[data?.status as StatusIndex];
-
-  const STEPS = [
-    {
-      icon: CircleCheck,
-      label: "Ordered",
-      date: data.createdAt,
-      active: true,
-    },
-    {
-      icon: ClipboardCheck,
-      label: "Processing",
-      date: data.createdAt,
-      active: true,
-    },
-    {
-      icon: Home,
-      label: data.status === "completed" ? "Delivered" : "Delivery",
-      date: data.status === "completed" ? data.updatedAt : data.updatedAt,
-      active: data.status === "completed",
-    },
-  ];
 
   return (
     <div
@@ -140,68 +75,25 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
         </div>
 
         {/* progress */}
-        <Card className="flex flex-row gap-6 rounded-2xl py-0">
-          <div className="flex-1">
-            <LiveTracking />
-          </div>
-          <div className="w-full max-w-2xs space-y-4 py-6">
-            <div>
-              <div className="flex-1 items-center space-y-2">
-                <h4 className="text-sm font-medium text-muted-foreground">
-                  Order #75675746887
-                </h4>
-                <p className="font-semibold">On its way to you</p>
-              </div>
+        <Card className="gap-0 rounded-2xl py-0 relative">
+          <LiveTracking />
 
-              <span className="inline-flex  h-8 items-center justify-self-end rounded-lg bg-yellow-500 px-3">
-                In Transit
-              </span>
+          <CardContent className="absolute inset-x-3 h-20 bottom-3 rounded-lg p-3 bg-background/70 backdrop-blur-lg z-2 ring-2 ring-border shadow-sm ring-offset-2">
+            <div className="flex justify-between items-start">
+              <div className="flex-1">
+                <p className="font-medium">Order #24647</p>
+                <div className="flex gap-2 items-center">
+                  <span className="font-medium text-muted-foreground">
+                    Estimated delivery in
+                  </span>
+                  <span className="text-2xl font-bold">30 mins</span>
+                </div>
+              </div>
+              <Badge className="h-7 bg-green-100 border border-green-300 text-green-600 px-4">
+                Arriving
+              </Badge>
             </div>
-            <Timeline
-              defaultValue={3}
-              orientation="vertical"
-              className="w-full"
-            >
-              {releases.map((release) => (
-                <TimelineItem key={release.id} step={release.id}>
-                  <TimelineHeader>
-                    <TimelineSeparator className="bg-input! group-data-[orientation=horizontal]/timeline:-top-6 group-data-[orientation=horizontal]/timeline:left-2.5 group-data-[orientation=horizontal]/timeline:w-[calc(100%-2.25rem)]" />
-                    <TimelineDate>{release.date}</TimelineDate>
-                    <TimelineTitle className="flex items-center gap-2">
-                      {release.version}
-                      {release.status === "current" && (
-                        <Badge variant="primary-light" size="sm">
-                          Current
-                        </Badge>
-                      )}
-                    </TimelineTitle>
-                    <TimelineIndicator
-                      className={cn(
-                        "flex size-6 items-center justify-center border-none",
-                        release.status === "released" &&
-                          "bg-emerald-500 text-white",
-                        release.status === "current" &&
-                          "bg-primary text-primary-foreground",
-                        release.status === "upcoming" &&
-                          "bg-muted text-muted-foreground",
-                      )}
-                    >
-                      {release.status === "released" ? (
-                        <CheckIcon className="size-3.5" />
-                      ) : release.status === "current" ? (
-                        <PlayIcon className="size-3" />
-                      ) : (
-                        <CircleIcon className="size-3" />
-                      )}
-                    </TimelineIndicator>
-                  </TimelineHeader>
-                  <TimelineContent className="text-xs">
-                    {release.title}
-                  </TimelineContent>
-                </TimelineItem>
-              ))}
-            </Timeline>
-          </div>
+          </CardContent>
         </Card>
 
         {/* purchased items */}
@@ -265,31 +157,33 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
           <CardTitle className="text-xl font-semibold">Order Summary</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6 text-base">
-          <div className="space-y-2">
+          <div className="space-y-1.5 text-sm text-muted-foreground">
             <div className="flex items-center justify-between">
-              <span>Item Count</span> <span>{data.lineItemCount}</span>
+              <span>Item Count</span>{" "}
+              <span className="font-medium">{data.lineItemCount}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span>Quantity</span> <span>{data.lineItemQuantity}</span>
+              <span>Quantity</span>{" "}
+              <span className="font-medium">{data.lineItemQuantity}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span>Subtotal</span> <span>{formatUSD(data.subtotal)}</span>
+              <span>Subtotal</span>{" "}
+              <span className="font-medium">{formatUSD(data.subtotal)}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span>Tax</span>
-              <span>
-                {/* {formatUSD(data.tax)} */}
-                TBD
-              </span>
+              <span>Tax ({data?.taxName})</span>
+              <span className="font-medium">{formatUSD(data.tax)}</span>
             </div>
             <div className="flex items-center justify-between">
               <span>{data.charges?.type}</span>
-              <span>{formatUSD(data.charges?.amount ?? 0)}</span>
+              <span className="font-medium">
+                {formatUSD(data.charges?.amount ?? 0)}
+              </span>
             </div>
-            <Separator className="my-6" />
-            <div className="flex items-center justify-between text-xl font-semibold">
-              <span>Total</span> <span>{formatUSD(data.total)}</span>
-            </div>
+          </div>
+          <Separator className="my-4" />
+          <div className="flex items-center justify-between text-xl font-semibold">
+            <span>Total</span> <span>{formatUSD(data.total)}</span>
           </div>
           <Button className="w-full rounded-xl " size="xl" asChild>
             <a href={`/api/orders/${data.id}/invoice`} target="_blank">

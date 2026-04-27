@@ -31,15 +31,26 @@ const CustomerDetailsPage = async ({
             <Button size="lg">Invite Member</Button>
           </div>
         </div>
-        <div className="grid grid-cols-3 gap-4">
-          <Card className="bg-card">Active Orders</Card>
-          <Card className="bg-card">Lifetime Value</Card>
-          <Card className="bg-card">Membership Status</Card>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Card>
+            <CardHeader className="flex gap-4 flex-row items-center">
+              <CardTitle>Active Orders</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-3xl font-bold">100</p>
+              <p className="text-sm text-muted-foreground">last 30 days</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent>
+              <CardTitle>Completed Orders</CardTitle>
+            </CardContent>
+          </Card>
         </div>
       </div>
       <Card className="col-span-2 rounded-2xl bg-card">
         <CardHeader>
-          <CardTitle className="text-xl font-semibold">Recent Orders</CardTitle>
+          <CardTitle className="font-semibold">Recent Orders</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6 text-base">Recent Orders</CardContent>
       </Card>

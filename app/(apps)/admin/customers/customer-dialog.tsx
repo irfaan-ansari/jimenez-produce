@@ -35,7 +35,7 @@ import { useAppForm } from "@/hooks/form-context";
 import { Skeleton } from "@/components/ui/skeleton";
 import { usePriceLevels, useTaxRules } from "@/hooks/use-product";
 import { phoneSchema } from "@/lib/form-schema/common";
-import { addTeamWithUser } from "@/server/auth";
+import { addTeamWithUser, updateTaxRulesToTeam } from "@/server/auth";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   Combobox,
@@ -101,14 +101,22 @@ export const CustomerDialog = ({
 
     onSubmit: async ({ value }) => {
       const toastId = toast.loading("Please wait...");
+
       if (isEdit) {
         const { error } = await authClient.organization.updateTeam({
           teamId: data.id as string,
           data: { ...value, priceLevelId: Number(value.priceLevelId) },
         });
 
-        if (error) {
-          toast.error(error.message, {
+        const taxRuleIds = value.taxRules.map((r) => r.id);
+
+        const { error: taxError } = await updateTaxRulesToTeam({
+          teamId: data.id as string,
+          taxRuleIds,
+        });
+
+        if (error || taxError) {
+          toast.error(error?.message || taxError?.message, {
             id: toastId,
           });
         } else {
@@ -221,7 +229,7 @@ export const CustomerDialog = ({
                         multiple
                         value={field.state.value}
                         onValueChange={(value) => field.handleChange(value)}
-                        itemToStringValue={(item) => item.name}
+                        itemToStringValue={(item) => String(item.id)}
                         modal={false}
                         name={field.name}
                         autoHighlight
@@ -233,7 +241,7 @@ export const CustomerDialog = ({
                           <ComboboxValue>
                             {field.state.value.map((item) => (
                               <ComboboxChip key={item.id}>
-                                {item.name}
+                                {item.name} - {item.rate}%
                               </ComboboxChip>
                             ))}
                           </ComboboxValue>

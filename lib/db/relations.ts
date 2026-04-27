@@ -9,6 +9,9 @@ import {
   order,
   lineItem,
   customerInvite,
+  orderGuideItem,
+  taxRule,
+  taxRuleItem,
 } from "./schema";
 
 import {
@@ -21,6 +24,7 @@ import {
   teamMember,
   team,
 } from "./auth-schema";
+
 export const userRelations = relations(user, ({ many }) => ({
   sessions: many(session),
   accounts: many(account),
@@ -47,6 +51,7 @@ export const organizationRelations = relations(organization, ({ many }) => ({
   teams: many(team),
   members: many(member),
   invitations: many(invitation),
+  taxRules: many(taxRule),
 }));
 
 export const teamRelations = relations(team, ({ one, many }) => ({
@@ -59,6 +64,7 @@ export const teamRelations = relations(team, ({ one, many }) => ({
     fields: [team.priceLevelId],
     references: [priceLevel.id],
   }),
+  taxRuleItems: many(taxRuleItem),
 }));
 
 export const teamMemberRelations = relations(teamMember, ({ one }) => ({
@@ -181,13 +187,32 @@ export const lineItemRelations = relations(lineItem, ({ one }) => ({
   }),
 }));
 
-// export const orderGuideItemRelations = relations(orderGuideItem, ({ one }) => ({
-//   user: one(user, {
-//     fields: [orderGuideItem.userId],
-//     references: [user.id],
-//   }),
-//   product: one(product, {
-//     fields: [orderGuideItem.productId],
-//     references: [product.id],
-//   }),
-// }));
+export const orderGuideItemRelations = relations(orderGuideItem, ({ one }) => ({
+  team: one(team, {
+    fields: [orderGuideItem.teamId],
+    references: [team.id],
+  }),
+  product: one(product, {
+    fields: [orderGuideItem.productId],
+    references: [product.id],
+  }),
+}));
+
+export const taxRuleRelations = relations(taxRule, ({ one, many }) => ({
+  organization: one(organization, {
+    fields: [taxRule.organizationId],
+    references: [organization.id],
+  }),
+  taxRuleItem: many(taxRuleItem),
+}));
+
+export const taxRuleItemRelations = relations(taxRuleItem, ({ one }) => ({
+  taxRule: one(taxRule, {
+    fields: [taxRuleItem.taxRuleId],
+    references: [taxRule.id],
+  }),
+  team: one(team, {
+    fields: [taxRuleItem.teamId],
+    references: [team.id],
+  }),
+}));

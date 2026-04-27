@@ -34,9 +34,10 @@ export const OrderCart = withForm({
         <form.Subscribe
           selector={({ values }) => ({
             lineItems: values.lineItems,
+            taxRules: values.taxRules,
           })}
-          children={({ lineItems }) => {
-            const totals = getTotals(lineItems);
+          children={({ lineItems, taxRules }) => {
+            const totals = getTotals(lineItems, taxRules);
             return (
               <SheetContent className="gap-0">
                 <SheetHeader className="gap-0 border-b">
@@ -188,6 +189,10 @@ export const OrderCart = withForm({
                     <div className="flex justify-between text-muted-foreground">
                       <span>{totals.charges?.type}</span>
                       <span>{formatUSD(Number(totals.charges?.amount))}</span>
+                    </div>
+                    <div className="flex justify-between text-muted-foreground">
+                      <span>Tax</span>
+                      <span>{formatUSD(Number(totals.tax))}</span>
                     </div>
                     <div className="mt-1 flex justify-between text-lg font-semibold">
                       <span>Total</span>

@@ -8,10 +8,11 @@ import {
   orderGuideItem,
 } from "@/lib/db/schema";
 import { db } from "@/lib/db";
-import { and, eq } from "drizzle-orm";
 import { getSession } from "./auth";
-import { handleAction } from "@/lib/helper/error-handler";
 import { isBefore } from "date-fns";
+import { and, eq } from "drizzle-orm";
+import { getTeamTaxRules } from "./tax-rule";
+import { handleAction } from "@/lib/helper/error-handler";
 
 /**
  * create order
@@ -29,16 +30,29 @@ export const createOrder = handleAction(
     if (!auth) throw new Error("Authentication required");
 
     const { activeTeamId, activeOrganizationId, userId } = auth.session;
-
     const { lineItems, ...rest } = data;
     const charges = { type: "Fuel Charge", amount: 15 };
 
-    // calculate totals
+    const { data: taxRules, error } = await getTeamTaxRules();
+
+    if (error) throw new Error("Failed to submit your order, please try again");
+
+    const totalTaxRate = taxRules.reduce(
+      (acc, rule) => acc + Number(rule.rate || 0),
+      0,
+    );
+
+    const taxName = taxRules.map((r) => r.name).join(", ");
+    const taxRate = String(totalTaxRate);
+
+    //  totals
     const totals = {
       lineItemCount: 0,
       lineItemQuantity: 0,
       lineItemTotal: 0,
       subtotal: 0,
+      taxableSubtotal: 0,
+      nonTaxableSubtotal: 0,
       discount: 0,
       tax: 0,
       total: 0,
@@ -47,19 +61,42 @@ export const createOrder = handleAction(
     for (const [index, item] of lineItems.entries()) {
       const qty = Number(item.quantity) || 0;
       const price = Number(item.price) || 0;
+      const isTaxable = Boolean(item.isTaxable);
 
-      const lineTotal = qty * price;
+      const lineSubtotal = qty * price;
+
+      // 👉 line tax
+      const lineTax = isTaxable ? (lineSubtotal * totalTaxRate) / 100 : 0;
+
+      const lineTotal = lineSubtotal + lineTax;
+
+      // assign line item fields
+      lineItems[index].subtotal = String(lineSubtotal);
+      lineItems[index].taxAmount = String(lineTax);
       lineItems[index].total = String(lineTotal);
 
+      // accumulate totals
       totals.lineItemCount++;
       totals.lineItemQuantity += qty;
-      totals.lineItemTotal += lineTotal;
-      totals.subtotal += lineTotal;
+      totals.lineItemTotal += lineSubtotal;
+      totals.subtotal += lineSubtotal;
+
+      if (isTaxable) {
+        totals.taxableSubtotal += lineSubtotal;
+        totals.tax += lineTax;
+      } else {
+        totals.nonTaxableSubtotal += lineSubtotal;
+      }
     }
 
+    // final total
     totals.total =
-      totals.subtotal - totals.discount + totals.tax + charges.amount;
+      totals.subtotal -
+      totals.discount +
+      totals.tax +
+      Number(charges.amount || 0);
 
+    // stringify for DB
     const stringTotals = Object.fromEntries(
       Object.entries(totals).map(([key, value]) => [key, String(value)]),
     );
@@ -69,6 +106,12 @@ export const createOrder = handleAction(
       .values({
         ...rest,
         ...stringTotals,
+        taxName,
+        taxRate,
+        charges: {
+          ...charges,
+          amount: String(charges.amount),
+        },
         status: "in_progress",
         organizationId: activeOrganizationId,
         teamId: activeTeamId,

@@ -11,13 +11,13 @@ import {
 } from "@/components/ui/input-group";
 import { ItemList } from "./item-list";
 import { OrderCart } from "./order-cart";
-import { type Session } from "@/lib/types";
+import { TaxRule, type Session } from "@/lib/types";
 import { cn, formatUSD } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { createOrder } from "@/server/order";
 import { Button } from "@/components/ui/button";
 import { useConfirm } from "@/hooks/use-confirm";
-import { useAppForm } from "@/hooks/form-context";
+import { useAppForm, withForm } from "@/hooks/form-context";
 import { useSidebar } from "@/components/ui/sidebar";
 import { useQueryClient } from "@tanstack/react-query";
 import { Loader, Minus, Plus, Star } from "lucide-react";
@@ -25,11 +25,16 @@ import { formOpt, getTotals } from "./order-form-options";
 import { useRouterStuff } from "@/hooks/use-router-stuff";
 import { SearchBar } from "@/components/admin/search-filters";
 
-export const OrderForm = ({ session }: { session?: Session }) => {
+export const OrderForm = ({
+  session,
+  taxRules,
+}: {
+  session?: Session;
+  taxRules: TaxRule[];
+}) => {
   const router = useRouter();
   const confirm = useConfirm();
   const { open, setOpen } = useSidebar();
-  const [showCart, setShowCart] = React.useState(false);
 
   const queryClient = useQueryClient();
   const { queryParams, searchParamsObj } = useRouterStuff();
@@ -45,6 +50,7 @@ export const OrderForm = ({ session }: { session?: Session }) => {
         zip: "",
       },
       notes: "",
+      taxRules: taxRules,
       deliveryDate: "",
       deliveryWindow: "",
       deliveryInstruction: "",
@@ -73,8 +79,6 @@ export const OrderForm = ({ session }: { session?: Session }) => {
         });
         form.reset();
         router.refresh();
-
-        setShowCart(false);
         queryClient.invalidateQueries({
           queryKey: ["products"],
         });
@@ -132,16 +136,31 @@ export const OrderForm = ({ session }: { session?: Session }) => {
         {/* items list */}
         <ItemList form={form} />
 
+        {/* sticky cart  */}
+        <StickyCart form={form} />
+      </form>
+    </div>
+  );
+};
+
+const StickyCart = withForm({
+  ...formOpt,
+  render: function ({ form }) {
+    const [open, setOpen] = React.useState(false);
+
+    return (
+      <>
         {/* cart popup */}
-        <OrderCart form={form} showCart={showCart} setShowCart={setShowCart} />
+        <OrderCart form={form} showCart={open} setShowCart={setOpen} />
 
         {/* sticky bar */}
         <form.Subscribe
           selector={({ values }) => ({
             lineItems: values.lineItems,
+            taxRules: values.taxRules,
           })}
-          children={({ lineItems }) => {
-            const totals = getTotals(lineItems);
+          children={({ lineItems, taxRules }) => {
+            const totals = getTotals(lineItems, taxRules);
 
             return (
               <div
@@ -161,7 +180,7 @@ export const OrderForm = ({ session }: { session?: Session }) => {
                     type="button"
                     variant="link"
                     className="ml-auto"
-                    onClick={() => setShowCart(true)}
+                    onClick={() => setOpen(true)}
                   >
                     View cart
                   </Button>
@@ -190,10 +209,10 @@ export const OrderForm = ({ session }: { session?: Session }) => {
             );
           }}
         />
-      </form>
-    </div>
-  );
-};
+      </>
+    );
+  },
+});
 
 export const QuantityInput = ({
   value = 0,

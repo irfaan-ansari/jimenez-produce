@@ -441,12 +441,16 @@ export const taxRuleItem = pgTable(
   "tax_rule_item",
   {
     id: serial("id").primaryKey(),
-    taxRuleId: integer("tax_rule_id").references(() => taxRule.id, {
-      onDelete: "cascade",
-    }),
-    teamId: text("team_id").references(() => team.id, {
-      onDelete: "cascade",
-    }),
+    taxRuleId: integer("tax_rule_id")
+      .notNull()
+      .references(() => taxRule.id, {
+        onDelete: "cascade",
+      }),
+    teamId: text("team_id")
+      .notNull()
+      .references(() => team.id, {
+        onDelete: "cascade",
+      }),
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at")
       .defaultNow()

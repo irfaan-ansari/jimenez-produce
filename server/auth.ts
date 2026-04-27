@@ -2,13 +2,14 @@
 
 import { db } from "@/lib/db";
 import { cache } from "react";
-import { eq } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { Role } from "@/lib/types";
 import { headers } from "next/headers";
 import { getInitialsAvatar } from "@/lib/utils";
 import { handleAction } from "@/lib/helper/error-handler";
 import { member, organization, team, teamMember } from "@/lib/db/auth-schema";
+import { taxRuleItem } from "@/lib/db/schema";
 
 type SignupProps = {
   name: string;
@@ -139,6 +140,7 @@ interface CreateTeam {
   password: string;
   managerName: string;
   pricelevelId: string | number;
+  taxRuleIds?: number[];
   groupId: any;
 }
 
@@ -150,7 +152,7 @@ export const addTeamWithUser = handleAction(async (data: CreateTeam) => {
   if (!session.session.activeOrganizationId) {
     throw new Error("No active organization found");
   }
-  const { name, email, password, phone, managerName } = data;
+  const { name, email, password, phone, managerName, taxRuleIds } = data;
 
   // create customer
   const { data: createdUser, error } = await signupWithOrganization({
@@ -176,14 +178,83 @@ export const addTeamWithUser = handleAction(async (data: CreateTeam) => {
     },
   });
 
-  // add member
-  await auth.api.addTeamMember({
-    body: {
-      userId: createdUser.userId,
-      teamId: createdTeam.id,
-    },
-    headers: await headers(),
-  });
+  const promises: Promise<any>[] = [
+    auth.api.addTeamMember({
+      body: {
+        userId: createdUser.userId,
+        teamId: createdTeam.id,
+      },
+      headers: await headers(),
+    }),
+  ];
+
+  if (taxRuleIds && taxRuleIds.length) {
+    promises.push(
+      updateTaxRulesToTeam({ teamId: createdTeam.id, taxRuleIds: taxRuleIds }),
+    );
+  }
+
+  await Promise.all(promises);
 
   return { ...createdUser, createdTeam };
 });
+
+/**
+ * update tax rules to team
+ * @param data { teamId, taxRuleIds }
+ * @returns inserted and deleted count
+ */
+export const updateTaxRulesToTeam = handleAction(
+  async (data: { teamId: string; taxRuleIds: number[] }) => {
+    const { teamId, taxRuleIds } = data;
+
+    //  Get existing
+    const existing = await db
+      .select({ taxRuleId: taxRuleItem.taxRuleId })
+      .from(taxRuleItem)
+      .where(eq(taxRuleItem.teamId, teamId));
+
+    const existingIds = existing.map((r) => r.taxRuleId);
+
+    // to insert
+    const toInsert = taxRuleIds.filter((id) => !existingIds.includes(id));
+
+    // to delete
+    const toDelete = existingIds.filter((id) => !taxRuleIds.includes(id));
+
+    const promises = [];
+    // Delete removed
+    if (toDelete.length) {
+      promises.push(
+        db
+          .delete(taxRuleItem)
+          .where(
+            and(
+              eq(taxRuleItem.teamId, teamId),
+              inArray(taxRuleItem.taxRuleId, toDelete),
+            ),
+          ),
+      );
+    }
+
+    // Insert new
+    if (toInsert.length) {
+      promises.push(
+        db.insert(taxRuleItem).values(
+          toInsert.map((taxRuleId) => ({
+            teamId,
+            taxRuleId,
+          })),
+        ),
+      );
+    }
+
+    await Promise.all(promises);
+
+    // return inserted and deleted count
+    return {
+      inserted: toInsert.length,
+      deleted: toDelete.length,
+    };
+  },
+);
