@@ -18,14 +18,21 @@ const OPTIONS = [
 
 const JobApplicationPage = async () => {
   return (
-    <div className="flex flex-col h-full gap-5">
-      <h1 className="text-2xl font-semibold">Job Applications</h1>
+    <div className="flex h-full flex-col gap-5">
+      <div className="flex justify-between gap-4">
+        <div className="flex-1 space-y-1">
+          <h1 className="text-2xl font-bold">Job Applications</h1>
+          <p className="text-sm text-muted-foreground">
+            Manage all applications in one place
+          </p>
+        </div>
+        <div className="flex flex-1 items-center justify-end gap-4">
+          <SearchBar />
+          <InviteCandidate />
+        </div>
+      </div>
       <FilterTabs tabs={OPTIONS} queryKey="job-applications" />
 
-      <div className="flex gap-4 items-center">
-        <SearchBar />
-        <InviteCandidate />
-      </div>
       {/* content */}
       <PageClient />
     </div>

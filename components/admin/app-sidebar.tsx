@@ -19,6 +19,7 @@ import {
   SidebarMenuSubItem,
   SidebarMenuSubButton,
   SidebarTrigger,
+  SidebarGroupLabel,
 } from "@/components/ui/sidebar";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -32,12 +33,32 @@ import { SidebarProfile } from "./sidebar-profile";
 import { PopoverXDrawer } from "../popover-x-drawer";
 import { WarehouseDialog } from "./warehouse-dialog";
 import { useQueryClient } from "@tanstack/react-query";
-import { SIDEBAR_MENU, SITE_CONFIG } from "@/lib/config";
 import { useRouterStuff } from "@/hooks/use-router-stuff";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Check, ChevronRight, ChevronsUpDown, Plus } from "lucide-react";
+import { APPLICATION_GROUP, SIDEBAR_MENU, SITE_CONFIG } from "@/lib/config";
 
 export function AppSidebar({ session }: { session: Session }) {
+  return (
+    <Sidebar collapsible="icon">
+      <SidebarOrganization />
+      <SidebarContent>
+        <SidebarGroup>
+          <MenuGroup menu={SIDEBAR_MENU} />
+        </SidebarGroup>
+        <SidebarGroup>
+          <SidebarGroupLabel>Applications</SidebarGroupLabel>
+          <MenuGroup menu={APPLICATION_GROUP} />
+        </SidebarGroup>
+      </SidebarContent>
+
+      {/* footer/ */}
+      <SidebarProfile session={session} />
+    </Sidebar>
+  );
+}
+
+const MenuGroup = ({ menu }: { menu: typeof SIDEBAR_MENU }) => {
   const { pathname, getQueryString } = useRouterStuff();
 
   const isActive = (href: string) => {
@@ -51,92 +72,81 @@ export function AppSidebar({ session }: { session: Session }) {
   };
 
   return (
-    <Sidebar collapsible="icon">
-      <SidebarOrganization />
-      <SidebarContent>
-        <SidebarGroup>
-          <SidebarMenu>
-            {SIDEBAR_MENU.map((item) => {
-              if (item.items.length <= 0) {
-                return (
-                  <SidebarMenuItem key={item.label}>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={isActive(item.href)}
-                      tooltip={item.label}
-                      className="h-10 rounded-xl px-3.5 transition duration-200 hover:bg-muted hover:text-sidebar-foreground data-active:hover:bg-sidebar-accent data-active:hover:text-sidebar-accent-foreground"
-                    >
-                      <Link href={item.href}>
-                        {item.icon && <item.icon className="opacity-80" />}
-                        <span>{item.label}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                );
-              }
-              return (
-                <Collapsible
-                  key={item.href}
+    <SidebarMenu>
+      {menu.map((item) => {
+        if (item.items.length <= 0) {
+          return (
+            <SidebarMenuItem key={item.label}>
+              <SidebarMenuButton
+                asChild
+                isActive={isActive(item.href)}
+                tooltip={item.label}
+                className="h-10 rounded-xl px-3.5 transition duration-200 hover:bg-muted hover:text-sidebar-foreground data-active:hover:bg-sidebar-accent data-active:hover:text-sidebar-accent-foreground"
+              >
+                <Link href={item.href}>
+                  {item.icon && <item.icon className="opacity-80" />}
+                  <span>{item.label}</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          );
+        }
+        return (
+          <Collapsible
+            key={item.href}
+            asChild
+            className="group/collapsible"
+            defaultOpen={isActive(item.href)}
+            data-active={isActive(item.href)}
+          >
+            <SidebarMenuItem>
+              <CollapsibleTrigger asChild className="rounded-xl">
+                <SidebarMenuButton
+                  tooltip={item.label}
+                  isActive={isActive(item.href)}
                   asChild
-                  className="group/collapsible"
-                  defaultOpen={isActive(item.href)}
-                  data-active={isActive(item.href)}
+                  className="h-10 px-3.5 transition duration-200 hover:bg-muted hover:text-sidebar-foreground data-open:hover:bg-muted data-open:hover:text-sidebar-foreground data-active:hover:bg-sidebar-accent data-active:hover:text-sidebar-accent-foreground"
                 >
-                  <SidebarMenuItem>
-                    <CollapsibleTrigger asChild className="rounded-xl">
-                      <SidebarMenuButton
-                        tooltip={item.label}
-                        isActive={isActive(item.href)}
+                  <Link href={item.href}>
+                    {item.icon && <item.icon className="opacity-80" />}
+                    <span>{item.label}</span>
+                    <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                  </Link>
+                </SidebarMenuButton>
+              </CollapsibleTrigger>
+
+              <CollapsibleContent>
+                <SidebarMenuSub>
+                  {item.items?.map((subItem) => (
+                    <SidebarMenuSubItem
+                      key={subItem.href}
+                      className="after:absolute  after:top-1/2 after:-left-3.5 after:size-2 after:-translate-y-1/2  after:rounded-full after:bg-(--color) after:opacity-0 after:transition group-data-[active=true]/collapsible:after:opacity-100"
+                      style={
+                        {
+                          "--color": subItem.color,
+                        } as React.CSSProperties
+                      }
+                    >
+                      <SidebarMenuSubButton
                         asChild
-                        className="h-10 px-3.5 transition duration-200 hover:bg-muted hover:text-sidebar-foreground data-open:hover:bg-muted data-open:hover:text-sidebar-foreground data-active:hover:bg-sidebar-accent data-active:hover:text-sidebar-accent-foreground"
+                        className="rounded-xl px-3 hover:bg-muted hover:text-sidebar-foreground data-active:bg-muted data-active:text-sidebar-foreground"
+                        isActive={isSubItemActive(subItem.href)}
                       >
-                        <Link href={item.href}>
-                          {item.icon && <item.icon className="opacity-80" />}
-                          <span>{item.label}</span>
-                          <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                        <Link href={subItem.href}>
+                          <span>{subItem.label}</span>
                         </Link>
-                      </SidebarMenuButton>
-                    </CollapsibleTrigger>
-
-                    <CollapsibleContent>
-                      <SidebarMenuSub>
-                        {item.items?.map((subItem) => (
-                          <SidebarMenuSubItem
-                            key={subItem.href}
-                            className="after:absolute  after:top-1/2 after:-left-3.5 after:size-2 after:-translate-y-1/2  after:rounded-full after:bg-(--color) after:opacity-0 after:transition group-data-[active=true]/collapsible:after:opacity-100"
-                            style={
-                              {
-                                "--color": subItem.color,
-                              } as React.CSSProperties
-                            }
-                          >
-                            <SidebarMenuSubButton
-                              asChild
-                              className="rounded-xl px-3 hover:bg-muted hover:text-sidebar-foreground data-active:bg-muted data-active:text-sidebar-foreground"
-                              isActive={isSubItemActive(subItem.href)}
-                            >
-                              <Link href={subItem.href}>
-                                <span>{subItem.label}</span>
-                              </Link>
-                            </SidebarMenuSubButton>
-                          </SidebarMenuSubItem>
-                        ))}
-                      </SidebarMenuSub>
-                    </CollapsibleContent>
-                  </SidebarMenuItem>
-                </Collapsible>
-              );
-            })}
-          </SidebarMenu>
-        </SidebarGroup>
-      </SidebarContent>
-
-      {/* footer/ */}
-      <SidebarProfile session={session} />
-    </Sidebar>
+                      </SidebarMenuSubButton>
+                    </SidebarMenuSubItem>
+                  ))}
+                </SidebarMenuSub>
+              </CollapsibleContent>
+            </SidebarMenuItem>
+          </Collapsible>
+        );
+      })}
+    </SidebarMenu>
   );
-}
-
+};
 const SidebarOrganization = () => {
   const [open, setOpen] = useState(false);
 

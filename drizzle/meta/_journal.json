@@ -575,6 +575,27 @@
       "when": 1777238812626,
       "tag": "0081_past_giant_man",
       "breakpoints": true
+    },
+    {
+      "idx": 82,
+      "version": "7",
+      "when": 1777286454828,
+      "tag": "0082_tired_spitfire",
+      "breakpoints": true
+    },
+    {
+      "idx": 83,
+      "version": "7",
+      "when": 1777286865452,
+      "tag": "0083_melted_phantom_reporter",
+      "breakpoints": true
+    },
+    {
+      "idx": 84,
+      "version": "7",
+      "when": 1777287307519,
+      "tag": "0084_unique_nomad",
+      "breakpoints": true
     }
   ]
 }

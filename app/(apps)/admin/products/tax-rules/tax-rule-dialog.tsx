@@ -80,9 +80,13 @@ export const TaxRuleDialog = ({
         >
           <DialogHeader>
             <DialogTitle className="text-xl font-bold">
-              Create tax rule
+              {isEdit ? "Edit tax rule" : "Create tax rule"}
             </DialogTitle>
-            <DialogDescription>Create a new tax rule.</DialogDescription>
+            <DialogDescription>
+              {isEdit
+                ? `Edit ${data?.name} tax rule`
+                : "Create a new tax rule."}
+            </DialogDescription>
           </DialogHeader>
 
           <FieldGroup>

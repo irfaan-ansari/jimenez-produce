@@ -141,7 +141,7 @@ export const UserDialog = ({ children }: { children: React.ReactNode }) => {
               children={(field) => (
                 <field.PhoneField
                   label="Phone"
-                  placeholder="xxxx-xxx-xxx"
+                  placeholder="xxx-xxx-xxxx"
                   className="col-span-2 **:data-[slot=input]:rounded-xl lg:col-span-1"
                 />
               )}
@@ -208,7 +208,7 @@ export const UserDialog = ({ children }: { children: React.ReactNode }) => {
                         anchor={anchor}
                         className="pointer-events-auto"
                       >
-                        <ComboboxEmpty>No items found.</ComboboxEmpty>
+                        <ComboboxEmpty>No account found.</ComboboxEmpty>
                         <ComboboxList>
                           {(team) => (
                             <ComboboxItem key={team.id} value={team}>

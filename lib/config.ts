@@ -1,4 +1,5 @@
 import {
+  BriefcaseBusiness,
   Building2,
   ClipboardList,
   Inbox,
@@ -128,8 +129,29 @@ export const SIDEBAR_MENU = [
     ],
   },
   {
-    label: "Applications",
-    icon: UserPlus,
+    label: "Warehouses",
+    icon: Building2,
+    href: "/admin/warehouses",
+    items: [],
+  },
+  {
+    label: "Customers",
+    icon: BriefcaseBusiness,
+    href: "/admin/customers",
+    items: [],
+  },
+  {
+    label: "Users",
+    icon: Users,
+    href: "/admin/users",
+    items: [],
+  },
+];
+
+export const APPLICATION_GROUP = [
+  {
+    label: "Customer",
+    icon: BriefcaseBusiness,
     href: "/admin/applications",
     items: [
       {
@@ -175,7 +197,7 @@ export const SIDEBAR_MENU = [
     ],
   },
   {
-    label: "Job Applications",
+    label: "Job",
     icon: ClipboardList,
     href: "/admin/job-applications",
     items: [
@@ -216,27 +238,7 @@ export const SIDEBAR_MENU = [
       },
     ],
   },
-
-  {
-    label: "Warehouses",
-    icon: Building2,
-    href: "/admin/warehouses",
-    items: [],
-  },
-  {
-    label: "Customers",
-    icon: Users,
-    href: "/admin/customers",
-    items: [],
-  },
-  {
-    label: "Users",
-    icon: Users,
-    href: "/admin/users",
-    items: [],
-  },
 ];
-
 export const SIDEBAR_MENU_CUSTOMER = [
   {
     label: "Dashboard",

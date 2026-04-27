@@ -79,7 +79,7 @@ export const useTaxRules = (query?: string) => {
   return useQuery({
     queryKey: ["tax-rules", query],
     queryFn: () => {
-      return fetcher<TaxRuleResponse>(`/api/tax-rules`);
+      return fetcher<TaxRuleResponse>(`/api/tax-rules?${query}`);
     },
     staleTime: 1000 * 60 * 5,
   });

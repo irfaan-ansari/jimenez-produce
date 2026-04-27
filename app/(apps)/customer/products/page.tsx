@@ -12,8 +12,7 @@ const ProductsPage = async () => {
         <div className="space-y-1">
           <h1 className="text-2xl font-bold">Explore all products</h1>
           <p className="text-sm text-muted-foreground">
-            A centralized view of your entire inventory and product
-            specifications.
+            A centralized view of available products for purchase.
           </p>
         </div>
         <div className="flex items-center justify-end gap-4">

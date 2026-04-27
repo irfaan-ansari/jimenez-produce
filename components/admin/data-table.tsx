@@ -75,9 +75,9 @@ export function DataTable<TData, TValue>({
   });
 
   return (
-    <div className="flex flex-col h-full gap-3">
-      <div className="overflow-hidden **:data-[slot=table-container]:no-scrollbar rounded-2xl border">
-        <Table className="text-base bg-background">
+    <div className="flex h-full flex-col gap-3">
+      <div className="overflow-hidden rounded-2xl border **:data-[slot=table-container]:no-scrollbar">
+        <Table className="bg-background">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id} className="bg-muted/80">
@@ -118,7 +118,7 @@ export function DataTable<TData, TValue>({
               <TableRow>
                 <TableCell colSpan={columns.length} className="p-0 text-center">
                   {isPending ? (
-                    <div className="h-1 bg-primary mb-36 animate-pulse rounded-full"></div>
+                    <div className="mb-36 h-1 animate-pulse rounded-full bg-primary"></div>
                   ) : isError ? (
                     <EmptyComponent variant="error" title={error?.message} />
                   ) : (

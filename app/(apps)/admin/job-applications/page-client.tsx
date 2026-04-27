@@ -11,12 +11,13 @@ import { JobApplicationSelectType } from "@/lib/db/schema";
 import { jobApplicationStatusMap } from "@/lib/constants/job";
 import { useJobApplications } from "@/hooks/use-job-application";
 import { JobApplicationAction } from "@/components/admin/job-application-actions";
+import { CopyButton } from "@/components/copy-button";
 
 export const PageClient = () => {
   const { searchParams } = useRouterStuff();
 
   const { data, isPending, isError, error } = useJobApplications(
-    searchParams.toString()
+    searchParams.toString(),
   );
 
   return (
@@ -33,50 +34,39 @@ export const PageClient = () => {
 const columns: ColumnDef<JobApplicationSelectType>[] = [
   {
     id: "name",
-    header: "Name",
+    header: "Applicant",
     cell: ({ row }) => {
-      const { firstName, lastName, id } = row.original;
+      const { firstName, lastName, id, position, location } = row.original;
       return (
         <Link
           href={`/admin/job-applications/${id}`}
-          className="hover:underline"
+          className="flex flex-col gap-1.5"
         >
-          {firstName} {lastName}
+          <span className="font-medium">
+            {firstName} {lastName}
+          </span>
+          <span className="text-xs font-medium text-muted-foreground">
+            {position} • {location}
+          </span>
         </Link>
       );
     },
   },
   {
     id: "contact",
-    header: "Contact Details",
+    header: "Contact",
     cell: ({ row }) => {
-      const { email, phone, id } = row.original;
+      const { email, phone } = row.original;
 
       return (
-        <Link
-          href={`/admin/job-applications/${id}`}
-          className="space-y-1 hover:underline"
-        >
-          <div className="text-sm text-muted-foreground">{phone}</div>
-          <div className="text-sm text-muted-foreground">{email}</div>
-        </Link>
-      );
-    },
-  },
-
-  {
-    id: "position",
-    header: "Position",
-    cell: ({ row }) => {
-      const { position, createdAt, location } = row.original;
-      return (
-        <div className="space-y-1">
-          <div className="font-medium">{position}</div>
-          <div className="text-sm text-muted-foreground">{location}</div>
+        <div className="space-y-0">
+          <CopyButton value={phone} />
+          <CopyButton value={email} />
         </div>
       );
     },
   },
+
   {
     id: "availability",
     header: "Availability",
@@ -90,9 +80,8 @@ const columns: ColumnDef<JobApplicationSelectType>[] = [
               : "—"}
           </div>
 
-          <div className="text-muted-foreground">
-            Legal:{" "}
-            <span className="capitalize font-medium">{hasLegalRights}</span>
+          <div className="text-xs text-muted-foreground">
+            Legal rights • <span className="capitalize">{hasLegalRights}</span>
           </div>
         </div>
       );
@@ -100,13 +89,11 @@ const columns: ColumnDef<JobApplicationSelectType>[] = [
   },
   {
     accessorKey: "createdAt",
-    header: "Date Applied",
+    header: "Applied",
     cell: ({ row }) => {
       return (
         <div className="flex flex-col">
-          <span className="font-medium">
-            {format(row.original.createdAt!, "MMMM dd, yyyy")}
-          </span>
+          <span>{format(row.original.createdAt!, "MMMM dd")}</span>
           <span className="text-muted-foreground">
             {format(row.original.createdAt!, "hh:mm:ss a")}
           </span>
@@ -127,7 +114,7 @@ const columns: ColumnDef<JobApplicationSelectType>[] = [
         <Badge
           variant="outline"
           style={{ "--color": map.color } as React.CSSProperties}
-          className="h-7 rounded-xl pl-1.5 pr-2.5 gap-1.5 [&>svg]:size-3.5! bg-(--color)/10 border-(--color)/10 text-sm"
+          className="h-7 gap-1.5 rounded-xl border-(--color)/10 bg-(--color)/10 pr-2.5 pl-1.5 text-sm [&>svg]:size-3.5!"
         >
           <map.icon className="text-(--color)" />
 
@@ -138,7 +125,10 @@ const columns: ColumnDef<JobApplicationSelectType>[] = [
   },
   {
     id: "action",
-    header: "Action",
+
+    meta: {
+      className: "w-10",
+    },
     cell: ({ row }) => (
       <JobApplicationAction showView={true} initialValues={row.original} />
     ),

@@ -169,12 +169,10 @@ export const CustomerInviteDialog = ({
                         onBlur={field.handleBlur}
                         onChange={(e) => field.handleChange(e.target.value)}
                         aria-invalid={isInvalid}
+                        placeholder="Enter any additional message you would like to include in the email."
                         className="min-h-24 resize-none rounded-xl"
                       />
-                      <FieldDescription>
-                        Enter any additional message you would like to include
-                        in the email.
-                      </FieldDescription>
+
                       {isInvalid && (
                         <FieldError errors={field.state.meta.errors} />
                       )}

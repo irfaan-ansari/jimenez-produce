@@ -131,7 +131,7 @@ export const JobApplicationAction = ({
       open={open}
       setOpen={setOpen}
       trigger={
-        <Button size="icon" variant="outline" className="rounded-xl">
+        <Button size="icon" variant="outline" className="rounded-lg">
           <MoreVertical className="size-5" />
         </Button>
       }
@@ -153,7 +153,7 @@ export const JobApplicationAction = ({
         <Button
           type="button"
           variant="ghost"
-          className="flex items-center gap-2 justify-start"
+          className="flex items-center justify-start gap-2"
         >
           <SquarePen />
           Edit
@@ -287,7 +287,7 @@ export const JobEditDialog = ({
           });
 
           return { [`${key}Url`]: result.url };
-        })
+        }),
       );
       const uploadedFiles = Object.assign({}, ...uploads);
 
@@ -310,7 +310,7 @@ export const JobEditDialog = ({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="ring-ring/10 rounded-2xl sm:max-w-lg">
+      <DialogContent className="rounded-2xl ring-ring/10 sm:max-w-lg">
         <DialogHeader>
           <DialogTitle className="text-2xl font-semibold">
             Edit Application
@@ -324,7 +324,7 @@ export const JobEditDialog = ({
           }}
         >
           <Tabs>
-            <TabsList className="w-full rounded-xl mb-4">
+            <TabsList className="mb-4 w-full rounded-xl">
               <TabsTrigger value="details" className="rounded-xl">
                 Details
               </TabsTrigger>
@@ -332,7 +332,7 @@ export const JobEditDialog = ({
                 Documents
               </TabsTrigger>
             </TabsList>
-            <div className="no-scrollbar @container -mx-4 max-h-[min(400px,60vh)] -my-1 py-1  overflow-y-auto px-4">
+            <div className="@container -mx-4 -my-1 no-scrollbar max-h-[min(400px,60vh)] overflow-y-auto  px-4 py-1">
               <TabsContent value="details" className="space-y-10">
                 {STEPS.map((step, i) => (
                   <step.component

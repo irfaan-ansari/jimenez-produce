@@ -1,4 +1,12 @@
-export function getQueryObject(searchParams: URLSearchParams) {
+interface ReturnType {
+  page: number;
+  limit: number;
+  offset: number;
+  q?: string;
+  [key: string]: any;
+}
+
+export function getQueryObject(searchParams: URLSearchParams): ReturnType {
   const params: Record<string, any> = {};
 
   for (const [key, value] of searchParams.entries()) {
@@ -15,8 +23,13 @@ export function getQueryObject(searchParams: URLSearchParams) {
     }
   }
 
-  if ("page" in params && "limit" in params) {
-    params.offset = (params.page - 1) * params.limit;
+  if ("page" in params) {
+    params.offset = (params.page - 1) * (params.limit ?? 24);
   }
-  return params;
+  return {
+    ...params,
+    page: Number(params.page ?? 1),
+    limit: Number(params.limit ?? 24),
+    offset: Number(params.offset ?? 0),
+  };
 }

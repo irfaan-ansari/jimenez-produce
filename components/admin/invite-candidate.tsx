@@ -81,7 +81,7 @@ export const InviteCandidate = () => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button size="xl" className="ml-auto rounded-xl">
+        <Button size="xl" className="rounded-xl">
           <Send /> Invite
         </Button>
       </DialogTrigger>

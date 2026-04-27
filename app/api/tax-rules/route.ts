@@ -12,12 +12,8 @@ export const GET = async (req: NextRequest) => {
     if (!session || !session.session.activeOrganizationId)
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
 
-    const {
-      page = 1,
-      limit = 24,
-      q,
-      offset = 0,
-    } = getQueryObject(req.nextUrl.searchParams);
+    const search = req.nextUrl.searchParams;
+    const { page, limit, q, offset } = getQueryObject(search);
 
     const conditions = [
       eq(taxRule.organizationId, session.session.activeOrganizationId),

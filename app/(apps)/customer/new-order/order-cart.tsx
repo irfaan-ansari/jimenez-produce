@@ -64,18 +64,17 @@ export const OrderCart = withForm({
                               </AvatarFallback>
                             </Avatar>
 
-                            <div className="grid flex-1 gap-0.5">
+                            <div className="flex flex-1 flex-col justify-start gap-2">
                               <h4 className="line-clamp-2 leading-tight font-semibold">
                                 {subField.title}
                               </h4>
-
-                              <p className="text-muted-foreground">564</p>
 
                               <form.Field
                                 name={`lineItems[${i}].quantity`}
                                 children={(subField) => (
                                   <QuantityInput
                                     value={Number(subField.state.value)}
+                                    className="self-start"
                                     onChange={(qty) => {
                                       if (qty === 0) {
                                         field.removeValue(i);

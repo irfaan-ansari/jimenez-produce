@@ -50,7 +50,7 @@ export function AppSidebar({ session }: { session: Session }) {
   };
 
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar collapsible="icon" variant="floating">
       {/* <SidebarLogo /> */}
       <SidebarTeam session={session} />
       <SidebarContent>
@@ -197,7 +197,7 @@ const SidebarTeam = ({ session: auth }: { session: Session }) => {
           <PopoverXDrawer
             open={open}
             setOpen={setOpen}
-            className="w-60 px-0 *:gap-0 data-[slot=popover-content]:max-w-60"
+            className="w-60 px-0 *:gap-0 data-[slot=popover-content]:max-w-56"
             trigger={
               <SidebarMenuButton
                 size="lg"

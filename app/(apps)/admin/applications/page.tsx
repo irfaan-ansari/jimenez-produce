@@ -22,19 +22,23 @@ const OPTIONS = [
 const CustomersPage = async () => {
   return (
     <div className="flex h-full flex-col gap-5">
-      <div className="flex gap-4 justify-between *:flex-1">
-        <h1 className="text-2xl font-bold">Customer applications</h1>
-        <div className="flex items-center gap-4">
+      <div className="flex justify-between gap-4 *:flex-1">
+        <div className="flex-1 space-y-1">
+          <h1 className="text-2xl font-bold">Customer</h1>
+          <p className="text-sm text-muted-foreground">
+            Manage customer applications
+          </p>
+        </div>
+        <div className="flex items-center justify-end gap-4">
           <SearchBar />
-          <div className="flex flex-1 items-center justify-end gap-4">
-            <CustomerInviteDialog type="invitation" />
-            <CustomerDialog>
-              <Button size="xl" className="rounded-xl">
-                <Plus />
-                Add New
-              </Button>
-            </CustomerDialog>
-          </div>
+
+          <CustomerInviteDialog type="invitation" />
+          <CustomerDialog>
+            <Button size="xl" className="rounded-xl">
+              <Plus />
+              Add New
+            </Button>
+          </CustomerDialog>
         </div>
       </div>
       <FilterTabs tabs={OPTIONS} queryKey="customers" />

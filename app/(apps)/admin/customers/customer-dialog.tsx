@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import {
   Field,
+  FieldDescription,
   FieldError,
   FieldGroup,
   FieldLabel,
@@ -32,10 +33,22 @@ import { authClient } from "@/lib/auth/client";
 import { Button } from "@/components/ui/button";
 import { useAppForm } from "@/hooks/form-context";
 import { Skeleton } from "@/components/ui/skeleton";
-import { usePriceLevels } from "@/hooks/use-product";
+import { usePriceLevels, useTaxRules } from "@/hooks/use-product";
 import { phoneSchema } from "@/lib/form-schema/common";
 import { addTeamWithUser } from "@/server/auth";
 import { useQueryClient } from "@tanstack/react-query";
+import {
+  Combobox,
+  ComboboxChip,
+  ComboboxChips,
+  ComboboxChipsInput,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxItem,
+  ComboboxList,
+  ComboboxValue,
+  useComboboxAnchor,
+} from "@/components/ui/combobox";
 
 const schema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -45,6 +58,13 @@ const schema = z.object({
   password: z.string().min(1, "Password is required"),
   priceLevelId: z.string(),
   groupId: z.string(),
+  taxRules: z.array(
+    z.object({
+      id: z.number(),
+      name: z.string(),
+      rate: z.string(),
+    }),
+  ),
 });
 
 export const CustomerDialog = ({
@@ -55,9 +75,11 @@ export const CustomerDialog = ({
   children: React.ReactNode;
 }) => {
   const isEdit = !!data;
-  const [open, setOpen] = useState(false);
+  const anchor = useComboboxAnchor();
   const queryClient = useQueryClient();
+  const [open, setOpen] = useState(false);
   const { data: levels } = usePriceLevels();
+  const { data: taxRules } = useTaxRules("limit=100");
 
   const form = useAppForm({
     defaultValues: {
@@ -68,6 +90,7 @@ export const CustomerDialog = ({
       password: "",
       priceLevelId: String(data?.priceLevelId || ""),
       groupId: "",
+      taxRules: [] as { id: number; name: string; rate: string }[],
     },
     validators: {
       onSubmit: ({ formApi, value }) => {
@@ -160,7 +183,7 @@ export const CustomerDialog = ({
               <form.AppField
                 name="phone"
                 children={(field) => (
-                  <field.PhoneField label="Phone" placeholder="xxxx-xxx-xxx" />
+                  <field.PhoneField label="Phone" placeholder="xxx-xxx-xxxx" />
                 )}
               />
               <form.AppField
@@ -179,6 +202,69 @@ export const CustomerDialog = ({
                     className={isEdit ? "hidden" : "col-span-2"}
                   />
                 )}
+              />
+
+              <form.Field
+                name="taxRules"
+                mode="array"
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid;
+
+                  return (
+                    <Field data-invalid={isInvalid} className="col-span-2">
+                      <FieldLabel htmlFor={field.name}>
+                        Select tax rules
+                      </FieldLabel>
+                      <Combobox
+                        items={taxRules?.data ?? []}
+                        multiple
+                        value={field.state.value}
+                        onValueChange={(value) => field.handleChange(value)}
+                        itemToStringValue={(item) => item.name}
+                        modal={false}
+                        name={field.name}
+                        autoHighlight
+                      >
+                        <ComboboxChips
+                          className="min-h-11 w-full rounded-xl"
+                          ref={anchor}
+                        >
+                          <ComboboxValue>
+                            {field.state.value.map((item) => (
+                              <ComboboxChip key={item.id}>
+                                {item.name}
+                              </ComboboxChip>
+                            ))}
+                          </ComboboxValue>
+                          <ComboboxChipsInput placeholder="Select tax rules" />
+                        </ComboboxChips>
+                        <ComboboxContent
+                          anchor={anchor}
+                          className="pointer-events-auto"
+                        >
+                          <ComboboxEmpty>No rule found.</ComboboxEmpty>
+                          <ComboboxList>
+                            {(team) => (
+                              <ComboboxItem key={team.id} value={team}>
+                                {team.name}
+                                <span className="ml-auto text-xs text-muted-foreground">
+                                  {team.rate}%
+                                </span>
+                              </ComboboxItem>
+                            )}
+                          </ComboboxList>
+                        </ComboboxContent>
+                      </Combobox>
+                      <FieldDescription>
+                        Select tax rules for this account.
+                      </FieldDescription>
+                      {isInvalid && (
+                        <FieldError errors={field.state.meta.errors} />
+                      )}
+                    </Field>
+                  );
+                }}
               />
 
               <form.Field

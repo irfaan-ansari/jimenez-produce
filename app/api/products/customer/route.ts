@@ -17,6 +17,7 @@ import {
   orderGuideItem,
   priceLevelItem,
   product,
+  ProductSelectType,
 } from "@/lib/db/schema";
 import { db } from "@/lib/db";
 import { team } from "@/lib/db/auth-schema";
@@ -33,7 +34,7 @@ export async function GET(req: NextRequest) {
     }
 
     const { activeOrganizationId, activeTeamId } = session.session;
-
+    const search = req.nextUrl.searchParams;
     const {
       page,
       limit,
@@ -41,7 +42,7 @@ export async function GET(req: NextRequest) {
       cat,
       offset = 0,
       saved = false,
-    } = getQueryObject(req.nextUrl.searchParams);
+    } = getQueryObject(search);
 
     // 🔹 Filters
     const conditions = [
@@ -69,11 +70,7 @@ export async function GET(req: NextRequest) {
 
     const filters = and(...conditions);
 
-    const teamData = await db.query.team.findFirst({
-      where: eq(team.id, activeTeamId!),
-      with: { priceLevel: true },
-    });
-
+    // sub query to get line items
     const lastLineItem = db
       .select({
         productId: lineItem.productId,
@@ -88,6 +85,7 @@ export async function GET(req: NextRequest) {
       .limit(1)
       .as("lastLineItem");
 
+    // main query to get products
     const products = await db
       .select({
         ...getTableColumns(product),
@@ -128,46 +126,7 @@ export async function GET(req: NextRequest) {
       )
       .where(filters);
 
-    const priceLevel = teamData?.priceLevel;
-
-    let updatedProducts = products;
-
-    if (priceLevel) {
-      if (priceLevel.appliesTo === "all") {
-        const { adjustmentType, adjustmentValue } = priceLevel;
-
-        updatedProducts = products.map((p) => {
-          let price = Number(p.basePrice);
-
-          if (adjustmentType === "percentage") {
-            price = price * (1 + Number(adjustmentValue) / 100);
-          } else {
-            price = price - Number(adjustmentValue);
-          }
-
-          return { ...p, basePrice: String(price) };
-        });
-      }
-
-      if (priceLevel.appliesTo === "per_item") {
-        const productIds = products.map((p) => p.id);
-
-        const prices = await db.query.priceLevelItem.findMany({
-          where: and(
-            inArray(priceLevelItem.productId, productIds),
-            eq(priceLevelItem.priceLevelId, priceLevel.id),
-          ),
-        });
-        const ids = prices.map((p) => p.productId);
-
-        const priceMap = new Map(prices.map((p) => [p.productId, p.price]));
-
-        updatedProducts = products.map((p) => ({
-          ...p,
-          basePrice: priceMap.get(p.id) ?? p.basePrice,
-        }));
-      }
-    }
+    const updatedProducts = await resolvePrice(activeTeamId!, products);
 
     return NextResponse.json(
       {
@@ -189,3 +148,57 @@ export async function GET(req: NextRequest) {
     );
   }
 }
+
+/**
+ * Resolve price level for products
+ * @param teamId
+ * @param products
+ * @returns Promise<ProductSelectType[]>
+ */
+const resolvePrice = async (teamId: string, products: ProductSelectType[]) => {
+  // get price level data
+  const teamData = await db.query.team.findFirst({
+    where: eq(team.id, teamId),
+    with: { priceLevel: true },
+  });
+
+  const priceLevel = teamData?.priceLevel;
+
+  if (!priceLevel) return products;
+
+  if (priceLevel.appliesTo === "all") {
+    const { adjustmentType, adjustmentValue } = priceLevel;
+
+    return products.map((p) => {
+      let price = Number(p.basePrice);
+
+      if (adjustmentType === "percentage") {
+        price = price * (1 + Number(adjustmentValue) / 100);
+      } else {
+        price = price - Number(adjustmentValue);
+      }
+
+      return { ...p, basePrice: String(price) };
+    });
+  }
+
+  if (priceLevel.appliesTo === "per_item") {
+    const productIds = products.map((p) => p.id);
+
+    const prices = await db.query.priceLevelItem.findMany({
+      where: and(
+        inArray(priceLevelItem.productId, productIds),
+        eq(priceLevelItem.priceLevelId, priceLevel.id),
+      ),
+    });
+
+    const ids = prices.map((p) => p.productId);
+
+    const priceMap = new Map(prices.map((p) => [p.productId, p.price]));
+
+    return products.map((p) => ({
+      ...p,
+      basePrice: priceMap.get(p.id) ?? p.basePrice,
+    }));
+  }
+};

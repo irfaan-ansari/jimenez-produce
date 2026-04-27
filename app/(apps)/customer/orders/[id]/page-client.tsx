@@ -13,7 +13,6 @@ import Link from "next/link";
 import { format } from "date-fns";
 import React, { use } from "react";
 import { formatUSD } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useOrder } from "@/hooks/use-customer";
 import {
@@ -23,6 +22,54 @@ import {
 import { STATUS_MAP } from "@/lib/constants/status-map";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { LiveTracking } from "./live-tracking";
+
+import { Badge } from "@/components/reui/badge";
+import {
+  Timeline,
+  TimelineContent,
+  TimelineDate,
+  TimelineHeader,
+  TimelineIndicator,
+  TimelineItem,
+  TimelineSeparator,
+  TimelineTitle,
+} from "@/components/reui/timeline";
+
+import { cn } from "@/lib/utils";
+import { CheckIcon, PlayIcon, CircleIcon } from "lucide-react";
+
+const releases = [
+  {
+    id: 1,
+    version: "v1.0",
+    date: "Jan 2025",
+    title: "Initial Release",
+    status: "released",
+  },
+  {
+    id: 2,
+    version: "v1.1",
+    date: "Mar 2025",
+    title: "Bug Fixes",
+    status: "released",
+  },
+  {
+    id: 3,
+    version: "v2.0",
+    date: "Jun 2025",
+    title: "Major Update",
+    status: "current",
+  },
+  {
+    id: 4,
+    version: "v2.1",
+    date: "Sep 2025",
+    title: "Improvements",
+    status: "upcoming",
+  },
+];
 
 type StatusIndex = keyof typeof STATUS_MAP;
 
@@ -93,18 +140,68 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
         </div>
 
         {/* progress */}
-        <Card className="rounded-2xl">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-4 text-lg font-semibold">
-              <MapPinned className="size-5 shrink-0" />
-              Order Progress
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="flex justify-between gap-4 text-base">
-            {STEPS.map((step, i) => (
-              <StepItem key={i} {...step} />
-            ))}
-          </CardContent>
+        <Card className="flex flex-row gap-6 rounded-2xl py-0">
+          <div className="flex-1">
+            <LiveTracking />
+          </div>
+          <div className="w-full max-w-2xs space-y-4 py-6">
+            <div>
+              <div className="flex-1 items-center space-y-2">
+                <h4 className="text-sm font-medium text-muted-foreground">
+                  Order #75675746887
+                </h4>
+                <p className="font-semibold">On its way to you</p>
+              </div>
+
+              <span className="inline-flex  h-8 items-center justify-self-end rounded-lg bg-yellow-500 px-3">
+                In Transit
+              </span>
+            </div>
+            <Timeline
+              defaultValue={3}
+              orientation="vertical"
+              className="w-full"
+            >
+              {releases.map((release) => (
+                <TimelineItem key={release.id} step={release.id}>
+                  <TimelineHeader>
+                    <TimelineSeparator className="bg-input! group-data-[orientation=horizontal]/timeline:-top-6 group-data-[orientation=horizontal]/timeline:left-2.5 group-data-[orientation=horizontal]/timeline:w-[calc(100%-2.25rem)]" />
+                    <TimelineDate>{release.date}</TimelineDate>
+                    <TimelineTitle className="flex items-center gap-2">
+                      {release.version}
+                      {release.status === "current" && (
+                        <Badge variant="primary-light" size="sm">
+                          Current
+                        </Badge>
+                      )}
+                    </TimelineTitle>
+                    <TimelineIndicator
+                      className={cn(
+                        "flex size-6 items-center justify-center border-none",
+                        release.status === "released" &&
+                          "bg-emerald-500 text-white",
+                        release.status === "current" &&
+                          "bg-primary text-primary-foreground",
+                        release.status === "upcoming" &&
+                          "bg-muted text-muted-foreground",
+                      )}
+                    >
+                      {release.status === "released" ? (
+                        <CheckIcon className="size-3.5" />
+                      ) : release.status === "current" ? (
+                        <PlayIcon className="size-3" />
+                      ) : (
+                        <CircleIcon className="size-3" />
+                      )}
+                    </TimelineIndicator>
+                  </TimelineHeader>
+                  <TimelineContent className="text-xs">
+                    {release.title}
+                  </TimelineContent>
+                </TimelineItem>
+              ))}
+            </Timeline>
+          </div>
         </Card>
 
         {/* purchased items */}
@@ -123,7 +220,10 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
             </div>
 
             {data.lineItems.map((line) => (
-              <div className="flex items-center justify-between gap-4 px-6 py-2">
+              <div
+                className="flex items-center justify-between gap-4 px-6 py-2"
+                key={line.id}
+              >
                 <div className="flex flex-1 items-center gap-3">
                   <Avatar className="size-9 rounded-lg ring-2 ring-green-600/20 ring-offset-1 **:rounded-lg after:hidden">
                     <AvatarImage src={line?.image!} />
@@ -159,6 +259,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
       </div>
 
       {/* order summary */}
+
       <Card className="col-span-2 rounded-2xl">
         <CardHeader>
           <CardTitle className="text-xl font-semibold">Order Summary</CardTitle>
@@ -185,7 +286,8 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
               <span>{data.charges?.type}</span>
               <span>{formatUSD(data.charges?.amount ?? 0)}</span>
             </div>
-            <div className="flex items-center justify-between text-lg font-semibold">
+            <Separator className="my-6" />
+            <div className="flex items-center justify-between text-xl font-semibold">
               <span>Total</span> <span>{formatUSD(data.total)}</span>
             </div>
           </div>
@@ -206,11 +308,9 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
               Reorder
             </Link>
           </Button>
-        </CardContent>
-        <CardHeader>
-          <CardTitle className="text-xl font-semibold">Delivery</CardTitle>
-        </CardHeader>
-        <CardContent>
+
+          <Separator className="my-6" />
+
           <div>
             <h4 className="mb-4 text-sm font-medium text-muted-foreground uppercase">
               Shipping Address

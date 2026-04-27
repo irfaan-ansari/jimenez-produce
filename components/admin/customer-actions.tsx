@@ -104,7 +104,7 @@ export const CustomerAction = ({ data, showView = true }: Props) => {
       open={open}
       setOpen={setOpen}
       trigger={
-        <Button size="icon" variant="outline" className="rounded-xl">
+        <Button size="icon" variant="outline" className="rounded-lg">
           <MoreVertical className="size-5" />
         </Button>
       }

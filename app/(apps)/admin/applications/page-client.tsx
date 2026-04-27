@@ -12,12 +12,13 @@ import { DataTable } from "@/components/admin/data-table";
 import { CustomerAction } from "@/components/admin/customer-actions";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { STATUS_MAP } from "@/lib/constants/status-map";
+import { CopyButton } from "@/components/copy-button";
 
 export const PageClient = () => {
   const { searchParams } = useRouterStuff();
 
   const { data, error, isPending, isError } = useCustomers(
-    searchParams.toString()
+    searchParams.toString(),
   );
 
   // data
@@ -40,29 +41,27 @@ export const columns: ColumnDef<CustomerSelectType>[] = [
       const {
         thumbnail,
         companyName,
-        companyStreet,
-        companyState,
-        companyZip,
+
+        companyPhone,
+        companyEmail,
         id,
       } = row.original;
       return (
         <Link
           href={`/admin/customers/${id}`}
-          className="flex gap-4 transition hover:underline"
+          className="flex items-start gap-2"
         >
-          <div className="shrink-0 pt-1.5">
-            <Avatar className="relative size-8 shrink-0 rounded-xl ring-2 ring-ring/30 **:rounded-xl">
+          <div className="shrink-0 pt-0.5">
+            <Avatar className="relative size-8 shrink-0 rounded-lg ring-2 ring-ring/30 **:rounded-lg">
               <AvatarImage src={thumbnail!} />
               <AvatarFallback>A</AvatarFallback>
             </Avatar>
           </div>
-          <div className="w-full max-w-3xs space-y-1 overflow-hidden">
-            <h4 className="text-base font-medium ">{companyName}</h4>
-            <div className="flex flex-col text-muted-foreground">
-              <span className="line-clamp-1 text-sm">{companyStreet}</span>
-              <span className="text-sm">
-                {companyState} - {companyZip}
-              </span>
+          <div className="flex flex-col">
+            <h4 className="font-medium">{companyName}</h4>
+            <div className="-space-y-1">
+              <CopyButton value={companyPhone} />
+              <CopyButton value={companyEmail} />
             </div>
           </div>
         </Link>
@@ -71,18 +70,37 @@ export const columns: ColumnDef<CustomerSelectType>[] = [
   },
   {
     accessorKey: "officerFirst",
-    header: "Primary Contact",
+    header: "Manager",
     cell: ({ row }) => {
       const { officerFirst, officerLast, officerMobile, officerEmail } =
         row.original;
       return (
         <div className="space-y-1">
-          <h4 className="text-[15px] font-medium">
+          <h4 className="font-medium">
             {officerFirst} {officerLast}
           </h4>
+          <div className="-space-y-1">
+            <CopyButton value={officerMobile} />
+            <CopyButton value={officerEmail} />
+          </div>
+        </div>
+      );
+    },
+  },
+  {
+    id: "address",
+    header: "Address",
+    cell: ({ row }) => {
+      const { companyStreet, companyState, companyZip, companyCity } =
+        row.original;
+      return (
+        <div className="space-y-1">
+          <h4 className="font-medium">{companyStreet}</h4>
           <div className="flex flex-col text-muted-foreground">
-            <span className="text-sm">{officerMobile}</span>
-            <span className="text-sm">{officerEmail}</span>
+            <span className="text-sm">{companyCity},</span>
+            <span className="text-sm">
+              {companyState} {companyZip}
+            </span>
           </div>
         </div>
       );
@@ -97,9 +115,7 @@ export const columns: ColumnDef<CustomerSelectType>[] = [
         <div className="flex items-start gap-2">
           {deliverySchedule.length > 0 ? (
             <div className="space-y-1">
-              <h4 className="text-[15px] font-medium">
-                {deliverySchedule?.[0]?.day}
-              </h4>
+              <h4 className="font-medium">{deliverySchedule?.[0]?.day}</h4>
               <div className="flex flex-col text-muted-foreground">
                 <span className="text-sm">{deliverySchedule?.[0]?.window}</span>
                 <span className="text-sm">
@@ -121,10 +137,10 @@ export const columns: ColumnDef<CustomerSelectType>[] = [
   },
   {
     accessorKey: "createdAt",
-    header: "Date Applied",
+    header: "Applied",
     cell: ({ row }) => {
       return (
-        <div className="flex flex-col">
+        <div className="flex flex-col gap-1">
           <span className="font-medium">
             {format(row.original.createdAt!, "MMMM dd, yyyy")}
           </span>

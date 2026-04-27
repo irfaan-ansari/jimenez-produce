@@ -505,7 +505,11 @@ export const order = pgTable(
     lineItemQuantity: text("line_item_quantity"),
     lineItemTotal: text("line_item_total"),
     subtotal: text("subtotal").notNull(),
+    taxableSubtotal: text("taxable_subtotal").notNull().default("0"),
+    nonTaxableSubtotal: text("non_taxable_subtotal").notNull().default("0"),
     discount: text("discount").default("0").notNull(),
+    taxName: text("tax_name"),
+    taxRate: text("tax_rate"),
     tax: text("tax").default("0").notNull(),
     charges: jsonb("charges").$type<{
       type: string;
@@ -551,9 +555,11 @@ export const lineItem = pgTable(
       .$type<string[]>()
       .default(sql`'[]'::jsonb`),
     price: text("price"),
-    offerPrice: text("offer_price"),
     quantity: text("quantity"),
-    total: text("total"),
+    subtotal: text("subtotal").default("0"),
+    isTaxable: boolean("is_taxable").default(false),
+    taxAmount: text("tax_amount").default("0"),
+    total: text("total").default("0"),
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at")
       .defaultNow()
