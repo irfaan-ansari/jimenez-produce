@@ -49,6 +49,7 @@ import {
   ComboboxValue,
   useComboboxAnchor,
 } from "@/components/ui/combobox";
+import { truncateSync } from "fs";
 
 const schema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -146,7 +147,7 @@ export const CustomerDialog = ({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="overflow-hidden rounded-2xl px-0 ring-ring/10 sm:max-w-2xl">
+      <DialogContent className="rounded-2xl px-0 ring-ring/10 sm:max-w-2xl overflow-visible">
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -249,10 +250,10 @@ export const CustomerDialog = ({
                         </ComboboxChips>
                         <ComboboxContent
                           anchor={anchor}
-                          className="pointer-events-auto"
+                          className="pointer-events-auto h-full overflow-auto! overscroll-contain"
                         >
                           <ComboboxEmpty>No rule found.</ComboboxEmpty>
-                          <ComboboxList>
+                          <ComboboxList onWheel={(e) => e.stopPropagation()}>
                             {(team) => (
                               <ComboboxItem key={team.id} value={team}>
                                 {team.name}

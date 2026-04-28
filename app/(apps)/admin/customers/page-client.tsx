@@ -21,7 +21,7 @@ import { Tooltip } from "@/components/tooltip";
 export const PageClient = () => {
   const { searchParams } = useRouterStuff();
   const { data, isPending, error, isError } = useTeams(searchParams.toString());
-  console.log(data);
+
   // data
   return (
     <DataTable
