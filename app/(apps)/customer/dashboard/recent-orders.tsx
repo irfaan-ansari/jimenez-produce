@@ -19,7 +19,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export const RecentOrders = () => {
   const { data, isPending, isError, error } = useOrders({
-    path: "/api/orders/customer",
+    path: "/api/teams/orders",
     query: "limit=5",
   });
   return (
@@ -37,7 +37,7 @@ export const RecentOrders = () => {
               <TableHead className="p-4">Order</TableHead>
               <TableHead className="p-4">Placed</TableHead>
               <TableHead className="p-4">Delivery</TableHead>
-              <TableHead className="p-4 text-right w-24">Total</TableHead>
+              <TableHead className="w-24 p-4 text-right">Total</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>

@@ -27,7 +27,7 @@ const OrdersPage = async () => {
         </div>
         <div className="flex items-center justify-end gap-4">
           <SearchBar />
-          <Button size="xl">
+          <Button size="xl" className="rounded-xl">
             <Plus /> Draft Order
           </Button>
         </div>

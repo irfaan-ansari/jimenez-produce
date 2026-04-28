@@ -104,7 +104,7 @@ export function AppSidebar({ session }: { session: Session }) {
                         {item.items?.map((subItem) => (
                           <SidebarMenuSubItem
                             key={subItem.href}
-                            className="after:absolute  after:top-1/2 after:-left-3.5 after:size-2 after:-translate-y-1/2  after:rounded-full after:bg-(--color) after:opacity-0 after:transition group-data-[active=true]/collapsible:after:opacity-100"
+                            className="after:absolute after:top-1/2 after:-left-3.5 after:size-2 after:-translate-y-1/2  after:rounded-full after:bg-(--color) after:opacity-0 after:transition group-data-[active=true]/collapsible:after:opacity-100"
                             style={
                               {
                                 "--color": subItem.color,
@@ -230,8 +230,8 @@ const SidebarTeam = ({ session: auth }: { session: Session }) => {
             }
           >
             <div className="flex flex-col gap-0.5 px-2">
-              <span className="px-2 pt-1 pb-2 text-xs font-medium text-muted-foreground">
-                ACCOUNTS
+              <span className="px-2 text-xs font-medium text-muted-foreground">
+                Accounts
               </span>
               {isPending ? (
                 <Skeleton className="h-9 w-full" />

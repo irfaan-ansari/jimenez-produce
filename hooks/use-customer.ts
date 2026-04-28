@@ -20,7 +20,7 @@ export const useCustomers = (query?: string) => {
   return useQuery({
     queryKey: ["customers", query],
     queryFn: () => {
-      return fetcher<CustomerResponse>(`/api/customers?${query}`);
+      return fetcher<CustomerResponse>(`/api/applications/customer?${query}`);
     },
     staleTime: 1000 * 60 * 5,
   });
@@ -29,7 +29,7 @@ export const useCustomers = (query?: string) => {
 export const useCustomer = (id: string | number) => {
   return useQuery<{ data: CustomerSelectType }>({
     queryKey: ["customer", id],
-    queryFn: () => fetcher(`/api/customers/${id}`),
+    queryFn: () => fetcher(`/api/applications/customer/${id}`),
     enabled: !!id,
     staleTime: 1000 * 60 * 5,
   });
@@ -39,7 +39,7 @@ export const useInvites = (query?: string) => {
   return useQuery({
     queryKey: ["invites", query],
     queryFn: () => {
-      return fetcher<CustomerInviteResponse>(`/api/invites${query}`);
+      return fetcher<CustomerInviteResponse>(`/api/invites/customer${query}`);
     },
     staleTime: 1000 * 60 * 5,
   });

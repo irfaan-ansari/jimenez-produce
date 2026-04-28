@@ -125,6 +125,7 @@ export const auth = betterAuth({
       },
     }),
     phoneNumber({
+      allowedAttempts: 3,
       sendOTP: ({ phoneNumber, code }, ctx) => {
         console.log("sending", phoneNumber, code);
       },

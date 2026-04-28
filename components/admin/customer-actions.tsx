@@ -116,7 +116,7 @@ export const CustomerAction = ({ data, showView = true }: Props) => {
           className="flex items-center gap-2"
           asChild
         >
-          <Link href={`/admin/customers/${id}`}>
+          <Link href={`/admin/applications/customer/${id}`}>
             <Eye />
             View
           </Link>
@@ -149,7 +149,7 @@ export const CustomerAction = ({ data, showView = true }: Props) => {
       ))}
 
       <Button variant="ghost" asChild>
-        <a href={`/api/customers/${id}/pdf`} target="_blank">
+        <a href={`/api/applications/customer/${id}/pdf`} target="_blank">
           <FileText /> Download PDF
         </a>
       </Button>

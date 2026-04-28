@@ -19,7 +19,7 @@ export const PageClient = () => {
   const { searchParams } = useRouterStuff();
 
   const { data, error, isPending, isError } = useOrders({
-    path: "/api/orders/customer",
+    path: "/api/teams/orders",
     query: searchParams.toString(),
   });
 
@@ -98,7 +98,7 @@ export const columns: ColumnDef<OrderType>[] = [
     },
     cell: ({ row }) => {
       return (
-        <span className="font-medium text-right block">
+        <span className="block text-right font-medium">
           {formatUSD(row.original.total)}
         </span>
       );

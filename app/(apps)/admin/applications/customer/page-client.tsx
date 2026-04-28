@@ -48,7 +48,7 @@ export const columns: ColumnDef<CustomerSelectType>[] = [
       } = row.original;
       return (
         <Link
-          href={`/admin/customers/${id}`}
+          href={`/admin/applications/customer/${id}`}
           className="flex items-start gap-2"
         >
           <div className="shrink-0 pt-0.5">

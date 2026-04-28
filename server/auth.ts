@@ -8,7 +8,13 @@ import { Role } from "@/lib/types";
 import { headers } from "next/headers";
 import { getInitialsAvatar } from "@/lib/utils";
 import { handleAction } from "@/lib/helper/error-handler";
-import { member, organization, team, teamMember } from "@/lib/db/auth-schema";
+import {
+  member,
+  organization,
+  team,
+  teamMember,
+  user,
+} from "@/lib/db/auth-schema";
 import { taxRuleItem } from "@/lib/db/schema";
 
 type SignupProps = {
@@ -26,6 +32,43 @@ type SignupProps = {
 export const getSession = cache(async () => {
   return await auth.api.getSession({ headers: await headers() });
 });
+
+/**
+ * send otp to user
+ * @param phoneNumber
+ */
+export const sendOtp = handleAction(
+  async ({ phoneNumber }: { phoneNumber: string }) => {
+    const account = await db.query.user.findFirst({
+      where: eq(user.phoneNumber, phoneNumber),
+    });
+
+    if (!account) throw new Error("Invalid phone number");
+
+    return await auth.api.sendPhoneNumberOTP({
+      body: {
+        phoneNumber,
+      },
+    });
+  },
+);
+
+export const verifyOtp = handleAction(
+  async ({ phoneNumber, code }: { phoneNumber: string; code: string }) => {
+    const account = await db.query.user.findFirst({
+      where: eq(user.phoneNumber, phoneNumber),
+    });
+
+    if (!account) throw new Error("Invalid phone number");
+
+    return await auth.api.verifyPhoneNumber({
+      body: {
+        phoneNumber,
+        code,
+      },
+    });
+  },
+);
 
 /**
  * signup user

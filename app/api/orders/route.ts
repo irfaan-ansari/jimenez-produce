@@ -1,8 +1,8 @@
 import { db } from "@/lib/db";
 import { order } from "@/lib/db/schema";
-import { getQueryObject } from "@/lib/helper/query";
 import { getSession } from "@/server/auth";
 import { or, and, ilike, eq } from "drizzle-orm";
+import { getQueryObject } from "@/lib/helper/query";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -45,7 +45,6 @@ export async function GET(req: NextRequest) {
     });
 
     const total = await db.$count(order, filters);
-    console.log(total, response);
 
     return NextResponse.json(
       {

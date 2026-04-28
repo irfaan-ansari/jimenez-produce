@@ -37,6 +37,7 @@ const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
           "--sidebar-width": "16rem",
         } as React.CSSProperties
       }
+      className="bg-slate-50"
     >
       <AppSidebar session={{ session, user }} />
       <SidebarInset className="min-w-0 bg-slate-50 dark:bg-zinc-950">

@@ -40,13 +40,12 @@ import { APPLICATION_GROUP, SIDEBAR_MENU, SITE_CONFIG } from "@/lib/config";
 
 export function AppSidebar({ session }: { session: Session }) {
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar collapsible="icon" variant="floating">
       <SidebarOrganization />
       <SidebarContent>
         <SidebarGroup>
           <MenuGroup menu={SIDEBAR_MENU} />
-        </SidebarGroup>
-        <SidebarGroup>
+
           <SidebarGroupLabel>Applications</SidebarGroupLabel>
           <MenuGroup menu={APPLICATION_GROUP} />
         </SidebarGroup>
@@ -81,10 +80,10 @@ const MenuGroup = ({ menu }: { menu: typeof SIDEBAR_MENU }) => {
                 asChild
                 isActive={isActive(item.href)}
                 tooltip={item.label}
-                className="h-10 rounded-xl px-3.5 transition duration-200 hover:bg-muted hover:text-sidebar-foreground data-active:hover:bg-sidebar-accent data-active:hover:text-sidebar-accent-foreground"
+                className="h-10 rounded-xl px-3.5 transition duration-200 group-data-[collapsible=icon]:px-1.5! hover:bg-muted hover:text-sidebar-foreground data-active:hover:bg-sidebar-accent data-active:hover:text-sidebar-accent-foreground"
               >
                 <Link href={item.href}>
-                  {item.icon && <item.icon className="opacity-80" />}
+                  {item.icon && <item.icon />}
                   <span>{item.label}</span>
                 </Link>
               </SidebarMenuButton>
@@ -105,10 +104,10 @@ const MenuGroup = ({ menu }: { menu: typeof SIDEBAR_MENU }) => {
                   tooltip={item.label}
                   isActive={isActive(item.href)}
                   asChild
-                  className="h-10 px-3.5 transition duration-200 hover:bg-muted hover:text-sidebar-foreground data-open:hover:bg-muted data-open:hover:text-sidebar-foreground data-active:hover:bg-sidebar-accent data-active:hover:text-sidebar-accent-foreground"
+                  className="h-10 px-3.5 transition duration-200 group-data-[collapsible=icon]:px-1.5! hover:bg-muted hover:text-sidebar-foreground data-open:hover:bg-muted data-open:hover:text-sidebar-foreground data-active:hover:bg-sidebar-accent data-active:hover:text-sidebar-accent-foreground"
                 >
                   <Link href={item.href}>
-                    {item.icon && <item.icon className="opacity-80" />}
+                    {item.icon && <item.icon />}
                     <span>{item.label}</span>
                     <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                   </Link>
@@ -116,11 +115,11 @@ const MenuGroup = ({ menu }: { menu: typeof SIDEBAR_MENU }) => {
               </CollapsibleTrigger>
 
               <CollapsibleContent>
-                <SidebarMenuSub>
+                <SidebarMenuSub className="ml-5">
                   {item.items?.map((subItem) => (
                     <SidebarMenuSubItem
                       key={subItem.href}
-                      className="after:absolute  after:top-1/2 after:-left-3.5 after:size-2 after:-translate-y-1/2  after:rounded-full after:bg-(--color) after:opacity-0 after:transition group-data-[active=true]/collapsible:after:opacity-100"
+                      className="after:absolute after:top-1/2 after:-left-3.5 after:size-2 after:-translate-y-1/2  after:rounded-full after:bg-(--color) after:opacity-0 after:transition group-data-[active=true]/collapsible:after:opacity-100"
                       style={
                         {
                           "--color": subItem.color,
@@ -129,7 +128,7 @@ const MenuGroup = ({ menu }: { menu: typeof SIDEBAR_MENU }) => {
                     >
                       <SidebarMenuSubButton
                         asChild
-                        className="rounded-xl px-3 hover:bg-muted hover:text-sidebar-foreground data-active:bg-muted data-active:text-sidebar-foreground"
+                        className="rounded-xl px-3  hover:bg-muted hover:text-sidebar-foreground data-active:bg-muted data-active:text-sidebar-foreground"
                         isActive={isSubItemActive(subItem.href)}
                       >
                         <Link href={subItem.href}>

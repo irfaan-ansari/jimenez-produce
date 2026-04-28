@@ -4,11 +4,7 @@ import {
   ClipboardList,
   Inbox,
   LayoutDashboard,
-  Settings,
-  ShoppingCart,
   Tag,
-  UserPlus,
-  Users,
 } from "lucide-react";
 import {
   Dashboard,
@@ -16,6 +12,11 @@ import {
   ShoppingBag,
   Settings as SettingsDuo,
   CoinStack,
+  File,
+  Building,
+  User,
+  IdCard,
+  Clipboard,
 } from "@duo-icons/react";
 
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL!;
@@ -53,13 +54,13 @@ export const SITE_CONFIG = {
 export const SIDEBAR_MENU = [
   {
     label: "Overview",
-    icon: LayoutDashboard,
+    icon: Dashboard,
     href: "/admin/overview",
     items: [],
   },
   {
     label: "Orders",
-    icon: Inbox,
+    icon: FolderOpen,
     href: "/admin/orders",
     items: [
       {
@@ -88,7 +89,7 @@ export const SIDEBAR_MENU = [
 
   {
     label: "Products",
-    icon: Tag,
+    icon: File,
     href: "/admin/products",
     items: [
       {
@@ -130,19 +131,19 @@ export const SIDEBAR_MENU = [
   },
   {
     label: "Warehouses",
-    icon: Building2,
+    icon: Building,
     href: "/admin/warehouses",
     items: [],
   },
   {
     label: "Customers",
-    icon: BriefcaseBusiness,
+    icon: IdCard,
     href: "/admin/customers",
     items: [],
   },
   {
     label: "Users",
-    icon: Users,
+    icon: User,
     href: "/admin/users",
     items: [],
   },
@@ -151,94 +152,95 @@ export const SIDEBAR_MENU = [
 export const APPLICATION_GROUP = [
   {
     label: "Customer",
-    icon: BriefcaseBusiness,
-    href: "/admin/applications",
+    icon: IdCard,
+    href: "/admin/applications/customer",
     items: [
       {
         label: "All",
-        href: "/admin/applications",
+        href: "/admin/applications/customer",
         color: "#A1A1AA",
       },
       {
         label: "New",
-        href: "/admin/applications?status=new",
+        href: "/admin/applications/customer?status=new",
         color: "#F59E0B",
       },
       {
         label: "Under Review",
-        href: "/admin/applications?status=under_review",
+        href: "/admin/applications/customer?status=under_review",
         color: "#8B5CF6",
       },
       {
         label: "Approved",
-        href: "/admin/applications?status=active",
+        href: "/admin/applications/customer?status=active",
         color: "#22C55E",
       },
       {
         label: "On Hold",
-        href: "/admin/applications?status=on_hold",
+        href: "/admin/applications/customer?status=on_hold",
         color: "#3B82F6",
       },
       {
         label: "Rejected",
-        href: "/admin/applications?status=rejected",
+        href: "/admin/applications/customer?status=rejected",
         color: "#EF4444",
       },
       {
         label: "Data Submitted",
-        href: "/admin/applications?status=submitted",
+        href: "/admin/applications/customer?status=submitted",
         color: "#A1A1AA",
       },
       {
         label: "Invites",
-        href: "/admin/applications/invites",
+        href: "/admin/applications/customer/invites",
         color: "#A1A1AA",
       },
     ],
   },
   {
-    label: "Job",
-    icon: ClipboardList,
-    href: "/admin/job-applications",
+    label: "Candidate",
+    icon: Clipboard,
+    href: "/admin/applications/candidate",
     items: [
       {
         label: "All",
-        href: "/admin/job-applications",
+        href: "/admin/applications/candidate",
         color: "#A1A1AA",
       },
       {
         label: "New",
-        href: "/admin/job-applications?status=new",
+        href: "/admin/applications/candidate?status=new",
         color: "#F59E0B",
       },
       {
         label: "Interview",
-        href: "/admin/job-applications?status=interview",
+        href: "/admin/applications/candidate?status=interview",
         color: "#8B5CF6",
       },
       {
         label: "Agreement",
-        href: "/admin/job-applications?status=pending",
+        href: "/admin/applications/candidate?status=pending",
         color: "#3B82F6",
       },
       {
         label: "Hired",
-        href: "/admin/job-applications?status=hired",
+        href: "/admin/applications/candidate?status=hired",
         color: "#22C55E",
       },
       {
         label: "Rejected",
-        href: "/admin/job-applications?status=rejected",
+        href: "/admin/applications/candidate?status=rejected",
         color: "#EF4444",
       },
       {
         label: "Invites",
-        href: "/admin/job-applications/job-invites",
+        href: "/admin/applications/candidate/invites",
         color: "#A1A1AA",
       },
     ],
   },
 ];
+
 export const SIDEBAR_MENU_CUSTOMER = [
   {
     label: "Dashboard",

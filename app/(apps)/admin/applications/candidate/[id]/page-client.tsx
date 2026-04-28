@@ -48,19 +48,19 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
       className="grid grid-cols-6 gap-8"
       style={{ "--color": status.color } as React.CSSProperties}
     >
-      <div className="col-span-6 lg:col-span-4 space-y-6">
-        <div className="flex gap-4 items-center">
+      <div className="col-span-6 space-y-6 lg:col-span-4">
+        <div className="flex items-center gap-4">
           <Button
             size="sm"
             asChild
             variant="outline"
-            className="rounded-xl shrink-0"
+            className="shrink-0 rounded-xl"
           >
-            <Link href="/admin/job-applications">
+            <Link href="/admin/applications/candidate">
               <ChevronLeft /> Back
             </Link>
           </Button>
-          <h1 className="text-xl font-semibold flex-1 truncate">
+          <h1 className="flex-1 truncate text-xl font-semibold">
             {data.applicantName}
           </h1>
           {/* action button */}
@@ -69,7 +69,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
         {/* applicant details */}
         <Card className="rounded-2xl">
           <CardHeader className="flex flex-row gap-4">
-            <Avatar className="shrink-0 after:hidden size-12 ring-2 rounded-xl **:rounded-xl ring-offset-1 ring-(--color)/30 relative">
+            <Avatar className="relative size-12 shrink-0 rounded-xl ring-2 ring-(--color)/30 ring-offset-1 **:rounded-xl after:hidden">
               <AvatarImage src={thumbnail!} />
               <AvatarFallback>A</AvatarFallback>
             </Avatar>
@@ -81,18 +81,18 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
             </div>
             <Badge
               variant="outline"
-              className="ml-auto h-7 rounded-xl pl-1.5 pr-2.5 gap-1.5 [&>svg]:size-3.5! bg-(--color)/10 border-(--color)/10 text-sm"
+              className="ml-auto h-7 gap-1.5 rounded-xl border-(--color)/10 bg-(--color)/10 pr-2.5 pl-1.5 text-sm [&>svg]:size-3.5!"
             >
               <status.icon className="text-(--color)" />
               {status.label}
             </Badge>
           </CardHeader>
           <div className="px-6">
-            <span className="border-b block"></span>
+            <span className="block border-b"></span>
           </div>
-          <CardContent className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <CardContent className="grid grid-cols-1 gap-6 lg:grid-cols-2">
             <div className="space-y-2">
-              <p className="text-muted-foreground uppercase font-medium">
+              <p className="font-medium text-muted-foreground uppercase">
                 Applicant Name
               </p>
               <p className="text-base">
@@ -100,11 +100,11 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
               </p>
             </div>
             <div className="space-y-2">
-              <p className="text-muted-foreground uppercase font-medium">DOB</p>
+              <p className="font-medium text-muted-foreground uppercase">DOB</p>
               <p className="text-base">{format(data.dob, "MMMM dd, yyyy")}</p>
             </div>
             <div className="space-y-2">
-              <p className="text-muted-foreground uppercase font-medium">
+              <p className="font-medium text-muted-foreground uppercase">
                 Available Date
               </p>
               <p className="text-base">
@@ -112,35 +112,35 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
               </p>
             </div>
             <div className="space-y-2">
-              <p className="text-muted-foreground uppercase font-medium">
+              <p className="font-medium text-muted-foreground uppercase">
                 Social Security #
               </p>
               <p className="text-base">{data.socialSecurity}</p>
             </div>
             <div className="space-y-2">
-              <p className="text-muted-foreground uppercase font-medium">
+              <p className="font-medium text-muted-foreground uppercase">
                 Work Authorization
               </p>
               <p className="text-base capitalize">{data.hasLegalRights}</p>
             </div>
             <div className="space-y-2">
-              <p className="text-muted-foreground uppercase font-medium">
+              <p className="font-medium text-muted-foreground uppercase">
                 Contact Details
               </p>
               <div className="space-y-1">
-                <div className="flex gap-2 items-center flex-nowrap">
+                <div className="flex flex-nowrap items-center gap-2">
                   <Phone className="size-4 shrink-0" />
                   <span>{data.phone}</span>
                 </div>
                 <span className="h-4 w-0.5 bg-foreground/20"></span>
-                <div className="flex gap-2 items-center flex-nowrap">
+                <div className="flex flex-nowrap items-center gap-2">
                   <MailCheck className="size-4 shrink-0" />
                   <span>{data.email}</span>
                 </div>
               </div>
             </div>
             <div className="space-y-2">
-              <p className="text-muted-foreground uppercase font-medium">
+              <p className="font-medium text-muted-foreground uppercase">
                 Current Address
               </p>
               <p className="text-base">
@@ -149,7 +149,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
               </p>
             </div>
             <div className="space-y-2">
-              <p className="text-muted-foreground uppercase font-medium">
+              <p className="font-medium text-muted-foreground uppercase">
                 Previous Address
               </p>
               <p className="text-base">
@@ -166,58 +166,58 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
             <CardTitle className="text-xl font-semibold">Education</CardTitle>
           </CardHeader>
 
-          <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <CardContent className="grid grid-cols-1 gap-6 md:grid-cols-2">
             <div className="space-y-2">
-              <div className="text-muted-foreground uppercase font-medium">
+              <div className="font-medium text-muted-foreground uppercase">
                 Name
               </div>
               <div className="text-base">{data.collage?.institutionName}</div>
             </div>
             <div className="space-y-1">
-              <div className="text-muted-foreground textsm">School</div>
+              <div className="textsm text-muted-foreground">School</div>
               <div className="text-base">{data.collage?.fieldOfStudy}</div>
             </div>
             <div className="space-y-1">
-              <div className="text-muted-foreground textsm">Location</div>
+              <div className="textsm text-muted-foreground">Location</div>
               <div className="text-base">{data.collage?.location}</div>
             </div>
             <div className="space-y-1">
-              <div className="text-muted-foreground textsm">Year Completed</div>
+              <div className="textsm text-muted-foreground">Year Completed</div>
               <div className="text-base">{data.collage?.yearCompleted}</div>
             </div>
-            <div className="space-y-1 col-span-2">
-              <div className="text-muted-foreground textsm">Details</div>
+            <div className="col-span-2 space-y-1">
+              <div className="textsm text-muted-foreground">Details</div>
               <div className="text-base">{data.collage?.details}</div>
             </div>
           </CardContent>
 
           <CardContent className="grid grid-cols-2 gap-6 border-t pt-6">
             <div className="space-y-2">
-              <div className="text-muted-foreground uppercase font-medium">
+              <div className="font-medium text-muted-foreground uppercase">
                 Institution Name
               </div>
               <div className="text-base">{data.collage?.institutionName}</div>
             </div>
             <div className="space-y-1">
-              <div className="text-muted-foreground uppercase font-medium">
+              <div className="font-medium text-muted-foreground uppercase">
                 Field of Study
               </div>
               <div className="text-base">{data.collage?.fieldOfStudy}</div>
             </div>
             <div className="space-y-1">
-              <div className="text-muted-foreground uppercase font-medium">
+              <div className="font-medium text-muted-foreground uppercase">
                 Location
               </div>
               <div className="text-base">{data.collage?.location}</div>
             </div>
             <div className="space-y-1">
-              <div className="text-muted-foreground uppercase font-medium">
+              <div className="font-medium text-muted-foreground uppercase">
                 Year Completed
               </div>
               <div className="text-base">{data.collage?.yearCompleted}</div>
             </div>
-            <div className="space-y-1 col-span-2">
-              <div className="text-muted-foreground uppercase font-medium">
+            <div className="col-span-2 space-y-1">
+              <div className="font-medium text-muted-foreground uppercase">
                 Details
               </div>
               <div className="text-base">{data.collage?.details}</div>
@@ -232,35 +232,35 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
                 </CardHeader>
                 {data.otherEducations?.map((edu, i) => (
                   <CardContent
-                    className="grid grid-cols-2 gap-6 not-last:pb-6 not-last:border-b"
+                    className="grid grid-cols-2 gap-6 not-last:border-b not-last:pb-6"
                     key={i}
                   >
                     <div className="space-y-1">
-                      <div className="text-muted-foreground uppercase font-medium">
+                      <div className="font-medium text-muted-foreground uppercase">
                         Institution Name
                       </div>
                       <div className="text-base">{edu?.institutionName}</div>
                     </div>
                     <div className="space-y-1">
-                      <div className="text-muted-foreground uppercase font-medium">
+                      <div className="font-medium text-muted-foreground uppercase">
                         Field of Study
                       </div>
                       <div className="text-base">{edu?.fieldOfStudy}</div>
                     </div>
                     <div className="space-y-1">
-                      <div className="text-muted-foreground uppercase font-medium">
+                      <div className="font-medium text-muted-foreground uppercase">
                         Location
                       </div>
                       <div className="text-base">{edu?.location}</div>
                     </div>
                     <div className="space-y-1">
-                      <div className="text-muted-foreground uppercase font-medium">
+                      <div className="font-medium text-muted-foreground uppercase">
                         Year Completed
                       </div>
                       <div className="text-base">{edu?.yearCompleted}</div>
                     </div>
-                    <div className="space-y-1 col-span-2">
-                      <div className="text-muted-foreground uppercase font-medium">
+                    <div className="col-span-2 space-y-1">
+                      <div className="font-medium text-muted-foreground uppercase">
                         Details
                       </div>
                       <div className="text-base">{edu?.details}</div>
@@ -282,34 +282,34 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
             {data.experience.map((emp, i) => (
               <CardContent
                 key={i}
-                className="grid grid-cols-2 gap-6 not-last:pb-6 not-last:border-b"
+                className="grid grid-cols-2 gap-6 not-last:border-b not-last:pb-6"
               >
                 <div className="space-y-1">
-                  <div className="text-muted-foreground uppercase font-medium">
+                  <div className="font-medium text-muted-foreground uppercase">
                     Employer Name
                   </div>
                   <div className="text-base">{emp.employerName}</div>
                 </div>
                 <div className="space-y-1">
-                  <div className="text-muted-foreground uppercase font-medium">
+                  <div className="font-medium text-muted-foreground uppercase">
                     Employer Phone
                   </div>
                   <div className="text-base">{emp.phone}</div>
                 </div>
                 <div className="space-y-1">
-                  <div className="text-muted-foreground uppercase font-medium">
+                  <div className="font-medium text-muted-foreground uppercase">
                     Employer Address
                   </div>
                   <div className="text-base">{emp.address}</div>
                 </div>
                 <div className="space-y-1">
-                  <div className="text-muted-foreground uppercase font-medium">
+                  <div className="font-medium text-muted-foreground uppercase">
                     Position
                   </div>
                   <div className="text-base">{emp.position}</div>
                 </div>
                 <div className="space-y-1">
-                  <div className="text-muted-foreground uppercase font-medium">
+                  <div className="font-medium text-muted-foreground uppercase">
                     Duration
                   </div>
                   <div className="text-base">
@@ -322,31 +322,31 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
                   </div>
                 </div>
                 <div className="space-y-1">
-                  <div className="text-muted-foreground uppercase font-medium">
+                  <div className="font-medium text-muted-foreground uppercase">
                     Salary
                   </div>
                   <div className="text-base">{emp.salary}</div>
                 </div>
                 <div className="space-y-1">
-                  <div className="text-muted-foreground uppercase font-medium">
+                  <div className="font-medium text-muted-foreground uppercase">
                     FMCSA Applied
                   </div>
                   <div className="capitalize">{emp.safetySensitive}</div>
                 </div>
                 <div className="space-y-1">
-                  <div className="text-muted-foreground uppercase font-medium">
+                  <div className="font-medium text-muted-foreground uppercase">
                     Safety-Sensitive (DOT)
                   </div>
                   <div className="capitalize">{emp.subjectToFmcsa}</div>
                 </div>
                 <div className="space-y-1">
-                  <div className="text-muted-foreground uppercase font-medium">
+                  <div className="font-medium text-muted-foreground uppercase">
                     Reason for Leaving
                   </div>
                   <div className="text-base">{emp.reasonForLeaving}</div>
                 </div>
                 <div className="space-y-1">
-                  <div className="text-muted-foreground uppercase font-medium">
+                  <div className="font-medium text-muted-foreground uppercase">
                     Explain eny Gaps
                   </div>
                   <div className="text-base">{emp.gap}</div>
@@ -367,34 +367,34 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
             {data.addresses.map((add, i) => (
               <CardContent
                 key={i}
-                className="grid grid-cols-2 gap-6 not-last:pb-6 not-last:boredr-b"
+                className="not-last:boredr-b grid grid-cols-2 gap-6 not-last:pb-6"
               >
                 <div className="space-y-1">
-                  <div className="text-muted-foreground uppercase font-medium">
+                  <div className="font-medium text-muted-foreground uppercase">
                     Street
                   </div>
                   <div className="text-base">{add.street}</div>
                 </div>
                 <div className="space-y-1">
-                  <div className="text-muted-foreground uppercase font-medium">
+                  <div className="font-medium text-muted-foreground uppercase">
                     City
                   </div>
                   <div className="text-base">{add.city}</div>
                 </div>
                 <div className="space-y-1">
-                  <div className="text-muted-foreground uppercase font-medium">
+                  <div className="font-medium text-muted-foreground uppercase">
                     State
                   </div>
                   <div className="text-base">{add.state}</div>
                 </div>
                 <div className="space-y-1">
-                  <div className="text-muted-foreground uppercase font-medium">
+                  <div className="font-medium text-muted-foreground uppercase">
                     Zip
                   </div>
                   <div className="text-base">{add.zip}</div>
                 </div>
                 <div className="space-y-1">
-                  <div className="text-muted-foreground uppercase font-medium">
+                  <div className="font-medium text-muted-foreground uppercase">
                     Years at Address
                   </div>
                   <div className="text-base">{add.yearsAtAddress}</div>
@@ -409,9 +409,9 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
           <CardHeader className="border-b">
             <CardTitle className="text-xl font-semibold">License</CardTitle>
           </CardHeader>
-          <CardContent className="grid grid-cols-2 gap-6 not-last:pb-6 not-last:border-b">
+          <CardContent className="grid grid-cols-2 gap-6 not-last:border-b not-last:pb-6">
             <div className="space-y-1">
-              <div className="text-muted-foreground uppercase font-medium">
+              <div className="font-medium text-muted-foreground uppercase">
                 License #
               </div>
               <div className="text-base">
@@ -419,7 +419,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
               </div>
             </div>
             <div className="space-y-1">
-              <div className="text-muted-foreground uppercase font-medium">
+              <div className="font-medium text-muted-foreground uppercase">
                 Type/Class
               </div>
               <div className="text-base">
@@ -427,7 +427,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
               </div>
             </div>
             <div className="space-y-1">
-              <div className="text-muted-foreground uppercase font-medium">
+              <div className="font-medium text-muted-foreground uppercase">
                 Expiry Date
               </div>
               <div className="text-base">
@@ -437,7 +437,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
               </div>
             </div>
             <div className="space-y-1">
-              <div className="text-muted-foreground uppercase font-medium">
+              <div className="font-medium text-muted-foreground uppercase">
                 Endorsements
               </div>
               <div className="text-base">
@@ -445,7 +445,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
               </div>
             </div>
             <div className="space-y-1">
-              <div className="text-muted-foreground uppercase font-medium">
+              <div className="font-medium text-muted-foreground uppercase">
                 Issuing State
               </div>
               <div className="text-base">{data.currentLicense?.state}</div>
@@ -462,34 +462,34 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
               {data.licenses.map((lic, i) => (
                 <CardContent
                   key={i}
-                  className="grid grid-cols-2 gap-6 not-last:pb-6 not-last:border-b"
+                  className="grid grid-cols-2 gap-6 not-last:border-b not-last:pb-6"
                 >
                   <div className="space-y-1">
-                    <div className="text-muted-foreground uppercase font-medium">
+                    <div className="font-medium text-muted-foreground uppercase">
                       License #
                     </div>
                     <div className="text-base">{lic.licenseNumber}</div>
                   </div>
                   <div className="space-y-1">
-                    <div className="text-muted-foreground uppercase font-medium">
+                    <div className="font-medium text-muted-foreground uppercase">
                       Type/Class
                     </div>
                     <div className="text-base">{lic.licenseType}</div>
                   </div>
                   <div className="space-y-1">
-                    <div className="text-muted-foreground uppercase font-medium">
+                    <div className="font-medium text-muted-foreground uppercase">
                       Expiry Date
                     </div>
                     <div className="text-base"> {lic.expiryDate}</div>
                   </div>
                   <div className="space-y-1">
-                    <div className="text-muted-foreground uppercase font-medium">
+                    <div className="font-medium text-muted-foreground uppercase">
                       Endorsements
                     </div>
                     <div>{lic.endorsements}</div>
                   </div>
                   <div className="space-y-1">
-                    <div className="text-muted-foreground uppercase font-medium">
+                    <div className="font-medium text-muted-foreground uppercase">
                       Issuing State
                     </div>
                     <div className="text-base">{lic.state}</div>
@@ -512,22 +512,22 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
               {data.drivingExperiences.map((exp, i) => (
                 <CardContent
                   key={i}
-                  className="grid grid-cols-2 gap-6 not-last:pb-6 not-last:border-b"
+                  className="grid grid-cols-2 gap-6 not-last:border-b not-last:pb-6"
                 >
                   <div className="space-y-1">
-                    <div className="text-muted-foreground uppercase font-medium">
+                    <div className="font-medium text-muted-foreground uppercase">
                       Category
                     </div>
                     <div className="text-base">{exp.category}</div>
                   </div>
                   <div className="space-y-1">
-                    <div className="text-muted-foreground uppercase font-medium">
+                    <div className="font-medium text-muted-foreground uppercase">
                       Type
                     </div>
                     <div className="text-base">{exp.type}</div>
                   </div>
                   <div className="space-y-1">
-                    <div className="text-muted-foreground uppercase font-medium">
+                    <div className="font-medium text-muted-foreground uppercase">
                       Duration
                     </div>
                     <div className="text-base">
@@ -540,7 +540,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
                     </div>
                   </div>
                   <div className="space-y-1">
-                    <div className="text-muted-foreground uppercase font-medium">
+                    <div className="font-medium text-muted-foreground uppercase">
                       Approx Miles Total
                     </div>
                     <div className="text-base">{exp.approxMilesTotal}</div>
@@ -560,33 +560,33 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
                 </CardTitle>
               </CardHeader>
               {data.accidentHistory.map((acc, i) => (
-                <CardContent className="grid grid-cols-2 gap-6 not-last:pb-6 not-last:border-b">
+                <CardContent className="grid grid-cols-2 gap-6 not-last:border-b not-last:pb-6">
                   <div className="space-y-1">
-                    <div className="text-muted-foreground uppercase font-medium">
+                    <div className="font-medium text-muted-foreground uppercase">
                       Date
                     </div>
                     <div className="text-base">{acc.accidentDate}</div>
                   </div>
                   <div className="space-y-1">
-                    <div className="text-muted-foreground uppercase font-medium">
+                    <div className="font-medium text-muted-foreground uppercase">
                       Nature
                     </div>
                     <div className="text-base">{acc.accidentNature}</div>
                   </div>
                   <div className="space-y-1">
-                    <div className="text-muted-foreground uppercase font-medium">
+                    <div className="font-medium text-muted-foreground uppercase">
                       Injuries Count
                     </div>
                     <div className="text-base">{acc.injuriesCount}</div>
                   </div>
                   <div className="space-y-1">
-                    <div className="text-muted-foreground uppercase font-medium">
+                    <div className="font-medium text-muted-foreground uppercase">
                       Fatalities Count
                     </div>
                     <div className="text-base">{acc.fatalitiesCount}</div>
                   </div>
                   <div className="space-y-1">
-                    <div className="text-muted-foreground uppercase font-medium">
+                    <div className="font-medium text-muted-foreground uppercase">
                       Chemical Spill
                     </div>
                     <div className="text-base">{acc.chemicalSpill}</div>
@@ -607,51 +607,51 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
                   </CardTitle>
                 </CardHeader>
                 {data.trafficConvictions.map((tc, i) => (
-                  <CardContent className="grid grid-cols-2 gap-6 not-last:pb-6 not-last:border-b">
+                  <CardContent className="grid grid-cols-2 gap-6 not-last:border-b not-last:pb-6">
                     <div className="space-y-1">
-                      <div className="text-muted-foreground uppercase font-medium">
+                      <div className="font-medium text-muted-foreground uppercase">
                         Date
                       </div>
                       <div className="text-base"> {tc.dateConvicted}</div>
                     </div>
                     <div className="space-y-1">
-                      <div className="text-muted-foreground uppercase font-medium">
+                      <div className="font-medium text-muted-foreground uppercase">
                         Violation
                       </div>
                       <div className="text-base">{tc.violation}</div>
                     </div>
                     <div className="space-y-1">
-                      <div className="text-muted-foreground uppercase font-medium">
+                      <div className="font-medium text-muted-foreground uppercase">
                         Location
                       </div>
                       <div className="text-base">{tc.state}</div>
                     </div>
                     <div className="space-y-1">
-                      <div className="text-muted-foreground uppercase font-medium">
+                      <div className="font-medium text-muted-foreground uppercase">
                         Penalty
                       </div>
                       <div className="text-base">{tc.penalty}</div>
                     </div>
                     <div className="space-y-1">
-                      <div className="text-muted-foreground uppercase font-medium">
+                      <div className="font-medium text-muted-foreground uppercase">
                         License Ever Denied
                       </div>
                       <div className="text-base">{tc.licenseDenied}</div>
                     </div>
                     <div className="space-y-1">
-                      <div className="text-muted-foreground uppercase font-medium">
+                      <div className="font-medium text-muted-foreground uppercase">
                         Reason for License Denial
                       </div>
                       <div className="text-base">{tc.licenseDeniedReason}</div>
                     </div>
                     <div className="space-y-1">
-                      <div className="text-muted-foreground uppercase font-medium">
+                      <div className="font-medium text-muted-foreground uppercase">
                         License Ever Suspended
                       </div>
                       <div className="text-base">{tc.licenseSuspended}</div>
                     </div>
                     <div className="space-y-1">
-                      <div className="text-muted-foreground uppercase font-medium">
+                      <div className="font-medium text-muted-foreground uppercase">
                         Reason for Suspension
                       </div>
                       <div className="text-base">
@@ -673,7 +673,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
           </CardHeader>
           <CardContent className="grid grid-cols-2 gap-6">
             <div className="space-y-1">
-              <div className="text-muted-foreground uppercase font-medium">
+              <div className="font-medium text-muted-foreground uppercase">
                 Created At:
               </div>
               <span className="text-base">
@@ -681,7 +681,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
               </span>
             </div>
             <div>
-              <div className="text-muted-foreground uppercase font-medium">
+              <div className="font-medium text-muted-foreground uppercase">
                 Updated At:
               </div>
               <span className="text-base">
@@ -689,7 +689,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
               </span>
             </div>
             <div>
-              <div className="text-muted-foreground uppercase font-medium">
+              <div className="font-medium text-muted-foreground uppercase">
                 IP Address:
               </div>
               <div className="grid gap-1 text-base">
@@ -701,11 +701,11 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
         </Card>
       </div>
       <div className="col-span-6 lg:col-span-2">
-        <Card className="rounded-2xl text-base sticky top-6 bg-sidebar">
+        <Card className="sticky top-6 rounded-2xl bg-sidebar text-base">
           <CardHeader>
             <CardTitle className="text-xl font-semibold">Notes</CardTitle>
           </CardHeader>
-          <CardContent className="border-b min-h-32 whitespace-pre">
+          <CardContent className="min-h-32 border-b whitespace-pre">
             {data.internalNotes}
           </CardContent>
 
@@ -716,7 +716,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
                   Rejection Reason
                 </CardTitle>
               </CardHeader>
-              <CardContent className="border-b min-h-32 whitespace-pre">
+              <CardContent className="min-h-32 border-b whitespace-pre">
                 {data.statusReason}
               </CardContent>
             </>
@@ -724,7 +724,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
           <CardHeader>
             <CardTitle>Documents</CardTitle>
           </CardHeader>
-          <CardContent className="border-b divide-y">
+          <CardContent className="divide-y border-b">
             <Attachment
               url={data.drivingLicenseFrontUrl as string}
               label="Driving License (Front)"

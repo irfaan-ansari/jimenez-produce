@@ -3,7 +3,6 @@ import {
   customerInvite,
   jobApplications,
   jobInvite,
-  order,
   product,
 } from "@/lib/db/schema";
 import { db } from "@/lib/db";
@@ -62,14 +61,6 @@ const map = {
       })
       .from(jobInvite)
       .groupBy(jobInvite.status),
-  orders: () =>
-    db
-      .select({
-        status: order.status,
-        value: count(),
-      })
-      .from(order)
-      .groupBy(order.status),
 };
 export async function GET(req: NextRequest) {
   try {

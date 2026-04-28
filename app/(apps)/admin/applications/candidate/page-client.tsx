@@ -39,7 +39,7 @@ const columns: ColumnDef<JobApplicationSelectType>[] = [
       const { firstName, lastName, id, position, location } = row.original;
       return (
         <Link
-          href={`/admin/job-applications/${id}`}
+          href={`/admin/applications/candidate/${id}`}
           className="flex flex-col gap-1.5"
         >
           <span className="font-medium">

@@ -143,7 +143,7 @@ export const JobApplicationAction = ({
           className="flex items-center gap-2"
           asChild
         >
-          <Link href={`/admin/job-applications/${id}`}>
+          <Link href={`/admin/applications/candidate/${id}`}>
             <Eye />
             View
           </Link>
@@ -190,7 +190,7 @@ export const JobApplicationAction = ({
       )}
 
       <Button variant="ghost" asChild>
-        <a href={`/api/job-applications/${id}/pdf`} target="_blank">
+        <a href={`/api/applications/candidate/${id}/pdf`} target="_blank">
           <FileText /> Download PDF
         </a>
       </Button>

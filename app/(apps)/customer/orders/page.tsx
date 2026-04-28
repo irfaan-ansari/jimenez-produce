@@ -1,6 +1,6 @@
 import { PageClient } from "./page-client";
 import { Button } from "@/components/ui/button";
-import { FilterTab, FilterTabs } from "@/components/admin/filter-tabs";
+import { FilterTab } from "@/components/admin/filter-tabs";
 import { SearchBar } from "@/components/admin/search-filters";
 
 import Link from "next/link";
@@ -34,7 +34,7 @@ const OrdersPage = async () => {
           <Link href="/customer/orders/new">View Cart (4)</Link>
         </Button>
       </div>
-      <FilterTab tabs={OPTIONS} path="/api/orders/count" />
+      <FilterTab tabs={OPTIONS} path="/api/teams/orders/count" />
       {/* content */}
       <PageClient />
     </div>

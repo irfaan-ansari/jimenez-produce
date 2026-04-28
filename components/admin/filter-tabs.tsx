@@ -78,7 +78,7 @@ export const FilterTab = ({ tabs, path }: FilterTabProps) => {
             key={value + i}
             href={`?${value ? `status=${value}` : ""}`}
             data-active={activeStatus === value || (!value && !activeStatus)}
-            className="relative z-1 inline-flex h-8 items-center gap-2 rounded-xl border bg-background px-2.5
+            className="relative z-1 inline-flex h-8 items-center gap-2 rounded-xl border bg-background pr-1.5 pl-3
             text-sm leading-tight font-medium whitespace-nowrap transition hover:bg-foreground hover:text-muted data-active:border-black data-active:bg-foreground data-active:text-muted"
             style={{ "--color": map.color } as React.CSSProperties}
           >

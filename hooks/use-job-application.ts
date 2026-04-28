@@ -22,7 +22,7 @@ export const useJobApplications = (query: string) => {
   return useQuery({
     queryKey: ["job-applications", query],
     queryFn: () =>
-      fetcher<JobApplicationResponse>(`/api/job-applications?${query}`),
+      fetcher<JobApplicationResponse>(`/api/applications/candidate?${query}`),
 
     staleTime: 1000 * 60 * 5,
   });
@@ -33,7 +33,7 @@ export const useJobApplication = (id: number) => {
     queryKey: ["job-application", id],
     queryFn: () =>
       fetcher<{ data: JobApplicationSelectType }>(
-        `/api/job-applications/${id}`
+        `/api/applications/candidate/${id}`,
       ),
     enabled: !!id,
     staleTime: 1000 * 60 * 5,
@@ -43,7 +43,7 @@ export const useJobApplication = (id: number) => {
 export const useJobInvites = (query: string) => {
   return useQuery({
     queryKey: ["job-invites", query],
-    queryFn: () => fetcher<JobInviteResponse>(`/api/job-invites?${query}`),
+    queryFn: () => fetcher<JobInviteResponse>(`/api/invites/job?${query}`),
 
     staleTime: 1000 * 60 * 5,
   });

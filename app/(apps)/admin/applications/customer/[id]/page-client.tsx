@@ -296,26 +296,22 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
       <div className="col-span-6 lg:col-span-2">
         <Card className="rounded-2xl bg-neutral-50">
           <CardHeader>
-            <CardTitle className="text-xl font-semibold">Notes</CardTitle>
+            <CardTitle className="font-semibold">Notes</CardTitle>
           </CardHeader>
-          <CardContent className="min-h-32 divide-y border-b whitespace-pre">
+          <CardContent className="min-h-32 divide-y border-b wrap-break-word">
             {data.internalNotes}
           </CardContent>
 
           {/* hold or reject reason */}
           {data.status === "on_hold" && (
             <CardHeader>
-              <CardTitle className="text-xl font-semibold">
-                Hold Reason
-              </CardTitle>
+              <CardTitle className="font-semibold">Hold Reason</CardTitle>
             </CardHeader>
           )}
 
           {data.status === "rejected" && (
             <CardHeader>
-              <CardTitle className="text-xl font-semibold">
-                Reject Reason
-              </CardTitle>
+              <CardTitle className="font-semibold">Reject Reason</CardTitle>
             </CardHeader>
           )}
 

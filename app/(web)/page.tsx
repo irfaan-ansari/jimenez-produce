@@ -22,7 +22,7 @@ export default function Page() {
     <>
       {/* hero */}
       <section>
-        <div className="grid items-center grid-cols-1 overflow-hidden">
+        <div className="grid grid-cols-1 items-center overflow-hidden">
           {/* image */}
           <div className="col-start-1 row-start-1 size-full">
             <Image
@@ -31,25 +31,25 @@ export default function Page() {
               src={hero.image}
               alt="Hero banner"
               priority
-              className="w-full h-full max-h-192  object-cover object-center"
+              className="h-full max-h-192 w-full  object-cover object-center"
             />
           </div>
           {/* content */}
           <div className="col-start-1 row-start-1 size-full">
             <Container className="h-full">
-              <div className="relative py-20 max-w-2xl">
-                <span className="absolute -inset-40 bg-primary/10 mask-x-from-70% mask-y-from-90% backdrop-blur-xs"></span>
-                <div className="flex items-start flex-col gap-8 relative ">
-                  <h1 className="text-5xl/tight md:text-7xl/tight font-bold uppercase font-heading">
+              <div className="relative max-w-2xl py-20">
+                <span className="absolute -inset-40 bg-primary/10 mask-y-from-90% mask-x-from-70% backdrop-blur-xs"></span>
+                <div className="relative flex flex-col items-start gap-8 ">
+                  <h1 className="font-heading text-5xl/tight font-bold uppercase md:text-7xl/tight">
                     {hero.title}
                   </h1>
-                  <h2 className="text-xl font-medium max-w-lg">
+                  <h2 className="max-w-lg text-xl font-medium">
                     {hero.description}
                   </h2>
                   <p className="text-base italic">{hero.badge}</p>
                   <div className="flex flex-wrap gap-4">
                     <Button asChild size="xl" className="">
-                      <Link href="/about">Apply for an Account</Link>
+                      <Link href="/apply">Apply for an Account</Link>
                     </Button>
                     <Button
                       asChild
@@ -71,19 +71,19 @@ export default function Page() {
       <section className="mt-16">
         <Container>
           <div className="space-y-8">
-            <h2 className="text-4xl/tight sm:text-5xl/tight md:text-7xl/tight flex-1 font-heading font-bold uppercase">
+            <h2 className="flex-1 font-heading text-4xl/tight font-bold uppercase sm:text-5xl/tight md:text-7xl/tight">
               Who We Serve
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 relative">
+            <div className="relative grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-4">
               {serve.map((item, i) => (
-                <Card className="ring-0 shadow-sm" key={item.title}>
+                <Card className="shadow-sm ring-0" key={item.title}>
                   <CardHeader>
-                    <span className="inline-flex size-12 items-center justify-center bg-highlight text-primary-foreground rounded-lg">
+                    <span className="inline-flex size-12 items-center justify-center rounded-lg bg-highlight text-primary-foreground">
                       <item.icon className="size-6" />
                     </span>
                   </CardHeader>
                   <CardContent className="space-y-3 pt-10">
-                    <h4 className="text-3xl uppercase font-semibold font-heading">
+                    <h4 className="font-heading text-3xl font-semibold uppercase">
                       {item.title}
                     </h4>
                     <p className="text-base">{item.description}</p>
@@ -99,7 +99,7 @@ export default function Page() {
       <section className="mt-16">
         <Container className="relative overflow-hidden">
           <Marquee className="gap-16">
-            <div className="flex gap-16 items-center">
+            <div className="flex items-center gap-16">
               {marquee.map((img, i) => (
                 <div
                   className="bg-linear-to-br from-foreground/5 to-foreground/20"
@@ -116,8 +116,8 @@ export default function Page() {
               ))}
             </div>
           </Marquee>
-          <div className="from-background pointer-events-none absolute inset-y-0 -left-4 w-24 bg-linear-to-r"></div>
-          <div className="from-background pointer-events-none absolute inset-y-0 -right-4 w-24 bg-linear-to-l"></div>
+          <div className="pointer-events-none absolute inset-y-0 -left-4 w-24 bg-linear-to-r from-background"></div>
+          <div className="pointer-events-none absolute inset-y-0 -right-4 w-24 bg-linear-to-l from-background"></div>
         </Container>
       </section>
 
@@ -125,8 +125,8 @@ export default function Page() {
       <section className="mt-16">
         <Container>
           <div className="space-y-8">
-            <div className="flex flex-col items-start gap-4 justify-between sm:flex-row sm:items-center">
-              <h2 className="text-4xl uppercase font-semibold font-heading">
+            <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+              <h2 className="font-heading text-4xl font-semibold uppercase">
                 Featured Categories
               </h2>
               <Button asChild size="xl">
@@ -146,20 +146,20 @@ export default function Page() {
                 {categories.map((cat, i) => (
                   <CarouselItem
                     key={i}
-                    className="pl-8 basis-2/3 md:basis-1/3 lg:basis-1/4"
+                    className="basis-2/3 pl-8 md:basis-1/3 lg:basis-1/4"
                   >
                     <Link
                       href={`/products?cat=${cat.title}`}
                       className="block pb-0.5 pl-0.5 hover:[&_img]:scale-110"
                     >
-                      <div className="rounded-[0.5rem] shadow-sm overflow-hidden bg-linear-to-br from-secondary via-background to-secondary  relative">
+                      <div className="relative overflow-hidden rounded-[0.5rem] bg-linear-to-br from-secondary via-background to-secondary  shadow-sm">
                         <div className="overflow-hidden">
                           <Image
                             width={600}
                             height={900}
                             src={cat.image}
                             alt={cat.image}
-                            className="relative z-2 w-full transition ease-out object-cover rounded-t-[0.5rem] aspect-square backdrop-blur-3xl"
+                            className="relative z-2 aspect-square w-full rounded-t-[0.5rem] object-cover backdrop-blur-3xl transition ease-out"
                           />
                         </div>
                         <div className="p-6">
@@ -182,11 +182,11 @@ export default function Page() {
         <Container>
           <div className="space-y-8">
             <div className="flex flex-col gap-4 md:flex-row">
-              <h2 className="text-4xl/tight sm:text-5xl/tight md:text-7xl/tight flex-1 font-heading font-bold uppercase">
+              <h2 className="flex-1 font-heading text-4xl/tight font-bold uppercase sm:text-5xl/tight md:text-7xl/tight">
                 Getting Started with <br />
                 <span className="text-primary">Jimenez Produce</span>
               </h2>
-              <p className="opacity-80 text-base/normal max-w-sm ml-auto">
+              <p className="ml-auto max-w-sm text-base/normal opacity-80">
                 We make it easy for foodservice operations to start working with
                 Jimenez Produce. Our onboarding process is designed to be clear,
                 efficient, and focused on getting your account set up quickly.
@@ -201,9 +201,9 @@ export default function Page() {
       {/* why choose us */}
       <section className="mt-16">
         <Container>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
-            <div className="space-y-8 max-w-2xl">
-              <h2 className="text-4xl/tight sm:text-5xl/tight md:text-7xl/tight flex-1 font-heading font-bold uppercase">
+          <div className="grid grid-cols-1 gap-16 md:grid-cols-2">
+            <div className="max-w-2xl space-y-8">
+              <h2 className="flex-1 font-heading text-4xl/tight font-bold uppercase sm:text-5xl/tight md:text-7xl/tight">
                 Why Choose Us
               </h2>
               <div className="flex flex-col gap-6">
@@ -213,10 +213,10 @@ export default function Page() {
                       <CircleCheck className="size-6 text-primary" />
                     </div>
                     <div className="space-y-1">
-                      <h4 className="text-3xl uppercase font-semibold font-heading">
+                      <h4 className="font-heading text-3xl font-semibold uppercase">
                         {item.title}
                       </h4>
-                      <p className="text-muted-foreground text-lg font-medium">
+                      <p className="text-lg font-medium text-muted-foreground">
                         {item.description}
                       </p>
                     </div>
@@ -224,13 +224,13 @@ export default function Page() {
                 ))}
               </div>
             </div>
-            <div className="bg-secondary aspect-[1/0.8]">
+            <div className="aspect-[1/0.8] bg-secondary">
               <Image
                 width={600}
                 height={600}
                 src="/why-choose-us.jpeg"
                 alt="Event cover"
-                className="object-cover aspect-[1/0.8]"
+                className="aspect-[1/0.8] object-cover"
               />
             </div>
           </div>
@@ -241,23 +241,23 @@ export default function Page() {
       <section className="mt-16">
         <Container>
           <div className="grid grid-cols-1">
-            <div className="col-start-1 row-start-1 rounded-lg overflow-hidden">
+            <div className="col-start-1 row-start-1 overflow-hidden rounded-lg">
               <Image
                 src="/reliable-delivery.jpeg"
                 width={1600}
                 height={600}
                 alt="Truck image"
-                className="w-full h-172 md:h-152 object-cover object-right"
+                className="h-172 w-full object-cover object-right md:h-152"
               />
             </div>
 
-            <div className="col-start-1 row-start-1 flex flex-col h-full justify-center relative">
+            <div className="relative col-start-1 row-start-1 flex h-full flex-col justify-center">
               <span className="absolute inset-0 z-0 bg-linear-to-r from-black/60 backdrop-blur-sm"></span>
-              <div className="max-w-4xl mx-auto text-center px-6 py-20">
-                <h2 className="text-4xl/tight relative sm:text-5xl/tight md:text-7xl/tight flex-1 font-heading font-bold uppercase text-primary-foreground">
+              <div className="mx-auto max-w-4xl px-6 py-20 text-center">
+                <h2 className="relative flex-1 font-heading text-4xl/tight font-bold text-primary-foreground uppercase sm:text-5xl/tight md:text-7xl/tight">
                   Fast & Reliable Delivery
                 </h2>
-                <p className="text-white text-lg mt-4 relative font-medium">
+                <p className="relative mt-4 text-lg font-medium text-white">
                   We take pride in delivering our products with our own fleet of
                   trucks, operated exclusively by professional drivers. This
                   ensures the highest level of care, reliability, and efficiency
@@ -277,10 +277,10 @@ export default function Page() {
       {/* safetty and quality */}
       <section className="mt-16">
         <Container>
-          <div className="grid  grid-cols-1 lg:grid-cols-2 gap-16">
+          <div className="grid  grid-cols-1 gap-16 lg:grid-cols-2">
             <div className="max-w-3xl">
-              <div className="space-y-4 sticky top-28">
-                <h2 className="text-4xl/tight sm:text-5xl/tight md:text-7xl/tight flex-1 font-heading font-bold uppercase">
+              <div className="sticky top-28 space-y-4">
+                <h2 className="flex-1 font-heading text-4xl/tight font-bold uppercase sm:text-5xl/tight md:text-7xl/tight">
                   Food Safety & <span className="text-primary">Quality</span>
                 </h2>
                 <p className="text-muted-foreground">
@@ -292,21 +292,21 @@ export default function Page() {
                 </p>
               </div>
             </div>
-            <div className="flex flex-row flex-nowrap overflow-x-scroll -m-2 p-2 snap-x snap-mandatory no-scrollbar gap-8 lg:flex-col lg:snap-none">
+            <div className="-m-2 no-scrollbar flex snap-x snap-mandatory flex-row flex-nowrap gap-8 overflow-x-scroll p-2 lg:snap-none lg:flex-col">
               {HOME_SECTIONS.quality.map((item, i) => (
                 <Card
                   key={i}
-                  className="ring-0 py-10 shadow-none basis-3/4 lg:basis-auto shrink-0 snap-start bg-secondary"
+                  className="shrink-0 basis-3/4 snap-start bg-secondary py-10 shadow-none ring-0 lg:basis-auto"
                 >
                   <CardHeader className="px-10">
-                    <h4 className="text-3xl uppercase font-semibold font-heading">
+                    <h4 className="font-heading text-3xl font-semibold uppercase">
                       {item.title}
                     </h4>
                   </CardHeader>
                   <CardContent className="space-y-4 px-10">
                     {item.items.map((text, i) => (
                       <div className="flex items-center gap-4" key={i}>
-                        <CircleCheck className="size-6 text-primary shrink-0" />
+                        <CircleCheck className="size-6 shrink-0 text-primary" />
                         <p className="text-lg font-medium opacity-80">{text}</p>
                       </div>
                     ))}
