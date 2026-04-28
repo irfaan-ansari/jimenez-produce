@@ -19,7 +19,7 @@ import { useRouterStuff } from "@/hooks/use-router-stuff";
 import { Pagination } from "@/components/admin/pagination";
 import { ProductAction } from "@/app/(apps)/admin/products/product-actions";
 import { AdminProductResponse } from "@/lib/types";
-import { formatUSD } from "@/lib/utils";
+import { formatUSD, getInitialsAvatar } from "@/lib/utils";
 
 export const PageClient = () => {
   const { searchParams, queryParams } = useRouterStuff();
@@ -48,48 +48,69 @@ export const PageClient = () => {
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 lg:gap-6 xl:grid-cols-4 2xl:grid-cols-6">
           {(data as AdminProductResponse)?.data?.map((product, i) => {
             const map = STATUS_MAP[product.status as keyof typeof STATUS_MAP];
-
+            const defaultImage = getInitialsAvatar(product.title);
             return (
               <Card
                 size="sm"
                 key={i}
-                className="relative rounded-2xl pt-0! transition ease-out hover:ring-2 hover:ring-offset-1 hover:ring-offset-background"
+                className="relative flex flex-col h-full rounded-xl pt-0! transition ease-out hover:ring-2 hover:ring-offset-1 hover:ring-offset-background"
                 style={{ "--color": map.color } as React.CSSProperties}
               >
-                <div className="absolute top-2 left-2 z-2 rounded-lg bg-background">
-                  <Badge className="h-6 rounded-lg bg-(--color)/10 border border-(--color)/20 text-sm text-(--color)">
+                {/* actions */}
+                <ProductAction product={product} />
+
+                <div className="absolute top-2 left-2 z-2 flex flex-col gap-1">
+                  {/* status */}
+                  <Badge className="h-6 rounded-md  backdrop-blur-2xl bg-(--color)/10 shadow-sm border border-(--color)/20 text-sm text-(--color)">
                     <map.icon className="size-3.5" />
                     {map.label}
                   </Badge>
+
+                  {/* tax status */}
+                  {product.isTaxable && (
+                    <Badge
+                      className="h-6 rounded-md text-sm backdrop-blur-md border shadow-sm bg-background"
+                      variant="secondary"
+                    >
+                      Taxable
+                    </Badge>
+                  )}
                 </div>
 
-                <ProductAction product={product} />
-
-                <div className="relative aspect-[1.6/1] overflow-hidden rounded-t-[0.5rem] bg-secondary">
-                  {product.image && (
+                <div className="relative aspect-[1.6/1] overflow-hidden rounded-xl bg-secondary">
+                  {product.image ? (
                     <img
-                      width={400}
-                      height={400}
+                      width={100}
+                      height={100}
                       src={product.image!}
                       alt={product.title}
                       loading={i <= 10 ? "eager" : "lazy"}
-                      className="relative z-1 aspect-[1.6/1] w-full rounded-lg object-contain transition ease-out"
+                      className="relative z-1 aspect-[1.6/1] w-full h-auto rounded-lg object-contain transition ease-out"
+                    />
+                  ) : (
+                    <img
+                      width={100}
+                      height={100}
+                      src={defaultImage}
+                      alt={product.title}
+                      loading={i <= 10 ? "eager" : "lazy"}
+                      className="relative z-1 w-full rounded-lg object-cover transition ease-out"
                     />
                   )}
                 </div>
-                <CardContent className="mt-auto space-y-1.5">
+                <CardContent className="flex flex-col flex-1 space-y-2">
+                  <Badge className="rounded-sm h-5">{product.identifier}</Badge>
                   <div className="flex flex-wrap gap-1">
                     {product.categories?.map((cat) => (
-                      <Badge
+                      <span
                         key={cat}
-                        className="h-6 rounded-lg text-sm"
-                        variant="secondary"
+                        className="text-xs uppercase text-muted-foreground font-medium not-last:pr-2 not-last:border-r-2 leading-tight"
                       >
                         {cat}
-                      </Badge>
+                      </span>
                     ))}
                   </div>
-                  <CardTitle className="font-semibold">
+                  <CardTitle className="font-semibold mt-auto">
                     {product.title}
                   </CardTitle>
 

@@ -39,7 +39,7 @@ export const PageClient = () => {
             <Card
               size="sm"
               key={i}
-              className="relative rounded-2xl pt-0! transition ease-out hover:ring-2 hover:ring-offset-1 hover:ring-offset-background"
+              className="relative rounded-xl pt-0! transition ease-out hover:ring-2 hover:ring-offset-1 hover:ring-offset-background"
             >
               <div className="relative aspect-[1.6/1] overflow-hidden rounded-t-[0.5rem] bg-secondary">
                 {product.image && (
@@ -56,13 +56,12 @@ export const PageClient = () => {
               <CardContent className="mt-auto space-y-2">
                 <div className="flex flex-wrap gap-x-2 gap-y-1">
                   {product.categories?.map((cat) => (
-                    <Badge
+                    <span
                       key={cat}
-                      className="h-6 rounded-lg text-sm"
-                      variant="secondary"
+                      className="text-sm text-muted-foreground inline-block leading-tight not-last:pr-2 not-last:border-r-2"
                     >
                       {cat}
-                    </Badge>
+                    </span>
                   ))}
                 </div>
                 <CardTitle className="font-semibold">{product.title}</CardTitle>

@@ -47,12 +47,12 @@ export const columns: ColumnDef<TaxRuleSelectType>[] = [
   },
 
   {
-    accessorKey: "createdAt",
+    accessorKey: "rate",
     header: "Tax Rate %",
     cell: ({ row }) => {
       return (
         <span className="text-sm text-muted-foreground">
-          {row.original.rate}
+          {row.original.rate}%
         </span>
       );
     },

@@ -253,13 +253,12 @@ const ProductItem = withForm({
             <div className="flex w-full items-center gap-2">
               <div className="no-scrollbar flex min-w-0 flex-nowrap items-center gap-1 overflow-auto">
                 {product.categories?.map((cat, i) => (
-                  <Badge
+                  <span
                     key={cat + i}
-                    variant="secondary"
-                    className="h-5 shrink-0 rounded-xl px-1.5"
+                    className="text-xs font-medium text-muted-foreground inline-block not-last:pr-1 not-last:border-r-2 leading-tight"
                   >
                     {cat}
-                  </Badge>
+                  </span>
                 ))}
               </div>
 
