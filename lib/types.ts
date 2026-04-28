@@ -9,6 +9,7 @@ import {
   ProductSelectType,
   TaxRuleSelectType,
   TeamSelectType,
+  UserSelectType,
 } from "./db/schema";
 
 export type JobApplicationStatus = keyof typeof jobApplicationStatusMap;
@@ -141,5 +142,13 @@ export type Member = Omit<BaseMember, "user"> & {
   user: BaseMember["user"] & {
     phoneNumber: string;
   };
+  lastLogin: string | null;
+};
+
+export type UserWithMember = UserSelectType & {
+  member: {
+    id: string;
+    role: Role;
+  } | null;
   lastLogin: string | null;
 };

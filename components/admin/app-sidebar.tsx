@@ -80,7 +80,7 @@ const MenuGroup = ({ menu }: { menu: typeof SIDEBAR_MENU }) => {
                 asChild
                 isActive={isActive(item.href)}
                 tooltip={item.label}
-                className="h-10 rounded-xl px-3.5 transition duration-200 group-data-[collapsible=icon]:px-1.5! hover:bg-muted hover:text-sidebar-foreground data-active:hover:bg-sidebar-accent data-active:hover:text-sidebar-accent-foreground"
+                className="h-10 rounded-xl [&>svg]:size-5 px-3.5 transition duration-200 group-data-[collapsible=icon]:px-1.5! hover:bg-muted hover:text-sidebar-foreground data-active:hover:bg-sidebar-accent data-active:hover:text-sidebar-accent-foreground"
               >
                 <Link href={item.href}>
                   {item.icon && <item.icon />}
@@ -104,7 +104,7 @@ const MenuGroup = ({ menu }: { menu: typeof SIDEBAR_MENU }) => {
                   tooltip={item.label}
                   isActive={isActive(item.href)}
                   asChild
-                  className="h-10 px-3.5 transition duration-200 group-data-[collapsible=icon]:px-1.5! hover:bg-muted hover:text-sidebar-foreground data-open:hover:bg-muted data-open:hover:text-sidebar-foreground data-active:hover:bg-sidebar-accent data-active:hover:text-sidebar-accent-foreground"
+                  className="h-10 px-3.5 [&>.duo-icons]:size-5 transition duration-200 group-data-[collapsible=icon]:px-1.5! hover:bg-muted hover:text-sidebar-foreground data-open:hover:bg-muted data-open:hover:text-sidebar-foreground data-active:hover:bg-sidebar-accent data-active:hover:text-sidebar-accent-foreground"
                 >
                   <Link href={item.href}>
                     {item.icon && <item.icon />}

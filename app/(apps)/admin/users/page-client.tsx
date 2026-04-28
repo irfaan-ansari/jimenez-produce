@@ -9,24 +9,20 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { format } from "date-fns";
-import {
-  useActiveOrganizationMember,
-  useOrganizationMembers,
-} from "@/hooks/use-teams";
 import { UserAction } from "./user-actions";
 import { Badge } from "@/components/ui/badge";
 import { roleMap } from "@/lib/constants/user";
+import { getInitialsAvatar } from "@/lib/utils";
+import { CopyButton } from "@/components/copy-button";
 import { useRouterStuff } from "@/hooks/use-router-stuff";
 import { EmptyComponent } from "@/components/admin/placeholder-component";
+import { useUsers, useActiveOrganizationMember } from "@/hooks/use-teams";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { CopyButton } from "@/components/copy-button";
 
 export const PageClient = () => {
   const { searchParamsObj } = useRouterStuff();
-  const { data, isPending, isError, error } = useOrganizationMembers(
-    searchParamsObj?.q,
-  );
   const { data: activeMember } = useActiveOrganizationMember();
+  const { data, isPending, isError, error } = useUsers(searchParamsObj?.q);
 
   return (
     <div className="flex-1 space-y-3">
@@ -50,49 +46,38 @@ export const PageClient = () => {
             <TableBody>
               {data?.data?.length ? (
                 data?.data?.map((row) => {
-                  const {
-                    label,
-                    color,
-                    icon: Icon,
-                  } = roleMap[row.role as keyof typeof roleMap];
                   return (
-                    <TableRow key={row.id}>
+                    <TableRow
+                      key={row.id}
+                      data-active={row.member}
+                      className="[&[data-active=false]>td:not(:last-child)]:opacity-50"
+                    >
                       <TableCell className="p-4">
                         <div
                           className="group flex items-center gap-3"
-                          data-active={activeMember?.userId === row.userId}
+                          data-active={activeMember?.userId === row.id}
                         >
                           <Avatar className="relative size-9 rounded-lg ring-2 ring-green-600/20 ring-offset-1 **:rounded-lg after:hidden">
                             <AvatarImage
-                              src={row.user.image ?? undefined}
+                              src={row.image ?? undefined}
                               alt="profile image"
                             />
                             <AvatarFallback className="rounded-xl bg-foreground text-xs font-semibold text-background">
-                              {row.user.name?.[0]?.toUpperCase()}
+                              {getInitialsAvatar(row.name)}
                             </AvatarFallback>
                             <span className="absolute -right-1 -bottom-1 size-3 border-2 bg-green-500 opacity-0 group-data-active:opacity-100"></span>
                           </Avatar>
 
-                          <span className="font-medium">{row.user.name}</span>
+                          <span className="font-medium">{row.name}</span>
                         </div>
                       </TableCell>
                       <TableCell className="p-4">
-                        <Badge
-                          className="h-7 rounded-md border-(--color)/20 bg-(--color)/10 text-sm text-(--color)"
-                          style={
-                            {
-                              "--color": color,
-                            } as React.CSSProperties
-                          }
-                        >
-                          <Icon />
-                          {label}
-                        </Badge>
+                        <RoleBadge role={row.member?.role} />
                       </TableCell>
                       <TableCell className="p-4">
                         <div className="flex flex-col text-muted-foreground">
-                          <CopyButton value={row.user.phoneNumber} />
-                          <CopyButton value={row.user.email} />
+                          <CopyButton value={row.phoneNumber!} />
+                          <CopyButton value={row.email} />
                         </div>
                       </TableCell>
                       <TableCell className="p-4 text-muted-foreground">
@@ -128,5 +113,26 @@ export const PageClient = () => {
         </div>
       </div>
     </div>
+  );
+};
+
+const RoleBadge = ({ role }: { role: string | undefined }) => {
+  if (!role)
+    return <span className="w-20 h-7 rounded-md bg-secondary inline-block" />;
+
+  const { label, color, icon: Icon } = roleMap[role as keyof typeof roleMap];
+
+  return (
+    <Badge
+      className="h-7 rounded-md border-(--color)/20 bg-(--color)/10 text-sm text-(--color)"
+      style={
+        {
+          "--color": color,
+        } as React.CSSProperties
+      }
+    >
+      <Icon />
+      {label}
+    </Badge>
   );
 };

@@ -1,14 +1,11 @@
 import {
-  AlertCircle,
   Briefcase,
-  CircleDashed,
   Crown,
-  PackageCheck,
-  Shield,
   ShieldCheck,
   Star,
   User,
   Users,
+  Lock,
 } from "lucide-react";
 
 export const roleMap = {
@@ -41,5 +38,10 @@ export const roleMap = {
     label: "Customer",
     icon: Star,
     color: "#EC4899",
+  },
+  none: {
+    label: "None",
+    icon: Lock,
+    color: "#6B7280",
   },
 };

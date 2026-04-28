@@ -1,8 +1,7 @@
 import { db } from "@/lib/db";
 import { getSession } from "@/server/auth";
-import { eq, getTableColumns, max, asc } from "drizzle-orm";
+import { eq, max, asc, and, ne } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
-
 import { member, session, user } from "@/lib/db/auth-schema";
 
 export async function GET(req: NextRequest) {
@@ -21,34 +20,46 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const latestSession = db
+    const lastSession = db
       .select({
         userId: session.userId,
         lastLogin: max(session.updatedAt).as("lastLogin"),
       })
       .from(session)
       .groupBy(session.userId)
-      .as("latestSession");
+      .as("lastSession");
 
-    const members = await db
+    const users = await db
       .select({
-        ...getTableColumns(member),
-        user: {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          phoneNumber: user.phoneNumber,
-          image: user.image,
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        emailVerified: user.emailVerified,
+        image: user.image,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+        phoneNumber: user.phoneNumber,
+        phoneNumberVerified: user.phoneNumberVerified,
+        isSuperAdmin: user.isSuperAdmin,
+        member: {
+          id: member.id,
+          role: member.role,
         },
-        lastLogin: latestSession.lastLogin,
+        lastLogin: lastSession.lastLogin,
       })
-      .from(member)
-      .where(eq(member.organizationId, activeOrganizationId))
-      .innerJoin(user, eq(member.userId, user.id))
-      .leftJoin(latestSession, eq(member.userId, latestSession.userId))
-      .orderBy(asc(latestSession.lastLogin));
+      .from(user)
+      .leftJoin(
+        member,
+        and(
+          eq(member.userId, user.id),
+          eq(member.organizationId, activeOrganizationId),
+        ),
+      )
+      .leftJoin(lastSession, eq(user.id, lastSession.userId))
+      .where(ne(user.accountType, "customer"))
+      .orderBy(asc(lastSession.lastLogin));
 
-    return NextResponse.json({ data: members }, { status: 200 });
+    return NextResponse.json({ data: users }, { status: 200 });
   } catch (error) {
     console.error("Error fetching users:", error);
     return NextResponse.json(

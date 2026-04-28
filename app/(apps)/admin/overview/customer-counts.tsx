@@ -71,7 +71,7 @@ export const CustomerCounts = () => {
 
       <Link
         href="/admin/customers?status=rejected"
-        className="flex flex-col gap-4 rounded-xl border p-6 ring-offset-1 ring-offset-background hover:ring-2 hover:ring-ring/50"
+        className="flex flex-col gap-4 rounded-xl bg-card border p-6 ring-offset-1 ring-offset-background hover:ring-2 hover:ring-ring/50"
         style={{ "--color": "#EF4444" } as React.CSSProperties}
       >
         <div className="flex items-center gap-6">

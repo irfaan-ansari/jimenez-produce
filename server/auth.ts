@@ -174,6 +174,32 @@ export const signupWithOrganization = handleAction(
 );
 
 /**
+ *
+ */
+export const addUserToOrganization = handleAction(
+  async ({ userId, role }: { userId: string; role: Role }) => {
+    const session = await getSession();
+
+    if (!session) {
+      throw new Error("No session found");
+    }
+
+    if (!session.session.activeOrganizationId) {
+      throw new Error("No active organization found");
+    }
+
+    const data = await auth.api.addMember({
+      body: {
+        userId,
+        role: role || "member",
+        organizationId: session.session.activeOrganizationId,
+      },
+    });
+
+    return data;
+  },
+);
+/**
  * signup user and add to team/customer
  */
 interface CreateTeam {

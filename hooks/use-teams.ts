@@ -1,6 +1,6 @@
 "use client";
 
-import { Member, Pagination, Team } from "@/lib/types";
+import { type UserWithMember, Pagination, Team } from "@/lib/types";
 import { authClient } from "@/lib/auth/client";
 import { fetcher } from "@/lib/helper/fetcher";
 import { useQuery } from "@tanstack/react-query";
@@ -17,11 +17,11 @@ export const useTeams = (q?: string) => {
 };
 
 // list users
-export const useOrganizationMembers = (q: string | undefined) => {
+export const useUsers = (q: string | undefined) => {
   return useQuery({
-    queryKey: ["members", q],
+    queryKey: ["users", q],
     queryFn: async () => {
-      return fetcher<{ data: Member[] }>(`/api/users?${q}`);
+      return fetcher<{ data: UserWithMember[] }>(`/api/users?${q}`);
     },
   });
 };

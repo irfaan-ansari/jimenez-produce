@@ -1,14 +1,14 @@
+import { WelcomeBanner } from "./welcome";
 import { ProductCounts } from "./product-stats";
 import { CustomerCounts } from "./customer-counts";
 import { CustomerInvites } from "./customer-invites";
 import { JobApplications } from "./job-applications";
-import { WelcomeBanner } from "./welcome";
 
 export const metadata = {
   title: "Overview",
 };
 
-const OverviewPage = () => {
+const OverviewPage = async () => {
   return (
     <div className="flex flex-col gap-8 mt-4 h-full">
       <WelcomeBanner />
