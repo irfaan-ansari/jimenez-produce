@@ -255,7 +255,7 @@ const ProductItem = withForm({
                 {product.categories?.map((cat, i) => (
                   <span
                     key={cat + i}
-                    className="text-xs font-medium text-muted-foreground inline-block not-last:pr-1 not-last:border-r-2 leading-tight"
+                    className="text-xs font-medium uppercase whitespace-nowrap text-muted-foreground inline-block not-last:pr-1 not-last:border-r-2 leading-tight"
                   >
                     {cat}
                   </span>
