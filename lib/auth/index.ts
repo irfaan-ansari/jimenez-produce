@@ -7,6 +7,7 @@ import { getActiveUser, getActiveTeam } from "@/server/auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { organization, phoneNumber } from "better-auth/plugins";
 import PasswordResetTemplate from "@/components/email/password-reset-email";
+import { twilioSendOTP } from "../twilio";
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -127,7 +128,8 @@ export const auth = betterAuth({
     phoneNumber({
       allowedAttempts: 3,
       sendOTP: ({ phoneNumber, code }, ctx) => {
-        console.log("sending", phoneNumber, code);
+        twilioSendOTP({ phoneNumber, code });
+        console.info("sending code:", phoneNumber, code);
       },
     }),
     nextCookies(),

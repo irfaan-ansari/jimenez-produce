@@ -77,14 +77,15 @@ export function LoginForm({
         e.preventDefault();
         form.handleSubmit();
       }}
-      className="flex flex-1 flex-col items-start justify-center gap-4 px-6 py-20 lg:px-16"
+      className="flex flex-1 flex-col items-start justify-center gap-6 px-6 py-20 lg:px-16"
     >
-      <h2 className="font-heading text-3xl font-bold">Login with password</h2>
-      <p className="mb-10 text-muted-foreground">
-        Use your email address or phone number to access your account.
-      </p>
-
       <FieldGroup>
+        <div className="space-y-2">
+          <h2 className="text-xl font-bold">Login with password</h2>
+          <p className="text-sm text-muted-foreground">
+            Use your email address or phone number to access your account.
+          </p>
+        </div>
         <form.AppField
           name="username"
           children={(field) => (
@@ -109,7 +110,7 @@ export function LoginForm({
           />
           <Link
             href="/forgot-password"
-            className="text-sm text-muted-foreground font-medium block hover:underline hover:text-foreground"
+            className="block text-sm font-medium text-muted-foreground hover:text-foreground hover:underline"
           >
             Forgot Password?
           </Link>
@@ -158,7 +159,9 @@ export function LoginForm({
 
         <div className="flex flex-row items-center justify-center gap-4">
           <div className="flex-[1_1_0] border-b "></div>
-          <span className="shrink-0">OR</span>
+          <span className="shrink-0 text-xs font-medium text-muted-foreground">
+            OR
+          </span>
           <span className="flex-[1_1_0] border-b"></span>
         </div>
 
