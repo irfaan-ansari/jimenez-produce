@@ -41,8 +41,8 @@ export function OTPLoginForm({
 }: React.ComponentProps<"div">) {
   const form = useAppForm({
     defaultValues: {
-      phoneNumber: "9871545454",
-      step: "verify",
+      phoneNumber: "",
+      step: "send",
       code: "",
       error: "",
       seconds: 60,
