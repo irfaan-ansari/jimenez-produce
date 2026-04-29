@@ -49,7 +49,7 @@ export const SidebarProfile = ({ session }: { session: Session }) => {
           <PopoverXDrawer
             open={open}
             setOpen={setOpen}
-            className="w-60 overflow-hidden px-0 pt-0 *:gap-0 data-[slot=popover-content]:max-w-56"
+            className="w-60 overflow-hidden rounded-xl px-0 pt-0 *:gap-0 data-[slot=popover-content]:max-w-56"
             trigger={
               <SidebarMenuButton
                 size="lg"

@@ -29,7 +29,7 @@ declare module "@tanstack/react-table" {
 
 interface PaginatedResponse<T> {
   data: T[];
-  pagination: PaginationMeta;
+  pagination: PaginationMeta | undefined;
 }
 
 interface DataTableProps<TData, TValue> {

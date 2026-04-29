@@ -41,6 +41,7 @@ export async function GET(req: NextRequest) {
         phoneNumber: user.phoneNumber,
         phoneNumberVerified: user.phoneNumberVerified,
         isSuperAdmin: user.isSuperAdmin,
+        isCurrentUser: eq(user.id, auth.session.userId),
         member: {
           id: member.id,
           role: member.role,

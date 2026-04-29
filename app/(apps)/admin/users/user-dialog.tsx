@@ -35,7 +35,7 @@ import {
   ComboboxValue,
   useComboboxAnchor,
 } from "@/components/ui/combobox";
-import { Role } from "@/lib/types";
+import { Role, UserWithMember } from "@/lib/types";
 import { useTeams } from "@/hooks/use-teams";
 import { useStore } from "@tanstack/react-form";
 import { useAppForm } from "@/hooks/form-context";
@@ -72,15 +72,30 @@ const defaultValues = {
   teams: [] as { id: string; name: string }[],
 };
 
-export const UserDialog = ({ children }: { children: React.ReactNode }) => {
+export const UserDialog = ({
+  data,
+  children,
+}: {
+  children: React.ReactNode;
+  data?: UserWithMember;
+}) => {
+  const isEdit = !!data;
   const anchor = useComboboxAnchor();
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
 
-  const { data: teams, isPending } = useTeams();
+  const { data: teams } = useTeams();
 
   const form = useAppForm({
-    defaultValues,
+    defaultValues: {
+      ...defaultValues,
+      ...(isEdit && {
+        name: data?.name ?? "",
+        email: data?.email ?? "",
+        phone: data?.phoneNumber ?? "",
+        role: data?.member?.role ?? defaultValues.role,
+      }),
+    },
     validators: {
       onSubmit: schema,
     },

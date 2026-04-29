@@ -124,6 +124,7 @@ export interface TaxRule {
 export type Role = "owner" | "sales" | "manager" | "member";
 
 export type Session = typeof auth.$Infer.Session;
+
 export type Warehouse = typeof auth.$Infer.Organization;
 
 export type Team = typeof auth.$Infer.Team & {
@@ -151,4 +152,5 @@ export type UserWithMember = UserSelectType & {
     role: Role;
   } | null;
   lastLogin: string | null;
+  isCurrentUser: boolean;
 };

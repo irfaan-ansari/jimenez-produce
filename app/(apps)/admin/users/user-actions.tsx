@@ -52,8 +52,8 @@ export const UserAction = ({ data }: { data: UserWithMember }) => {
           <Lock /> Assign Access
         </Button>
       )}
-      <UserDialog>
-        <Button variant="ghost" className="rounded-lg! justify-start">
+      <UserDialog data={data}>
+        <Button variant="ghost" className="justify-start rounded-lg!">
           <SquarePen /> Edit
         </Button>
       </UserDialog>
