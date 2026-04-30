@@ -61,8 +61,8 @@ export const WarehouseDialog = ({
         .replace(/[^a-z0-9]+/g, "-")
         .replace(/^-|-$/g, "");
 
+      const toastId = toast.loading("Please wait...");
       if (isEdit) {
-        const toastId = toast.loading("Updating warehouse...");
         const { error } = await authClient.organization.update({
           organizationId: data.id,
           data: {
@@ -92,14 +92,13 @@ export const WarehouseDialog = ({
           keepCurrentActiveOrganization: true,
         });
 
-        const toastId = toast.loading("Creating warehouse...");
         if (error) {
           toast.error(error.message, { id: toastId });
-          return;
+        } else {
+          toast.success("Warehouse created successfully", { id: toastId });
+          setOpen(false);
+          form.reset();
         }
-        toast.success("Warehouse created successfully", { id: toastId });
-        setOpen(false);
-        form.reset();
       }
     },
   });
@@ -109,7 +108,7 @@ export const WarehouseDialog = ({
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="overflow-hidden rounded-2xl px-0 ring-ring/10 sm:max-w-xl">
         <DialogHeader className="px-6">
-          <DialogTitle className="text-2xl font-bold">
+          <DialogTitle className="text-xl font-bold">
             {isEdit ? "Edit Warehouse" : "Create Warehouse"}
           </DialogTitle>
           <DialogDescription>

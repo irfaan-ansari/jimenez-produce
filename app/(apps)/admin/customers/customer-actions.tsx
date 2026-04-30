@@ -1,18 +1,17 @@
 "use client";
 
-import { Eye, MoreVertical, SquarePen, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { Team } from "@/lib/types";
-import { useConfirm } from "@/hooks/use-confirm";
-import { PopoverXDrawer } from "@/components/popover-x-drawer";
-import { useQueryClient } from "@tanstack/react-query";
-import { CustomerDialog } from "./customer-dialog";
 import { authClient } from "@/lib/auth/client";
-import { UserDialog } from "../users/user-dialog";
-import { AddUserDialog } from "./add-user-dialog";
+import { Button } from "@/components/ui/button";
+import { useConfirm } from "@/hooks/use-confirm";
+import { CustomerDialog } from "./customer-dialog";
+import { useQueryClient } from "@tanstack/react-query";
+import { PopoverXDrawer } from "@/components/popover-x-drawer";
+import { UserSelector } from "@/components/admin/user-selector";
+import { Eye, MoreVertical, SquarePen, Trash2, User } from "lucide-react";
 
 export const CustomerActions = ({
   showView,
@@ -21,10 +20,10 @@ export const CustomerActions = ({
   data: Team;
   showView?: boolean;
 }) => {
+  const { id } = data;
   const confirm = useConfirm();
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
-  const { id } = data;
 
   const onDelete = async () => {
     await confirm.delete({
@@ -46,6 +45,33 @@ export const CustomerActions = ({
         }
       },
     });
+  };
+
+  const handleAssignUser = async (user: any) => {
+    const userId = user.id;
+    if (!userId) return;
+    const toastId = toast.loading("Please wait...");
+
+    const exist = data.members?.some((m) => m.id === userId);
+
+    if (exist) {
+      toast.error("User already assigned", { id: toastId });
+      return;
+    }
+    const { error } = await authClient.organization.addTeamMember({
+      teamId: data.id,
+      userId: userId,
+    });
+
+    if (error) {
+      toast.error(error?.message, { id: toastId });
+    } else {
+      setOpen(false);
+
+      toast.success("User added successfully", { id: toastId });
+    }
+
+    queryClient.invalidateQueries({ queryKey: ["teams"] });
   };
 
   return (
@@ -77,12 +103,13 @@ export const CustomerActions = ({
           <SquarePen /> Edit
         </Button>
       </CustomerDialog>
-      <AddUserDialog teamId={id}>
+
+      <UserSelector onValueChange={handleAssignUser} disabled={data.members}>
         <Button variant="ghost" className="justify-start">
-          <SquarePen />
-          Add User
+          <User />
+          Assign User
         </Button>
-      </AddUserDialog>
+      </UserSelector>
 
       <Button
         variant="ghost"

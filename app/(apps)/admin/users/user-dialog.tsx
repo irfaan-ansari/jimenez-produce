@@ -14,27 +14,10 @@ import React from "react";
 import { toast } from "sonner";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Loader } from "lucide-react";
-import {
-  Field,
-  FieldDescription,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field";
+import { Loader, Plus, Trash2 } from "lucide-react";
+import { Field, FieldGroup } from "@/components/ui/field";
 
-import {
-  Combobox,
-  ComboboxChip,
-  ComboboxChips,
-  ComboboxChipsInput,
-  ComboboxContent,
-  ComboboxEmpty,
-  ComboboxItem,
-  ComboboxList,
-  ComboboxValue,
-  useComboboxAnchor,
-} from "@/components/ui/combobox";
+import { useComboboxAnchor } from "@/components/ui/combobox";
 import { Role, UserWithMember } from "@/lib/types";
 import { useTeams } from "@/hooks/use-teams";
 import { useStore } from "@tanstack/react-form";
@@ -42,6 +25,7 @@ import { useAppForm } from "@/hooks/form-context";
 import { signupWithOrganization } from "@/server/auth";
 import { useQueryClient } from "@tanstack/react-query";
 import { capitalizeWords } from "@/lib/utils";
+import { CustomersSelector } from "@/components/admin/customers-selector";
 
 const schema = z
   .object({
@@ -64,6 +48,12 @@ const schema = z
     path: ["confirmPassword"],
   });
 
+interface CallBackAgrs {
+  id: string;
+  name: string;
+  phoneNumber: string | null | undefined;
+  email: string;
+}
 export const UserDialog = ({
   data,
   children,
@@ -71,12 +61,7 @@ export const UserDialog = ({
 }: {
   children: React.ReactNode;
   data?: UserWithMember;
-  callback?: (arg: {
-    id: string;
-    organizationId: string;
-    userId: string;
-    role: string;
-  }) => void;
+  callback?: (arg: CallBackAgrs) => void;
 }) => {
   const anchor = useComboboxAnchor();
   const queryClient = useQueryClient();
@@ -99,7 +84,6 @@ export const UserDialog = ({
       onSubmit: schema,
     },
     onSubmit: async ({ value }) => {
-      // signup the user and add to current organization as member
       const role = value.role.toLowerCase() as Role;
       const toastId = toast.loading("Please wait...");
 
@@ -133,7 +117,7 @@ export const UserDialog = ({
             e.preventDefault();
             form.handleSubmit();
           }}
-          className="flex flex-col gap-6"
+          className="flex h-full max-h-[calc(100svh-10rem)] flex-col gap-6"
         >
           <DialogHeader>
             <DialogTitle className="text-xl font-bold">Create user</DialogTitle>
@@ -141,7 +125,7 @@ export const UserDialog = ({
               Enter user details to add them to the system.
             </DialogDescription>
           </DialogHeader>
-          <FieldGroup className="grid flex-1 grid-cols-2">
+          <FieldGroup className="no-scrollbar grid flex-1 grid-cols-2 overflow-y-auto">
             <form.AppField
               name="name"
               children={(field) => (
@@ -182,69 +166,62 @@ export const UserDialog = ({
                 />
               )}
             />
-            <form.Field
-              name="teams"
-              mode="array"
-              children={(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid;
-
-                return (
-                  <Field
-                    data-invalid={isInvalid}
-                    className={role === "Sales" ? "col-span-2" : "hidden"}
-                  >
-                    <FieldLabel htmlFor={field.name}>
-                      Select accounts
-                    </FieldLabel>
-                    <Combobox
-                      items={teams?.data ?? []}
-                      multiple
-                      value={field.state.value}
-                      onValueChange={(value) => field.handleChange(value)}
-                      itemToStringValue={(team) => team.name}
-                      modal={false}
-                      name={field.name}
-                      autoHighlight
-                    >
-                      <ComboboxChips
-                        className="min-h-11 w-full rounded-xl"
-                        ref={anchor}
-                      >
-                        <ComboboxValue>
-                          {field.state.value.map((item) => (
-                            <ComboboxChip key={item.id}>
-                              {item.name}
-                            </ComboboxChip>
+            <div className={role === "Sales" ? "lg:col-span-2" : "hidden"}>
+              <p className="mb-2 font-medium">Accounts</p>
+              <form.Field
+                name="teams"
+                mode="array"
+                children={(field) => {
+                  const teams = field.state.value;
+                  return (
+                    <div className="space-y-2 rounded-lg border-l py-2 pl-2">
+                      {teams.length > 0 ? (
+                        <div className="space-y-1">
+                          {teams?.map((team, i) => (
+                            <div
+                              key={team.id}
+                              className="flex items-center rounded-lg border bg-secondary/20 p-2"
+                            >
+                              <div className="flex-1 space-x-4">
+                                <span>{team.name}</span>
+                              </div>
+                              <Button
+                                size="icon-xs"
+                                type="button"
+                                variant="destructive"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  field.removeValue(i);
+                                }}
+                              >
+                                <Trash2 />
+                              </Button>
+                            </div>
                           ))}
-                        </ComboboxValue>
-                        <ComboboxChipsInput placeholder="Select accounts" />
-                      </ComboboxChips>
-                      <ComboboxContent
-                        anchor={anchor}
-                        className="pointer-events-auto"
+                        </div>
+                      ) : null}
+                      <CustomersSelector
+                        selected={field.state.value}
+                        setSelectedChange={(value) => {
+                          const index = field.state.value.findIndex(
+                            (s) => s.id === value.id,
+                          );
+                          if (index >= 0) {
+                            field.removeValue(index);
+                          } else {
+                            field.pushValue(value);
+                          }
+                        }}
                       >
-                        <ComboboxEmpty>No account found.</ComboboxEmpty>
-                        <ComboboxList>
-                          {(team) => (
-                            <ComboboxItem key={team.id} value={team}>
-                              {team.name}
-                            </ComboboxItem>
-                          )}
-                        </ComboboxList>
-                      </ComboboxContent>
-                    </Combobox>
-                    <FieldDescription>
-                      Select accounts this user can manage
-                    </FieldDescription>
-                    {isInvalid && (
-                      <FieldError errors={field.state.meta.errors} />
-                    )}
-                  </Field>
-                );
-              }}
-            />
-
+                        <Button variant="outline" size="sm">
+                          <Plus /> Accounts
+                        </Button>
+                      </CustomersSelector>
+                    </div>
+                  );
+                }}
+              />
+            </div>
             <form.AppField
               name="password"
               children={(field) => (

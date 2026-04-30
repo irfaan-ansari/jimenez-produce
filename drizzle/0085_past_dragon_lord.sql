@@ -1,0 +1,3 @@
+ALTER TABLE "tax_rule_item" ALTER COLUMN "tax_rule_id" SET NOT NULL;--> statement-breakpoint
+ALTER TABLE "tax_rule_item" ALTER COLUMN "team_id" SET NOT NULL;--> statement-breakpoint
+ALTER TABLE "team_member" ADD CONSTRAINT "teamMember_teamId_userId_uidx" UNIQUE("team_id","user_id");

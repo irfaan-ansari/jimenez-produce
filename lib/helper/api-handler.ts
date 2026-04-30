@@ -1,17 +1,19 @@
-import { getSession } from "@/server/auth";
-import { ERROR_MESSAGE } from "./error-message";
 import { NextRequest, NextResponse } from "next/server";
+import { ERROR_MESSAGE } from "./error-message";
+import { getSession } from "@/server/auth";
 
 type Auth = NonNullable<Awaited<ReturnType<typeof getSession>>>;
-type HandlerContext = {
+
+type HandlerContext<TParams = {}> = {
   req: NextRequest;
   auth: Auth;
+  params: TParams;
 };
 
-export function apiHandler(
-  handler: (ctx: HandlerContext) => Promise<NextResponse>,
+export function apiHandler<TParams = {}>(
+  handler: (ctx: HandlerContext<TParams>) => Promise<NextResponse>,
 ) {
-  return async (req: NextRequest) => {
+  return async (req: NextRequest, context: { params: TParams }) => {
     try {
       const auth = await getSession();
 
@@ -22,7 +24,11 @@ export function apiHandler(
         );
       }
 
-      return await handler({ req, auth });
+      return await handler({
+        req,
+        auth,
+        params: context.params,
+      });
     } catch (error) {
       console.error("[API_ERROR]", error);
 

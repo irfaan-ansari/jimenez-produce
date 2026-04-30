@@ -29,8 +29,12 @@ export async function GET(req: NextRequest) {
     } = getQueryObject(req.nextUrl.searchParams);
 
     const conditions = [];
-    if (accountType) conditions.push(eq(user.accountType, accountType));
-    else conditions.push(ne(user.accountType, "customer"));
+
+    if (accountType === "customer") {
+      conditions.push(eq(user.accountType, "customer"));
+    } else {
+      conditions.push(ne(user.accountType, "customer"));
+    }
 
     if (q) {
       conditions.push(
@@ -41,6 +45,9 @@ export async function GET(req: NextRequest) {
         ),
       );
     }
+
+    const filters = conditions.length > 0 ? and(...conditions) : undefined;
+
     const lastSession = db
       .select({
         userId: session.userId,
@@ -78,7 +85,7 @@ export async function GET(req: NextRequest) {
         ),
       )
       .leftJoin(lastSession, eq(user.id, lastSession.userId))
-      .where(ne(user.accountType, accountType))
+      .where(filters)
       .orderBy(asc(lastSession.lastLogin));
 
     return NextResponse.json({ data: users }, { status: 200 });

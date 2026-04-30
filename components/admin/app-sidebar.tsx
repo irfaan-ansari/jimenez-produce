@@ -45,7 +45,9 @@ export function AppSidebar({ session }: { session: Session }) {
       <SidebarContent>
         <SidebarGroup>
           <MenuGroup menu={SIDEBAR_MENU} />
+        </SidebarGroup>
 
+        <SidebarGroup>
           <SidebarGroupLabel>Applications</SidebarGroupLabel>
           <MenuGroup menu={APPLICATION_GROUP} />
         </SidebarGroup>

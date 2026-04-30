@@ -30,7 +30,7 @@ export const useUsers = ({
   if (accountType) params.set("accountType", accountType);
 
   return useQuery({
-    queryKey: ["users", q],
+    queryKey: ["users", q, accountType],
     queryFn: async () => {
       return fetcher<{ data: UserWithMember[] }>(
         `/api/users?${params.toString()}`,

@@ -161,7 +161,7 @@ export const signupWithOrganization = handleAction(
       accountType,
     });
 
-    const data = await auth.api.addMember({
+    await auth.api.addMember({
       body: {
         userId: createdUser.id,
         role: role || "member",
@@ -169,7 +169,12 @@ export const signupWithOrganization = handleAction(
       },
     });
 
-    return data;
+    return {
+      id: createdUser.id,
+      name: createdUser.name,
+      email: createdUser.email,
+      phoneNumber: createdUser.phoneNumber,
+    };
   },
 );
 
