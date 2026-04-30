@@ -12,6 +12,7 @@ import {
   orderGuideItem,
   taxRule,
   taxRuleItem,
+  teamProduct,
 } from "./schema";
 
 import {
@@ -65,6 +66,7 @@ export const teamRelations = relations(team, ({ one, many }) => ({
     references: [priceLevel.id],
   }),
   taxRuleItems: many(taxRuleItem),
+  products: many(teamProduct),
 }));
 
 export const teamMemberRelations = relations(teamMember, ({ one }) => ({
@@ -141,6 +143,17 @@ export const priceLevelItemsRelations = relations(
     }),
   }),
 );
+
+export const teamProductRelations = relations(teamProduct, ({ one }) => ({
+  team: one(team, {
+    fields: [teamProduct.teamId],
+    references: [team.id],
+  }),
+  product: one(product, {
+    fields: [teamProduct.productId],
+    references: [product.id],
+  }),
+}));
 
 export const applicantRelations = relations(jobApplications, ({ one }) => ({
   user: one(user, {

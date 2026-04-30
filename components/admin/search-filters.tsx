@@ -77,6 +77,7 @@ export const SearchBar = ({
   ...props
 }: React.ComponentProps<"div"> & { placeholder?: string }) => {
   const { searchParamsObj, queryParams } = useRouterStuff();
+  const [search, setSearch] = useState(searchParamsObj.q);
 
   const debouncedSetQuery = useDebounce((value: string) => {
     queryParams({
@@ -94,8 +95,11 @@ export const SearchBar = ({
         <Search />
       </InputGroupAddon>
       <InputGroupInput
-        value={searchParamsObj.q}
-        onChange={(e) => debouncedSetQuery(e.target.value)}
+        value={search}
+        onChange={(e) => {
+          setSearch(e.target.value);
+          debouncedSetQuery(e.target.value);
+        }}
         className="rounded-xl"
         placeholder={placeholder}
       />

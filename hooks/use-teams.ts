@@ -1,9 +1,8 @@
 "use client";
 
-import { type UserWithMember, Pagination, Team } from "@/lib/types";
-import { authClient } from "@/lib/auth/client";
 import { fetcher } from "@/lib/helper/fetcher";
 import { useQuery } from "@tanstack/react-query";
+import { type UserWithMember, Pagination, Team } from "@/lib/types";
 
 // list teams
 export const useTeams = (q?: string) => {
@@ -11,8 +10,16 @@ export const useTeams = (q?: string) => {
     queryKey: ["teams", q],
     queryFn: () =>
       fetcher<{ data: Team[]; pagination: Pagination }>(
-        `/api/teams${q ? "?" + q : ""}`,
+        `/api/customers${q ? "?" + q : ""}`,
       ),
+  });
+};
+
+// get customer
+export const useTeam = (id: string) => {
+  return useQuery({
+    queryKey: ["team", id],
+    queryFn: () => fetcher<{ data: Team }>(`/api/customers/${id}`),
   });
 };
 
@@ -35,18 +42,6 @@ export const useUsers = ({
       return fetcher<{ data: UserWithMember[] }>(
         `/api/users?${params.toString()}`,
       );
-    },
-  });
-};
-
-// get active user
-export const useActiveOrganizationMember = () => {
-  return useQuery({
-    queryKey: ["active-member"],
-    queryFn: async () => {
-      const { data, error } = await authClient.organization.getActiveMember({});
-      if (error) throw error;
-      return data;
     },
   });
 };

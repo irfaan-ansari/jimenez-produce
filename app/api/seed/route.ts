@@ -1,14 +1,8 @@
-import { auth } from "@/lib/auth";
+import { db } from "@/lib/db";
+import { eq } from "drizzle-orm";
+import { product } from "@/lib/db/schema";
 import { NextResponse } from "next/server";
 
 export const GET = async () => {
-  //   const promises = all.map((s) =>
-  //     auth.api.createTeam({
-  //       body: { ...s },
-  //     }),
-  //   );
-
-  //   await Promise.all(promises);
-
-  return NextResponse.json({ message: "Teams seeded successfully" });
+  return NextResponse.json({ message: "products status updated successfully" });
 };

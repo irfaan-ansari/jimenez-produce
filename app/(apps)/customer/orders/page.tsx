@@ -34,7 +34,7 @@ const OrdersPage = async () => {
           <Link href="/customer/orders/new">View Cart (4)</Link>
         </Button>
       </div>
-      <FilterTab tabs={OPTIONS} path="/api/teams/orders/count" />
+      <FilterTab tabs={OPTIONS} path="/api/customer/orders/count" />
       {/* content */}
       <PageClient />
     </div>

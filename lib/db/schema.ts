@@ -417,6 +417,34 @@ export const priceLevelItem = pgTable(
 );
 
 /* -----------------------------
+  team product
+----------------------------- */
+export const teamProduct = pgTable(
+  "team_product",
+  {
+    id: serial("id").primaryKey(),
+    teamId: text("team_id").references(() => team.id, {
+      onDelete: "cascade",
+    }),
+    productId: integer("product_id")
+      .notNull()
+      .references(() => product.id, {
+        onDelete: "cascade",
+      }),
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at")
+      .defaultNow()
+      .$onUpdate(() => /* @__PURE__ */ new Date())
+      .notNull(),
+  },
+  (table) => [
+    index("team_product_teamId_idx").on(table.teamId),
+    index("team_product_productId_idx").on(table.productId),
+    unique("team_product_unique").on(table.teamId, table.productId),
+  ],
+);
+
+/* -----------------------------
    Tax Rules
 ----------------------------- */
 export const taxRule = pgTable("tax_rule", {

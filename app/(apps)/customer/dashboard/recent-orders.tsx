@@ -19,7 +19,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export const RecentOrders = () => {
   const { data, isPending, isError, error } = useOrders({
-    path: "/api/teams/orders",
+    path: "/api/customer/orders",
     query: "limit=5",
   });
   return (

@@ -29,7 +29,7 @@ export const useInfiniteProducts = (query: string) => {
       params.set("page", String(pageParam));
 
       return fetcher<CustomerProductResponse>(
-        `/api/teams/products?${params.toString()}`,
+        `/api/customer/products?${params.toString()}`,
       );
     },
     getNextPageParam: ({ pagination }) => {

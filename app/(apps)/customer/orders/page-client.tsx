@@ -19,7 +19,7 @@ export const PageClient = () => {
   const { searchParams } = useRouterStuff();
 
   const { data, error, isPending, isError } = useOrders({
-    path: "/api/teams/orders",
+    path: "/api/customer/orders",
     query: searchParams.toString(),
   });
 
