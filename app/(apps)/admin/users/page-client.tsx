@@ -25,7 +25,10 @@ import { DataTable } from "@/components/admin/data-table";
 export const PageClient = () => {
   const { searchParamsObj } = useRouterStuff();
 
-  const { data, isPending, isError, error } = useUsers(searchParamsObj?.q);
+  const { data, isPending, isError, error } = useUsers({
+    q: searchParamsObj?.q,
+    accountType: "admin",
+  });
 
   return (
     <DataTable

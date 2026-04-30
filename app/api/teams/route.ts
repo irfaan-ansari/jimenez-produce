@@ -60,9 +60,15 @@ export const GET = apiHandler(async ({ req, auth }) => {
           },
         },
       },
+      taxRuleItems: {
+        with: {
+          taxRule: true,
+        },
+      },
     },
     offset,
     limit,
+    orderBy: (team, { asc }) => [asc(team.createdAt)],
   });
 
   const [{ total }] = await db
@@ -72,9 +78,19 @@ export const GET = apiHandler(async ({ req, auth }) => {
     .leftJoin(user, eq(user.id, teamMember.userId))
     .where(filter);
 
+  // transform data
   const transformed = teams.map((t) => {
     return {
-      ...t,
+      id: t.id,
+      name: t.name,
+      organizationId: t.organizationId,
+      createdAt: t.createdAt,
+      updatedAt: t.updatedAt,
+      managerName: t.managerName,
+      phone: t.phone,
+      email: t.email,
+      logo: t.logo,
+      priceLevelId: t.priceLevelId,
       members: t.teamMembers.map((tm) => {
         return {
           id: tm.userId,
@@ -82,6 +98,13 @@ export const GET = apiHandler(async ({ req, auth }) => {
           email: tm.user.email,
           phoneNumber: tm.user.phoneNumber,
           image: tm.user.image,
+        };
+      }),
+      taxRules: t.taxRuleItems.map((tri) => {
+        return {
+          id: tri.taxRuleId,
+          name: tri.taxRule.name,
+          rate: tri.taxRule.rate,
         };
       }),
     };

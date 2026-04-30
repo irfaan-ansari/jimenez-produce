@@ -1,8 +1,9 @@
 import { db } from "@/lib/db";
 import { getSession } from "@/server/auth";
-import { eq, max, asc, and, ne } from "drizzle-orm";
+import { eq, max, asc, and, ne, ilike, or } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 import { member, session, user } from "@/lib/db/auth-schema";
+import { getQueryObject } from "@/lib/helper/query";
 
 export async function GET(req: NextRequest) {
   try {
@@ -19,7 +20,27 @@ export async function GET(req: NextRequest) {
         { status: 403 },
       );
     }
+    const {
+      q,
+      page = 1,
+      limit = 24,
+      offset = 0,
+      accountType,
+    } = getQueryObject(req.nextUrl.searchParams);
 
+    const conditions = [];
+    if (accountType) conditions.push(eq(user.accountType, accountType));
+    else conditions.push(ne(user.accountType, "customer"));
+
+    if (q) {
+      conditions.push(
+        or(
+          ilike(user.name, `%${q}%`),
+          ilike(user.email, `%${q}%`),
+          ilike(user.phoneNumber, `%${q}%`),
+        ),
+      );
+    }
     const lastSession = db
       .select({
         userId: session.userId,
@@ -57,7 +78,7 @@ export async function GET(req: NextRequest) {
         ),
       )
       .leftJoin(lastSession, eq(user.id, lastSession.userId))
-      .where(ne(user.accountType, "customer"))
+      .where(ne(user.accountType, accountType))
       .orderBy(asc(lastSession.lastLogin));
 
     return NextResponse.json({ data: users }, { status: 200 });

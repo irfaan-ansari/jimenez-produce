@@ -13,12 +13,10 @@ import {
 } from "@/components/ui/dialog";
 import {
   Field,
-  FieldDescription,
   FieldError,
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
-
 import {
   Select,
   SelectContent,
@@ -26,17 +24,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Team } from "@/lib/types";
-import { Loader } from "lucide-react";
-import React, { useState } from "react";
-import { authClient } from "@/lib/auth/client";
-import { Button } from "@/components/ui/button";
-import { useAppForm } from "@/hooks/form-context";
-import { Skeleton } from "@/components/ui/skeleton";
-import { usePriceLevels, useTaxRules } from "@/hooks/use-product";
-import { phoneSchema } from "@/lib/form-schema/common";
-import { addTeamWithUser, updateTaxRulesToTeam } from "@/server/auth";
-import { useQueryClient } from "@tanstack/react-query";
 import {
   Combobox,
   ComboboxChip,
@@ -49,14 +36,22 @@ import {
   ComboboxValue,
   useComboboxAnchor,
 } from "@/components/ui/combobox";
-import { truncateSync } from "fs";
+import { Team } from "@/lib/types";
+import { Loader } from "lucide-react";
+import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { useAppForm, withForm } from "@/hooks/form-context";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useQueryClient } from "@tanstack/react-query";
+import { phoneSchema } from "@/lib/form-schema/common";
+import { usePriceLevels, useTaxRules } from "@/hooks/use-product";
+import { addTeamWithTaxRules, updateTeamWithTaxRules } from "@/server/auth";
 
 const schema = z.object({
   name: z.string().min(1, "Name is required"),
   managerName: z.string().min(1, "Manager Name is required"),
   phone: phoneSchema,
   email: z.email("Invalid email"),
-  password: z.string().min(1, "Password is required"),
   priceLevelId: z.string(),
   groupId: z.string(),
   taxRules: z.array(
@@ -76,11 +71,10 @@ export const CustomerDialog = ({
   children: React.ReactNode;
 }) => {
   const isEdit = !!data;
-  const anchor = useComboboxAnchor();
+
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const { data: levels } = usePriceLevels();
-  const { data: taxRules } = useTaxRules("limit=100");
 
   const form = useAppForm({
     defaultValues: {
@@ -88,14 +82,12 @@ export const CustomerDialog = ({
       managerName: data?.managerName || "",
       phone: data?.phone || "",
       email: data?.email || "",
-      password: "",
       priceLevelId: String(data?.priceLevelId || ""),
       groupId: "",
-      taxRules: [] as { id: number; name: string; rate: string }[],
+      taxRules: data?.taxRules || [],
     },
     validators: {
-      onSubmit: ({ formApi, value }) => {
-        if (isEdit) value.password = "00000000";
+      onSubmit: ({ formApi }) => {
         return formApi.parseValuesWithSchema(schema);
       },
     },
@@ -104,20 +96,17 @@ export const CustomerDialog = ({
       const toastId = toast.loading("Please wait...");
 
       if (isEdit) {
-        const { error } = await authClient.organization.updateTeam({
-          teamId: data.id as string,
-          data: { ...value, priceLevelId: Number(value.priceLevelId) },
-        });
-
+        // update team/customer
         const taxRuleIds = value.taxRules.map((r) => r.id);
 
-        const { error: taxError } = await updateTaxRulesToTeam({
-          teamId: data.id as string,
+        const { error } = await updateTeamWithTaxRules(data.id as string, {
+          ...value,
           taxRuleIds,
+          priceLevelId: Number(value.priceLevelId),
         });
 
-        if (error || taxError) {
-          toast.error(error?.message || taxError?.message, {
+        if (error) {
+          toast.error(error?.message, {
             id: toastId,
           });
         } else {
@@ -126,9 +115,10 @@ export const CustomerDialog = ({
           toast.success("Customer updated successfully", { id: toastId });
         }
       } else {
-        const { error } = await addTeamWithUser({
+        // create team/customer
+        const { error } = await addTeamWithTaxRules({
           ...value,
-          pricelevelId: value.priceLevelId!,
+          priceLevelId: Number(value.priceLevelId!),
         });
 
         if (error) {
@@ -202,79 +192,8 @@ export const CustomerDialog = ({
                 )}
               />
 
-              <form.AppField
-                name="password"
-                children={(field) => (
-                  <field.PasswordField
-                    label="Password"
-                    placeholder="••••••"
-                    className={isEdit ? "hidden" : "col-span-2"}
-                  />
-                )}
-              />
-
-              <form.Field
-                name="taxRules"
-                mode="array"
-                children={(field) => {
-                  const isInvalid =
-                    field.state.meta.isTouched && !field.state.meta.isValid;
-
-                  return (
-                    <Field data-invalid={isInvalid} className="col-span-2">
-                      <FieldLabel htmlFor={field.name}>
-                        Select tax rules
-                      </FieldLabel>
-                      <Combobox
-                        items={taxRules?.data ?? []}
-                        multiple
-                        value={field.state.value}
-                        onValueChange={(value) => field.handleChange(value)}
-                        itemToStringValue={(item) => String(item.id)}
-                        modal={false}
-                        name={field.name}
-                        autoHighlight
-                      >
-                        <ComboboxChips
-                          className="min-h-11 w-full rounded-xl"
-                          ref={anchor}
-                        >
-                          <ComboboxValue>
-                            {field.state.value.map((item) => (
-                              <ComboboxChip key={item.id}>
-                                {item.name} - {item.rate}%
-                              </ComboboxChip>
-                            ))}
-                          </ComboboxValue>
-                          <ComboboxChipsInput placeholder="Select tax rules" />
-                        </ComboboxChips>
-                        <ComboboxContent
-                          anchor={anchor}
-                          className="pointer-events-auto h-full overflow-auto! overscroll-contain"
-                        >
-                          <ComboboxEmpty>No rule found.</ComboboxEmpty>
-                          <ComboboxList onWheel={(e) => e.stopPropagation()}>
-                            {(team) => (
-                              <ComboboxItem key={team.id} value={team}>
-                                {team.name}
-                                <span className="ml-auto text-xs text-muted-foreground">
-                                  {team.rate}%
-                                </span>
-                              </ComboboxItem>
-                            )}
-                          </ComboboxList>
-                        </ComboboxContent>
-                      </Combobox>
-                      <FieldDescription>
-                        Select tax rules for this account.
-                      </FieldDescription>
-                      {isInvalid && (
-                        <FieldError errors={field.state.meta.errors} />
-                      )}
-                    </Field>
-                  );
-                }}
-              />
+              {/* @ts-expect-error */}
+              <TaxRulesSelector form={form} />
 
               <form.Field
                 name="groupId"
@@ -393,3 +312,92 @@ export const CustomerDialog = ({
     </Dialog>
   );
 };
+
+const TaxRulesSelector = withForm({
+  defaultValues: {
+    taxRules: [] as { id: number; name: string; rate: string }[],
+  },
+  render: function ({ form }) {
+    const anchor = useComboboxAnchor();
+    const { data: taxRules, isPending } = useTaxRules("limit=100");
+
+    const items = React.useMemo(() => {
+      const defaultRules = form.state.values.taxRules;
+
+      const rules =
+        taxRules?.data?.map((tx) => ({
+          id: tx.id,
+          name: tx.name,
+          rate: tx.rate,
+        })) ?? [];
+
+      const merged = [...rules, ...defaultRules];
+
+      const unique = Array.from(
+        new Map(merged.map((item) => [item.id, item])).values(),
+      );
+
+      return unique;
+    }, [taxRules, isPending]);
+
+    return (
+      <form.Field
+        name="taxRules"
+        mode="array"
+        children={(field) => {
+          const isInvalid =
+            field.state.meta.isTouched && !field.state.meta.isValid;
+
+          return (
+            <Field data-invalid={isInvalid} className="col-span-2">
+              <FieldLabel htmlFor={field.name}>Select Taxes</FieldLabel>
+
+              <Combobox
+                items={items}
+                multiple
+                value={field.state.value}
+                defaultValue={field.state.value}
+                onValueChange={(value) => field.handleChange(value)}
+                modal={false}
+                name={field.name}
+                autoHighlight
+              >
+                <ComboboxChips
+                  className="min-h-11 w-full rounded-xl"
+                  ref={anchor}
+                >
+                  <ComboboxValue>
+                    {field.state.value.map((item) => (
+                      <ComboboxChip key={item.id}>
+                        {item.name} - {item.rate}%
+                      </ComboboxChip>
+                    ))}
+                  </ComboboxValue>
+                  <ComboboxChipsInput placeholder="Select" />
+                </ComboboxChips>
+                <ComboboxContent
+                  anchor={anchor}
+                  className="pointer-events-auto h-full overflow-auto! overscroll-contain"
+                >
+                  <ComboboxEmpty>No rule found.</ComboboxEmpty>
+                  <ComboboxList onWheel={(e) => e.stopPropagation()}>
+                    {(team) => (
+                      <ComboboxItem key={team.id} value={team}>
+                        {team.name}
+                        <span className="ml-auto text-xs text-muted-foreground">
+                          {team.rate}%
+                        </span>
+                      </ComboboxItem>
+                    )}
+                  </ComboboxList>
+                </ComboboxContent>
+              </Combobox>
+
+              {isInvalid && <FieldError errors={field.state.meta.errors} />}
+            </Field>
+          );
+        }}
+      />
+    );
+  },
+});

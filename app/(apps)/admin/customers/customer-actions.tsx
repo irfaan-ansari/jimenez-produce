@@ -11,6 +11,8 @@ import { PopoverXDrawer } from "@/components/popover-x-drawer";
 import { useQueryClient } from "@tanstack/react-query";
 import { CustomerDialog } from "./customer-dialog";
 import { authClient } from "@/lib/auth/client";
+import { UserDialog } from "../users/user-dialog";
+import { AddUserDialog } from "./add-user-dialog";
 
 export const CustomerActions = ({
   showView,
@@ -75,6 +77,12 @@ export const CustomerActions = ({
           <SquarePen /> Edit
         </Button>
       </CustomerDialog>
+      <AddUserDialog teamId={id}>
+        <Button variant="ghost" className="justify-start">
+          <SquarePen />
+          Add User
+        </Button>
+      </AddUserDialog>
 
       <Button
         variant="ghost"

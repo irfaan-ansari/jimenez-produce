@@ -17,11 +17,24 @@ export const useTeams = (q?: string) => {
 };
 
 // list users
-export const useUsers = (q: string | undefined) => {
+export const useUsers = ({
+  q,
+  accountType,
+}: {
+  q?: string;
+  accountType?: string;
+}) => {
+  const params = new URLSearchParams();
+
+  if (q) params.set("q", q);
+  if (accountType) params.set("accountType", accountType);
+
   return useQuery({
     queryKey: ["users", q],
     queryFn: async () => {
-      return fetcher<{ data: UserWithMember[] }>(`/api/users?${q}`);
+      return fetcher<{ data: UserWithMember[] }>(
+        `/api/users?${params.toString()}`,
+      );
     },
   });
 };

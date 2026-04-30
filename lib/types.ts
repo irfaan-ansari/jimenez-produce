@@ -121,7 +121,7 @@ export interface TaxRule {
   name: string;
   rate: string;
 }
-export type Role = "owner" | "sales" | "manager" | "member";
+export type Role = "owner" | "sales" | "manager" | "member" | "customer";
 
 export type Session = typeof auth.$Infer.Session;
 
@@ -134,6 +134,11 @@ export type Team = typeof auth.$Infer.Team & {
     email: string;
     phoneNumber: string;
     image?: string | undefined;
+  }[];
+  taxRules: {
+    id: number;
+    name: string;
+    rate: string;
   }[];
 };
 

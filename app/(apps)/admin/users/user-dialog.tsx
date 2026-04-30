@@ -41,6 +41,7 @@ import { useStore } from "@tanstack/react-form";
 import { useAppForm } from "@/hooks/form-context";
 import { signupWithOrganization } from "@/server/auth";
 import { useQueryClient } from "@tanstack/react-query";
+import { capitalizeWords } from "@/lib/utils";
 
 const schema = z
   .object({
@@ -50,6 +51,7 @@ const schema = z
     password: z.string().min(8, "Minimum 8 characters required"),
     confirmPassword: z.string().min(8, "Minimum 8 characters required"),
     role: z.string().min(1, "Select role"),
+    accountType: z.string(),
     teams: z.array(
       z.object({
         id: z.string(),
@@ -62,24 +64,20 @@ const schema = z
     path: ["confirmPassword"],
   });
 
-const defaultValues = {
-  name: "",
-  email: "",
-  phone: "",
-  password: "",
-  confirmPassword: "",
-  role: "Manager",
-  teams: [] as { id: string; name: string }[],
-};
-
 export const UserDialog = ({
   data,
   children,
+  callback,
 }: {
   children: React.ReactNode;
   data?: UserWithMember;
+  callback?: (arg: {
+    id: string;
+    organizationId: string;
+    userId: string;
+    role: string;
+  }) => void;
 }) => {
-  const isEdit = !!data;
   const anchor = useComboboxAnchor();
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
@@ -88,13 +86,14 @@ export const UserDialog = ({
 
   const form = useAppForm({
     defaultValues: {
-      ...defaultValues,
-      ...(isEdit && {
-        name: data?.name ?? "",
-        email: data?.email ?? "",
-        phone: data?.phoneNumber ?? "",
-        role: data?.member?.role ?? defaultValues.role,
-      }),
+      name: data?.name ?? "",
+      email: data?.email ?? "",
+      phone: data?.phoneNumber ?? "",
+      password: "",
+      confirmPassword: "",
+      role: capitalizeWords(data?.member?.role ?? "Member"),
+      accountType: data?.accountType ?? "admin",
+      teams: [] as { id: string; name: string }[],
     },
     validators: {
       onSubmit: schema,
@@ -103,15 +102,18 @@ export const UserDialog = ({
       // signup the user and add to current organization as member
       const role = value.role.toLowerCase() as Role;
       const toastId = toast.loading("Please wait...");
-      const { error } = await signupWithOrganization({
+
+      const { error, data: createdUser } = await signupWithOrganization({
         ...value,
         role,
         phoneNumber: value.phone,
       });
+
       if (error) {
         toast.error(error.message, { id: toastId });
       } else {
         setOpen(false);
+        callback?.(createdUser);
         form.reset();
         toast.success("User added successfully", { id: toastId });
       }
@@ -121,7 +123,6 @@ export const UserDialog = ({
   });
 
   const role = useStore(form.store, (state) => state.values.role);
-  const access = useStore(form.store, (state) => state.values.teams);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -177,7 +178,7 @@ export const UserDialog = ({
                 <field.SelectField
                   label="Role"
                   className="col-span-2 **:rounded-xl"
-                  options={["Admin", "Member", "Sales", "Manager"]}
+                  options={["Admin", "Member", "Sales", "Manager", "Customer"]}
                 />
               )}
             />

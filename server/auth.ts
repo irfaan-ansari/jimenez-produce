@@ -174,7 +174,7 @@ export const signupWithOrganization = handleAction(
 );
 
 /**
- *
+ * add user to organization
  */
 export const addUserToOrganization = handleAction(
   async ({ userId, role }: { userId: string; role: Role }) => {
@@ -200,20 +200,19 @@ export const addUserToOrganization = handleAction(
   },
 );
 /**
- * signup user and add to team/customer
+ * create a team with tax rules
  */
 interface CreateTeam {
   name: string;
   phone: string;
   email: string;
-  password: string;
   managerName: string;
-  pricelevelId: string | number;
+  priceLevelId: string | number;
   taxRuleIds?: number[];
   groupId: any;
 }
 
-export const addTeamWithUser = handleAction(async (data: CreateTeam) => {
+export const addTeamWithTaxRules = handleAction(async (data: CreateTeam) => {
   const session = await getSession();
 
   if (!session) throw new Error("No session found");
@@ -221,18 +220,7 @@ export const addTeamWithUser = handleAction(async (data: CreateTeam) => {
   if (!session.session.activeOrganizationId) {
     throw new Error("No active organization found");
   }
-  const { name, email, password, phone, managerName, taxRuleIds } = data;
-
-  // create customer
-  const { data: createdUser, error } = await signupWithOrganization({
-    name,
-    email,
-    password,
-    phoneNumber: phone,
-    accountType: "customer",
-  });
-
-  if (!createdUser) throw new Error(error?.message);
+  const { name, email, phone, managerName, taxRuleIds = [] } = data;
 
   // create team
   const createdTeam = await auth.api.createTeam({
@@ -242,31 +230,62 @@ export const addTeamWithUser = handleAction(async (data: CreateTeam) => {
       phone,
       managerName,
       logo: getInitialsAvatar(data.name),
-      priceLevelId: Number(data.pricelevelId),
+      priceLevelId: Number(data.priceLevelId),
       organizationId: session.session.activeOrganizationId,
     },
   });
 
-  const promises: Promise<any>[] = [
-    auth.api.addTeamMember({
-      body: {
-        userId: createdUser.userId,
-        teamId: createdTeam.id,
-      },
-      headers: await headers(),
-    }),
-  ];
-
-  if (taxRuleIds && taxRuleIds.length) {
-    promises.push(
-      updateTaxRulesToTeam({ teamId: createdTeam.id, taxRuleIds: taxRuleIds }),
-    );
+  if (taxRuleIds?.length > 0) {
+    await updateTaxRulesToTeam({
+      teamId: createdTeam.id,
+      taxRuleIds: taxRuleIds,
+    });
   }
 
-  await Promise.all(promises);
-
-  return { ...createdUser, createdTeam };
+  return { ...createdTeam };
 });
+
+/**
+ * update team with tax rules
+ */
+export const updateTeamWithTaxRules = handleAction(
+  async (teamId: string, data: CreateTeam) => {
+    const session = await getSession();
+
+    if (!session) throw new Error("No session found");
+
+    if (!session.session.activeOrganizationId) {
+      throw new Error("No active organization found");
+    }
+    const { name, email, phone, managerName, taxRuleIds = [] } = data;
+
+    // create team
+    const updatedTeam = await auth.api.updateTeam({
+      body: {
+        teamId,
+        data: {
+          name,
+          email,
+          phone,
+          managerName,
+          logo: getInitialsAvatar(data.name),
+          priceLevelId: Number(data.priceLevelId),
+          organizationId: session.session.activeOrganizationId,
+        },
+      },
+      headers: await headers(),
+    });
+
+    if (taxRuleIds?.length > 0) {
+      await updateTaxRulesToTeam({
+        teamId,
+        taxRuleIds: taxRuleIds,
+      });
+    }
+
+    return { ...updatedTeam };
+  },
+);
 
 /**
  * update tax rules to team
