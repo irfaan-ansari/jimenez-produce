@@ -35,14 +35,12 @@ const CatalogPage = async () => {
               <Upload /> Import
             </Button>
           </ImportDialog>
-          <ProductDialog
-            trigger={
-              <Button size="xl" className="rounded-xl">
-                <Plus />
-                Add New
-              </Button>
-            }
-          />
+          <ProductDialog>
+            <Button size="xl" className="rounded-xl">
+              <Plus />
+              Add New
+            </Button>
+          </ProductDialog>
         </div>
       </div>
 

@@ -51,14 +51,11 @@ export const ProductAction = ({ product }: { product: AdminProductType }) => {
         </Button>
       }
     >
-      <ProductDialog
-        trigger={
-          <Button variant="ghost" className="justify-start">
-            <SquarePen /> Edit
-          </Button>
-        }
-        product={product}
-      />
+      <ProductDialog product={product}>
+        <Button variant="ghost" className="justify-start">
+          <SquarePen /> Edit
+        </Button>
+      </ProductDialog>
 
       <Button
         variant="ghost"

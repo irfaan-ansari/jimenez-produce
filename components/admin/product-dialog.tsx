@@ -33,16 +33,25 @@ import { AnyFieldApi } from "@tanstack/react-form";
 import { useCategories } from "@/hooks/use-product";
 import { type AdminProductType } from "@/lib/types";
 import { useQueryClient } from "@tanstack/react-query";
-import { Check, Loader, Trash2, X } from "lucide-react";
-import { createProduct, updateProduct } from "@/server/product";
+import {
+  AlertCircleIcon,
+  Check,
+  ImageUp,
+  Loader,
+  Trash2,
+  X,
+} from "lucide-react";
+import { createProduct, deleteProduct, updateProduct } from "@/server/product";
 import { Checkbox } from "../ui/checkbox";
+import { Alert, AlertAction, AlertDescription, AlertTitle } from "../ui/alert";
+import { useConfirm } from "@/hooks/use-confirm";
 
 const schema = z.object({
   identifier: z.string(),
   title: z.string().min(1, "Enter title"),
   description: z.string(),
   isTaxable: z.boolean(),
-  categories: z.array(z.string()).min(1, "Select at least one category"),
+  categories: z.array(z.string()),
   status: z.string().min(1, "Select status"),
   image: z.string(),
   basePrice: z.string().min(1, "Enter base price"),
@@ -53,12 +62,13 @@ const schema = z.object({
 });
 
 export const ProductDialog = ({
-  trigger,
+  children,
   product,
 }: {
   product?: AdminProductType;
-  trigger: React.ReactNode;
+  children: React.ReactNode;
 }) => {
+  const confirm = useConfirm();
   const [open, setOpen] = useState(false);
   const queryClient = useQueryClient();
 
@@ -96,25 +106,24 @@ export const ProductDialog = ({
       }
 
       if (product && product.id) {
-        const { data, success, error } = await updateProduct(product.id, {
+        const { success, error } = await updateProduct(product.id, {
           ...rest,
           status,
         });
         if (success) {
-          toast.success("Product has been saved!");
+          toast.success("Product updated successfully.");
           setOpen(false);
         } else {
-          toast.error(error.message ?? "Failed to update product");
+          toast.error(error.message);
         }
       } else {
         const { success, error } = await createProduct({ ...rest, status });
         if (success) {
-          toast.success("Product has been saved!");
-
+          toast.success("Product added successfully.");
           setOpen(false);
           form.reset();
         } else {
-          toast.error(error.message ?? "Failed to updatee product");
+          toast.error(error.message);
         }
       }
       queryClient.invalidateQueries({ queryKey: ["products"] });
@@ -128,9 +137,31 @@ export const ProductDialog = ({
     form.setFieldValue("image", "");
   };
 
+  const handleDeleteProduct = () => {
+    if (!product?.id) return;
+    confirm.delete({
+      title: "Delete Product",
+      description:
+        "This action will permanently delete the selected product and this cannot be undone.",
+      actionLabel: "Yes, Delete",
+      action: async () => {
+        const { success, error } = await deleteProduct(product.id);
+        if (success) {
+          toast.success("Product has been deleted!");
+          setOpen(false);
+          queryClient.invalidateQueries({
+            queryKey: ["products"],
+          });
+        } else {
+          toast.error(error.message);
+        }
+      },
+      cancelLabel: "Cancel",
+    });
+  };
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>{trigger}</DialogTrigger>
+      <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="rounded-2xl px-0 ring-ring/10 sm:max-w-2xl">
         <DialogHeader className="px-6">
           <DialogTitle className="text-2xl font-bold">
@@ -147,7 +178,7 @@ export const ProductDialog = ({
             e.preventDefault();
             form.handleSubmit();
           }}
-          className="flex h-[calc(100svh-200px)] flex-col"
+          className="flex h-[calc(100svh-200px)] flex-col gap-6"
         >
           <div className="no-scrollbar flex-1 overflow-y-auto px-6">
             <FieldGroup className="grid grid-cols-1 lg:grid-cols-2">
@@ -181,9 +212,12 @@ export const ProductDialog = ({
                       ) : (
                         <FieldLabel
                           htmlFor={field.name}
-                          className="h-28 justify-center rounded-xl border border-dashed bg-secondary transition hover:border-solid hover:ring-1 hover:ring-ring/50"
+                          className="h-28 flex-col hover:*:data-[slot=field-legend]:underline pt-6 justify-center rounded-xl border-2 border-dashed bg-secondary/40 transition"
                         >
-                          <FieldLegend>Upload Image</FieldLegend>
+                          <ImageUp className="size-6 text-muted-foreground" />
+                          <FieldLegend className="text-muted-foreground text-sm! ">
+                            Click to upload image
+                          </FieldLegend>
 
                           <Input
                             className="sr-only"
@@ -372,9 +406,32 @@ export const ProductDialog = ({
                   />
                 )}
               />
+
+              {product?.id && (
+                <Alert
+                  variant="destructive"
+                  className="lg:col-span-2 border-destructive bg-destructive/2"
+                >
+                  <AlertCircleIcon />
+                  <AlertTitle>Delete product</AlertTitle>
+                  <AlertDescription className="text-muted-foreground!">
+                    This action cannot be undone. This will permanently delete
+                    the product.
+                  </AlertDescription>
+                  <AlertAction>
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      onClick={handleDeleteProduct}
+                    >
+                      Delete
+                    </Button>
+                  </AlertAction>
+                </Alert>
+              )}
             </FieldGroup>
           </div>
-          <Field className="flex flex-col-reverse gap-4 px-6 pt-4 sm:flex-row sm:justify-end  sm:[&>*]:w-28">
+          <Field className="flex flex-col-reverse gap-4 px-6 sm:flex-row sm:justify-end  sm:[&>*]:w-28">
             <Button
               variant="outline"
               size="xl"

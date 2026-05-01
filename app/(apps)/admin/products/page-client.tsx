@@ -20,6 +20,9 @@ import { Pagination } from "@/components/admin/pagination";
 import { ProductAction } from "@/app/(apps)/admin/products/product-actions";
 import { AdminProductResponse } from "@/lib/types";
 import { formatUSD, getInitialsAvatar } from "@/lib/utils";
+import { ProductDialog } from "@/components/admin/product-dialog";
+import { Button } from "@/components/ui/button";
+import { SquarePen } from "lucide-react";
 
 export const PageClient = () => {
   const { searchParams, queryParams } = useRouterStuff();
@@ -57,11 +60,20 @@ export const PageClient = () => {
                 style={{ "--color": map.color } as React.CSSProperties}
               >
                 {/* actions */}
-                <ProductAction product={product} />
+
+                <ProductDialog product={product}>
+                  <Button
+                    variant="outline"
+                    size="icon-xs"
+                    className="absolute top-2 right-2 z-2 rounded-sm shadow-sm h-6!"
+                  >
+                    <SquarePen />
+                  </Button>
+                </ProductDialog>
 
                 <div className="absolute top-2 left-2 z-2 flex flex-col gap-1">
                   {/* status */}
-                  <Badge className="h-6 rounded-md  backdrop-blur-2xl bg-(--color)/10 shadow-sm border border-(--color)/20 text-sm text-(--color)">
+                  <Badge className="h-6 rounded-md  backdrop-blur-2xl bg-background/80 shadow-sm border border-(--color)/20 text-sm text-(--color)">
                     <map.icon className="size-3.5" />
                     {map.label}
                   </Badge>
