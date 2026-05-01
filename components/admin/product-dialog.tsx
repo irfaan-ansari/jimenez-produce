@@ -20,7 +20,6 @@ import z from "zod";
 import { toast } from "sonner";
 import Image from "next/image";
 import { useState } from "react";
-import { del } from "@vercel/blob";
 import { Input } from "../ui/input";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
@@ -45,6 +44,7 @@ import { createProduct, deleteProduct, updateProduct } from "@/server/product";
 import { Checkbox } from "../ui/checkbox";
 import { Alert, AlertAction, AlertDescription, AlertTitle } from "../ui/alert";
 import { useConfirm } from "@/hooks/use-confirm";
+import { deleteBlob } from "@/server/blob";
 
 const schema = z.object({
   identifier: z.string(),
@@ -53,12 +53,11 @@ const schema = z.object({
   isTaxable: z.boolean(),
   categories: z.array(z.string()),
   status: z.string().min(1, "Select status"),
-  image: z.string(),
+  image: z.string().or(z.any()),
   basePrice: z.string().min(1, "Enter base price"),
   type: z.string(),
   pack: z.string(),
   unit: z.string(),
-  imageObj: z.file().mime(["image/png", "image/jpeg"]).or(z.any()),
 });
 
 export const ProductDialog = ({
@@ -85,25 +84,14 @@ export const ProductDialog = ({
       unit: product?.unit || "",
       basePrice: product?.basePrice || "",
       image: product?.image || "",
-      imageObj: null as any,
     },
     validators: {
       onSubmit: schema,
     },
 
     onSubmit: async ({ value }) => {
-      const { imageObj, ...rest } = value;
+      const { ...rest } = value;
       const status = rest.status.toLowerCase();
-
-      // if has new file upload it to blob
-      if (imageObj instanceof File) {
-        const blob = await upload(`products/${imageObj.name}`, imageObj, {
-          access: "public",
-          handleUploadUrl: "/api/upload",
-        });
-
-        rest.image = blob.url;
-      }
 
       if (product && product.id) {
         const { success, error } = await updateProduct(product.id, {
@@ -130,13 +118,43 @@ export const ProductDialog = ({
     },
   });
 
-  const handleDeleteImage = () => {
-    const url = form.getFieldValue("image");
-    if (url?.includes("blob.vercel-storage")) del(url);
-
+  /**
+   * Handles the deletion of a product image.
+   */
+  const handleDeleteImage = async (url: string) => {
     form.setFieldValue("image", "");
+    await deleteBlob(url);
   };
 
+  /**
+   * Handles the change of a product image.
+   */
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) {
+      toast.error("Please upload a valid image.");
+      return;
+    }
+    const toastId = toast.loading("Please wait...");
+
+    const url = URL.createObjectURL(file);
+    form.setFieldValue("image", url);
+
+    const blob = await upload(`products/${file.name}`, file, {
+      access: "public",
+      handleUploadUrl: "/api/upload",
+    });
+    if (blob.url) {
+      toast.success("Image uploaded successfully.", { id: toastId });
+      form.setFieldValue("image", blob.url);
+    } else {
+      toast.error("Failed to upload the upload the image.", { id: toastId });
+    }
+  };
+
+  /**
+   * Handles the deletion of a product.
+   */
   const handleDeleteProduct = () => {
     if (!product?.id) return;
     confirm.delete({
@@ -159,6 +177,7 @@ export const ProductDialog = ({
       cancelLabel: "Cancel",
     });
   };
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
@@ -204,7 +223,7 @@ export const ProductDialog = ({
                             size="icon-sm"
                             variant="outline"
                             className="absolute top-2 right-2 rounded-xl"
-                            onClick={handleDeleteImage}
+                            onClick={() => handleDeleteImage(field.state.value)}
                           >
                             <Trash2 />
                           </Button>
@@ -224,16 +243,7 @@ export const ProductDialog = ({
                             type="file"
                             accept="image/*"
                             id={field.name}
-                            onChange={(e) => {
-                              form.setFieldValue(
-                                "imageObj",
-                                e.target.files?.[0],
-                              );
-                              const url = URL.createObjectURL(
-                                e.target.files?.[0]!,
-                              );
-                              form.setFieldValue("image", url);
-                            }}
+                            onChange={handleFileChange}
                           />
                         </FieldLabel>
                       )}
@@ -421,6 +431,7 @@ export const ProductDialog = ({
                   <AlertAction>
                     <Button
                       size="sm"
+                      type="button"
                       variant="destructive"
                       onClick={handleDeleteProduct}
                     >
