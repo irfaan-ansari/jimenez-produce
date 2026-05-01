@@ -7,13 +7,13 @@ import {
   EmptyTitle,
 } from "../ui/empty";
 import { Loader } from "../animate-ui/icons/loader";
-import { AlertTriangle, Inbox } from "lucide-react";
+import { Inbox, OctagonX } from "lucide-react";
 import { AnimateIcon } from "../animate-ui/icons/icon";
 import { cn } from "@/lib/utils";
 
 export const EmptyComponent = ({
   title = "No Data Available",
-  description = "There’s currently nothing to display here.",
+  description = "Requested resource not found",
   variant = "empty",
 }: {
   title?: string;
@@ -26,7 +26,7 @@ export const EmptyComponent = ({
         {variant === "empty" ? (
           <Inbox className="size-20 text-neutral-200" />
         ) : (
-          <AlertTriangle className="size-10 text-destructive" />
+          <OctagonX className="size-20 text-neutral-200" />
         )}
 
         <EmptyTitle className="text-xl font-semibold">{title}</EmptyTitle>
@@ -40,7 +40,7 @@ export const LoadingSkeleton = ({ className }: { className?: string }) => {
   return (
     <div className={cn("flex flex-col items-center justify-center", className)}>
       <Empty>
-        <EmptyHeader className="rounded-2xl p-10 shadow-xs border bg-sidebar">
+        <EmptyHeader className="rounded-2xl border bg-sidebar p-10 shadow-xs">
           <EmptyMedia>
             <AnimateIcon animate persistOnAnimateEnd>
               <Loader />

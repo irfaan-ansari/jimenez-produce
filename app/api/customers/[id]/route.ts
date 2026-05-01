@@ -21,7 +21,28 @@ export const GET = async (
       );
     }
 
-    const conditions = [eq(team.id, id)];
+    const exists = await db.query.team.findFirst({
+      where: (team, { and, eq }) =>
+        and(
+          eq(team.id, id),
+          eq(team.organizationId, auth.session.activeOrganizationId!),
+        ),
+      columns: {
+        id: true,
+      },
+    });
+
+    if (!exists) {
+      return NextResponse.json(
+        { error: ERROR_MESSAGE.NOT_FOUND },
+        { status: 404 },
+      );
+    }
+
+    const conditions = [
+      eq(team.id, id),
+      eq(team.organizationId, auth.session.activeOrganizationId!),
+    ];
 
     const [customer, recentOrders, stats] = await Promise.all([
       db.query.team.findFirst({
@@ -59,9 +80,13 @@ export const GET = async (
       }),
 
       db.query.order.findMany({
-        where: (order, { eq }) => eq(order.teamId, id),
+        where: (order, { eq, and }) =>
+          and(
+            eq(order.teamId, id),
+            eq(order.organizationId, auth.session.activeOrganizationId!),
+          ),
         orderBy: (order, { desc }) => [desc(order.createdAt)],
-        limit: 8,
+        limit: 5,
       }),
       db
         .select({

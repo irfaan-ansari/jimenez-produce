@@ -1,6 +1,13 @@
 "use client";
+import { use } from "react";
 import Link from "next/link";
-
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Timeline,
   TimelineContent,
@@ -11,23 +18,17 @@ import {
   TimelineSeparator,
   TimelineTitle,
 } from "@/components/reui/timeline";
-import { ChevronLeft, CircleDashed, PackageCheck } from "lucide-react";
+import { formatUSD } from "@/lib/utils";
+import { format } from "date-fns/format";
 import { useTeam } from "@/hooks/use-teams";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import {
   EmptyComponent,
   LoadingSkeleton,
 } from "@/components/admin/placeholder-component";
-import { use } from "react";
-import { formatUSD } from "@/lib/utils";
-import { format } from "date-fns/format";
+import { ChevronLeft, CircleDashed, PackageCheck } from "lucide-react";
+import { STATUS_MAP } from "@/lib/constants/status-map";
+import { Badge } from "@/components/ui/badge";
 
 export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = use(params);
@@ -43,7 +44,6 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
 
   const { data } = result;
 
-  console.log(data);
   return (
     <div className="grid grid-cols-6 gap-8">
       <div className="col-span-6 space-y-6 lg:col-span-4">
@@ -66,14 +66,15 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
             <Button size="lg">Invite Member</Button>
           </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Card className="flex-row px-6 items-start">
+        {/* stats cards */}
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <Card className="flex-row items-start px-6">
             <div className="flex-1">
-              <CardTitle className="text-3xl font-bold mb-2">
+              <CardTitle className="mb-2 text-3xl font-bold">
                 {/* @ts-expect-error */}
                 {data.stats?.activeCount}
               </CardTitle>
-              <CardDescription className="mb-6 font-semibold text-base">
+              <CardDescription className="mb-6 text-base font-semibold">
                 {/* @ts-expect-error */}
                 {formatUSD(data.stats?.activeValue)}
               </CardDescription>
@@ -81,17 +82,17 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
                 Active Orders
               </span>
             </div>
-            <span className="size-10 inline-flex text-foreground rounded-lg p-0 justify-center items-center bg-amber-100">
+            <span className="inline-flex size-10 items-center justify-center rounded-lg bg-amber-100 p-0 text-foreground">
               <CircleDashed className="size-4" />
             </span>
           </Card>
-          <Card className="flex-row px-6 items-start">
+          <Card className="flex-row items-start px-6">
             <div className="flex-1">
-              <CardTitle className="text-3xl font-bold mb-2">
+              <CardTitle className="mb-2 text-3xl font-bold">
                 {/* @ts-expect-error */}
                 {data.stats?.completedCount}
               </CardTitle>
-              <CardDescription className="mb-6 font-semibold text-base">
+              <CardDescription className="mb-6 text-base font-semibold">
                 {/* @ts-expect-error */}
                 {formatUSD(data.stats?.completedValue)}
               </CardDescription>
@@ -99,11 +100,40 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
                 Completed Orders
               </span>
             </div>
-            <span className="size-10 inline-flex text-foreground rounded-lg p-0 justify-center items-center bg-green-100">
+            <span className="inline-flex size-10 items-center justify-center rounded-lg bg-green-100 p-0 text-foreground">
               <PackageCheck className="size-4" />
             </span>
           </Card>
         </div>
+
+        {/* Product access */}
+        <Card className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <CardHeader>
+            <CardTitle className="font-semibold">Product access</CardTitle>
+            <CardDescription>
+              Manage product access of this team
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="grid grid-cols-1 gap-4 md:grid-cols-2"></CardContent>
+        </Card>
+
+        {/* Tax rules */}
+        <Card className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <CardHeader>
+            <CardTitle className="font-semibold">Tax rules</CardTitle>
+            <CardDescription>Manage tax rules of this team</CardDescription>
+          </CardHeader>
+          <CardContent className="grid grid-cols-1 gap-4 md:grid-cols-2"></CardContent>
+        </Card>
+
+        {/* members */}
+        <Card className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <CardHeader>
+            <CardTitle className="font-semibold">Members</CardTitle>
+            <CardDescription>Manage members of this team</CardDescription>
+          </CardHeader>
+          <CardContent className="grid grid-cols-1 gap-4 md:grid-cols-2"></CardContent>
+        </Card>
       </div>
       <Card className="col-span-2 rounded-2xl bg-card">
         <CardHeader>
@@ -114,15 +144,18 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
             {/* @ts-expect-error */}
             {data?.recentOrders?.map((order) => (
               <TimelineItem key={order.id} step={1}>
-                <TimelineHeader>
-                  <TimelineDate>
-                    {format(order.createdAt, "MMM dd")}
-                  </TimelineDate>
-                  <TimelineTitle>#{order.id}</TimelineTitle>
+                <TimelineHeader className="flex items-start gap-2">
+                  <div className="flex-1">
+                    <TimelineDate>
+                      {format(order.createdAt, "MMM dd")}
+                    </TimelineDate>
+                    <TimelineTitle>#{order.id}</TimelineTitle>
+                  </div>
+                  <TimelineBadge status={order.status} />
                 </TimelineHeader>
                 <TimelineIndicator />
                 <TimelineSeparator />
-                <TimelineContent className="bg-secondary p-4 rounded-xl space-y-0.5">
+                <TimelineContent className="space-y-0.5 rounded-xl bg-secondary p-4">
                   <div className="flex justify-between">
                     <span>Subtotal</span>
                     <span>{formatUSD(order.subtotal)}</span>
@@ -135,7 +168,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
                     <span>{order?.charges?.type}</span>
                     <span>{formatUSD(order?.charges?.amount)}</span>
                   </div>
-                  <div className="flex justify-between text-foreground text-base font-semibold mt-2">
+                  <div className="mt-2 flex justify-between text-base font-semibold text-foreground">
                     <span>Total</span>
                     <span>{formatUSD(order.total)}</span>
                   </div>
@@ -146,5 +179,19 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
         </CardContent>
       </Card>
     </div>
+  );
+};
+
+const TimelineBadge = ({ status }: { status: string }) => {
+  const map = STATUS_MAP[status as keyof typeof STATUS_MAP];
+  return (
+    <Badge
+      variant="outline"
+      style={{ "--color": map.color } as React.CSSProperties}
+      className="h-7 gap-1.5 rounded-xl border-(--color)/10 bg-(--color)/10 pr-2.5 pl-1.5 text-sm [&>svg]:size-3.5!"
+    >
+      <map.icon className="text-(--color)" />
+      {map.label}
+    </Badge>
   );
 };
