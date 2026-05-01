@@ -14,13 +14,19 @@ import {
 import { useStore } from "@tanstack/react-form";
 import { Button } from "@/components/ui/button";
 import { useAppForm } from "@/hooks/form-context";
-import { AlertCircleIcon, ArrowLeft, Loader, X } from "lucide-react";
-import { Alert, AlertAction, AlertDescription, AlertTitle } from "../ui/alert";
+import { AlertCircleIcon, Loader, X } from "lucide-react";
+import { Alert, AlertAction, AlertTitle } from "../ui/alert";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "../ui/input-otp";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 import { phoneSchema } from "@/lib/form-schema/common";
 import { sendOtp, verifyOtp } from "@/server/auth";
-import { useRouter } from "next/navigation";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "../ui/input-group";
+import { Badge } from "../ui/badge";
+import { formatPhone } from "@/lib/utils";
 
 const phone = z.object({
   phoneNumber: phoneSchema,
@@ -77,6 +83,11 @@ export function OTPLoginForm({
         if (success) {
           // clear error
           form.setFieldValue("error", "");
+
+          form.setFieldMeta("phoneNumber", (prev) => ({
+            ...prev,
+            errorMap: { ...prev.errorMap, onChange: "Username already taken" },
+          }));
 
           toast.success("Login successfull, redirecting...", { id: toastId });
           window.location.reload();
@@ -154,15 +165,46 @@ export function OTPLoginForm({
               passcode.
             </p>
           </div>
-          <form.AppField
+
+          <form.Field
             name="phoneNumber"
             children={(field) => {
+              const isInvalid =
+                field.state.meta.isTouched && !field.state.meta.isValid;
+
+              const displayValue = formatPhone(field.state.value ?? "");
+
               return (
-                <field.PhoneField
-                  label="Phone Number"
-                  placeholder="(xxx)-yyy-zzzz"
-                  className="*:data-[slot=input]:rounded-xl *:data-[slot=input]:bg-background"
-                />
+                <Field className="gap-2">
+                  <FieldLabel htmlFor={field.name}>Phone Number</FieldLabel>
+
+                  <InputGroup className="bg-background rounded-xl">
+                    <InputGroupAddon>
+                      <Badge
+                        className="h-4 hover:bg-transparent! mr-2 pr-4 rounded-none relative after:absolute after:right-0 after:inset-y-0 after:w-0.5 after:bg-foreground/30 "
+                        variant="ghost"
+                      >
+                        +1
+                      </Badge>
+                    </InputGroupAddon>
+                    <InputGroupInput
+                      id={field.name}
+                      name={field.name}
+                      value={displayValue}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => {
+                        const digits = e.target.value
+                          .replace(/\D/g, "")
+                          .slice(0, 10);
+                        field.handleChange(digits);
+                      }}
+                      aria-invalid={isInvalid}
+                      type="tel"
+                      placeholder="123-123-1234"
+                    />
+                  </InputGroup>
+                  {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                </Field>
               );
             }}
           />

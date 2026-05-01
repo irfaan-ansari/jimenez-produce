@@ -101,6 +101,7 @@ export const ProductDialog = ({
         if (success) {
           toast.success("Product updated successfully.");
           setOpen(false);
+          form.reset();
         } else {
           toast.error(error.message);
         }

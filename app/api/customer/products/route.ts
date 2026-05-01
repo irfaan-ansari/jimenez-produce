@@ -11,6 +11,7 @@ import {
   SQL,
   isNotNull,
   countDistinct,
+  notInArray,
 } from "drizzle-orm";
 import {
   lineItem,
@@ -18,6 +19,7 @@ import {
   priceLevelItem,
   product,
   ProductSelectType,
+  teamProduct,
 } from "@/lib/db/schema";
 import { db } from "@/lib/db";
 import { team } from "@/lib/db/auth-schema";
@@ -44,10 +46,22 @@ export async function GET(req: NextRequest) {
       saved = false,
     } = getQueryObject(search);
 
-    // 🔹 Filters
+    const ids = await db.query.teamProduct.findMany({
+      where: eq(teamProduct.teamId, activeTeamId!),
+      columns: {
+        productId: true,
+      },
+    });
+
+    const privateIds = ids.map((id) => id.productId);
+
     const conditions = [
       ne(product.status, "archived"),
       eq(product.organizationId, activeOrganizationId),
+      or(
+        and(eq(product.status, "active"), notInArray(product.id, privateIds)),
+        inArray(product.id, privateIds),
+      ),
     ];
 
     if (cat) {
@@ -82,7 +96,6 @@ export async function GET(req: NextRequest) {
       .from(lineItem)
       .where(eq(lineItem.teamId, activeTeamId!))
       .orderBy(desc(lineItem.createdAt))
-      .limit(1)
       .as("lastLineItem");
 
     // main query to get products
@@ -191,8 +204,6 @@ const resolvePrice = async (teamId: string, products: ProductSelectType[]) => {
         eq(priceLevelItem.priceLevelId, priceLevel.id),
       ),
     });
-
-    const ids = prices.map((p) => p.productId);
 
     const priceMap = new Map(prices.map((p) => [p.productId, p.price]));
 

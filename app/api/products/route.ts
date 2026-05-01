@@ -42,7 +42,10 @@ export async function GET(req: NextRequest) {
       where: filters,
       limit: Number(limit),
       offset,
-      orderBy: (product, { desc }) => [desc(product.createdAt)],
+      orderBy: (product, { desc, asc }) => [
+        desc(product.createdAt),
+        asc(product.id),
+      ],
     });
 
     const total = await db.$count(product, filters);
@@ -62,7 +65,7 @@ export async function GET(req: NextRequest) {
   } catch (error) {
     console.error(error);
     return NextResponse.json(
-      { message: "Failed to load data" },
+      { message: "Failed to load products" },
       { status: 500 },
     );
   }
