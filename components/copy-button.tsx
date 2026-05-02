@@ -34,13 +34,15 @@ export function CopyButton({ value, render, className }: CopyProps) {
   }
 
   return (
-    <div className={`flex items-center gap-1 ${className}`}>
+    <div
+      className={`flex items-center gap-1 hover:*:data-[slot=button]:opacity-100 ${className}`}
+    >
       <span className="text-sm text-muted-foreground">{value}</span>
       <Button
         onClick={copy}
         size="icon-xs"
         variant="ghost"
-        className="rounded-md border text-sm"
+        className="rounded-md border text-sm opacity-0"
       >
         {copied ? <Check /> : <Copy />}
       </Button>

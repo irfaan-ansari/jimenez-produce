@@ -18,7 +18,7 @@ import {
   TimelineSeparator,
   TimelineTitle,
 } from "@/components/reui/timeline";
-import { formatUSD } from "@/lib/utils";
+import { formatUSD, getAvatarFallback } from "@/lib/utils";
 import { format } from "date-fns/format";
 import { useTeam } from "@/hooks/use-teams";
 import { Button } from "@/components/ui/button";
@@ -26,9 +26,21 @@ import {
   EmptyComponent,
   LoadingSkeleton,
 } from "@/components/admin/placeholder-component";
-import { ChevronLeft, CircleDashed, PackageCheck } from "lucide-react";
+import {
+  ChevronLeft,
+  CircleDashed,
+  PackageCheck,
+  Plus,
+  Trash2,
+} from "lucide-react";
 import { STATUS_MAP } from "@/lib/constants/status-map";
 import { Badge } from "@/components/ui/badge";
+import { useForm } from "@tanstack/react-form";
+import { toast } from "sonner";
+import { TaxRulesSelector } from "@/components/admin/tax-rules-selector";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { CopyButton } from "@/components/copy-button";
+import { TaxRule } from "@/lib/types";
 
 export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = use(params);
@@ -66,6 +78,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
             <Button size="lg">Invite Member</Button>
           </div>
         </div>
+
         {/* stats cards */}
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <Card className="flex-row items-start px-6">
@@ -106,6 +119,26 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
           </Card>
         </div>
 
+        {/* account info */}
+        <Card className="rounded-2xl">
+          <CardContent className="flex gap-6 items-center">
+            <Avatar className="size-20 lg:size-24 ring-2 shrink-0 ring-primary/40 ring-offset-2 ring-offset-background">
+              <AvatarImage src={data.logo} />
+              <AvatarFallback>
+                {getAvatarFallback(data?.name || "")}
+              </AvatarFallback>
+            </Avatar>
+            <div>
+              <CardTitle className="font-semibold">{data.name}</CardTitle>
+              <CardDescription>{data.managerName}</CardDescription>
+              <div className="flex gap-1 flex-col lg:flex-row lg:gap-2 mt-3">
+                <CopyButton value={data.phone} />
+                <CopyButton value={data.email} />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Product access */}
         <Card className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <CardHeader>
@@ -118,12 +151,14 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
         </Card>
 
         {/* Tax rules */}
-        <Card className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <Card>
           <CardHeader>
             <CardTitle className="font-semibold">Tax rules</CardTitle>
             <CardDescription>Manage tax rules of this team</CardDescription>
           </CardHeader>
-          <CardContent className="grid grid-cols-1 gap-4 md:grid-cols-2"></CardContent>
+          <CardContent>
+            <TaxRulesForm data={data.taxRules} teamId={data.id} />
+          </CardContent>
         </Card>
 
         {/* members */}
@@ -193,5 +228,96 @@ const TimelineBadge = ({ status }: { status: string }) => {
       <map.icon className="text-(--color)" />
       {map.label}
     </Badge>
+  );
+};
+
+const TaxRulesForm = ({
+  data,
+  teamId,
+}: {
+  data: TaxRule[];
+  teamId: string;
+}) => {
+  const form = useForm({
+    defaultValues: {
+      taxRules: data || ([] as any),
+    },
+    onSubmit: async ({ value }) => {
+      toast.info("Form values", {
+        description: JSON.stringify(value, null, 2),
+      });
+      // const toastId = toast.loading("Please wait...");
+    },
+  });
+  return (
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        form.handleSubmit();
+      }}
+    >
+      <form.Field
+        name="taxRules"
+        mode="array"
+        children={(field) => {
+          const taxRules = field.state.value;
+          return (
+            <div className="space-y-2 rounded-lg border-l py-2 pl-2">
+              {taxRules.length > 0 ? (
+                <div className="space-y-1">
+                  {taxRules?.map((rule, i) => (
+                    <div
+                      key={rule.id}
+                      className="flex items-center rounded-lg border bg-secondary/20 p-2"
+                    >
+                      <div className="flex-1 space-x-4">
+                        <span>{rule.name}</span>
+                        <span className="text-muted-foreground">•</span>
+                        <span className="font-medium">{rule.rate}%</span>
+                      </div>
+                      <Button
+                        size="icon-xs"
+                        type="button"
+                        variant="destructive"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          field.removeValue(i);
+                        }}
+                      >
+                        <Trash2 />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              ) : null}
+              <TaxRulesSelector
+                selected={field.state.value}
+                setSelectedChange={(value) => {
+                  const index = field.state.value.findIndex(
+                    (s) => s.id === value.id,
+                  );
+                  if (index >= 0) {
+                    field.removeValue(index);
+                  } else {
+                    field.pushValue({ ...value, id: Number(value.id) });
+                  }
+                }}
+              >
+                <Button variant="outline" size="sm">
+                  <Plus /> Choose Tax Rules
+                </Button>
+              </TaxRulesSelector>
+            </div>
+          );
+        }}
+      />
+      <div className="flex justify-end mt-2">
+        <form.Subscribe selector={({ isSubmitting }) => ({ isSubmitting })} />
+
+        <Button className="w-28" size="lg">
+          Save
+        </Button>
+      </div>
+    </form>
   );
 };

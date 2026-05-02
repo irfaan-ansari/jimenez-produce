@@ -66,14 +66,17 @@ export const GET = async (
             },
           },
           products: {
-            columns: {
-              id: true,
-              // @ts-ignore
-              title: true,
-              identifier: true,
-              image: true,
-              categories: true,
-              status: true,
+            with: {
+              product: {
+                columns: {
+                  id: true,
+                  title: true,
+                  identifier: true,
+                  image: true,
+                  categories: true,
+                  status: true,
+                },
+              },
             },
           },
         },
@@ -117,7 +120,6 @@ export const GET = async (
       email: customer.email,
       logo: customer.logo,
       priceLevelId: customer.priceLevelId,
-      // @ts-ignore
       members: customer?.teamMembers?.map((tm) => {
         return {
           id: tm.userId,
@@ -127,7 +129,7 @@ export const GET = async (
           image: tm.user.image,
         };
       }),
-      // @ts-ignore
+
       taxRules: customer?.taxRuleItems?.map((tri) => {
         return {
           id: tri.taxRuleId,
@@ -135,8 +137,17 @@ export const GET = async (
           rate: tri.taxRule.rate,
         };
       }),
-      // @ts-ignore
-      ...customer.products,
+
+      products: customer?.products?.map((p) => {
+        return {
+          id: p.productId,
+          title: p.product.title,
+          identifier: p.product.identifier,
+          image: p.product.image,
+          categories: p.product.categories,
+          status: p.product.status,
+        };
+      }),
     };
 
     return NextResponse.json(
