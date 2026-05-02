@@ -36,14 +36,15 @@ export const ProfileForm = () => {
       onSubmit: schema,
     },
     onSubmit: async ({ value }) => {
+      const { name, phoneNumber } = value;
       await authClient.updateUser(
-        { name: value.name },
+        { name, phoneNumber },
         {
           onSuccess: () => {
-            toast.success("User created successfully!");
+            toast.success("Profile updated successfully!");
           },
           onError: (err) => {
-            toast.error(err.error.message || "Something went wrong!");
+            toast.error(err.error.message || "Failed to update profile!");
           },
         },
       );

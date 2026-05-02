@@ -9,7 +9,7 @@ import {
 import { db } from "@/lib/db";
 import { getSession } from "./auth";
 import { cookies } from "next/headers";
-import { and, eq, ilike, or, desc, sql, inArray, isNotNull } from "drizzle-orm";
+import { and, eq, ilike, desc, sql, countDistinct } from "drizzle-orm";
 import { handleAction } from "@/lib/helper/error-handler";
 
 export const getProducts = handleAction(
@@ -26,7 +26,7 @@ export const getProducts = handleAction(
     filters.push(eq(product.status, "active"));
 
     const products = await db
-      .select({
+      .selectDistinctOn([product.identifier], {
         id: product.id,
         title: product.title,
         image: product.image,
@@ -36,9 +36,14 @@ export const getProducts = handleAction(
       .limit(email ? Number(limit) : 20)
       .where(and(...filters))
       .offset(email ? offset : 0)
-      .orderBy(desc(product.createdAt));
+      .orderBy(product.identifier, desc(product.createdAt));
 
-    const total = await db.$count(product);
+    const [{ total }] = await db
+      .select({
+        total: countDistinct(product.identifier),
+      })
+      .from(product)
+      .where(and(...filters));
 
     return {
       data: products,

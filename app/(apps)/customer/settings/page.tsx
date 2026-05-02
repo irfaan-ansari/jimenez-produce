@@ -1,6 +1,13 @@
-import { ProfileForm } from "./profile";
+import { ProfileForm } from "./profile-form";
 import ChangePasswordForm from "./change-password";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 const tabs = [
   { value: "account", name: "Account", content: <ProfileForm /> },
@@ -39,12 +46,14 @@ const SettingsPage = async ({
         </TabsList>
 
         {tabs.map((tab) => (
-          <TabsContent
-            key={tab.value}
-            value={tab.value}
-            className="rounded-2xl bg-background p-6"
-          >
-            <p className="text-sm text-muted-foreground">{tab.content}</p>
+          <TabsContent key={tab.value} value={tab.value}>
+            <Card>
+              <CardHeader>
+                <CardTitle>{tab.name}</CardTitle>
+                <CardDescription>Lorem ipsum dolor sit amet.</CardDescription>
+              </CardHeader>
+              <CardContent>{tab.content}</CardContent>
+            </Card>
           </TabsContent>
         ))}
       </Tabs>

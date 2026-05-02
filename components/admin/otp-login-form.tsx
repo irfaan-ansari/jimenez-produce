@@ -84,11 +84,6 @@ export function OTPLoginForm({
           // clear error
           form.setFieldValue("error", "");
 
-          form.setFieldMeta("phoneNumber", (prev) => ({
-            ...prev,
-            errorMap: { ...prev.errorMap, onChange: "Username already taken" },
-          }));
-
           toast.success("Login successfull, redirecting...", { id: toastId });
           window.location.reload();
         } else {
@@ -121,8 +116,8 @@ export function OTPLoginForm({
     if (success) {
       // clear error
       form.setFieldValue("error", "");
-
       // go to next step
+      form.setFieldValue("seconds", 60);
       form.setFieldValue("step", "verify");
       form.setFieldValue("canResend", false);
       toast.success("OTP sent successfully!", {

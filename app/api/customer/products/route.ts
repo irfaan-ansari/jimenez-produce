@@ -100,7 +100,7 @@ export async function GET(req: NextRequest) {
 
     // main query to get products
     const products = await db
-      .select({
+      .selectDistinctOn([product.id], {
         ...getTableColumns(product),
         lastPurchased: {
           id: lastLineItem.id,
@@ -114,7 +114,7 @@ export async function GET(req: NextRequest) {
         },
       })
       .from(product)
-      .leftJoinLateral(lastLineItem, eq(lastLineItem.productId, product.id))
+      .leftJoin(lastLineItem, eq(lastLineItem.productId, product.id))
       .leftJoin(
         orderGuideItem,
         and(
@@ -123,6 +123,11 @@ export async function GET(req: NextRequest) {
         ),
       )
       .where(filters)
+      .orderBy(
+        product.id,
+        desc(lastLineItem.createdAt),
+        desc(lastLineItem.quantity),
+      )
       .limit(limit)
       .offset(offset);
 

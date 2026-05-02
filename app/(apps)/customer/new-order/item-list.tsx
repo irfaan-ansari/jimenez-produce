@@ -60,9 +60,9 @@ export const ItemList = withForm({
   ...formOpt,
 
   render: function Render({ form }) {
-    const [filter, setFilter] = React.useState<Record<string, any>>({});
-    const [layout, setLayout] = React.useState<"list" | "grid">("list");
     const { searchParamsObj } = useRouterStuff();
+    const [filter, setFilter] = React.useState<Record<string, any>>({});
+    const [layout, setLayout] = React.useState<"list" | "grid">("grid");
     const query = new URLSearchParams({ ...filter, ...searchParamsObj });
 
     const {
