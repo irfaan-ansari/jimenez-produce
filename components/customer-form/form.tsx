@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation";
 import { upload } from "@vercel/blob/client";
 import { useConfirm } from "@/hooks/use-confirm";
 import { useAppForm } from "@/hooks/form-context";
-import { createCustomer } from "@/server/customer";
+import { createCustomer } from "@/server/customer-application";
 import { defaultValues } from "@/lib/constants/customer";
 import { steps } from "@/lib/constants/customer-form-steps";
 import { ArrowLeft, ArrowRight, Loader } from "lucide-react";
@@ -26,7 +26,7 @@ export const formOpts = formOptions({
   validators: {
     onSubmit: ({ value, formApi }) => {
       return formApi.parseValuesWithSchema(
-        steps[value.step as number].schema as typeof customerSchema
+        steps[value.step as number].schema as typeof customerSchema,
       );
     },
   },
@@ -37,7 +37,7 @@ export const CustomerForm = () => {
   const router = useRouter();
   const { t, dir, setLanguage, language } = useTranslation(
     translations as Translations,
-    "en"
+    "en",
   );
 
   const form = useAppForm({
@@ -61,8 +61,8 @@ export const CustomerForm = () => {
           upload(`customer/${file.name}`, file, {
             access: "public",
             handleUploadUrl: "/api/upload",
-          })
-        )
+          }),
+        ),
       );
       const { certificate, dlFront, dlBack, signature, ...rest } = value;
       // submit form

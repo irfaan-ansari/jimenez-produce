@@ -7,7 +7,7 @@ import { useConfirm } from "@/hooks/use-confirm";
 import { MoreVertical, Trash2 } from "lucide-react";
 import { PopoverXDrawer } from "../popover-x-drawer";
 import { inviteStatusMap } from "@/lib/constants/customer";
-import { deleteInvite, updateInvite } from "@/server/customer";
+import { deleteInvite, updateInvite } from "@/server/customer-application";
 import { CustomerInviteStatusDialog } from "./customer-invite-status-dialog";
 import { useQueryClient } from "@tanstack/react-query";
 

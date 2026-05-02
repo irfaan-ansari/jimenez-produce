@@ -10,7 +10,7 @@ import {
   EmptyComponent,
   LoadingSkeleton,
 } from "@/components/admin/placeholder-component";
-import { updateCustomer } from "@/server/customer";
+import { updateCustomer } from "@/server/customer-application";
 import { useCustomer } from "@/hooks/use-customer";
 import { useQueryClient } from "@tanstack/react-query";
 import { STATUS_MAP } from "@/lib/constants/status-map";

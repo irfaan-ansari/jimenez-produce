@@ -21,7 +21,7 @@ import { Button } from "../ui/button";
 import { Loader } from "lucide-react";
 import { Textarea } from "../ui/textarea";
 import { useAppForm } from "@/hooks/form-context";
-import { updateCustomer } from "@/server/customer";
+import { updateCustomer } from "@/server/customer-application";
 import { useQueryClient } from "@tanstack/react-query";
 
 const schema = z.object({

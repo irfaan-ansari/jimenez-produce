@@ -161,12 +161,10 @@ export const signupWithOrganization = handleAction(
       accountType,
     });
 
-    await auth.api.addMember({
-      body: {
-        userId: createdUser.id,
-        role: role || "member",
-        organizationId: session.session.activeOrganizationId,
-      },
+    // add user to current organization
+    await addUserToOrganization({
+      userId: createdUser.id,
+      role: role || "member",
     });
 
     return {
@@ -202,93 +200,6 @@ export const addUserToOrganization = handleAction(
     });
 
     return data;
-  },
-);
-/**
- * create a team with tax rules
- */
-interface CreateTeam {
-  name: string;
-  phone: string;
-  email: string;
-  managerName: string;
-  priceLevelId: string | number;
-  taxRuleIds?: number[];
-  groupId: any;
-}
-
-export const addTeamWithTaxRules = handleAction(async (data: CreateTeam) => {
-  const session = await getSession();
-
-  if (!session) throw new Error("No session found");
-
-  if (!session.session.activeOrganizationId) {
-    throw new Error("No active organization found");
-  }
-  const { name, email, phone, managerName, taxRuleIds = [] } = data;
-
-  // create team
-  const createdTeam = await auth.api.createTeam({
-    body: {
-      name,
-      email,
-      phone,
-      managerName,
-      logo: getInitialsAvatar(data.name),
-      priceLevelId: Number(data.priceLevelId),
-      organizationId: session.session.activeOrganizationId,
-    },
-  });
-
-  if (taxRuleIds?.length > 0) {
-    await updateTaxRulesToTeam({
-      teamId: createdTeam.id,
-      taxRuleIds: taxRuleIds,
-    });
-  }
-
-  return { ...createdTeam };
-});
-
-/**
- * update team with tax rules
- */
-export const updateTeamWithTaxRules = handleAction(
-  async (teamId: string, data: CreateTeam) => {
-    const session = await getSession();
-
-    if (!session) throw new Error("No session found");
-
-    if (!session.session.activeOrganizationId) {
-      throw new Error("No active organization found");
-    }
-    const { name, email, phone, managerName, taxRuleIds = [] } = data;
-
-    // create team
-    const updatedTeam = await auth.api.updateTeam({
-      body: {
-        teamId,
-        data: {
-          name,
-          email,
-          phone,
-          managerName,
-          logo: getInitialsAvatar(data.name),
-          priceLevelId: Number(data.priceLevelId),
-          organizationId: session.session.activeOrganizationId,
-        },
-      },
-      headers: await headers(),
-    });
-
-    if (taxRuleIds?.length > 0) {
-      await updateTaxRulesToTeam({
-        teamId,
-        taxRuleIds: taxRuleIds,
-      });
-    }
-
-    return { ...updatedTeam };
   },
 );
 

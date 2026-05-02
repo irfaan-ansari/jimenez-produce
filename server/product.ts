@@ -9,63 +9,40 @@ import {
 import { db } from "@/lib/db";
 import { getSession } from "./auth";
 import { cookies } from "next/headers";
-import { and, eq, ilike, or, desc, sql } from "drizzle-orm";
+import { and, eq, ilike, or, desc, sql, inArray, isNotNull } from "drizzle-orm";
 import { handleAction } from "@/lib/helper/error-handler";
 
 export const getProducts = handleAction(
   async (query: Record<string, string>) => {
-    const session = await getSession();
-
     const cookieStore = await cookies();
     const email: string = cookieStore.get("customer-email")?.value as any;
 
-    const [customerRes, inviteRes] = await Promise.all([
-      db.query.customer.findFirst({
-        where: and(
-          or(
-            eq(customer.companyEmail, email),
-            eq(customer.officerEmail, email),
-          ),
-          eq(customer.status, "approved"),
-        ),
-      }),
-      db.query.customerInvite.findFirst({
-        where: and(
-          eq(customerInvite.email, email),
-          eq(customerInvite.status, "approved"),
-        ),
-      }),
-    ]);
+    const { page = 1, limit = 24 } = query;
 
-    const isPublicUser = !session && !customerRes && !inviteRes;
-
-    const { page = 1, limit = 24, status, q } = query;
     const offset = (Number(page) - 1) * Number(limit);
 
-    const statusFilter = isPublicUser
-      ? eq(product.status, "active")
-      : status
-        ? eq(product.status, status)
-        : undefined;
+    const filters = [ilike(product.image, `%http%`)];
 
-    const filters = and(
-      statusFilter,
-      q ? ilike(product.title, `%${q}%`) : undefined,
-    );
+    filters.push(eq(product.status, "active"));
 
     const products = await db
-      .select()
+      .select({
+        id: product.id,
+        title: product.title,
+        image: product.image,
+        identifier: product.identifier,
+      })
       .from(product)
-      .where(filters)
-      .limit(Number(limit))
-      .offset(offset)
+      .limit(email ? Number(limit) : 20)
+      .where(and(...filters))
+      .offset(email ? offset : 0)
       .orderBy(desc(product.createdAt));
 
     const total = await db.$count(product);
 
     return {
       data: products,
-      access: !isPublicUser,
+      access: !!email,
       pagination: {
         page,
         limit,

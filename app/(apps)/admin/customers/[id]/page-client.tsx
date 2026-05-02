@@ -18,10 +18,10 @@ import {
   TimelineSeparator,
   TimelineTitle,
 } from "@/components/reui/timeline";
-import { formatUSD, getAvatarFallback } from "@/lib/utils";
 import { format } from "date-fns/format";
 import { useTeam } from "@/hooks/use-teams";
 import { Button } from "@/components/ui/button";
+import { formatUSD, getAvatarFallback } from "@/lib/utils";
 import {
   EmptyComponent,
   LoadingSkeleton,
@@ -151,6 +151,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
             </CardDescription>
           </CardHeader>
           <CardContent>
+            {/* @ts-expect-error */}
             <ProductAccessForm data={data.products} teamId={data.id} />
           </CardContent>
         </Card>
@@ -172,7 +173,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
             <CardTitle className="font-semibold">Members</CardTitle>
             <CardDescription>Manage members of this team</CardDescription>
           </CardHeader>
-          <CardContent className="px-0">
+          <CardContent>
             <Members members={data.members} />
           </CardContent>
         </Card>
@@ -269,19 +270,19 @@ const TaxRulesForm = ({
         children={(field) => {
           const taxRules = field.state.value;
           return (
-            <div className="space-y-2 rounded-lg border-l py-2 pl-2">
+            <div className="space-y-4">
               {taxRules.length > 0 ? (
                 <div className="space-y-1">
                   {taxRules?.map((rule, i) => (
                     <div
                       key={rule.id}
-                      className="flex items-center rounded-lg border bg-secondary/20 p-2"
+                      className="flex items-center gap-2 py-2 rounded-lg p-2 border bg-secondary/20"
                     >
-                      <div className="flex-1 space-x-4">
-                        <span>{rule.name}</span>
-                        <span className="text-muted-foreground">•</span>
-                        <span className="font-medium">{rule.rate}%</span>
-                      </div>
+                      <span className="flex-1">{rule.name}</span>
+
+                      <span className="font-medium text-muted-foreground">
+                        {rule.rate}%
+                      </span>
                       <Button
                         size="icon-xs"
                         type="button"
@@ -343,7 +344,7 @@ const ProductAccessForm = ({
 }) => {
   const form = useForm({
     defaultValues: {
-      products: [] as ProductSelectType[],
+      products: data as ProductSelectType[],
     },
     onSubmit: ({ value }) => {
       toast.info("Form values", {
@@ -364,19 +365,39 @@ const ProductAccessForm = ({
         mode="array"
         children={(field) => {
           const products = field.state.value;
+
           return (
-            <div className="space-y-2 rounded-lg border-l py-2 pl-2">
+            <div className="space-y-4">
               {products.length > 0 ? (
                 <div className="space-y-1">
-                  {products?.map((rule, i) => (
+                  {products?.map((item, i) => (
                     <div
-                      key={rule.id}
-                      className="flex items-center rounded-lg border bg-secondary/20 p-2"
+                      key={item.id}
+                      className="flex items-center gap-2 p-2 rounded-xl border bg-secondary/20"
                     >
-                      <div className="flex-1 space-x-4">
-                        <span>{rule.title}</span>
-                        <span className="text-muted-foreground">•</span>
-                        <span className="font-medium">{rule.basePrice}</span>
+                      <div className="flex flex-1 items-start gap-3">
+                        <div className="shrink-0">
+                          <Avatar className="size-9 rounded-lg ring-2 ring-green-600/40 ring-offset-1 **:rounded-lg after:hidden">
+                            <AvatarImage src={item?.image as string} />
+                            <AvatarFallback>
+                              {getAvatarFallback((item.title as string)?.[0])}
+                            </AvatarFallback>
+                          </Avatar>
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <h4 className="leading-tight font-medium whitespace-normal">
+                            {item.title}
+                          </h4>
+                          <Badge
+                            variant="secondary"
+                            className="rounded-xl border border-border uppercase"
+                          >
+                            {item.identifier}
+                          </Badge>
+                        </div>
+                      </div>
+                      <div className="w-28 self-center text-right">
+                        {formatUSD(item.basePrice)}
                       </div>
                       <Button
                         size="icon-xs"
@@ -414,32 +435,48 @@ const ProductAccessForm = ({
           );
         }}
       />
+      <div className="mt-2 flex justify-end">
+        <form.Subscribe
+          selector={({ isSubmitting }) => ({ isSubmitting })}
+          children={({ isSubmitting }) => {
+            return (
+              <Button className="w-28" size="lg" disabled={isSubmitting}>
+                {isSubmitting ? <Loader className="animate-spin" /> : "Save"}
+              </Button>
+            );
+          }}
+        />
+      </div>
     </form>
   );
 };
 
 const Members = ({ members }: { members: any[] }) => {
-  return members?.map((member) => (
-    <div className="flex items-center gap-4 px-6">
-      <div className="flex flex-1 items-start gap-3 md:items-center">
-        <Avatar className="size-9 rounded-lg ring-2 ring-green-600/20 ring-offset-1 **:rounded-lg after:hidden">
-          <AvatarImage src="" />
-          <AvatarFallback>CN</AvatarFallback>
-        </Avatar>
-        <div className="flex flex-col">
-          <h4 className="mb-3 text-sm font-medium md:mb-0">John Doe</h4>
-          <p className="text-sm text-muted-foreground md:hidden">0181728172</p>
-          <p className="text-sm text-muted-foreground md:hidden">
-            john.doe@gmail.com
-          </p>
-        </div>
+  if (members?.length === 0) {
+    return (
+      <div className="flex items-center justify-center text-muted-foreground">
+        No members found
       </div>
-      <p className="hidden text-sm text-muted-foreground md:inline-block">
-        0181728172
-      </p>
-      <p className="hidden text-sm text-muted-foreground md:inline-block">
-        john.doe@gmail.com
-      </p>
+    );
+  }
+  return (
+    <div className="space-y-1">
+      {members?.map((member) => (
+        <div className="flex items-center gap-4 p-2 rounded-lg bg-secondary/20 border">
+          <div className="flex flex-1 items-center gap-3">
+            <Avatar className="size-9 rounded-lg ring-2 ring-green-600/20 ring-offset-1 **:rounded-lg after:hidden">
+              <AvatarImage src={member.image} />
+              <AvatarFallback>{getAvatarFallback(member.name)}</AvatarFallback>
+            </Avatar>
+
+            <div className="space-y-0">
+              <h4 className="text-sm font-medium">{member.name}</h4>
+              <CopyButton value={member.phoneNumber!} />
+            </div>
+          </div>
+          <CopyButton value={member.email} />
+        </div>
+      ))}
     </div>
-  ));
+  );
 };

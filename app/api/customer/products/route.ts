@@ -114,7 +114,7 @@ export async function GET(req: NextRequest) {
         },
       })
       .from(product)
-      .leftJoin(lastLineItem, eq(lastLineItem.productId, product.id))
+      .leftJoinLateral(lastLineItem, eq(lastLineItem.productId, product.id))
       .leftJoin(
         orderGuideItem,
         and(

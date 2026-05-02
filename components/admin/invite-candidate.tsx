@@ -22,7 +22,7 @@ import {
 } from "../ui/field";
 import { toast } from "sonner";
 import { Textarea } from "../ui/textarea";
-import { createInvite } from "@/server/customer";
+import { createInvite } from "@/server/customer-application";
 import { useQueryClient } from "@tanstack/react-query";
 import { OPEN_POSITIONS } from "@/lib/constants/web";
 import { inviteCandidate } from "@/server/job";

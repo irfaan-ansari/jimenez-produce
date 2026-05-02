@@ -19,7 +19,7 @@ const CatalogPage = async ({
   const query = (await searchParams) || {};
 
   const { success, data: response, error } = await getProducts(query);
-
+  console.log(response);
   if (!success) {
     return (
       <section className="my-16">

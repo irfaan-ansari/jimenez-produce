@@ -11,7 +11,7 @@ import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { useConfirm } from "@/hooks/use-confirm";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { createInvite } from "@/server/customer";
+import { createInvite } from "@/server/customer-application";
 import { BUSINESS_TYPES } from "@/lib/constants/customer";
 
 export const CONTACT_SCHEMA = z.object({
@@ -24,7 +24,7 @@ export const CONTACT_SCHEMA = z.object({
     .trim()
     .regex(
       /^(\+1\s?)?(\(?\d{3}\)?[\s.-]?)\d{3}[\s.-]?\d{4}$/,
-      "Invalid phone number"
+      "Invalid phone number",
     ),
   message: z.string().trim().min(1, "Message is required"),
 });

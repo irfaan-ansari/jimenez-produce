@@ -22,7 +22,7 @@ import {
   FieldLabel,
 } from "../ui/field";
 import { Textarea } from "../ui/textarea";
-import { createInvite } from "@/server/customer";
+import { createInvite } from "@/server/customer-application";
 import { useQueryClient } from "@tanstack/react-query";
 
 const schema = z.object({

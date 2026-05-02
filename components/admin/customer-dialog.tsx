@@ -11,7 +11,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { defaultValues } from "@/lib/constants/customer";
 import { steps } from "@/lib/constants/customer-form-steps";
 import { fileSchema } from "@/lib/form-schema/customer-schema";
-import { createCustomer, updateCustomer } from "@/server/customer";
+import { createCustomer, updateCustomer } from "@/server/customer-application";
 import {
   Dialog,
   DialogContent,

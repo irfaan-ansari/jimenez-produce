@@ -9,7 +9,7 @@ import { CustomerSelectType } from "@/lib/db/schema";
 import { PopoverXDrawer } from "../popover-x-drawer";
 import { useQueryClient } from "@tanstack/react-query";
 import { CustomerStatusDialog } from "./customer-status-dialog";
-import { deleteCustomer, updateCustomer } from "@/server/customer";
+import { deleteCustomer, updateCustomer } from "@/server/customer-application";
 import { Eye, FileText, MoreVertical, SquarePen, Trash2 } from "lucide-react";
 
 import { CUSTOMER_ACTIONS } from "@/lib/constants/status-map";

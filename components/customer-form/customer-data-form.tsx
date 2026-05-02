@@ -8,7 +8,7 @@ import { FieldGroup } from "../ui/field";
 import { useRouter } from "next/navigation";
 import { upload } from "@vercel/blob/client";
 import { useAppForm } from "@/hooks/form-context";
-import { createCustomer } from "@/server/customer";
+import { createCustomer } from "@/server/customer-application";
 import { defaultValues } from "@/lib/constants/customer";
 import { fileSchema } from "@/lib/form-schema/customer-schema";
 import {
