@@ -29,6 +29,7 @@ import {
 import {
   ChevronLeft,
   CircleDashed,
+  Loader,
   PackageCheck,
   Plus,
   Trash2,
@@ -41,6 +42,8 @@ import { TaxRulesSelector } from "@/components/admin/tax-rules-selector";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { CopyButton } from "@/components/copy-button";
 import { TaxRule } from "@/lib/types";
+import { ProductSelector } from "@/components/admin/product-selector";
+import { ProductSelectType } from "@/lib/db/schema";
 
 export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = use(params);
@@ -121,8 +124,8 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
 
         {/* account info */}
         <Card className="rounded-2xl">
-          <CardContent className="flex gap-6 items-center">
-            <Avatar className="size-20 lg:size-24 ring-2 shrink-0 ring-primary/40 ring-offset-2 ring-offset-background">
+          <CardContent className="flex items-center gap-6">
+            <Avatar className="size-16 shrink-0 ring-2 ring-primary/40 ring-offset-2 ring-offset-background lg:size-20">
               <AvatarImage src={data.logo} />
               <AvatarFallback>
                 {getAvatarFallback(data?.name || "")}
@@ -131,7 +134,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
             <div>
               <CardTitle className="font-semibold">{data.name}</CardTitle>
               <CardDescription>{data.managerName}</CardDescription>
-              <div className="flex gap-1 flex-col lg:flex-row lg:gap-2 mt-3">
+              <div className="mt-3 flex flex-col gap-1 lg:flex-row lg:gap-2">
                 <CopyButton value={data.phone} />
                 <CopyButton value={data.email} />
               </div>
@@ -140,14 +143,16 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
         </Card>
 
         {/* Product access */}
-        <Card className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <Card>
           <CardHeader>
             <CardTitle className="font-semibold">Product access</CardTitle>
             <CardDescription>
               Manage product access of this team
             </CardDescription>
           </CardHeader>
-          <CardContent className="grid grid-cols-1 gap-4 md:grid-cols-2"></CardContent>
+          <CardContent>
+            <ProductAccessForm data={data.products} teamId={data.id} />
+          </CardContent>
         </Card>
 
         {/* Tax rules */}
@@ -162,12 +167,14 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
         </Card>
 
         {/* members */}
-        <Card className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <Card>
           <CardHeader>
             <CardTitle className="font-semibold">Members</CardTitle>
             <CardDescription>Manage members of this team</CardDescription>
           </CardHeader>
-          <CardContent className="grid grid-cols-1 gap-4 md:grid-cols-2"></CardContent>
+          <CardContent className="px-0">
+            <Members members={data.members} />
+          </CardContent>
         </Card>
       </div>
       <Card className="col-span-2 rounded-2xl bg-card">
@@ -311,13 +318,128 @@ const TaxRulesForm = ({
           );
         }}
       />
-      <div className="flex justify-end mt-2">
-        <form.Subscribe selector={({ isSubmitting }) => ({ isSubmitting })} />
-
-        <Button className="w-28" size="lg">
-          Save
-        </Button>
+      <div className="mt-2 flex justify-end">
+        <form.Subscribe
+          selector={({ isSubmitting }) => ({ isSubmitting })}
+          children={({ isSubmitting }) => {
+            return (
+              <Button className="w-28" size="lg" disabled={isSubmitting}>
+                {isSubmitting ? <Loader className="animate-spin" /> : "Save"}
+              </Button>
+            );
+          }}
+        />
       </div>
     </form>
   );
+};
+
+const ProductAccessForm = ({
+  data,
+  teamId,
+}: {
+  data: ProductSelectType[];
+  teamId: string;
+}) => {
+  const form = useForm({
+    defaultValues: {
+      products: [] as ProductSelectType[],
+    },
+    onSubmit: ({ value }) => {
+      toast.info("Form values", {
+        description: JSON.stringify(value, null, 2),
+      });
+    },
+  });
+
+  return (
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        form.handleSubmit();
+      }}
+    >
+      <form.Field
+        name="products"
+        mode="array"
+        children={(field) => {
+          const products = field.state.value;
+          return (
+            <div className="space-y-2 rounded-lg border-l py-2 pl-2">
+              {products.length > 0 ? (
+                <div className="space-y-1">
+                  {products?.map((rule, i) => (
+                    <div
+                      key={rule.id}
+                      className="flex items-center rounded-lg border bg-secondary/20 p-2"
+                    >
+                      <div className="flex-1 space-x-4">
+                        <span>{rule.title}</span>
+                        <span className="text-muted-foreground">•</span>
+                        <span className="font-medium">{rule.basePrice}</span>
+                      </div>
+                      <Button
+                        size="icon-xs"
+                        type="button"
+                        variant="destructive"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          field.removeValue(i);
+                        }}
+                      >
+                        <Trash2 />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              ) : null}
+              <ProductSelector
+                selected={field.state.value}
+                setSelectedChange={(value) => {
+                  const index = field.state.value.findIndex(
+                    (s) => s.id === value.id,
+                  );
+                  if (index >= 0) {
+                    field.removeValue(index);
+                  } else {
+                    field.pushValue({ ...value, id: value.id });
+                  }
+                }}
+              >
+                <Button variant="outline" size="sm">
+                  <Plus /> Choose products
+                </Button>
+              </ProductSelector>
+            </div>
+          );
+        }}
+      />
+    </form>
+  );
+};
+
+const Members = ({ members }: { members: any[] }) => {
+  return members?.map((member) => (
+    <div className="flex items-center gap-4 px-6">
+      <div className="flex flex-1 items-start gap-3 md:items-center">
+        <Avatar className="size-9 rounded-lg ring-2 ring-green-600/20 ring-offset-1 **:rounded-lg after:hidden">
+          <AvatarImage src="" />
+          <AvatarFallback>CN</AvatarFallback>
+        </Avatar>
+        <div className="flex flex-col">
+          <h4 className="mb-3 text-sm font-medium md:mb-0">John Doe</h4>
+          <p className="text-sm text-muted-foreground md:hidden">0181728172</p>
+          <p className="text-sm text-muted-foreground md:hidden">
+            john.doe@gmail.com
+          </p>
+        </div>
+      </div>
+      <p className="hidden text-sm text-muted-foreground md:inline-block">
+        0181728172
+      </p>
+      <p className="hidden text-sm text-muted-foreground md:inline-block">
+        john.doe@gmail.com
+      </p>
+    </div>
+  ));
 };
