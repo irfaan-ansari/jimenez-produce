@@ -58,10 +58,7 @@ export async function GET(req: NextRequest) {
     const conditions = [
       ne(product.status, "archived"),
       eq(product.organizationId, activeOrganizationId),
-      or(
-        and(eq(product.status, "active"), notInArray(product.id, privateIds)),
-        inArray(product.id, privateIds),
-      ),
+      or(eq(product.status, "active"), inArray(product.id, privateIds)),
     ];
 
     if (cat) {

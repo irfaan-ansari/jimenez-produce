@@ -33,7 +33,6 @@ export const useInfiniteProducts = (query: string) => {
       );
     },
     getNextPageParam: ({ pagination }) => {
-      console.log(pagination);
       const { page, totalPages } = pagination;
 
       return page < totalPages ? Number(page) + 1 : undefined;

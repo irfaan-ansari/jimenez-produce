@@ -135,15 +135,22 @@ export type Team = typeof auth.$Infer.Team & {
     phoneNumber: string;
     image?: string | undefined;
   }[];
-  taxRules: {
-    id: number;
-    name: string;
-    rate: string;
-  }[];
+};
+
+export type TeamDetail = Team & {
+  taxRules: TaxRuleSelectType[];
+  products: ProductSelectType[];
+  priceLevel: PriceLevelSelectType | null;
+  orders: OrderType[];
+  stats: {
+    activeCount: number;
+    activeValue: string;
+    completedCount: number;
+    completedValue: string;
+  } | null;
 };
 
 type BaseMember = typeof auth.$Infer.Member;
-
 export type Member = Omit<BaseMember, "user"> & {
   user: BaseMember["user"] & {
     phoneNumber: string;

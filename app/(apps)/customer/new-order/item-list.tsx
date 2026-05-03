@@ -362,6 +362,8 @@ const Thumbnail = ({
             <img
               src={product.image}
               alt={product.title}
+              width={200}
+              height={200}
               className="absolute inset-0 h-full w-full object-contain"
             />
           )}

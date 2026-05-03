@@ -89,6 +89,7 @@ export const UserDialog = ({
 
       const { error, data: createdUser } = await signupWithOrganization({
         ...value,
+        accountType: role === "customer" ? "customer" : "admin",
         role,
         phoneNumber: value.phone,
       });

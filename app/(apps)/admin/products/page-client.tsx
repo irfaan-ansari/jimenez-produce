@@ -77,16 +77,6 @@ export const PageClient = () => {
                     <map.icon className="size-3.5" />
                     {map.label}
                   </Badge>
-
-                  {/* tax status */}
-                  {product.isTaxable && (
-                    <Badge
-                      className="h-6 rounded-md text-sm backdrop-blur-md border shadow-sm bg-background"
-                      variant="secondary"
-                    >
-                      Taxable
-                    </Badge>
-                  )}
                 </div>
 
                 <div className="relative aspect-[1.6/1] overflow-hidden rounded-xl bg-secondary">
@@ -111,7 +101,16 @@ export const PageClient = () => {
                   )}
                 </div>
                 <CardContent className="flex flex-col flex-1 space-y-2">
-                  <Badge className="rounded-sm h-5">{product.identifier}</Badge>
+                  <div className="flex gap-2 items-center">
+                    {/* tax status */}
+                    {product.isTaxable && (
+                      <Badge className="h-5 rounded-sm">Taxable</Badge>
+                    )}
+                    {/* item code */}
+                    <Badge className="rounded-sm h-5">
+                      {product.identifier}
+                    </Badge>
+                  </div>
                   <div className="flex flex-wrap gap-1">
                     {product.categories?.map((cat) => (
                       <span

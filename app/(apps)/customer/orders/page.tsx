@@ -4,6 +4,7 @@ import { FilterTab } from "@/components/admin/filter-tabs";
 import { SearchBar } from "@/components/admin/search-filters";
 
 import Link from "next/link";
+import { Plus } from "lucide-react";
 
 export const metadata = {
   title: "New Order",
@@ -31,7 +32,9 @@ const OrdersPage = async () => {
           Browse Catalog
         </Button>
         <Button size="xl" className="rounded-xl" asChild>
-          <Link href="/customer/orders/new">View Cart (4)</Link>
+          <Link href="/customer/new-order">
+            <Plus /> New Order
+          </Link>
         </Button>
       </div>
       <FilterTab tabs={OPTIONS} path="/api/customer/orders/count" />

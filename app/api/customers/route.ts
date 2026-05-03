@@ -74,11 +74,6 @@ export const GET = async (req: NextRequest) => {
             },
           },
         },
-        taxRuleItems: {
-          with: {
-            taxRule: true,
-          },
-        },
       },
       offset,
       limit,
@@ -112,13 +107,6 @@ export const GET = async (req: NextRequest) => {
             email: tm.user.email,
             phoneNumber: tm.user.phoneNumber,
             image: tm.user.image,
-          };
-        }),
-        taxRules: t.taxRuleItems.map((tri) => {
-          return {
-            id: tri.taxRuleId,
-            name: tri.taxRule.name,
-            rate: tri.taxRule.rate,
           };
         }),
       };

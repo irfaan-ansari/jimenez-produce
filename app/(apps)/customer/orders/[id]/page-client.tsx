@@ -75,7 +75,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
         </div>
 
         {/* progress */}
-        <Card className="gap-0 rounded-2xl py-0 relative">
+        {/* <Card className="gap-0 rounded-2xl py-0 relative">
           <LiveTracking />
 
           <CardContent className="absolute inset-x-3 h-20 bottom-3 rounded-lg p-3 bg-background/70 backdrop-blur-lg z-2 ring-2 ring-border shadow-sm ring-offset-2">
@@ -94,7 +94,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
               </Badge>
             </div>
           </CardContent>
-        </Card>
+        </Card> */}
 
         {/* purchased items */}
         <Card className="gap-0 rounded-2xl">
@@ -104,7 +104,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
             </CardTitle>
           </CardHeader>
           <CardContent className="divide-y px-0">
-            <div className="flex items-center justify-between gap-4 bg-muted px-6 py-4 font-medium text-muted-foreground uppercase">
+            <div className="flex items-center justify-between gap-4 bg-muted/40 px-6 py-4 font-medium text-muted-foreground uppercase">
               <div className="flex-1">Item</div>
               <div className="w-20 text-right">Price</div>
               <div className="w-20 text-right">Quantity</div>
@@ -151,7 +151,6 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
       </div>
 
       {/* order summary */}
-
       <Card className="col-span-2 rounded-2xl">
         <CardHeader>
           <CardTitle className="text-xl font-semibold">Order Summary</CardTitle>
@@ -205,29 +204,20 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
 
           <Separator className="my-6" />
 
-          <div>
-            <h4 className="mb-4 text-sm font-medium text-muted-foreground uppercase">
-              Shipping Address
-            </h4>
-            <div>{data.shippingAddress?.street}</div>
-            <div>
-              {data.shippingAddress?.city} {data.shippingAddress?.state}{" "}
-              {data.shippingAddress?.zip}
-            </div>
-          </div>
-          <div>
-            <h4 className="mb-4 text-sm font-medium text-muted-foreground uppercase">
-              Schedule
+          <div className="text-sm">
+            <h4 className="mb-2 text-sm font-medium text-muted-foreground">
+              Delivery By
             </h4>
             <div>{data.deliveryWindow}</div>
-            <div>{format(data.createdAt!, "MMMM dd, hh:mm a")}</div>
-            <div>{data.deliveryInstruction}</div>
+            <div>{format(data.createdAt!, "MMMM dd • hh:mm a")}</div>
           </div>
-          <div>
-            <h4 className="mb-4 text-sm font-medium text-muted-foreground uppercase">
+          <div className="text-sm">
+            <h4 className="mb-2 text-sm font-medium text-muted-foreground">
               Instructions
             </h4>
-            <div>{data.deliveryInstruction}</div>
+            <div className="whitespace-pre-line">
+              {data.deliveryInstruction}
+            </div>
           </div>
         </CardContent>
 

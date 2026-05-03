@@ -10,7 +10,6 @@ import { useConfirm } from "@/hooks/use-confirm";
 import { CustomerDialog } from "./customer-dialog";
 import { useQueryClient } from "@tanstack/react-query";
 import { PopoverXDrawer } from "@/components/popover-x-drawer";
-import { UserSelector } from "@/components/admin/user-selector";
 import { Eye, MoreVertical, SquarePen, Trash2, User } from "lucide-react";
 
 export const CustomerActions = ({
@@ -47,32 +46,32 @@ export const CustomerActions = ({
     });
   };
 
-  const handleAssignUser = async (user: any) => {
-    const userId = user.id;
-    if (!userId) return;
-    const toastId = toast.loading("Please wait...");
+  // const handleAssignUser = async (user: any) => {
+  //   const userId = user.id;
+  //   if (!userId) return;
+  //   const toastId = toast.loading("Please wait...");
 
-    const exist = data.members?.some((m) => m.id === userId);
+  //   const exist = data.members?.some((m) => m.id === userId);
 
-    if (exist) {
-      toast.error("User already assigned", { id: toastId });
-      return;
-    }
-    const { error } = await authClient.organization.addTeamMember({
-      teamId: data.id,
-      userId: userId,
-    });
+  //   if (exist) {
+  //     toast.error("User already assigned", { id: toastId });
+  //     return;
+  //   }
+  //   const { error } = await authClient.organization.addTeamMember({
+  //     teamId: data.id,
+  //     userId: userId,
+  //   });
 
-    if (error) {
-      toast.error(error?.message, { id: toastId });
-    } else {
-      setOpen(false);
+  //   if (error) {
+  //     toast.error(error?.message, { id: toastId });
+  //   } else {
+  //     setOpen(false);
 
-      toast.success("User added successfully", { id: toastId });
-    }
+  //     toast.success("User added successfully", { id: toastId });
+  //   }
 
-    queryClient.invalidateQueries({ queryKey: ["teams"] });
-  };
+  //   queryClient.invalidateQueries({ queryKey: ["teams"] });
+  // };
 
   return (
     <PopoverXDrawer
@@ -103,13 +102,6 @@ export const CustomerActions = ({
           <SquarePen /> Edit
         </Button>
       </CustomerDialog>
-
-      <UserSelector onValueChange={handleAssignUser} disabled={data.members}>
-        <Button variant="ghost" className="justify-start">
-          <User />
-          Assign User
-        </Button>
-      </UserSelector>
 
       <Button
         variant="ghost"

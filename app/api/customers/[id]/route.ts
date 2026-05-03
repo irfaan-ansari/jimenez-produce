@@ -21,6 +21,7 @@ export const GET = async (
       );
     }
 
+    // check if user has account access
     const exists = await db.query.team.findFirst({
       where: (team, { and, eq }) =>
         and(
@@ -45,6 +46,7 @@ export const GET = async (
     ];
 
     const [customer, recentOrders, stats] = await Promise.all([
+      // customer account with products, tax rules, members
       db.query.team.findFirst({
         where: and(...conditions),
         with: {
@@ -58,6 +60,15 @@ export const GET = async (
                   image: true,
                 },
               },
+            },
+          },
+          priceLevel: {
+            columns: {
+              id: true,
+              name: true,
+              adjustmentType: true,
+              appliesTo: true,
+              adjustmentValue: true,
             },
           },
           taxRuleItems: {
@@ -75,13 +86,14 @@ export const GET = async (
                   image: true,
                   categories: true,
                   status: true,
+                  basePrice: true,
                 },
               },
             },
           },
         },
       }),
-
+      // recent orders
       db.query.order.findMany({
         where: (order, { eq, and }) =>
           and(
@@ -91,6 +103,7 @@ export const GET = async (
         orderBy: (order, { desc }) => [desc(order.createdAt)],
         limit: 5,
       }),
+      // stats
       db
         .select({
           activeCount: sql<number>`count(*) filter (where status = 'in_progress')`,
@@ -146,12 +159,22 @@ export const GET = async (
           image: p.product.image,
           categories: p.product.categories,
           status: p.product.status,
+          basePrice: p.product.basePrice,
         };
       }),
+      priceLevel: {
+        id: customer.priceLevel?.id,
+        name: customer.priceLevel?.name,
+        adjustmentType: customer.priceLevel?.adjustmentType,
+        adjustmentValue: customer.priceLevel?.adjustmentValue,
+        appliesTo: customer.priceLevel?.appliesTo,
+      },
     };
 
     return NextResponse.json(
-      { data: { ...transformed, recentOrders, stats: stats?.[0] || {} } },
+      {
+        data: { ...transformed, orders: recentOrders, stats: stats?.[0] || {} },
+      },
       { status: 200 },
     );
   } catch (error) {

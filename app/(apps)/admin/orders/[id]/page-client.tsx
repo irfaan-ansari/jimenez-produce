@@ -191,32 +191,19 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
           <CardHeader className="border-b">
             <CardTitle className="text-lg font-semibold">Delivery</CardTitle>
           </CardHeader>
-          <CardContent className="grid grid-cols-3 gap-4 text-base">
-            <div>
-              <h4 className="mb-4 text-sm font-medium text-muted-foreground uppercase">
-                Shipping Address
-              </h4>
-              {data.shippingAddress?.street} {data.shippingAddress?.city}{" "}
-              {data.shippingAddress?.state} {data.shippingAddress?.zip}
-            </div>
-            <div>
-              <h4 className="mb-4 text-sm font-medium text-muted-foreground uppercase">
-                Recipient
-              </h4>
-            </div>
-            <div>
-              <div className="flex items-start justify-between gap-4">
-                <h4 className="mb-4 text-sm font-medium text-muted-foreground uppercase">
-                  Schedule
-                </h4>
-                <Button size="icon-xs" variant="ghost" className="rounded-xl">
-                  <SquarePen />
-                </Button>
-              </div>
-              <div>{data.deliveryWindow}</div>
-              <div>{format(data.createdAt!, "MMMM dd, hh:mm a")}</div>
-              <div>{data.deliveryInstruction}</div>
-            </div>
+          <CardContent>
+            <h4 className="mb-2 text-sm font-medium text-muted-foreground">
+              Delivery By
+            </h4>
+            <p>
+              {format(data.deliveryDate ?? new Date(), "MMMM dd, yyyy")} -{" "}
+              {data.deliveryWindow}
+            </p>
+
+            <h4 className="mb-2 text-sm font-medium text-muted-foreground">
+              Instructions
+            </h4>
+            <p>{data.deliveryInstruction}</p>
           </CardContent>
         </Card>
       </div>

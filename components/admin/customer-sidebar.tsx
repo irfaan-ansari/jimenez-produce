@@ -132,12 +132,16 @@ export function AppSidebar({ session }: { session: Session }) {
         </SidebarGroup>
         <SidebarGroup className="group-data-[state=collapsed]:hidden">
           <SidebarMenu className="mb-4">
-            <SidebarMenuItem className="rounded-xl bg-linear-to-br from-lime-100 via-emerald-50 to-white p-4">
+            <SidebarMenuItem className="rounded-xl bg-linear-to-br relative from-lime-100 via-emerald-50 to-white p-4">
               <div className="mb-1 font-semibold dark:text-background">
                 Reorder smarter
               </div>
               <p className="mb-4 text-sm text-muted-foreground">
                 Your top items and recent purchases are ready to add in seconds.
+                <br />
+                <span className="bg-lime-200 py-0.5 rounded-lg text-xs px-2 inline-block mt-2">
+                  Coming Soon
+                </span>
               </p>
               <Button
                 asChild
@@ -203,27 +207,40 @@ const SidebarTeam = ({ session: auth }: { session: Session }) => {
                 size="lg"
                 className="hover:bg-muted! hover:text-sidebar-foreground! data-open:bg-muted! data-open:hover:bg-muted data-open:hover:text-sidebar-foreground data-active:hover:bg-muted"
               >
-                <Avatar className="size-9 rounded-lg ring-2 ring-green-600/20 ring-offset-1 **:rounded-xl after:hidden">
-                  <AvatarImage src={SITE_CONFIG.logo} alt="Logo" asChild>
-                    <Image
-                      src={SITE_CONFIG.logo}
+                <Avatar className="size-9 rounded-lg ring-2 ring-green-600/20 ring-offset-1 **:rounded-lg after:hidden">
+                  <AvatarImage
+                    src={activeTeam?.logo ?? SITE_CONFIG.logo}
+                    alt="Logo"
+                    asChild
+                  >
+                    <img
+                      src={activeTeam?.logo ?? SITE_CONFIG.logo}
                       alt="Logo"
                       width={40}
                       height={40}
                     />
                   </AvatarImage>
                   <AvatarFallback className="rounded-xl bg-primary/40 text-xs font-semibold text-primary">
-                    {getAvatarFallback(SITE_CONFIG.name)}
+                    {getAvatarFallback(activeTeam?.name ?? "")}
                   </AvatarFallback>
                 </Avatar>
-                <div className="grid min-w-0 flex-1">
-                  <span className="truncate text-base leading-tight font-bold">
-                    {SITE_CONFIG.name}
-                  </span>
 
-                  <span className="truncate text-sm leading-tight text-muted-foreground">
-                    {activeTeam?.name ?? "Loading..."}
-                  </span>
+                <div className="grid min-w-0 flex-1">
+                  {activeTeam?.name ? (
+                    <span className="truncate text-base leading-tight font-bold">
+                      {activeTeam?.name}
+                    </span>
+                  ) : (
+                    <Skeleton className="h-4 w-3/4 rounded-lg bg-sidebar-accent/10" />
+                  )}
+
+                  {activeTeam?.managerName ? (
+                    <span className="truncate text-sm leading-tight text-muted-foreground">
+                      {activeTeam?.managerName}
+                    </span>
+                  ) : (
+                    <Skeleton className="h-3 w-3/4 rounded-lg bg-sidebar-accent/10" />
+                  )}
                 </div>
                 <ChevronsUpDown className="ml-auto size-4" />
               </SidebarMenuButton>
