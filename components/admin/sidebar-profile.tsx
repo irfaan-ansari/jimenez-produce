@@ -2,22 +2,21 @@
 
 import Image from "next/image";
 import { toast } from "sonner";
-import { authClient } from "@/lib/auth/client";
 import {
   SidebarFooter,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
 } from "../ui/sidebar";
+import Link from "next/link";
+import { useState } from "react";
 import { Session } from "@/lib/types";
 import { Button } from "../ui/button";
-import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { authClient } from "@/lib/auth/client";
 import { getAvatarFallback } from "@/lib/utils";
-import { ProfileDialog } from "../profile-dialog";
 import { PopoverXDrawer } from "../popover-x-drawer";
 import { useQueryClient } from "@tanstack/react-query";
-import { ChangePasswordDialog } from "../change-password";
 import { ChevronsUpDown, Lock, LogOut, User } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
@@ -102,25 +101,28 @@ export const SidebarProfile = ({ session }: { session: Session }) => {
               </div>
             </div>
             <div className="px-2 pt-2 *:w-full">
-              <ProfileDialog
-                user={{
-                  id: user.id,
-                  name: user.name,
-                  email: user.email,
-                  image: user.image,
-                }}
+              <Button
+                className="justify-start rounded-lg"
+                variant="ghost"
+                asChild
               >
-                <Button className="justify-start rounded-lg" variant="ghost">
+                <Link href={`/${user.accountType}/settings?tab=profile`}>
                   <User />
                   Profile
-                </Button>
-              </ProfileDialog>
-              <ChangePasswordDialog>
-                <Button className="justify-start rounded-lg" variant="ghost">
+                </Link>
+              </Button>
+
+              <Button
+                className="justify-start rounded-lg"
+                variant="ghost"
+                asChild
+              >
+                <Link href={`/${user.accountType}/settings?tab=password`}>
                   <Lock />
                   Change Password
-                </Button>
-              </ChangePasswordDialog>
+                </Link>
+              </Button>
+
               <Button
                 onClick={handleLogout}
                 variant="destructive"

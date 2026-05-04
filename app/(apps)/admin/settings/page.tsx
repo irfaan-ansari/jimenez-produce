@@ -1,23 +1,10 @@
 import Link from "next/link";
 import { ProfileForm } from "@/components/admin/profile-form";
-import { AccountForm } from "@/components/admin/account-form";
 import ChangePasswordForm from "@/components/admin/change-password";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const tabs = [
-  {
-    value: "account",
-    name: "Account",
-    description: "Update account details",
-    content: AccountForm,
-  },
-  {
-    value: "users",
-    name: "Users",
-    description: "Manage your users",
-    content: ProfileForm,
-  },
   {
     value: "profile",
     name: "Profile",
@@ -57,9 +44,7 @@ const SettingsPage = async ({
               key={tab.value}
               value={tab.value}
             >
-              <Link href={`/customer/settings?tab=${tab.value}`}>
-                {tab.name}
-              </Link>
+              <Link href={`/admin/settings?tab=${tab.value}`}>{tab.name}</Link>
             </TabsTrigger>
           ))}
         </TabsList>

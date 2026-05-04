@@ -2,11 +2,11 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Archive, CheckCircle, Lock } from "lucide-react";
-import { useStatusCount } from "@/hooks/use-status-count";
+import { useCountsByStatus } from "@/hooks/use-status-count";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export const ProductCounts = () => {
-  const { data, isPending } = useStatusCount("products");
+  const { data, isPending } = useCountsByStatus("/api/products/count");
 
   return (
     <Card className="rounded-2xl text-base lg:col-span-2 col-span-6">

@@ -1,5 +1,5 @@
 import { PageClient } from "./page-client";
-import { FilterTabs } from "@/components/admin/filter-tabs";
+import { FilterTab } from "@/components/admin/filter-tabs";
 import { SearchBar } from "@/components/admin/search-filters";
 import { InviteCandidate } from "@/components/admin/invite-candidate";
 
@@ -31,7 +31,7 @@ const JobApplicationPage = async () => {
           <InviteCandidate />
         </div>
       </div>
-      <FilterTabs tabs={OPTIONS} queryKey="job-applications" />
+      <FilterTab tabs={OPTIONS} path="/api/applications/candidate/count" />
 
       {/* content */}
       <PageClient />

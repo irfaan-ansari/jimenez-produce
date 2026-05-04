@@ -15,7 +15,7 @@ const TeamPage = async () => {
         <h1 className="text-2xl font-semibold">Users</h1>
         <div className="flex items-center justify-end gap-4">
           <SearchBar />
-          <UserDialog>
+          <UserDialog data={{ accountType: "admin" }}>
             <Button size="xl" className="rounded-xl">
               <Plus /> Add New
             </Button>

@@ -38,6 +38,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Check, ChevronRight, ChevronsUpDown, Plus } from "lucide-react";
 import { APPLICATION_GROUP, SIDEBAR_MENU, SITE_CONFIG } from "@/lib/config";
 
+const ROLES = ["admin", "owner"];
+
 export function AppSidebar({ session }: { session: Session }) {
   return (
     <Sidebar collapsible="icon" variant="floating">
@@ -46,11 +48,12 @@ export function AppSidebar({ session }: { session: Session }) {
         <SidebarGroup>
           <MenuGroup menu={SIDEBAR_MENU} />
         </SidebarGroup>
-
-        <SidebarGroup>
-          <SidebarGroupLabel>Applications</SidebarGroupLabel>
-          <MenuGroup menu={APPLICATION_GROUP} />
-        </SidebarGroup>
+        {ROLES.includes(session?.session?.role as string) && (
+          <SidebarGroup>
+            <SidebarGroupLabel>Applications</SidebarGroupLabel>
+            <MenuGroup menu={APPLICATION_GROUP} />
+          </SidebarGroup>
+        )}
       </SidebarContent>
 
       {/* footer/ */}

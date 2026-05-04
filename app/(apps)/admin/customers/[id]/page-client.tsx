@@ -38,7 +38,6 @@ import {
   EmptyComponent,
   LoadingSkeleton,
 } from "@/components/admin/placeholder-component";
-import { PriceLevelSelectType, ProductSelectType } from "@/lib/db/schema";
 import { CopyButton } from "@/components/copy-button";
 import { STATUS_MAP } from "@/lib/constants/status-map";
 import {
@@ -46,13 +45,15 @@ import {
   formatUSD,
   getAvatarFallback,
 } from "@/lib/utils";
+import { authClient } from "@/lib/auth/client";
+import { CustomerActions } from "../customer-actions";
 import { ProductSelector } from "@/components/admin/product-selector";
 import { TaxRulesSelector } from "@/components/admin/tax-rules-selector";
+import { PriceLevelSelectType, ProductSelectType } from "@/lib/db/schema";
 import { updateProductsToTeam, updateTaxRulesToTeam } from "@/server/auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { PriceLevelSelector } from "@/components/admin/price-level-selector";
-import { authClient } from "@/lib/auth/client";
-import { CustomerActions } from "../customer-actions";
+import { UserSelector } from "@/components/admin/user-selector";
 
 export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = use(params);
@@ -87,8 +88,10 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
             <h1 className="text-lg font-semibold">{data.name}</h1>
           </div>
           <div className="flex items-center gap-4">
-            <Button size="default">Invite Member</Button>
-            <CustomerActions data={data} showView />
+            <UserSelector teamId={data.id}>
+              <Button size="default">Assign user</Button>
+            </UserSelector>
+            <CustomerActions data={data} showView={false} />
           </div>
         </div>
 
@@ -456,7 +459,6 @@ const ProductAccessForm = ({
   data: ProductSelectType[];
   teamId: string;
 }) => {
-  console.log("data", data);
   const form = useForm({
     defaultValues: {
       products: data as ProductSelectType[],

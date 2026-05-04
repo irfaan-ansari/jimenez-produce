@@ -60,33 +60,39 @@ export const UserDialog = ({
   callback,
 }: {
   children: React.ReactNode;
-  data?: UserWithMember;
+  data: UserWithMember | { accountType: string };
   callback?: (arg: CallBackAgrs) => void;
 }) => {
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
 
+  const { id, name, phoneNumber, email, accountType, member } =
+    data as UserWithMember;
+
   const form = useAppForm({
     defaultValues: {
-      name: data?.name ?? "",
-      email: data?.email ?? "",
-      phone: data?.phoneNumber ?? "",
+      name: name ?? "",
+      email: email ?? "",
+      phone: phoneNumber ?? "",
       password: "",
       confirmPassword: "",
-      role: capitalizeWords(data?.member?.role ?? "Member"),
-      accountType: data?.accountType ?? "admin",
+      role: capitalizeWords(member?.role ?? "Member"),
+      accountType: accountType ?? "admin",
       teams: [] as { id: string; name: string }[],
     },
     validators: {
       onSubmit: schema,
     },
     onSubmit: async ({ value }) => {
+      if (id) {
+        toast.error("Editing user is disabled");
+        return;
+      }
       const role = value.role.toLowerCase() as Role;
       const toastId = toast.loading("Please wait...");
 
       const { error, data: createdUser } = await signupWithOrganization({
         ...value,
-        accountType: role === "customer" ? "customer" : "admin",
         role,
         phoneNumber: value.phone,
       });
@@ -100,7 +106,9 @@ export const UserDialog = ({
         toast.success("User added successfully", { id: toastId });
       }
 
-      queryClient.invalidateQueries({ queryKey: ["members"] });
+      queryClient.invalidateQueries({
+        queryKey: ["members", "users", "team-members"],
+      });
     },
   });
 
@@ -165,7 +173,7 @@ export const UserDialog = ({
                 />
               )}
             />
-            <div className={role === "Sales" ? "lg:col-span-2" : "hidden"}>
+            {/* <div className={role === "Sales" ? "lg:col-span-2" : "hidden"}>
               <p className="mb-2 font-medium">Accounts</p>
               <form.Field
                 name="teams"
@@ -220,7 +228,7 @@ export const UserDialog = ({
                   );
                 }}
               />
-            </div>
+            </div> */}
             <form.AppField
               name="password"
               children={(field) => (

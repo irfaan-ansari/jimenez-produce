@@ -2,11 +2,11 @@
 import React from "react";
 import Link from "next/link";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useStatusCount } from "@/hooks/use-status-count";
+import { useCountsByStatus } from "@/hooks/use-status-count";
 import { CircleDashed, Inbox, PackageCheck } from "lucide-react";
 
 export const OrderStats = () => {
-  const { data, isPending } = useStatusCount("orders");
+  const { data, isPending } = useCountsByStatus("/api/customer/orders/count");
 
   return (
     <div className="col-span-6 grid grid-cols-1 gap-6 lg:gap-8 @md:grid-cols-2 @4xl:grid-cols-4">

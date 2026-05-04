@@ -3,7 +3,6 @@ import React from "react";
 
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogHeader,
@@ -17,6 +16,7 @@ import {
   FieldLabel,
   FieldTitle,
 } from "@/components/ui/field";
+import { toast } from "sonner";
 import {
   InputGroup,
   InputGroupAddon,
@@ -24,42 +24,32 @@ import {
   InputGroupInput,
 } from "@/components/ui/input-group";
 import { Plus, Search } from "lucide-react";
-import { useUsers } from "@/hooks/use-teams";
+import { useListTeamMembers, useUsers } from "@/hooks/use-teams";
+import { authClient } from "@/lib/auth/client";
 import { Button } from "@/components/ui/button";
-import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
-import { UserDialog } from "@/app/(apps)/admin/users/user-dialog";
-import { LoadingSkeleton } from "@/components/admin/placeholder-component";
 import { useDebounce } from "@/hooks/use-debounce";
-
-interface User {
-  id: string;
-  name: string;
-  phoneNumber: string | null;
-  email: string;
-}
+import { UserDialog } from "@/app/(apps)/admin/users/user-dialog";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { LoadingSkeleton } from "@/components/admin/placeholder-component";
 
 export const UserSelector = ({
-  value,
-  disabled,
-  onValueChange,
-  children,
   accountType = "customer",
+  teamId,
+  children,
 }: {
-  value?: User;
-  disabled?: User[];
-  onValueChange: (value: User) => void;
   children: React.ReactNode;
+  teamId: string;
   accountType?: string;
 }) => {
   const [search, setSearch] = React.useState("");
-
+  const auth = authClient.useSession();
   const [debounced, setDebounced] = React.useState("");
 
   const debounceFn = useDebounce((val) => {
     setDebounced(val);
   }, 500);
 
-  const [selected, setSelected] = React.useState<User | undefined>(value);
+  const { data: teamMembers } = useListTeamMembers(teamId);
 
   const { data: users, isPending } = useUsers({
     q: debounced,
@@ -68,15 +58,38 @@ export const UserSelector = ({
 
   const options = React.useMemo(() => {
     return (
-      users?.data?.map((t) => ({
-        id: t.id,
-        name: t.name,
-        phoneNumber: t.phoneNumber,
-        email: t.email,
-      })) ?? []
+      users?.data?.map((t) => {
+        const isMember = teamMembers?.some((m) => m.userId === t.id);
+        return {
+          id: t.id,
+          name: t.name,
+          phoneNumber: t.phoneNumber,
+          email: t.email,
+          image: t.image,
+          accountType: t.accountType,
+          isMember,
+        };
+      }) ?? []
     );
-  }, [users, value]);
+  }, [users, teamMembers]);
 
+  const handleAssign = async (userId: string) => {
+    const { data } = auth;
+    if (!data || !data?.session?.activeOrganizationId || !teamId) {
+      toast.error("Please select organization");
+      return;
+    }
+    const toastId = toast.loading("Please wait...");
+    const { error } = await authClient.organization.addTeamMember({
+      teamId,
+      userId,
+    });
+    if (error) {
+      toast.error(error.message, { id: toastId });
+    } else {
+      toast.success("User assigned successfully", { id: toastId });
+    }
+  };
   return (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
@@ -104,7 +117,12 @@ export const UserSelector = ({
           />
 
           <InputGroupAddon align="inline-end">
-            <UserDialog>
+            <UserDialog
+              data={{
+                accountType,
+                member: { role: "customer", id: null as any },
+              }}
+            >
               <InputGroupButton size="icon-sm">
                 <Plus />
               </InputGroupButton>
@@ -121,50 +139,44 @@ export const UserSelector = ({
               No result found
             </p>
           ) : (
-            <RadioGroup
-              className="gap-1"
-              value={selected?.id}
-              onValueChange={(value) => {
-                const index = options.findIndex((user) => user.id === value);
-
-                setSelected(options[index]);
-              }}
-            >
+            <div className="space-y-1">
               {options.map((user) => {
-                const isDisabled = disabled?.some((u) => u.id === user.id);
-
                 return (
                   <FieldLabel
                     key={user.id}
                     htmlFor={user.id}
-                    className="cursor-pointer rounded-xl! data-disabled:opacity-50"
-                    data-disabled={isDisabled}
+                    className="rounded-xl!"
                   >
                     <Field orientation="horizontal" className="rounded-xl">
-                      <FieldContent>
+                      <Avatar className="size-9 rounded-lg ring-2 ring-green-600/20 ring-offset-1 **:rounded-lg after:hidden">
+                        <AvatarImage
+                          src={user.image ?? undefined}
+                          alt="profile image"
+                        />
+                        <AvatarFallback className="rounded-xl bg-primary/40 text-xs font-semibold text-primary">
+                          {user.name?.[0]?.toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+
+                      <FieldContent className="gap-0">
                         <FieldTitle>{user.name}</FieldTitle>
                         <FieldDescription>{user.email}</FieldDescription>
                       </FieldContent>
 
-                      <RadioGroupItem
-                        value={user.id}
-                        id={user.id}
-                        disabled={isDisabled}
-                      />
+                      <Button
+                        size="sm"
+                        onClick={() => handleAssign(user.id)}
+                        disabled={user.isMember}
+                      >
+                        {user.isMember ? "Assigned" : "Assign"}
+                      </Button>
                     </Field>
                   </FieldLabel>
                 );
               })}
-            </RadioGroup>
+            </div>
           )}
         </div>
-
-        {/* Footer */}
-        <Field className="flex flex-col-reverse gap-4 sm:flex-row sm:justify-end sm:[&>button]:w-32">
-          <DialogClose asChild onClick={() => onValueChange(selected!)}>
-            <Button size="lg">Done</Button>
-          </DialogClose>
-        </Field>
       </DialogContent>
     </Dialog>
   );

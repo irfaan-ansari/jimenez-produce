@@ -30,23 +30,24 @@ const ChangePasswordForm = () => {
       onSubmit: schema,
     },
     onSubmit: async ({ value }) => {
-      await authClient.changePassword(
-        {
-          currentPassword: value.currentPassword,
-          newPassword: value.confirmPassword,
-          revokeOtherSessions: true,
-        },
-        {
-          onSuccess: () => {
-            toast.success("Password successfully!");
-          },
-          onError: (err) => {
-            toast.error(err.error.message || "Something went wrong!");
-          },
-        },
-      );
+      const toastId = await toast.loading("Please wait...");
+      const { error } = await authClient.changePassword({
+        currentPassword: value.currentPassword,
+        newPassword: value.confirmPassword,
+        revokeOtherSessions: true,
+      });
+      if (error) {
+        toast.error(error?.message, {
+          id: toastId,
+        });
+      } else {
+        toast.success("Password updated successfully!", {
+          id: toastId,
+        });
+      }
     },
   });
+
   return (
     <form
       onSubmit={(e) => {
@@ -58,10 +59,9 @@ const ChangePasswordForm = () => {
         <form.AppField
           name="currentPassword"
           children={(field) => (
-            <field.TextField
+            <field.PasswordField
               label="Current Password"
-              // @ts-ignore
-              type="password"
+              placeholder="••••••"
               className="**:data-[slot=input]:rounded-xl"
             />
           )}
@@ -69,10 +69,9 @@ const ChangePasswordForm = () => {
         <form.AppField
           name="newPassword"
           children={(field) => (
-            <field.TextField
+            <field.PasswordField
               label="New Password"
-              // @ts-ignore
-              type="password"
+              placeholder="••••••"
               className="**:data-[slot=input]:rounded-xl"
             />
           )}
@@ -80,34 +79,40 @@ const ChangePasswordForm = () => {
         <form.AppField
           name="confirmPassword"
           children={(field) => (
-            <field.TextField
+            <field.PasswordField
               label="Confirm Password"
-              // @ts-ignore
-              type="password"
+              placeholder="••••••"
               className="**:data-[slot=input]:rounded-xl"
             />
           )}
         />
-      </FieldGroup>
 
-      <Field className="mt-10 flex flex-col-reverse gap-4 sm:flex-row sm:justify-end sm:[&>button]:w-32">
-        <form.Subscribe
-          selector={({ isSubmitting, canSubmit }) => ({
-            isSubmitting,
-            canSubmit,
-          })}
-          children={({ isSubmitting, canSubmit }) => (
-            <Button
-              type="submit"
-              size="xl"
-              className="rounded-xl"
-              disabled={isSubmitting || !canSubmit}
-            >
-              {isSubmitting ? <Loader className="animate-spin" /> : "Save"}
-            </Button>
-          )}
-        />
-      </Field>
+        <div className="flex *:w-full sm:*:w-32 items-center justify-end">
+          <form.Subscribe
+            selector={({ isSubmitting, canSubmit, isDirty }) => ({
+              isSubmitting,
+              canSubmit,
+              isDirty,
+            })}
+            children={({ isSubmitting, canSubmit, isDirty }) => {
+              return (
+                <Button
+                  type="submit"
+                  className="w-28"
+                  size="lg"
+                  disabled={isSubmitting || !isDirty || !canSubmit}
+                >
+                  {isSubmitting ? (
+                    <Loader className="animate-spin" />
+                  ) : (
+                    "Update"
+                  )}
+                </Button>
+              );
+            }}
+          />
+        </div>
+      </FieldGroup>
     </form>
   );
 };

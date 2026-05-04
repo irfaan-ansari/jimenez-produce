@@ -20,17 +20,14 @@ import {
 import {
   InputGroup,
   InputGroupAddon,
-  InputGroupButton,
   InputGroupInput,
 } from "@/components/ui/input-group";
-import { Check, Plus, Search } from "lucide-react";
+import { Check, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
-import { UserDialog } from "@/app/(apps)/admin/users/user-dialog";
 import { LoadingSkeleton } from "@/components/admin/placeholder-component";
 import { useDebounce } from "@/hooks/use-debounce";
 import { usePriceLevels } from "@/hooks/use-product";
-import { Badge } from "../ui/badge";
 import { formatPriceLevelAdjustment } from "@/lib/utils";
 
 interface PriceLevel {
@@ -104,14 +101,6 @@ export const PriceLevelSelector = ({
               debounceFn(e.target.value);
             }}
           />
-
-          <InputGroupAddon align="inline-end">
-            <UserDialog>
-              <InputGroupButton size="icon-sm">
-                <Plus />
-              </InputGroupButton>
-            </UserDialog>
-          </InputGroupAddon>
         </InputGroup>
 
         {/* List */}

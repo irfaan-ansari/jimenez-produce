@@ -3,6 +3,7 @@ import { getSession } from "@/server/auth";
 import { customerInvite } from "@/lib/db/schema";
 import { eq, or, and, ilike, desc } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
+import { ERROR_MESSAGE } from "@/lib/helper/error-message";
 
 export async function GET(req: NextRequest) {
   try {
@@ -10,6 +11,15 @@ export async function GET(req: NextRequest) {
 
     if (!session)
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+
+    const { role } = session.session;
+
+    if (role !== "admin" && role !== "owner") {
+      return NextResponse.json(
+        { message: ERROR_MESSAGE.FORBIDDEN },
+        { status: 403 },
+      );
+    }
 
     const searchParams = req.nextUrl.searchParams;
     const query = Object.fromEntries(searchParams.entries());

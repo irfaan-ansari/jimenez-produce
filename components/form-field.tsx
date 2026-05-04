@@ -403,6 +403,7 @@ const PhoneField = ({
         name={field.name}
         value={displayValue}
         onBlur={field.handleBlur}
+        {...props}
         onChange={(e) => {
           // store digits only
           const digits = e.target.value.replace(/\D/g, "").slice(0, 10);

@@ -3,6 +3,7 @@ import { eq } from "drizzle-orm";
 import { jobApplications } from "@/lib/db/schema";
 import { getSession } from "@/server/auth";
 import { NextRequest, NextResponse } from "next/server";
+import { ERROR_MESSAGE } from "@/lib/helper/error-message";
 
 export const GET = async (
   req: NextRequest,
@@ -13,6 +14,15 @@ export const GET = async (
 
     if (!session)
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+
+    const { role } = session.session;
+
+    if (role !== "admin" && role !== "owner") {
+      return NextResponse.json(
+        { message: ERROR_MESSAGE.FORBIDDEN },
+        { status: 403 },
+      );
+    }
 
     const { id } = await params;
 

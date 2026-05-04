@@ -1,22 +1,26 @@
 import { db } from "@/lib/db";
 import { getSession } from "@/server/auth";
-import { eq, max, asc, and, ne, ilike, or } from "drizzle-orm";
+import { eq, max, asc, and, ne, ilike, or, isNotNull } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 import { member, session, user } from "@/lib/db/auth-schema";
 import { getQueryObject } from "@/lib/helper/query";
+import { ERROR_MESSAGE } from "@/lib/helper/error-message";
 
 export async function GET(req: NextRequest) {
   try {
     const auth = await getSession();
 
     if (!auth) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+      return NextResponse.json(
+        { message: ERROR_MESSAGE.UNAUTHORIZED },
+        { status: 401 },
+      );
     }
     const { activeOrganizationId } = auth.session;
 
     if (!activeOrganizationId) {
       return NextResponse.json(
-        { message: "No active organization." },
+        { message: ERROR_MESSAGE.FORBIDDEN },
         { status: 403 },
       );
     }
@@ -31,7 +35,7 @@ export async function GET(req: NextRequest) {
     const conditions = [];
 
     if (accountType === "customer") {
-      conditions.push(eq(user.accountType, "customer"));
+      conditions.push(eq(user.accountType, "customer"), isNotNull(member.id));
     } else {
       conditions.push(ne(user.accountType, "customer"));
     }
@@ -45,8 +49,6 @@ export async function GET(req: NextRequest) {
         ),
       );
     }
-
-    const filters = conditions.length > 0 ? and(...conditions) : undefined;
 
     const lastSession = db
       .select({
@@ -67,6 +69,7 @@ export async function GET(req: NextRequest) {
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
         phoneNumber: user.phoneNumber,
+        accountType: user.accountType,
         phoneNumberVerified: user.phoneNumberVerified,
         isSuperAdmin: user.isSuperAdmin,
         isCurrentUser: eq(user.id, auth.session.userId),
@@ -85,7 +88,7 @@ export async function GET(req: NextRequest) {
         ),
       )
       .leftJoin(lastSession, eq(user.id, lastSession.userId))
-      .where(filters)
+      .where(and(...conditions))
       .orderBy(asc(lastSession.lastLogin));
 
     return NextResponse.json({ data: users }, { status: 200 });

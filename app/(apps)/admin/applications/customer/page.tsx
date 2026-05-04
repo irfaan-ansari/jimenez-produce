@@ -1,7 +1,7 @@
-import { Plus, PlusCircle } from "lucide-react";
+import { Plus } from "lucide-react";
 import { PageClient } from "./page-client";
 import { Button } from "@/components/ui/button";
-import { FilterTabs } from "@/components/admin/filter-tabs";
+import { FilterTab } from "@/components/admin/filter-tabs";
 import { SearchBar } from "@/components/admin/search-filters";
 import { CustomerDialog } from "@/components/admin/customer-dialog";
 import { CustomerInviteDialog } from "@/components/admin/customer-invite-dialog";
@@ -41,7 +41,7 @@ const CustomersPage = async () => {
           </CustomerDialog>
         </div>
       </div>
-      <FilterTabs tabs={OPTIONS} queryKey="customers" />
+      <FilterTab tabs={OPTIONS} path="/api/applications/customer/count" />
       {/* content */}
       <PageClient />
     </div>

@@ -1,5 +1,5 @@
 import { PageClient } from "./page-client";
-import { FilterTabs } from "@/components/admin/filter-tabs";
+import { FilterTab } from "@/components/admin/filter-tabs";
 import { SearchBar } from "@/components/admin/search-filters";
 import { CustomerInviteDialog } from "@/components/admin/customer-invite-dialog";
 
@@ -19,7 +19,10 @@ const InvitesPage = async () => {
     <div className="flex flex-col h-full gap-5">
       <h1 className="text-2xl font-semibold">Customer Invitations</h1>
 
-      <FilterTabs tabs={OPTIONS} queryKey="invites" />
+      <FilterTab
+        tabs={OPTIONS}
+        path="/api/invites/customer/count?type=invitation"
+      />
 
       <div className="flex gap-4 items-center">
         <SearchBar />

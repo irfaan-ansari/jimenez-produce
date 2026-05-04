@@ -1,19 +1,18 @@
 "use client";
 
 import z from "zod";
-import { Loader } from "lucide-react";
 import {
   Field,
   FieldError,
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
+import { toast } from "sonner";
+import { Loader } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { authClient } from "@/lib/auth/client";
 import { Button } from "@/components/ui/button";
 import { useAppForm } from "@/hooks/form-context";
-
-import { authClient } from "@/lib/auth/client";
-import { toast } from "sonner";
 
 const schema = z.object({
   id: z.string(),
@@ -37,17 +36,13 @@ export const ProfileForm = () => {
     },
     onSubmit: async ({ value }) => {
       const { name, phoneNumber } = value;
-      await authClient.updateUser(
-        { name, phoneNumber },
-        {
-          onSuccess: () => {
-            toast.success("Profile updated successfully!");
-          },
-          onError: (err) => {
-            toast.error(err.error.message || "Failed to update profile!");
-          },
-        },
-      );
+      const toastId = toast.loading("Please wait...");
+      const { error } = await authClient.updateUser({ name, phoneNumber });
+      if (error) {
+        toast.error(error.message, { id: toastId });
+      } else {
+        toast.success("Profile updated successfully!", { id: toastId });
+      }
     },
   });
 
@@ -74,6 +69,8 @@ export const ProfileForm = () => {
             <field.PhoneField
               label="Phone Number"
               className="**:data-[slot=input]:rounded-xl"
+              // @ts-expect-error
+              disabled={true}
             />
           )}
         />
@@ -101,26 +98,32 @@ export const ProfileForm = () => {
             );
           }}
         />
+        <div className="flex *:w-full sm:*:w-32 items-center justify-end">
+          <form.Subscribe
+            selector={({ isSubmitting, canSubmit, isDirty }) => ({
+              isSubmitting,
+              canSubmit,
+              isDirty,
+            })}
+            children={({ isSubmitting, canSubmit, isDirty }) => {
+              return (
+                <Button
+                  type="submit"
+                  className="w-28"
+                  size="lg"
+                  disabled={isSubmitting || !isDirty || !canSubmit}
+                >
+                  {isSubmitting ? (
+                    <Loader className="animate-spin" />
+                  ) : (
+                    "Update"
+                  )}
+                </Button>
+              );
+            }}
+          />
+        </div>
       </FieldGroup>
-
-      <Field className="mt-10 flex flex-col-reverse gap-4 sm:flex-row sm:justify-end sm:[&>button]:w-32">
-        <form.Subscribe
-          selector={({ isSubmitting, canSubmit }) => ({
-            isSubmitting,
-            canSubmit,
-          })}
-          children={({ isSubmitting, canSubmit }) => (
-            <Button
-              type="submit"
-              size="xl"
-              className="rounded-xl"
-              disabled={isSubmitting || !canSubmit}
-            >
-              {isSubmitting ? <Loader className="animate-spin" /> : "Save"}
-            </Button>
-          )}
-        />
-      </Field>
     </form>
   );
 };

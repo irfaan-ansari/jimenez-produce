@@ -39,6 +39,7 @@ export const useInvites = (query?: string) => {
   return useQuery({
     queryKey: ["invites", query],
     queryFn: () => {
+      console.log(query);
       return fetcher<CustomerInviteResponse>(`/api/invites/customer${query}`);
     },
     staleTime: 1000 * 60 * 5,

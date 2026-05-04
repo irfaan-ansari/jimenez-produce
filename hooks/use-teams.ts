@@ -8,6 +8,23 @@ import {
 } from "@/lib/types";
 import { fetcher } from "@/lib/helper/fetcher";
 import { useQuery } from "@tanstack/react-query";
+import { authClient } from "@/lib/auth/client";
+
+export const useListTeamMembers = (teamId: string) => {
+  return useQuery({
+    queryKey: ["team-members"],
+    queryFn: async () => {
+      const { data, error } = await authClient.organization.listTeamMembers({
+        query: {
+          teamId,
+        },
+      });
+      if (error) throw error;
+
+      return data;
+    },
+  });
+};
 
 // list teams
 export const useTeams = (q?: string) => {
@@ -48,5 +65,14 @@ export const useUsers = ({
         `/api/users?${params.toString()}`,
       );
     },
+  });
+};
+
+export const useCustomerProfile = () => {
+  return useQuery({
+    queryKey: ["customer-profile"],
+    queryFn: () =>
+      fetcher<{ data: Omit<Team, "priceLevelId"> }>(`/api/customer/profile`),
+    staleTime: 1000 * 60 * 5,
   });
 };

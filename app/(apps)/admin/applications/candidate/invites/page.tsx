@@ -1,4 +1,4 @@
-import { FilterTabs } from "@/components/admin/filter-tabs";
+import { FilterTab } from "@/components/admin/filter-tabs";
 import { SearchBar } from "@/components/admin/search-filters";
 import { InviteCandidate } from "@/components/admin/invite-candidate";
 import { PageClient } from "./page-client";
@@ -16,7 +16,7 @@ const JobApplicationPage = async () => {
   return (
     <div className="flex flex-col h-full gap-5">
       <h1 className="text-2xl font-semibold">Candidate Invitations</h1>
-      <FilterTabs tabs={OPTIONS} queryKey="job-invites" />
+      <FilterTab tabs={OPTIONS} path="/api/invites/job/count" />
 
       <div className="flex gap-4 items-center">
         <SearchBar />

@@ -3,11 +3,13 @@
 import React from "react";
 import Link from "next/link";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useStatusCount } from "@/hooks/use-status-count";
+import { useCountsByStatus } from "@/hooks/use-status-count";
 import { Ban, OctagonPause, UserCheck, UserPlus } from "lucide-react";
 
 export const CustomerCounts = () => {
-  const { data, isPending } = useStatusCount("customers");
+  const { data, isPending } = useCountsByStatus(
+    "/api/applications/customer/count",
+  );
 
   return (
     <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
