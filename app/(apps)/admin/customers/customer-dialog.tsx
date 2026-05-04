@@ -12,7 +12,7 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { Team } from "@/lib/types";
-import { Loader, User } from "lucide-react";
+import { Loader, User, UserPlus } from "lucide-react";
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useAppForm } from "@/hooks/form-context";
@@ -102,10 +102,10 @@ export const CustomerDialog = ({
             e.preventDefault();
             form.handleSubmit();
           }}
-          className="flex h-[calc(100svh-200px)] flex-col justify-start gap-6"
+          className="flex max-h-[min(700px,90svh)] flex-col justify-start gap-6"
         >
-          <DialogHeader className="px-6 flex-row gap-3 items-center">
-            <span className="bg-secondary size-9 rounded-lg inline-flex items-center justify-center *:size-4 border">
+          <DialogHeader className="flex-row items-center gap-3 px-6">
+            <span className="inline-flex size-9 items-center justify-center rounded-lg border bg-secondary *:size-4">
               <User />
             </span>
             <DialogTitle className="text-xl font-bold">

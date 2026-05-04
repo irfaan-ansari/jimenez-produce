@@ -72,7 +72,7 @@ export const CustomersSelector = ({
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
 
-      <DialogContent className="h-full max-h-[calc(100svh-10rem)] overflow-hidden rounded-2xl ring-ring/10 sm:max-w-xl">
+      <DialogContent className="h-full max-h-[min(700px,90svh)] overflow-hidden rounded-2xl ring-ring/10 sm:max-w-xl">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold">
             Select accounts

@@ -115,6 +115,7 @@ const PasswordField = ({
         />
         <InputGroupAddon align="inline-end">
           <InputGroupButton
+            tabIndex={-1}
             size="icon-sm"
             className="rounded-2xl"
             type="button"

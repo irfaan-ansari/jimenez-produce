@@ -63,7 +63,7 @@ export const OrderScheduleDialog = ({ children, defaultValues }: Props) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="rounded-2xl ring-ring/10 sm:max-w-2xl">
+      <DialogContent className="rounded-2xl ring-ring/10 sm:max-w-xl">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold">
             Edit Schedule

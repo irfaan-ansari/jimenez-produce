@@ -96,22 +96,6 @@ export const OrderActions = ({
         </Button>
       )}
 
-      {status !== "completed" && (
-        <OrderScheduleDialog
-          defaultValues={{ id, deliveryDate, deliveryWindow }}
-        >
-          <Button variant="ghost" className="justify-start rounded-xl">
-            <SquarePen /> Edit Schedule
-          </Button>
-        </OrderScheduleDialog>
-      )}
-
-      {status !== "completed" && (
-        <Button variant="ghost" onClick={() => handleAction("completed")}>
-          <CheckCircle /> Mark as Completed
-        </Button>
-      )}
-
       <Button variant="ghost" asChild>
         <a href={`/api/orders/${id}/invoice`} target="_blank">
           <FileCheck /> Invoice
@@ -122,6 +106,21 @@ export const OrderActions = ({
           <Package /> Packing Slip
         </a>
       </Button>
+
+      {status !== "completed" && (
+        <OrderScheduleDialog
+          defaultValues={{ id, deliveryDate, deliveryWindow }}
+        >
+          <Button variant="ghost" className="justify-start rounded-xl">
+            <SquarePen /> Edit Schedule
+          </Button>
+        </OrderScheduleDialog>
+      )}
+      {status !== "completed" && (
+        <Button variant="ghost" onClick={() => handleAction("completed")}>
+          <CheckCircle /> Mark as Completed
+        </Button>
+      )}
 
       <Button
         variant="ghost"

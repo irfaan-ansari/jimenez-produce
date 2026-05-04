@@ -14,7 +14,7 @@ import React from "react";
 import { toast } from "sonner";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Loader, Plus, Trash2 } from "lucide-react";
+import { Loader, LogIn, Plus, Trash2, UserLock } from "lucide-react";
 import { Field, FieldGroup } from "@/components/ui/field";
 
 import { useComboboxAnchor } from "@/components/ui/combobox";
@@ -63,11 +63,8 @@ export const UserDialog = ({
   data?: UserWithMember;
   callback?: (arg: CallBackAgrs) => void;
 }) => {
-  const anchor = useComboboxAnchor();
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
-
-  const { data: teams } = useTeams();
 
   const form = useAppForm({
     defaultValues: {
@@ -118,14 +115,15 @@ export const UserDialog = ({
             e.preventDefault();
             form.handleSubmit();
           }}
-          className="flex h-full max-h-[calc(100svh-10rem)] flex-col gap-6"
+          className="flex h-full max-h-[min(700px,90svh)] flex-col gap-6"
         >
-          <DialogHeader>
-            <DialogTitle className="text-xl font-bold">Create user</DialogTitle>
-            <DialogDescription>
-              Enter user details to add them to the system.
-            </DialogDescription>
+          <DialogHeader className="flex-row items-center gap-3">
+            <span className="inline-flex size-9 items-center justify-center rounded-lg border bg-secondary *:size-4">
+              <UserLock />
+            </span>
+            <DialogTitle className="text-xl font-bold">Add user</DialogTitle>
           </DialogHeader>
+
           <FieldGroup className="no-scrollbar grid flex-1 grid-cols-2 overflow-y-auto">
             <form.AppField
               name="name"
