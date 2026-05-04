@@ -2,6 +2,7 @@ import {
   OrderSelectType,
   LineItemSelectType,
   OrganizationSelectType,
+  TeamSelectType,
 } from "@/lib/db/schema";
 import { format } from "date-fns";
 import { styles } from "./styles";
@@ -12,6 +13,7 @@ interface OrderInvoiceProps {
   data: OrderSelectType & {
     lineItems: LineItemSelectType[];
     organization: OrganizationSelectType;
+    team: TeamSelectType;
   };
 }
 
@@ -22,18 +24,38 @@ export const OrderInvoice = ({ data }: OrderInvoiceProps) => {
 
   return (
     <Document title={`Invoice - ${data.id}`}>
-      <Page size="A4" style={[{ padding: 10 }]}>
+      <Page size="A4" style={[{ padding: 20 }]}>
         <View style={[{ borderWidth: 1 }]}>
-          <View style={[styles.header, { marginBottom: 20 }]}>
-            <View style={styles.headerLeft}>
+          <View
+            style={[
+              styles.tableRow,
+              {
+                borderBottomWidth: 1,
+                paddingHorizontal: 6,
+                paddingVertical: 20,
+              },
+            ]}
+          >
+            <View
+              style={[
+                styles.headerLeft,
+                {
+                  flex: 1,
+                  alignItems: "flex-start",
+                },
+              ]}
+            >
               <Image
                 src={process.env.BETTER_AUTH_URL + "/logo.png"}
-                style={[styles.logo, { marginBottom: 10 }]}
+                style={[styles.logo]}
               />
-              <Text style={{ fontSize: 14, fontWeight: "bold" }}>
-                {data.organization?.name}
-              </Text>
-              <View style={styles.headerContactText}>
+
+              <View style={[styles.headerContactText]}>
+                <Text
+                  style={{ fontSize: 14, fontWeight: "bold", marginBottom: 6 }}
+                >
+                  Jimenez Produce
+                </Text>
                 <Text>{metadata?.street || ""}</Text>
                 <Text>{`${metadata?.city || ""}, ${metadata?.state || ""} ${metadata?.zip || ""}`}</Text>
                 <Text>Phone: {data.organization?.phone}</Text>
@@ -41,7 +63,7 @@ export const OrderInvoice = ({ data }: OrderInvoiceProps) => {
               </View>
             </View>
 
-            <View style={styles.headerRight}>
+            <View style={[styles.headerRight, { width: "40%" }]}>
               <Text
                 style={[styles.docTitle, { fontSize: 24, marginBottom: 10 }]}
               >
@@ -55,69 +77,74 @@ export const OrderInvoice = ({ data }: OrderInvoiceProps) => {
                 <Text style={{ fontSize: 10 }}>
                   Date: {format(new Date(data.createdAt!), "MMM dd, yyyy")}
                 </Text>
-                <Text style={{ fontSize: 10 }}>
-                  P.O. Number: {data.po || "N/A"}
-                </Text>
-                <Text style={{ fontSize: 10 }}>
-                  Due Date:{" "}
-                  {data.deliveryDate
-                    ? format(new Date(data.deliveryDate), "MMM dd, yyyy")
-                    : "Upon Receipt"}
-                </Text>
               </View>
             </View>
           </View>
 
           {/* BILLING & SHIPPING SECTION */}
-          <View style={{ flexDirection: "row", marginBottom: 30, gap: 40 }}>
-            <View style={{ flex: 1 }}>
+          <View style={[styles.tableRow]}>
+            <View
+              style={{
+                width: "33%",
+                padding: 6,
+                paddingBottom: 40,
+                borderRightWidth: 1,
+              }}
+            >
               <Text
                 style={{
                   fontSize: 10,
-                  color: "#666",
-                  textTransform: "uppercase",
+                  marginBottom: 5,
+                }}
+              >
+                P.O. Number
+              </Text>
+
+              <Text style={{ fontSize: 10 }}>{data.po}</Text>
+            </View>
+            <View
+              style={{
+                width: "33%",
+                borderRightWidth: 1,
+                padding: 6,
+                paddingBottom: 40,
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 10,
                   marginBottom: 5,
                 }}
               >
                 Bill To
               </Text>
-              {/* <Text style={{ fontSize: 11, fontWeight: "bold" }}>
-                {data.receiverName || "Client Name"}
-              </Text> */}
-              {/* Replace with actual billing address logic if different from shipping */}
-              <Text style={{ fontSize: 10 }}>
-                {data.shippingAddress?.street}
-              </Text>
-              <Text
-                style={{ fontSize: 10 }}
-              >{`${data.shippingAddress?.city}, ${data.shippingAddress?.state} ${data.shippingAddress?.zip}`}</Text>
-            </View>
 
-            <View style={{ flex: 1 }}>
-              <Text
-                style={{
-                  fontSize: 10,
-                  color: "#666",
-                  textTransform: "uppercase",
-                  marginBottom: 5,
-                }}
-              >
-                Ship To
-              </Text>
-              {/* <Text style={{ fontSize: 11 }}>{data.receiverName}</Text> */}
-              <Text style={{ fontSize: 10 }}>
-                {data.shippingAddress?.street}
-              </Text>
-              <Text
-                style={{ fontSize: 10 }}
-              >{`${data.shippingAddress?.city}, ${data.shippingAddress?.state} ${data.shippingAddress?.zip}`}</Text>
-              {/* <Text style={{ fontSize: 10 }}>{data.receiverPhone}</Text> */}
+              <Text style={{ fontSize: 10 }}>{data.team.name}</Text>
+              <Text style={{ fontSize: 10 }}>{data.team.phone}</Text>
+              <Text style={{ fontSize: 10 }}>{data.team.email}</Text>
+            </View>
+            <View
+              style={{
+                width: "33%",
+                padding: 6,
+                paddingBottom: 40,
+              }}
+            >
+              <Text style={{ fontSize: 10, marginBottom: 5 }}>Ship To</Text>
+              <Text style={{ fontSize: 10 }}>{data.team.name}</Text>
+              <Text style={{ fontSize: 10 }}>{data.team.phone}</Text>
+              <Text style={{ fontSize: 10 }}>{data.team.email}</Text>
             </View>
           </View>
 
           {/* LINE ITEMS TABLE */}
           <View style={styles.table}>
-            <View style={[styles.tableRow]}>
+            <View
+              style={[
+                styles.tableRow,
+                { backgroundColor: "#EEEEEE", borderBottomWidth: 1 },
+              ]}
+            >
               <View style={{ width: "15%" }}>
                 <Text style={styles.tableColHeader}>Item #</Text>
               </View>
@@ -147,7 +174,13 @@ export const OrderInvoice = ({ data }: OrderInvoiceProps) => {
             </View>
 
             {data.lineItems?.map((item, index) => (
-              <View key={index} style={[styles.tableRow]}>
+              <View
+                key={index}
+                style={[
+                  styles.tableRow,
+                  index % 2 !== 0 ? { backgroundColor: "#EEEEEE" } : {},
+                ]}
+              >
                 <View style={{ width: "15%" }}>
                   <Text style={styles.tableCell}>{item.identifier}</Text>
                 </View>
@@ -179,64 +212,55 @@ export const OrderInvoice = ({ data }: OrderInvoiceProps) => {
           </View>
 
           {/* TOTALS SECTION */}
-          <View style={{ flexDirection: "row", marginTop: 20 }}>
-            <View style={{ flex: 1 }}>
+          <View style={styles.tableRow}>
+            <View style={{ flex: 1, borderRightWidth: 1, padding: 6 }}>
               <Text
                 style={{ fontSize: 10, fontWeight: "bold", marginBottom: 5 }}
               >
                 Notes & Instructions:
               </Text>
-              <Text style={{ fontSize: 9, color: "#444" }}>
+              {/* <Text style={{ fontSize: 9, color: "#444" }}>
                 Please include the invoice number on your check.
-              </Text>
+              </Text> */}
             </View>
 
-            <View style={{ width: "35%" }}>
+            <View style={{ width: "40%" }}>
               <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  paddingVertical: 3,
-                }}
+                style={[styles.tableRow, { padding: 6, borderBottomWidth: 1 }]}
               >
-                <Text style={{ fontSize: 10 }}>Subtotal</Text>
+                <Text style={{ fontSize: 10, flex: 1 }}>Subtotal</Text>
                 <Text style={{ fontSize: 10 }}>{formatUSD(data.subtotal)}</Text>
               </View>
+
               <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  paddingVertical: 3,
-                }}
+                style={[styles.tableRow, { padding: 6, borderBottomWidth: 1 }]}
               >
-                <Text style={{ fontSize: 10 }}>Tax</Text>
+                <Text style={{ fontSize: 10, flex: 1 }}>Tax</Text>
                 <Text style={{ fontSize: 10 }}>{formatUSD(data.tax)}</Text>
               </View>
               {data.charges && (
                 <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    paddingVertical: 3,
-                  }}
+                  style={[
+                    styles.tableRow,
+                    { padding: 6, borderBottomWidth: 1 },
+                  ]}
                 >
-                  <Text style={{ fontSize: 10 }}>{data.charges.type}</Text>
+                  <Text style={{ fontSize: 10, flex: 1 }}>
+                    {data.charges.type}
+                  </Text>
                   <Text style={{ fontSize: 10 }}>
                     {formatUSD(data.charges.amount ?? 0)}
                   </Text>
                 </View>
               )}
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  paddingVertical: 5,
-                  borderTopWidth: 1,
-                  borderColor: "#000",
-                  marginTop: 5,
-                }}
-              >
-                <Text style={{ fontSize: 11, fontWeight: "bold" }}>
+              <View style={[styles.tableRow, { padding: 6 }]}>
+                <Text
+                  style={{
+                    fontSize: 11,
+                    fontWeight: "bold",
+                    flex: 1,
+                  }}
+                >
                   Total Amount
                 </Text>
                 <Text style={{ fontSize: 11, fontWeight: "bold" }}>
@@ -247,18 +271,6 @@ export const OrderInvoice = ({ data }: OrderInvoiceProps) => {
           </View>
 
           {/* FOOTER */}
-          <View>
-            <Text style={{ fontSize: 9, textAlign: "center", color: "#999" }}>
-              Thank you for your business! | {data.organization?.name} |
-              https://jimenezproduce.com/
-            </Text>
-            <Text
-              style={styles.pageNumber}
-              render={({ pageNumber, totalPages }) =>
-                `${pageNumber} / ${totalPages}`
-              }
-            />
-          </View>
         </View>
       </Page>
     </Document>

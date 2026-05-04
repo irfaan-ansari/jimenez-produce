@@ -2,213 +2,234 @@ import {
   OrderSelectType,
   LineItemSelectType,
   OrganizationSelectType,
+  TeamSelectType,
 } from "@/lib/db/schema";
 import { format } from "date-fns";
 import { styles } from "./styles";
+import { formatUSD } from "@/lib/utils";
 import { Document, Page, Text, View, Image } from "@react-pdf/renderer";
 
-interface OrderInvoiceProps {
+interface PackingSlipProps {
   data: OrderSelectType & {
     lineItems: LineItemSelectType[];
     organization: OrganizationSelectType;
+    team: TeamSelectType;
   };
 }
 
-export const PackingSlip = ({ data }: OrderInvoiceProps) => {
-  const metadata = JSON.parse(data.organization.metadata!);
+export const PackingSlip = ({ data }: PackingSlipProps) => {
+  const metadata = data.organization.metadata
+    ? JSON.parse(data.organization.metadata)
+    : {};
+
   return (
     <Document title={`Packing Slip - ${data.id}`}>
-      <Page size="A4" style={[styles.page]}>
-        {/* HEADER SECTION */}
-        <View fixed>
-          <View style={styles.header}>
-            <View style={styles.headerLeft}>
-              <Image
-                src={process.env.BETTER_AUTH_URL + "/logo.png"}
-                style={styles.logo}
-              />
-              <View>
-                <View style={styles.headerContactText}>
-                  <Text>
-                    {metadata?.street} {metadata?.city}
-                  </Text>
-                  <Text>
-                    {metadata?.state}
-                    {metadata?.zip}
-                  </Text>
-                  <Text>Phone: {data.organization?.phone}</Text>
-                  <Text>Email: {data.organization?.email}</Text>
-                  <Text>Website: https://jimenezproduce.com/</Text>
-                </View>
-              </View>
-            </View>
-
-            <View style={styles.headerRight}>
-              <Text
-                style={[
-                  styles.docTitle,
-                  { fontSize: 12, textTransform: "uppercase" },
-                ]}
-              >
-                Packing Slip
-              </Text>
-              <View
-                style={[
-                  styles.table,
-                  { marginTop: 15, width: "80%", marginLeft: "auto" },
-                ]}
-              >
-                <View style={[styles.tableRow]}>
-                  <Text
-                    style={[
-                      styles.tableCell,
-                      { backgroundColor: "#eee", textAlign: "center" },
-                    ]}
-                  >
-                    Invoice #:
-                  </Text>
-                  <Text
-                    style={[
-                      styles.tableCell,
-                      { backgroundColor: "#eee", textAlign: "center" },
-                    ]}
-                  >
-                    Invoice Date:
-                  </Text>
-                </View>
-                <View style={styles.tableRow}>
-                  <Text style={[styles.tableCell, { textAlign: "center" }]}>
-                    {data.id}
-                  </Text>
-                  <Text style={[styles.tableCell, { textAlign: "center" }]}>
-                    {format(new Date(data.createdAt!), "MMMM dd, yyyy")}
-                  </Text>
-                </View>
-              </View>
-            </View>
-          </View>
-
-          <View style={[styles.row, { alignItems: "flex-start" }]}>
-            {/* SHIP TO  */}
-            <View style={[styles.table, { marginTop: 15, width: "30%" }]}>
-              <View style={[styles.tableRow, { backgroundColor: "#eee" }]}>
-                <Text style={styles.tableCell}>Ship To.</Text>
-              </View>
-              <View style={styles.tableRow}>
-                <View style={[styles.tableCell]}>
-                  {/* <Text>{data.receiverName}</Text>
-                  <Text>{data.shippingAddress?.street}</Text>
-                  <Text>
-                    {data.shippingAddress?.city} {data.shippingAddress?.state}
-                    {data.shippingAddress?.zip}
-                  </Text>
-                  <Text>{data.receiverPhone}</Text> */}
-                </View>
-              </View>
-            </View>
-
-            {/* ORDER SUMMARY TABLE (P.O., Driver, etc) */}
+      <Page size="A4" style={[{ padding: 20 }]}>
+        <View style={[{ borderWidth: 1 }]}>
+          <View
+            style={[
+              styles.tableRow,
+              {
+                borderBottomWidth: 1,
+                paddingHorizontal: 6,
+                paddingVertical: 20,
+              },
+            ]}
+          >
             <View
               style={[
-                styles.table,
+                styles.headerLeft,
                 {
-                  marginTop: 15,
-                  width: "32%",
-                  height: "auto",
-                  marginLeft: "auto",
+                  flex: 1,
+                  alignItems: "flex-start",
                 },
               ]}
             >
-              <View style={[styles.tableRow, { backgroundColor: "#eee" }]}>
-                <Text style={styles.tableCell}>P.O. No.</Text>
-                <Text style={styles.tableCell}>Ship Date</Text>
+              <Image
+                src={process.env.BETTER_AUTH_URL + "/logo.png"}
+                style={[styles.logo]}
+              />
+
+              <View style={[styles.headerContactText]}>
+                <Text
+                  style={{ fontSize: 14, fontWeight: "bold", marginBottom: 6 }}
+                >
+                  Jimenez Produce
+                </Text>
+                <Text>{metadata?.street || ""}</Text>
+                <Text>{`${metadata?.city || ""}, ${metadata?.state || ""} ${metadata?.zip || ""}`}</Text>
+                <Text>Phone: {data.organization?.phone}</Text>
+                <Text>Email: {data.organization?.email}</Text>
               </View>
-              <View style={styles.tableRow}>
-                <Text style={styles.tableCell}>{data.po || ""}</Text>
-                <Text style={styles.tableCell}>{data.deliveryDate || ""}</Text>
+            </View>
+
+            <View style={[styles.headerRight, { width: "40%" }]}>
+              <Text
+                style={[styles.docTitle, { fontSize: 24, marginBottom: 10 }]}
+              >
+                Packing Slip
+              </Text>
+              <View style={{ gap: 2 }}>
+                <Text style={{ fontSize: 10 }}>
+                  Invoice #:{" "}
+                  <Text style={{ fontWeight: "bold" }}>{data.id}</Text>
+                </Text>
+                <Text style={{ fontSize: 10 }}>
+                  Date: {format(new Date(data.createdAt!), "MMM dd, yyyy")}
+                </Text>
               </View>
             </View>
           </View>
-        </View>
 
-        {/* LINE ITEMS TABLE */}
-        <View style={[styles.table, { marginTop: 20 }]}>
-          <View
-            style={[styles.tableRow, { backgroundColor: "#eee" }]}
-            wrap={false}
-            fixed
-          >
-            <View style={{ width: "15%" }}>
-              <Text style={styles.tableColHeader}>Item Code</Text>
-            </View>
-            <View style={{ width: "15%" }}>
-              <Text style={styles.tableColHeader}>Quantity</Text>
-            </View>
-            <View style={{ width: "70%" }}>
-              <Text style={styles.tableColHeader}>Description</Text>
-            </View>
-          </View>
-
-          {data.lineItems?.map((item, index) => (
+          {/* BILLING & SHIPPING SECTION */}
+          <View style={[styles.tableRow]}>
             <View
-              key={index}
-              wrap={false}
+              style={{
+                width: "33%",
+                padding: 6,
+                paddingBottom: 40,
+                borderRightWidth: 1,
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 10,
+                  marginBottom: 5,
+                }}
+              >
+                P.O. Number
+              </Text>
+
+              <Text style={{ fontSize: 10 }}>{data.po}</Text>
+            </View>
+            <View
+              style={{
+                width: "33%",
+                borderRightWidth: 1,
+                padding: 6,
+                paddingBottom: 40,
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 10,
+                  marginBottom: 5,
+                }}
+              >
+                Bill To
+              </Text>
+
+              <Text style={{ fontSize: 10 }}>{data.team.name}</Text>
+              <Text style={{ fontSize: 10 }}>{data.team.phone}</Text>
+              <Text style={{ fontSize: 10 }}>{data.team.email}</Text>
+            </View>
+            <View
+              style={{
+                width: "33%",
+                padding: 6,
+                paddingBottom: 40,
+              }}
+            >
+              <Text style={{ fontSize: 10, marginBottom: 5 }}>Ship To</Text>
+              <Text style={{ fontSize: 10 }}>{data.team.name}</Text>
+              <Text style={{ fontSize: 10 }}>{data.team.phone}</Text>
+              <Text style={{ fontSize: 10 }}>{data.team.email}</Text>
+            </View>
+          </View>
+
+          {/* LINE ITEMS TABLE */}
+          <View style={styles.table}>
+            <View
               style={[
                 styles.tableRow,
-                index % 2 !== 0 ? { backgroundColor: "#EEEEEE" } : {},
+                { backgroundColor: "#EEEEEE", borderBottomWidth: 1 },
               ]}
             >
-              <View style={[styles.tableCell, { width: "15%" }]}>
-                <Text>{item.identifier}</Text>
+              <View style={{ width: "15%" }}>
+                <Text style={styles.tableColHeader}>Item #</Text>
               </View>
-              <View
-                style={[styles.tableCell, { width: "15%", textAlign: "right" }]}
-              >
-                <Text>{item.quantity}</Text>
+              <View style={{ width: "70%" }}>
+                <Text style={styles.tableColHeader}>Description</Text>
               </View>
-              <View style={[styles.tableCell, { width: "70%" }]}>
-                <Text>{item.title}</Text>
+
+              <View style={{ width: "15%" }}>
+                <Text
+                  style={[
+                    styles.tableColHeader,
+                    { borderRightWidth: 0, textAlign: "right" },
+                  ]}
+                >
+                  Quantity
+                </Text>
               </View>
             </View>
-          ))}
-        </View>
-        {/* other charges */}
-        <View
-          style={[
-            styles.table,
-            {
-              marginTop: 15,
-              width: "32%",
-              height: "auto",
-              marginLeft: "auto",
-            },
-          ]}
-        >
-          <View style={[styles.tableRow]}>
-            <Text style={[styles.tableCell, { backgroundColor: "#eee" }]}>
-              Item Count
-            </Text>
-            <Text style={[styles.tableCell, { textAlign: "right" }]}>
-              {data.lineItemCount}
-            </Text>
-          </View>
-          <View style={[styles.tableRow]}>
-            <Text style={[styles.tableCell, { backgroundColor: "#eee" }]}>
-              Quantity
-            </Text>
-            <Text style={[styles.tableCell, { textAlign: "right" }]}>
-              {data.lineItemQuantity}
-            </Text>
-          </View>
-        </View>
 
-        <Text
-          style={styles.pageNumber}
-          render={({ pageNumber, totalPages }) =>
-            `${pageNumber} / ${totalPages}`
-          }
-          fixed
-        />
+            {data.lineItems?.map((item, index) => (
+              <View
+                key={index}
+                style={[
+                  styles.tableRow,
+                  index % 2 !== 0 ? { backgroundColor: "#EEEEEE" } : {},
+                ]}
+              >
+                <View style={{ width: "15%" }}>
+                  <Text style={styles.tableCell}>{item.identifier}</Text>
+                </View>
+                <View style={{ width: "70%" }}>
+                  <Text style={styles.tableCell}>{item.title}</Text>
+                </View>
+
+                <View style={{ width: "15%" }}>
+                  <Text
+                    style={[
+                      styles.tableCell,
+                      { textAlign: "right", borderRightWidth: 0 },
+                    ]}
+                  >
+                    {item.quantity}
+                  </Text>
+                </View>
+              </View>
+            ))}
+          </View>
+
+          {/* TOTALS SECTION */}
+          <View style={styles.tableRow}>
+            <View style={{ flex: 1, borderRightWidth: 1, padding: 6 }}>
+              <Text
+                style={{ fontSize: 10, fontWeight: "bold", marginBottom: 5 }}
+              >
+                Notes & Instructions:
+              </Text>
+            </View>
+
+            <View style={{ width: "40%" }}>
+              <View
+                style={[styles.tableRow, { padding: 6, borderBottomWidth: 1 }]}
+              >
+                <Text style={{ fontSize: 10, flex: 1 }}>Item Count</Text>
+                <Text style={{ fontSize: 10 }}>{data.lineItemCount}</Text>
+              </View>
+
+              <View style={[styles.tableRow, { padding: 6 }]}>
+                <Text
+                  style={{
+                    fontSize: 11,
+                    fontWeight: "bold",
+                    flex: 1,
+                  }}
+                >
+                  Total Quantity
+                </Text>
+                <Text style={{ fontSize: 11, fontWeight: "bold" }}>
+                  {data.lineItemQuantity}
+                </Text>
+              </View>
+            </View>
+          </View>
+
+          {/* FOOTER */}
+        </View>
       </Page>
     </Document>
   );

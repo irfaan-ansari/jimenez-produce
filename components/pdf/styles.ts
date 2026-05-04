@@ -55,9 +55,7 @@ const styles = StyleSheet.create({
     width: "40%",
   },
   headerContactText: {
-    fontSize: 8,
-    color: COLORS.secondary,
-    lineHeight: 1.3,
+    fontSize: 10,
   },
   sectionTitle: {
     fontSize: 9,
