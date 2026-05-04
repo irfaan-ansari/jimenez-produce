@@ -23,9 +23,9 @@ export const OrderInvoice = ({ data }: OrderInvoiceProps) => {
     : {};
 
   return (
-    <Document title={`Invoice - ${data.id}`}>
+    <Document title={`Estimate - ${data.id}`}>
       <Page size="A4" style={[{ padding: 20 }]}>
-        <View style={[{ borderWidth: 1 }]}>
+        <View style={[{ borderWidth: 1, flex: 1 }]}>
           <View
             style={[
               styles.tableRow,
@@ -67,7 +67,7 @@ export const OrderInvoice = ({ data }: OrderInvoiceProps) => {
               <Text
                 style={[styles.docTitle, { fontSize: 24, marginBottom: 10 }]}
               >
-                INVOICE
+                ESTIMATE
               </Text>
               <View style={{ gap: 2 }}>
                 <Text style={{ fontSize: 10 }}>
@@ -211,65 +211,74 @@ export const OrderInvoice = ({ data }: OrderInvoiceProps) => {
             ))}
           </View>
 
-          {/* TOTALS SECTION */}
-          <View style={styles.tableRow}>
-            <View style={{ flex: 1, borderRightWidth: 1, padding: 6 }}>
-              <Text
-                style={{ fontSize: 10, fontWeight: "bold", marginBottom: 5 }}
-              >
-                Notes & Instructions:
-              </Text>
-              {/* <Text style={{ fontSize: 9, color: "#444" }}>
+          <View style={{ marginTop: "auto" }}>
+            {/* TOTALS SECTION */}
+            <View style={[styles.tableRow, { borderTopWidth: 1 }]}>
+              <View style={{ flex: 1, borderRightWidth: 1, padding: 6 }}>
+                <Text
+                  style={{ fontSize: 10, fontWeight: "bold", marginBottom: 5 }}
+                >
+                  Notes & Instructions:
+                </Text>
+                {/* <Text style={{ fontSize: 9, color: "#444" }}>
                 Please include the invoice number on your check.
               </Text> */}
-            </View>
-
-            <View style={{ width: "40%" }}>
-              <View
-                style={[styles.tableRow, { padding: 6, borderBottomWidth: 1 }]}
-              >
-                <Text style={{ fontSize: 10, flex: 1 }}>Subtotal</Text>
-                <Text style={{ fontSize: 10 }}>{formatUSD(data.subtotal)}</Text>
               </View>
 
-              <View
-                style={[styles.tableRow, { padding: 6, borderBottomWidth: 1 }]}
-              >
-                <Text style={{ fontSize: 10, flex: 1 }}>Tax</Text>
-                <Text style={{ fontSize: 10 }}>{formatUSD(data.tax)}</Text>
-              </View>
-              {data.charges && (
+              <View style={{ width: "40%" }}>
                 <View
                   style={[
                     styles.tableRow,
                     { padding: 6, borderBottomWidth: 1 },
                   ]}
                 >
-                  <Text style={{ fontSize: 10, flex: 1 }}>
-                    {data.charges.type}
-                  </Text>
+                  <Text style={{ fontSize: 10, flex: 1 }}>Subtotal</Text>
                   <Text style={{ fontSize: 10 }}>
-                    {formatUSD(data.charges.amount ?? 0)}
+                    {formatUSD(data.subtotal)}
                   </Text>
                 </View>
-              )}
-              <View style={[styles.tableRow, { padding: 6 }]}>
-                <Text
-                  style={{
-                    fontSize: 11,
-                    fontWeight: "bold",
-                    flex: 1,
-                  }}
+
+                <View
+                  style={[
+                    styles.tableRow,
+                    { padding: 6, borderBottomWidth: 1 },
+                  ]}
                 >
-                  Total Amount
-                </Text>
-                <Text style={{ fontSize: 11, fontWeight: "bold" }}>
-                  {formatUSD(data.total)}
-                </Text>
+                  <Text style={{ fontSize: 10, flex: 1 }}>Tax</Text>
+                  <Text style={{ fontSize: 10 }}>{formatUSD(data.tax)}</Text>
+                </View>
+                {data.charges && (
+                  <View
+                    style={[
+                      styles.tableRow,
+                      { padding: 6, borderBottomWidth: 1 },
+                    ]}
+                  >
+                    <Text style={{ fontSize: 10, flex: 1 }}>
+                      {data.charges.type}
+                    </Text>
+                    <Text style={{ fontSize: 10 }}>
+                      {formatUSD(data.charges.amount ?? 0)}
+                    </Text>
+                  </View>
+                )}
+                <View style={[styles.tableRow, { padding: 6 }]}>
+                  <Text
+                    style={{
+                      fontSize: 11,
+                      fontWeight: "bold",
+                      flex: 1,
+                    }}
+                  >
+                    Total Amount
+                  </Text>
+                  <Text style={{ fontSize: 11, fontWeight: "bold" }}>
+                    {formatUSD(data.total)}
+                  </Text>
+                </View>
               </View>
             </View>
           </View>
-
           {/* FOOTER */}
         </View>
       </Page>

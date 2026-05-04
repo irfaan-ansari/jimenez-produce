@@ -196,7 +196,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
               Delivery By
             </h4>
             <p>
-              {format(data.deliveryDate ?? new Date(), "MMMM dd, yyyy")} -{" "}
+              {format(data.deliveryDate || new Date(), "MMMM dd, yyyy")} -{" "}
               {data.deliveryWindow}
             </p>
 
