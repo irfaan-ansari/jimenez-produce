@@ -36,7 +36,10 @@ import { cn, formatUSD, getInitialsAvatar } from "@/lib/utils";
 import { PopoverXDrawer } from "@/components/popover-x-drawer";
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useCategories, useInfiniteProducts } from "@/hooks/use-product";
+import {
+  useCategories,
+  useInfiniteProductsCustomer,
+} from "@/hooks/use-product";
 import { createOrderGuideItem, deleteOrderGuideItem } from "@/server/order";
 import { ImageZoom } from "@/components/animate-ui/primitives/effects/image-zoom";
 
@@ -73,7 +76,7 @@ export const ItemList = withForm({
       hasNextPage,
       isFetchingNextPage,
       fetchNextPage,
-    } = useInfiniteProducts(query?.toString());
+    } = useInfiniteProductsCustomer(query?.toString());
 
     const products = data?.pages.flatMap((page) => page.data) ?? [];
 

@@ -1,22 +1,15 @@
 import {
-  BriefcaseBusiness,
-  Building2,
-  ClipboardList,
-  Inbox,
-  LayoutDashboard,
-  Tag,
-} from "lucide-react";
-import {
   Dashboard,
   FolderOpen,
   ShoppingBag,
-  Settings as SettingsDuo,
+  Settings,
   CoinStack,
   File,
   Building,
   User,
   IdCard,
   Clipboard,
+  FolderUpload,
 } from "@duo-icons/react";
 
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL!;
@@ -254,6 +247,7 @@ export const SIDEBAR_MENU_CUSTOMER = [
     href: "/customer/new-order",
     items: [],
   },
+
   {
     label: "Orders",
     icon: FolderOpen,
@@ -277,14 +271,20 @@ export const SIDEBAR_MENU_CUSTOMER = [
     ],
   },
   {
-    label: "Products",
+    label: "Order Guides",
+    icon: FolderUpload,
+    href: "/customer/order-guides",
+    items: [],
+  },
+  {
+    label: "Catalog",
     icon: CoinStack,
     href: "/customer/products",
     items: [],
   },
   {
     label: "Settings",
-    icon: SettingsDuo,
+    icon: Settings,
     href: "/customer/settings",
     items: [],
   },

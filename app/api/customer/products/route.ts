@@ -106,19 +106,13 @@ export async function GET(req: NextRequest) {
           createdAt: lastLineItem.createdAt,
         },
         guide: {
-          id: orderGuideItem.id,
-          quantity: orderGuideItem.quantity,
+          id: lastLineItem.id,
+          quantity: lastLineItem.quantity,
         },
       })
       .from(product)
       .leftJoin(lastLineItem, eq(lastLineItem.productId, product.id))
-      .leftJoin(
-        orderGuideItem,
-        and(
-          eq(orderGuideItem.productId, product.id),
-          eq(orderGuideItem.teamId, activeTeamId!),
-        ),
-      )
+
       .where(filters)
       .orderBy(
         product.id,
@@ -132,13 +126,6 @@ export async function GET(req: NextRequest) {
     const [{ total }] = await db
       .select({ total: countDistinct(product.id) })
       .from(product)
-      .leftJoin(
-        orderGuideItem,
-        and(
-          eq(orderGuideItem.productId, product.id),
-          eq(orderGuideItem.teamId, activeTeamId!),
-        ),
-      )
       .where(filters);
 
     const updatedProducts = await resolvePrice(activeTeamId!, products);

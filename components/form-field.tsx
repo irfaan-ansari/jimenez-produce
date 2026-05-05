@@ -11,6 +11,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { useFieldContext } from "@/hooks/form-context";
 import {
   Field,
+  FieldContent,
   FieldDescription,
   FieldError,
   FieldLabel,
@@ -46,6 +47,7 @@ import {
   InputGroupButton,
   InputGroupInput,
 } from "./ui/input-group";
+import { Textarea } from "./ui/textarea";
 
 interface FieldProps {
   label?: string;
@@ -86,6 +88,37 @@ const TextField = ({
     </Field>
   );
 };
+
+const TextAreaField = ({
+  label,
+  description,
+  placeholder,
+  className,
+  ...props
+}: FieldProps) => {
+  const field = useFieldContext<string>();
+
+  const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
+
+  return (
+    <Field className={cn("gap-2", className)} {...props}>
+      {label && <FieldLabel htmlFor={field.name}>{label}</FieldLabel>}
+
+      <Textarea
+        id={field.name}
+        name={field.name}
+        value={field.state.value}
+        onBlur={field.handleBlur}
+        onChange={(e) => field.handleChange(e.target.value)}
+        aria-invalid={isInvalid}
+        placeholder={placeholder}
+      />
+      {description && <FieldDescription>{description}</FieldDescription>}
+      {isInvalid && <FieldError errors={field.state.meta.errors} />}
+    </Field>
+  );
+};
+
 const PasswordField = ({
   label,
   description,
@@ -245,7 +278,10 @@ const RadioField = ({
           return (
             <FieldLabel htmlFor={id} key={`field-label-${opt.value}`}>
               <Field orientation="horizontal" className="gap-4">
-                <FieldTitle>{opt.label}</FieldTitle>
+                <FieldContent>
+                  <FieldTitle>{opt.label}</FieldTitle>
+                  <FieldDescription>{opt.description}</FieldDescription>
+                </FieldContent>
                 <RadioGroupItem value={opt.value} id={id} />
               </Field>
             </FieldLabel>
@@ -420,6 +456,7 @@ const PhoneField = ({
   );
 };
 export {
+  TextAreaField,
   TextField,
   DateField,
   SelectField,

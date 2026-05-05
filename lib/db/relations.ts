@@ -13,6 +13,8 @@ import {
   taxRule,
   taxRuleItem,
   teamProduct,
+  orderGuide,
+  orderGuideTarget,
 } from "./schema";
 
 import {
@@ -200,6 +202,29 @@ export const lineItemRelations = relations(lineItem, ({ one }) => ({
   }),
 }));
 
+export const orderGuideRelations = relations(orderGuide, ({ one, many }) => ({
+  organization: one(organization, {
+    fields: [orderGuide.organizationId],
+    references: [organization.id],
+  }),
+  team: one(team, {
+    fields: [orderGuide.teamId],
+    references: [team.id],
+  }),
+  orderGuideItem: many(orderGuideItem),
+}));
+
+// export const orderGuideItemRelations = relations(orderGuideItem, ({ one }) => ({
+//   orderGuide: one(orderGuide, {
+//     fields: [orderGuideItem.orderGuideId],
+//     references: [orderGuide.id],
+//   }),
+//   product: one(product, {
+//     fields: [orderGuideItem.productId],
+//     references: [product.id],
+//   }),
+// }));
+
 export const orderGuideItemRelations = relations(orderGuideItem, ({ one }) => ({
   team: one(team, {
     fields: [orderGuideItem.teamId],
@@ -210,6 +235,20 @@ export const orderGuideItemRelations = relations(orderGuideItem, ({ one }) => ({
     references: [product.id],
   }),
 }));
+
+export const orderGuideTargetRelations = relations(
+  orderGuideTarget,
+  ({ one }) => ({
+    orderGuide: one(orderGuide, {
+      fields: [orderGuideTarget.orderGuideId],
+      references: [orderGuide.id],
+    }),
+    team: one(team, {
+      fields: [orderGuideTarget.teamId],
+      references: [team.id],
+    }),
+  }),
+);
 
 export const taxRuleRelations = relations(taxRule, ({ one, many }) => ({
   organization: one(organization, {

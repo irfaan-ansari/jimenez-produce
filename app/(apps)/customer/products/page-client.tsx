@@ -6,7 +6,7 @@ import {
   EmptyComponent,
   LoadingSkeleton,
 } from "@/components/admin/placeholder-component";
-import { useInfiniteProducts } from "@/hooks/use-product";
+import { useInfiniteProductsCustomer } from "@/hooks/use-product";
 import { useRouterStuff } from "@/hooks/use-router-stuff";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
@@ -23,7 +23,7 @@ export const PageClient = () => {
     isFetchingNextPage,
     fetchNextPage,
     hasNextPage,
-  } = useInfiniteProducts(searchParams.toString());
+  } = useInfiniteProductsCustomer(searchParams.toString());
 
   const loadMoreRef = useInfiniteScroll(() => {
     if (hasNextPage && !isFetchingNextPage) {

@@ -8,6 +8,7 @@ import {
   TextField,
   PhoneField,
   PasswordField,
+  TextAreaField,
 } from "@/components/form-field";
 import { createFormHookContexts, createFormHook } from "@tanstack/react-form";
 
@@ -26,6 +27,7 @@ const { useAppForm, withForm } = createFormHook({
     FileField,
     PhoneField,
     PasswordField,
+    TextAreaField,
   },
   formComponents: {},
 });

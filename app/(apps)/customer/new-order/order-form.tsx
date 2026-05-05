@@ -24,6 +24,8 @@ import { Loader, Minus, Plus, Star } from "lucide-react";
 import { formOpt, getTotals } from "./order-form-options";
 import { useRouterStuff } from "@/hooks/use-router-stuff";
 import { SearchBar } from "@/components/admin/search-filters";
+import { OrderGuideSheet } from "./order-guide-sheet";
+import { OrderGuideDialog } from "../order-guides/order-guide-dialog";
 
 export const OrderForm = ({
   session,
@@ -103,7 +105,7 @@ export const OrderForm = ({
         </div>
         <div className="flex w-full items-center justify-between gap-4 lg:w-auto lg:flex-1 lg:justify-end">
           <SearchBar placeholder="Search products..." />
-          <Button
+          {/* <Button
             size="xl"
             className="rounded-xl bg-yellow-500 transition hover:bg-yellow-500/80"
             asChild
@@ -121,7 +123,18 @@ export const OrderForm = ({
               <Star />
               Reorder List
             </Link>
-          </Button>
+          </Button> */}
+
+          <OrderGuideSheet>
+            <Button size="xl" className="rounded-xl bg-sidebar-accent">
+              View Order Guide
+            </Button>
+          </OrderGuideSheet>
+          <OrderGuideDialog>
+            <Button size="xl" className="rounded-xl">
+              <Plus /> New Guide
+            </Button>
+          </OrderGuideDialog>
         </div>
       </div>
 

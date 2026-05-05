@@ -21,15 +21,15 @@ export const useProducts = (query: string) => {
 
 export const useInfiniteProducts = (query: string) => {
   return useInfiniteQuery({
-    queryKey: ["customer-products", query],
+    queryKey: ["products", query],
     initialPageParam: 1,
     queryFn: ({ pageParam }) => {
       const params = new URLSearchParams(query);
 
       params.set("page", String(pageParam));
 
-      return fetcher<CustomerProductResponse>(
-        `/api/customer/products?${params.toString()}`,
+      return fetcher<AdminProductResponse>(
+        `/api/products?${params.toString()}`,
       );
     },
     getNextPageParam: ({ pagination }) => {
@@ -80,6 +80,30 @@ export const useTaxRules = (query?: string) => {
     queryFn: () => {
       return fetcher<TaxRuleResponse>(`/api/tax-rules?${query}`);
     },
+    staleTime: 1000 * 60 * 5,
+  });
+};
+
+// customer
+export const useInfiniteProductsCustomer = (query: string) => {
+  return useInfiniteQuery({
+    queryKey: ["customer-products", query],
+    initialPageParam: 1,
+    queryFn: ({ pageParam }) => {
+      const params = new URLSearchParams(query);
+
+      params.set("page", String(pageParam));
+
+      return fetcher<CustomerProductResponse>(
+        `/api/customer/products?${params.toString()}`,
+      );
+    },
+    getNextPageParam: ({ pagination }) => {
+      const { page, totalPages } = pagination;
+
+      return page < totalPages ? Number(page) + 1 : undefined;
+    },
+
     staleTime: 1000 * 60 * 5,
   });
 };

@@ -39,16 +39,9 @@ export const EmptyComponent = ({
 export const LoadingSkeleton = ({ className }: { className?: string }) => {
   return (
     <div className={cn("flex flex-col items-center justify-center", className)}>
-      <Empty>
-        <EmptyHeader className="rounded-2xl border bg-sidebar p-10 shadow-xs">
-          <EmptyMedia>
-            <AnimateIcon animate persistOnAnimateEnd>
-              <Loader />
-            </AnimateIcon>
-          </EmptyMedia>
-          <EmptyDescription>Please wait...</EmptyDescription>
-        </EmptyHeader>
-      </Empty>
+      <AnimateIcon animate persistOnAnimateEnd>
+        <Loader />
+      </AnimateIcon>
     </div>
   );
 };
