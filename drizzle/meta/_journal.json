@@ -617,6 +617,20 @@
       "when": 1778006253416,
       "tag": "0087_faulty_bloodaxe",
       "breakpoints": true
+    },
+    {
+      "idx": 88,
+      "version": "7",
+      "when": 1778099826754,
+      "tag": "0088_parched_beast",
+      "breakpoints": true
+    },
+    {
+      "idx": 89,
+      "version": "7",
+      "when": 1778103283224,
+      "tag": "0089_thick_cobalt_man",
+      "breakpoints": true
     }
   ]
 }

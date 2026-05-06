@@ -1,8 +1,12 @@
 import React from "react";
-import { OrderGuideDetailClient } from "./page-client";
+import { PageClient } from "./page-client";
 
-const OrderGuide = () => {
-  return <OrderGuideDetailClient />;
+export const metadata = {
+  title: "Edit Order Guide",
 };
 
-export default OrderGuide;
+const EditOrderGuidePage = () => {
+  return <PageClient />;
+};
+
+export default EditOrderGuidePage;

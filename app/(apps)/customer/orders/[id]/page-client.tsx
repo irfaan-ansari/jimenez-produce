@@ -1,14 +1,6 @@
 "use client";
 
-import {
-  Copy,
-  Home,
-  Download,
-  MapPinned,
-  ChevronLeft,
-  CircleCheck,
-  ClipboardCheck,
-} from "lucide-react";
+import { Copy, Home, Download, ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { format } from "date-fns";
 import React, { use } from "react";
@@ -23,7 +15,6 @@ import { STATUS_MAP } from "@/lib/constants/status-map";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { LiveTracking } from "./live-tracking";
 
 import { Badge } from "@/components/reui/badge";
 

@@ -4,25 +4,27 @@ import {
   Check,
   LayoutGrid,
   ListFilter,
-  Loader,
   Star,
   TextAlignJustify,
   X,
 } from "lucide-react";
 import React from "react";
-import { toast } from "sonner";
+import {
+  useCategories,
+  useInfiniteProductsCustomer,
+} from "@/hooks/use-product";
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import { format } from "date-fns/format";
-import { Badge } from "@/components/ui/badge";
+import { cn, formatUSD } from "@/lib/utils";
 import { QuantityInput } from "./order-form";
+import { Badge } from "@/components/ui/badge";
 import { formOpt } from "./order-form-options";
 import { withForm } from "@/hooks/form-context";
 import { useStore } from "@tanstack/react-form";
-import { Tooltip } from "@/components/tooltip";
 import { Button } from "@/components/ui/button";
 import {
   EmptyComponent,
@@ -30,18 +32,10 @@ import {
 } from "@/components/admin/placeholder-component";
 import { Skeleton } from "@/components/ui/skeleton";
 import { type CustomerProductType } from "@/lib/types";
-import { useQueryClient } from "@tanstack/react-query";
 import { useRouterStuff } from "@/hooks/use-router-stuff";
-import { cn, formatUSD, getInitialsAvatar } from "@/lib/utils";
 import { PopoverXDrawer } from "@/components/popover-x-drawer";
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  useCategories,
-  useInfiniteProductsCustomer,
-} from "@/hooks/use-product";
-import { createOrderGuideItem, deleteOrderGuideItem } from "@/server/order";
-import { ImageZoom } from "@/components/animate-ui/primitives/effects/image-zoom";
 import { SaveToGuideDialog } from "../order-guides/save-to-guide-dialog";
 
 const LAYOUTS = [
@@ -443,69 +437,6 @@ const Thumbnail = ({
         </div>
       </HoverCardContent>
     </HoverCard>
-  );
-};
-
-const OrderGuideButton = ({
-  id,
-  productId,
-  className,
-}: {
-  id?: number | undefined;
-  productId: number;
-  className?: string;
-}) => {
-  const queryClient = useQueryClient();
-  const [loading, setLoading] = React.useState(false);
-
-  const handleSave = async () => {
-    setLoading(true);
-    if (id) {
-      const { success } = await deleteOrderGuideItem(id);
-      if (success) {
-        queryClient.invalidateQueries({ queryKey: ["customer-products"] });
-        toast.success("Removed from order guide");
-      } else {
-        toast.error("Failed to remove from order guide");
-      }
-    } else {
-      const { success } = await createOrderGuideItem(productId);
-      if (success) {
-        toast.success("Saved to order guide");
-        queryClient.invalidateQueries({ queryKey: ["customer-products"] });
-      } else {
-        toast.error("Failed to save to order guide");
-      }
-    }
-    setLoading(false);
-  };
-
-  return (
-    <Tooltip content={id ? "Remove from order guide" : "Add to order guide"}>
-      <Button
-        type="button"
-        variant="outline"
-        size="icon-xs"
-        onClick={(e) => {
-          e.stopPropagation();
-          handleSave();
-        }}
-        className={className}
-        disabled={loading}
-      >
-        {loading ? (
-          <Loader className="animate-spin" />
-        ) : (
-          <Star
-            className={
-              id
-                ? "fill-yellow-500 stroke-yellow-500"
-                : "fill-foreground stroke-foreground"
-            }
-          />
-        )}
-      </Button>
-    </Tooltip>
   );
 };
 

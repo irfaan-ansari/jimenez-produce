@@ -1,4 +1,5 @@
 "use client";
+import z from "zod";
 import React from "react";
 import {
   Dialog,
@@ -22,9 +23,8 @@ import { Badge } from "@/components/reui/badge";
 import { useAppForm } from "@/hooks/form-context";
 import { Field, FieldGroup } from "@/components/ui/field";
 import { formatUSD, getAvatarFallback } from "@/lib/utils";
-import { ProductSelectorCustomer } from "./product-selector-customer";
+import { ProductSelectorCustomer } from "../../../../components/admin/product-selector-customer";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import z from "zod";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const schema = z.object({
@@ -85,14 +85,17 @@ export const SaveToGuideDialog = ({
               Add order guide
             </DialogTitle>
           </DialogHeader>
-          <Tabs defaultValue="existing" className="px-6">
-            <TabsList className="grid w-full grid-cols-2">
+          <Tabs
+            defaultValue="existing"
+            className="px-6 no-scrollbar flex-1 overflow-auto"
+          >
+            <TabsList className="grid w-full grid-cols-2 mb-6">
               <TabsTrigger value="existing">Select from existing</TabsTrigger>
               <TabsTrigger value="new">Create new guide</TabsTrigger>
             </TabsList>
             <TabsContent value="existing"></TabsContent>
             <TabsContent value="new">
-              <FieldGroup className="no-scrollbar flex-1 overflow-auto">
+              <FieldGroup>
                 <form.AppField
                   name="name"
                   children={(field) => (

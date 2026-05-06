@@ -66,9 +66,7 @@ export const OrderGuideSheet = ({
           <SheetTitle className="text-lg font-semibold">
             Order Guides
           </SheetTitle>
-          <SheetDescription>
-            <p>Your saved order guides</p>
-          </SheetDescription>
+          <SheetDescription>Your saved order guides</SheetDescription>
         </SheetHeader>
         <div className="no-scrollbar flex-1 gap-2 space-y-2 overflow-y-auto p-4">
           {GUIDES.map((guide) => (
@@ -87,30 +85,24 @@ export const OrderGuideSheet = ({
               </p>
               <div className="flex items-center gap-2 mt-3">
                 <div className="flex-1">
-                  <OrderGuideItemSheet>
-                    <Button
-                      size="sm"
-                      type="button"
-                      variant="link"
-                      className="pl-0"
-                    >
-                      View
-                    </Button>
-                  </OrderGuideItemSheet>
                   <span className="font-medium text-muted-foreground">
                     {guide.itemsCount} items
                   </span>
                 </div>
+                <OrderGuideItemSheet>
+                  <Button size="xs" type="button" className="bg-sidebar-accent">
+                    View
+                  </Button>
+                </OrderGuideItemSheet>
                 <Button
                   size="xs"
                   type="button"
-                  className="bg-sidebar-accent"
                   onClick={() => {
                     setOpen(false);
                     toast.info("Show checkout dialog or complete the order");
                   }}
                 >
-                  Order Now
+                  Add to Cart
                 </Button>
               </div>
             </div>

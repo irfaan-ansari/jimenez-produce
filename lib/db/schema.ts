@@ -512,9 +512,7 @@ export const orderGuide = pgTable(
     }),
     name: text("name").notNull(),
     description: text("description"),
-    visibility: text("visibility").notNull().default("personal"),
-    type: text("type").notNull().default("custom"),
-    target: text("target").default("all").notNull() /** all/team */,
+    target: text("target") /** all/team */,
     createdBy: text("created_by").references(() => user.id, {
       onDelete: "set null",
     }),
@@ -702,9 +700,6 @@ export type OrderInsertType = InferInsertModel<typeof order>;
 export type LineItemSelectType = InferSelectModel<typeof lineItem>;
 export type LineItemInsertType = InferInsertModel<typeof lineItem>;
 
-export type OrderGuideItemInsertType = InferInsertModel<typeof orderGuideItem>;
-export type OrderGuideItemSelectType = InferSelectModel<typeof orderGuideItem>;
-
 export type OrganizationSelectType = InferSelectModel<typeof organization>;
 export type OrganizationInsertType = InferInsertModel<typeof organization>;
 
@@ -716,3 +711,16 @@ export type TaxRuleInsertType = InferInsertModel<typeof taxRule>;
 
 export type TaxRuleItemSelectType = InferSelectModel<typeof taxRuleItem>;
 export type TaxRuleItemInsertType = InferInsertModel<typeof taxRuleItem>;
+
+export type OrderGuideSelectType = InferSelectModel<typeof orderGuide>;
+export type OrderGuideInsertType = InferInsertModel<typeof orderGuide>;
+
+export type OrderGuideItemSelectType = InferSelectModel<typeof orderGuideItem>;
+export type OrderGuideItemInsertType = InferInsertModel<typeof orderGuideItem>;
+
+export type OrderGuideTargetSelectType = InferSelectModel<
+  typeof orderGuideTarget
+>;
+export type OrderGuideTargetInsertType = InferInsertModel<
+  typeof orderGuideTarget
+>;
