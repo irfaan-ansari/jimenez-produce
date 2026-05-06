@@ -25,7 +25,6 @@ import { formatUSD, getAvatarFallback } from "@/lib/utils";
 import { ProductSelectorCustomer } from "./product-selector-customer";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import z from "zod";
-import { ProductSelectType } from "@/lib/db/schema";
 
 const schema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -69,16 +68,16 @@ export const OrderGuideDialog = ({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="overflow-hidden rounded-2xl ring-ring/10 sm:max-w-2xl">
+      <DialogContent className="overflow-hidden rounded-2xl p-0 ring-ring/10 sm:max-w-2xl">
         <form
           onSubmit={(e) => {
             e.preventDefault();
             form.handleSubmit();
           }}
-          className="flex h-full max-h-[min(700px,90svh)] flex-col gap-6"
+          className="flex h-full max-h-[min(800px,90svh)] flex-col gap-6 py-6"
         >
-          <DialogHeader className="flex-row items-center gap-3">
-            <span className="inline-flex *:size-5 size-9 items-center justify-center rounded-lg border bg-secondary">
+          <DialogHeader className="flex-row items-center gap-3 px-6">
+            <span className="inline-flex size-9 items-center justify-center rounded-lg border bg-secondary *:size-5">
               <File />
             </span>
             <DialogTitle className="text-xl font-bold">
@@ -86,7 +85,7 @@ export const OrderGuideDialog = ({
             </DialogTitle>
           </DialogHeader>
 
-          <FieldGroup className="flex-1 overflow-auto no-scrollbar">
+          <FieldGroup className="no-scrollbar flex-1 overflow-auto px-6">
             <form.AppField
               name="name"
               children={(field) => (
@@ -175,7 +174,7 @@ export const OrderGuideDialog = ({
                                 <SortableItem
                                   key={index}
                                   value={item.id}
-                                  className="flex flex-1 items-center gap-3 py-2 first:pt-0 last:pb-0 bg-background"
+                                  className="flex flex-1 items-center gap-3 bg-background py-2 first:pt-0 last:pb-0"
                                 >
                                   <SortableItemHandle>
                                     <GripVerticalIcon className="size-4" />
@@ -194,7 +193,7 @@ export const OrderGuideDialog = ({
                                   </div>
                                   <div className="min-w-0 flex-1 space-y-1">
                                     <p>{item.title}</p>
-                                    <div className="flex gap-1 items-center">
+                                    <div className="flex items-center gap-1">
                                       {item.categories?.map((cat, i) => (
                                         <Badge
                                           key={cat + i}
@@ -229,7 +228,7 @@ export const OrderGuideDialog = ({
             />
           </FieldGroup>
 
-          <Field className="flex flex-col-reverse gap-4 sm:flex-row sm:justify-end sm:[&>button]:w-32">
+          <Field className="flex flex-col-reverse gap-4 px-6 sm:flex-row sm:justify-end sm:[&>button]:w-32">
             <DialogClose asChild>
               <Button
                 variant="outline"

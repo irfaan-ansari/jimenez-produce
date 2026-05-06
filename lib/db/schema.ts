@@ -534,41 +534,18 @@ export const orderGuide = pgTable(
 /* -----------------------------
    order guide item schema
 ----------------------------- */
-// export const orderGuideItem = pgTable(
-//   "order_guide_item",
-//   {
-//     id: serial("id").primaryKey(),
-//     productId: integer("product_id").references(() => product.id, {
-//       onDelete: "cascade",
-//     }),
-//     orderGuideId: integer("order_guide_id").references(() => orderGuide.id, {
-//       onDelete: "cascade",
-//     }),
-//     quantity: text("quantity"),
-//     position: integer("position").notNull().default(0),
-//     createdAt: timestamp("created_at").defaultNow(),
-//     updatedAt: timestamp("updated_at")
-//       .defaultNow()
-//       .$onUpdate(() => /* @__PURE__ */ new Date())
-//       .notNull(),
-//   },
-//   (table) => [
-//     index("order_guide_item_productId_idx").on(table.productId),
-//     index("order_guide_item_order_guide_id_idx").on(table.orderGuideId),
-//     unique("order_guide_item_orderGuide_product_unique").on(
-//       table.orderGuideId,
-//       table.productId,
-//     ),
-//   ],
-// );
-
 export const orderGuideItem = pgTable(
   "order_guide_item",
   {
     id: serial("id").primaryKey(),
-    productId: integer("product_id").notNull(),
-    teamId: text("team_id"),
+    productId: integer("product_id").references(() => product.id, {
+      onDelete: "cascade",
+    }),
+    orderGuideId: integer("order_guide_id").references(() => orderGuide.id, {
+      onDelete: "cascade",
+    }),
     quantity: text("quantity"),
+    position: integer("position").notNull().default(0),
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at")
       .defaultNow()
@@ -577,8 +554,9 @@ export const orderGuideItem = pgTable(
   },
   (table) => [
     index("order_guide_item_productId_idx").on(table.productId),
-    unique("order_guide_item_team_product_unique").on(
-      table.teamId,
+    index("order_guide_item_order_guide_id_idx").on(table.orderGuideId),
+    unique("order_guide_item_orderGuide_product_unique").on(
+      table.orderGuideId,
       table.productId,
     ),
   ],

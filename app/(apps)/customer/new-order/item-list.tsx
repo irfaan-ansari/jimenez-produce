@@ -42,6 +42,7 @@ import {
 } from "@/hooks/use-product";
 import { createOrderGuideItem, deleteOrderGuideItem } from "@/server/order";
 import { ImageZoom } from "@/components/animate-ui/primitives/effects/image-zoom";
+import { SaveToGuideDialog } from "../order-guides/save-to-guide-dialog";
 
 const LAYOUTS = [
   {
@@ -222,87 +223,96 @@ const ProductItem = withForm({
     );
 
     return (
-      <div
-        className={cn(
-          `flex animate-in cursor-pointer items-center gap-4 rounded-xl border py-2 transition fade-in-50 select-none slide-in-from-bottom-10 group-data-[layout=grid]/card:h-full group-data-[layout=grid]/card:flex-col
+      <div className="relative">
+        <SaveToGuideDialog>
+          <Button
+            size="icon-sm"
+            type="button"
+            variant="outline"
+            onClick={(e) => e.stopPropagation()}
+            className="absolute top-1 right-1 z-1 hidden group-data-[layout=grid]/card:inline-flex"
+          >
+            <Star />
+          </Button>
+        </SaveToGuideDialog>
+        <div
+          className={cn(
+            `flex animate-in cursor-pointer items-center gap-4 rounded-xl border py-2 transition fade-in-50 select-none slide-in-from-bottom-10 group-data-[layout=grid]/card:h-full group-data-[layout=grid]/card:flex-col
           group-data-[layout=grid]/card:items-stretch group-data-[layout=grid]/card:gap-0 group-data-[layout=grid]/card:p-0
           group-data-[layout=list]/card:mb-1 group-data-[layout=list]/card:px-4 hover:shadow-md 
           group-data-[layout=grid]/card:hover:-translate-y-1`,
-          isCartItem ? "shadow-sm" : "",
-        )}
-        onClick={() => updateQty(qty + 1)}
-      >
-        <div
-          className="relative aspect-square w-12 shrink-0 overflow-hidden rounded-xl bg-secondary
-             group-data-[layout=grid]/card:aspect-video group-data-[layout=grid]/card:w-full"
+            isCartItem ? "shadow-sm" : "",
+          )}
+          onClick={() => updateQty(qty + 1)}
         >
-          <Thumbnail
-            product={product}
-            qty={qty}
-            onChange={(newValue) => updateQty(newValue)}
-          />
-        </div>
+          <div
+            className="relative aspect-square w-12 shrink-0 overflow-hidden rounded-xl bg-secondary
+             group-data-[layout=grid]/card:aspect-video group-data-[layout=grid]/card:w-full"
+          >
+            <Thumbnail
+              product={product}
+              qty={qty}
+              onChange={(newValue) => updateQty(newValue)}
+            />
+          </div>
 
-        <div
-          className="flex min-w-0 flex-1 items-start gap-4
+          <div
+            className="flex min-w-0 flex-1 items-start gap-4
              group-data-[layout=grid]/card:w-full
              group-data-[layout=grid]/card:flex-col
              group-data-[layout=grid]/card:justify-between
              group-data-[layout=grid]/card:p-4"
-        >
-          <div className="w-full min-w-0 space-y-1 group-data-[layout=grid]/card:space-y-2">
-            <h4 className="leading-tight font-medium">{product.title}</h4>
+          >
+            <div className="w-full min-w-0 space-y-1 group-data-[layout=grid]/card:space-y-2">
+              <h4 className="leading-tight font-medium">{product.title}</h4>
 
-            <div className="flex w-full items-center gap-2">
-              <div className="no-scrollbar flex min-w-0 flex-nowrap items-center gap-1 overflow-auto">
-                {product.categories?.map((cat, i) => (
-                  <span
-                    key={cat + i}
-                    className="text-xs font-medium uppercase whitespace-nowrap text-muted-foreground inline-block not-last:pr-1 not-last:border-r-2 leading-tight"
-                  >
-                    {cat}
-                  </span>
-                ))}
+              <div className="flex w-full items-center gap-2">
+                <div className="no-scrollbar flex min-w-0 flex-nowrap items-center gap-1 overflow-auto">
+                  {product.categories?.map((cat, i) => (
+                    <span
+                      key={cat + i}
+                      className="inline-block text-xs leading-tight font-medium whitespace-nowrap text-muted-foreground uppercase not-last:border-r-2 not-last:pr-1"
+                    >
+                      {cat}
+                    </span>
+                  ))}
+                </div>
+
+                <LastPurchase
+                  product={product}
+                  className="group-data-[layout=grid]/card:hidden"
+                />
               </div>
-
-              <LastPurchase
-                product={product}
-                className="group-data-[layout=grid]/card:hidden"
-              />
             </div>
-          </div>
-          <OrderGuideButton
-            id={product?.guide?.id}
-            productId={product?.id}
-            className="self-center group-data-[layout=grid]/card:hidden"
-          />
-          <div className="ml-auto w-24 self-center text-xs text-muted-foreground group-data-[layout=grid]/card:hidden">
-            {product.pack ?? null}
-          </div>
 
-          <Price
-            price={product.basePrice ?? 0}
-            className="group-data-[layout=grid]/card:hidden"
-          />
+            <div className="ml-auto w-24 self-center text-xs text-muted-foreground group-data-[layout=grid]/card:hidden">
+              {product.pack ?? null}
+            </div>
 
-          <QuantityInput
-            value={qty}
-            onChange={updateQty}
-            className="group-data-[layout=grid]/card:hidden"
-          />
+            <Price
+              price={product.basePrice ?? 0}
+              className="group-data-[layout=grid]/card:hidden"
+            />
 
-          <div className="flex w-full items-center gap-2 group-data-[layout=list]/card:hidden">
-            <div className="flex flex-1 flex-col">
-              <div className="text-xs text-muted-foreground">
-                {product.pack ?? null}
+            <QuantityInput
+              value={qty}
+              onChange={updateQty}
+              className="group-data-[layout=grid]/card:hidden"
+            />
+
+            <div className="flex w-full items-center gap-2 group-data-[layout=list]/card:hidden">
+              <div className="flex flex-1 flex-col">
+                <div className="text-xs text-muted-foreground">
+                  {product.pack ?? null}
+                </div>
+
+                <Price
+                  price={product.basePrice ?? 0}
+                  className="w-auto self-start"
+                />
               </div>
-
-              <Price
-                price={product.basePrice ?? 0}
-                className="w-auto self-start"
-              />
+              <QuantityInput value={qty} onChange={updateQty} />
             </div>
-            <QuantityInput value={qty} onChange={updateQty} />
           </div>
         </div>
       </div>
@@ -374,12 +384,6 @@ const Thumbnail = ({
           <LastPurchase
             product={product}
             className="absolute top-1 left-1 hidden group-data-[layout=grid]/card:inline-flex"
-          />
-
-          <OrderGuideButton
-            productId={product.id}
-            id={product.guide?.id}
-            className="absolute top-1 right-1 hidden group-data-[layout=grid]/card:inline-flex"
           />
         </div>
       </HoverCardTrigger>

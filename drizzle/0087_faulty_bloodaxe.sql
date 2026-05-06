@@ -21,6 +21,7 @@ CREATE TABLE "order_guide_targets" (
 );
 --> statement-breakpoint
 ALTER TABLE "order_guide_item" RENAME COLUMN "team_id" TO "order_guide_id";--> statement-breakpoint
+
 ALTER TABLE "order_guide_item" DROP CONSTRAINT "order_guide_item_team_product_unique";--> statement-breakpoint
 ALTER TABLE "order_guide_item" ALTER COLUMN "product_id" DROP NOT NULL;--> statement-breakpoint
 ALTER TABLE "order_guide_item" ADD COLUMN "position" integer DEFAULT 0 NOT NULL;--> statement-breakpoint

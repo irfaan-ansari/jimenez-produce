@@ -196,26 +196,27 @@ export const createOrderGuideItem = handleAction(async (productId: number) => {
   const session = await getSession();
   if (!session) throw new Error("Authentication required");
 
-  const { activeTeamId } = session.session;
+  // const { activeTeamId } = session.session;
 
-  if (!activeTeamId || session.user.accountType !== "customer")
-    throw new Error("Not authorized for this action.");
+  // if (!activeTeamId || session.user.accountType !== "customer")
+  //   throw new Error("Not authorized for this action.");
 
-  const existing = await db.query.orderGuideItem.findFirst({
-    where: and(
-      eq(orderGuideItem.productId, productId),
-      eq(orderGuideItem.teamId, activeTeamId!),
-    ),
-  });
+  // const existing = await db.query.orderGuideItem.findFirst({
+  //   where: and(
+  //     eq(orderGuideItem.productId, productId),
+  //     eq(orderGuideItem.teamId, activeTeamId!),
+  //   ),
+  // });
 
-  if (existing) throw new Error("Item already added to order guide.");
+  // if (existing) throw new Error("Item already added to order guide.");
 
-  const [result] = await db
-    .insert(orderGuideItem)
-    .values({ productId, teamId: activeTeamId })
-    .returning();
+  // const [result] = await db
+  //   .insert(orderGuideItem)
+  //   .values({ productId, teamId: activeTeamId })
+  //   .returning();
 
-  return result;
+  // return result;
+  return null;
 });
 
 /**
@@ -233,19 +234,21 @@ export const deleteOrderGuideItem = handleAction(async (id: number) => {
   if (!activeTeamId || session.user.accountType !== "customer")
     throw new Error("Not authorized for this action.");
 
-  const existing = await db.query.orderGuideItem.findFirst({
-    where: and(
-      eq(orderGuideItem.id, id),
-      eq(orderGuideItem.teamId, activeTeamId),
-    ),
-  });
+  // const existing = await db.query.orderGuideItem.findFirst({
+  //   where: and(
+  //     eq(orderGuideItem.id, id),
+  //     eq(orderGuideItem.teamId, activeTeamId),
+  //   ),
+  // });
 
-  if (!existing) throw new Error("Item not found in your order guide.");
+  // if (!existing) throw new Error("Item not found in your order guide.");
 
-  const [res] = await db
-    .delete(orderGuideItem)
-    .where(eq(orderGuideItem.id, id))
-    .returning();
+  // const [res] = await db
+  //   .delete(orderGuideItem)
+  //   .where(eq(orderGuideItem.id, id))
+  //   .returning();
 
-  return res;
+  // return res;
+
+  return null;
 });

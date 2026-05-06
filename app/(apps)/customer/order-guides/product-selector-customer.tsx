@@ -81,7 +81,7 @@ export const ProductSelectorCustomer = ({
   return (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="h-full flex flex-col justify-start max-h-[min(700px,90svh)] overflow-hidden rounded-2xl ring-ring/10 sm:max-w-2xl">
+      <DialogContent className="flex h-full max-h-[min(800px,90svh)] flex-col justify-start overflow-hidden rounded-2xl ring-ring/10 sm:max-w-2xl">
         <DialogHeader className="flex-row items-center gap-3">
           <span className="inline-flex size-9 items-center justify-center rounded-lg border bg-secondary *:size-4">
             <CoinStack />
@@ -130,7 +130,7 @@ export const ProductSelectorCustomer = ({
                       </div>
                       <div className="min-w-0 flex-1 space-y-1">
                         <FieldTitle>{item.title}</FieldTitle>
-                        <div className="flex gap-1 items-center">
+                        <div className="flex items-center gap-1">
                           {item.categories?.map((cat, i) => (
                             <Badge
                               key={cat + i}
@@ -166,7 +166,7 @@ export const ProductSelectorCustomer = ({
             {isFetchingNextPage || isPending ? (
               <LoadingSkeleton />
             ) : options.length === 0 ? (
-              <div className="text-sm text-muted-foreground text-center">
+              <div className="text-center text-sm text-muted-foreground">
                 No result found
               </div>
             ) : null}

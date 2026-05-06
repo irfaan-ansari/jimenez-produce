@@ -70,7 +70,7 @@ export const columns: ColumnDef<(typeof GUIDES)[number]>[] = [
     cell: ({ row }) => {
       return (
         <Link
-          href={`/customer/orders-guides/${row.original.id}`}
+          href={`/customer/order-guides/${row.original.id}`}
           className="flex flex-col gap-1.5"
         >
           <div className="flex items-center gap-2 font-medium">
@@ -78,7 +78,7 @@ export const columns: ColumnDef<(typeof GUIDES)[number]>[] = [
             {row.original.recommended && (
               <Badge
                 variant="outline"
-                className="h-7 gap-1.5 rounded-xl bg-amber-100 border-amber-200 pr-2.5 pl-1.5 text-sm [&>svg]:size-3.5!"
+                className="h-7 gap-1.5 rounded-xl border-amber-200 bg-amber-100 pr-2.5 pl-1.5 text-sm [&>svg]:size-3.5!"
               >
                 Suggested
               </Badge>

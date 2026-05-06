@@ -214,21 +214,10 @@ export const orderGuideRelations = relations(orderGuide, ({ one, many }) => ({
   orderGuideItem: many(orderGuideItem),
 }));
 
-// export const orderGuideItemRelations = relations(orderGuideItem, ({ one }) => ({
-//   orderGuide: one(orderGuide, {
-//     fields: [orderGuideItem.orderGuideId],
-//     references: [orderGuide.id],
-//   }),
-//   product: one(product, {
-//     fields: [orderGuideItem.productId],
-//     references: [product.id],
-//   }),
-// }));
-
 export const orderGuideItemRelations = relations(orderGuideItem, ({ one }) => ({
-  team: one(team, {
-    fields: [orderGuideItem.teamId],
-    references: [team.id],
+  orderGuide: one(orderGuide, {
+    fields: [orderGuideItem.orderGuideId],
+    references: [orderGuide.id],
   }),
   product: one(product, {
     fields: [orderGuideItem.productId],
