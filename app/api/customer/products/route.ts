@@ -11,7 +11,6 @@ import {
   SQL,
   isNotNull,
   countDistinct,
-  notInArray,
 } from "drizzle-orm";
 import {
   lineItem,
@@ -22,8 +21,8 @@ import {
   teamProduct,
 } from "@/lib/db/schema";
 import { db } from "@/lib/db";
-import { team } from "@/lib/db/auth-schema";
 import { getSession } from "@/server/auth";
+import { team } from "@/lib/db/auth-schema";
 import { getQueryObject } from "@/lib/helper/query";
 import { NextRequest, NextResponse } from "next/server";
 

@@ -59,7 +59,6 @@ export const OrderGuideForm = ({
     id,
     name = "",
     description = "",
-
     items = [],
     layout: itemLayout = "list",
   } = initialData || {};
@@ -68,7 +67,6 @@ export const OrderGuideForm = ({
     defaultValues: {
       name,
       description,
-
       items,
       layout: itemLayout,
     },
@@ -110,8 +108,8 @@ export const OrderGuideForm = ({
   } = useStore(form.store, ({ values }) => values);
 
   return (
-    <div className="grid grid-cols-7 gap-6">
-      <div className="col-span-7 space-y-6 lg:col-span-5">
+    <div className="grid grid-cols-6 gap-6">
+      <div className="col-span-6 space-y-6 lg:col-span-4">
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -249,7 +247,7 @@ export const OrderGuideForm = ({
                     form.setFieldValue("items", v);
                   }}
                   getItemValue={(item) => item.id}
-                  className="space-y-1 group"
+                  className="group space-y-1"
                   data-layout={layout}
                 >
                   {valueItems?.map((item, index) => {
@@ -257,7 +255,7 @@ export const OrderGuideForm = ({
                       <SortableItem
                         key={item.id}
                         value={String(item.id)}
-                        className="flex flex-1 border rounded-lg p-2 items-center gap-3 bg-background"
+                        className="flex flex-1 items-center gap-3 rounded-lg border bg-background p-2"
                       >
                         <SortableItemHandle>
                           <GripVerticalIcon className="size-4" />
@@ -306,9 +304,9 @@ export const OrderGuideForm = ({
           </Card>
         </form>
       </div>
-      <div className="col-span-7 lg:col-span-2">
+      <div className="col-span-2 hidden flex-col lg:flex">
         <Card>
-          <CardContent className="flex flex-col gap-3 relative">
+          <CardContent className="relative flex flex-col gap-3">
             <CardTitle className="text-base font-semibold">
               {valueName || "New Order Guide"}
             </CardTitle>

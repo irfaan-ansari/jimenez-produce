@@ -25,6 +25,22 @@ export const PageClient = () => {
     return <EmptyComponent variant="error" title={error.message} />;
   }
   const { data } = result;
-  console.log(data);
-  return <OrderGuideForm />;
+
+  const formData = {
+    name: data.name,
+    description: data.description,
+    items: data.items.map((item) => ({
+      title: item.title,
+      identifier: item.identifier,
+      categories: item.categories,
+      image: item.image,
+      basePrice: item.finalPrice,
+      productId: item.productId,
+      quantity: item.quantity,
+      position: item.position,
+    })),
+  };
+
+  // @ts-expect-error
+  return <OrderGuideForm initialData={formData} />;
 };

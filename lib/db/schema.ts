@@ -536,9 +536,11 @@ export const orderGuideItem = pgTable(
   "order_guide_item",
   {
     id: serial("id").primaryKey(),
-    productId: integer("product_id").references(() => product.id, {
-      onDelete: "cascade",
-    }),
+    productId: integer("product_id")
+      .notNull()
+      .references(() => product.id, {
+        onDelete: "cascade",
+      }),
     orderGuideId: integer("order_guide_id").references(() => orderGuide.id, {
       onDelete: "cascade",
     }),

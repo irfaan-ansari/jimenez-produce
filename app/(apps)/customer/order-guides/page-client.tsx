@@ -9,18 +9,33 @@ import { DataTable } from "@/components/admin/data-table";
 import { PopoverXDrawer } from "@/components/popover-x-drawer";
 import { MoreVertical, SquarePen, Trash2 } from "lucide-react";
 import { OrderGuide, useOrderGuides } from "@/hooks/use-orders";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardTitle,
+} from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 
 export const OrderGuidesClientPage = () => {
   const { data, isPending, isError, error } = useOrderGuides();
 
   return (
-    <DataTable
-      columns={columns}
-      data={data}
-      isPending={isPending}
-      isError={isError}
-      error={error}
-    />
+    <div className="grid grid-cols-1 gap-6 md:grid-cols-4">
+      {data?.data?.map((item) => (
+        <Card key={item.id}>
+          <CardContent className="space-y-3">
+            <CardTitle>{item.name}</CardTitle>
+            <CardDescription>{item.description}</CardDescription>
+            <Separator />
+            <div className="flex items-center justify-between">
+              <span>{item.itemCount}</span>
+              <span>Items</span>
+            </div>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
   );
 };
 
