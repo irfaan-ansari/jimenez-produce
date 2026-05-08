@@ -1,7 +1,7 @@
+import Link from "next/link";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { OrderGuidesClientPage } from "./page-client";
-import { OrderGuideDialog } from "./order-guide-dialog";
 import { SearchBar } from "@/components/admin/search-filters";
 
 const OrderGuidesPage = () => {
@@ -16,11 +16,11 @@ const OrderGuidesPage = () => {
         </div>
         <SearchBar />
 
-        <OrderGuideDialog>
-          <Button size="xl" className="rounded-xl">
+        <Button size="xl" className="rounded-xl" asChild>
+          <Link href="/customer/order-guides/new">
             <Plus /> New Guide
-          </Button>
-        </OrderGuideDialog>
+          </Link>
+        </Button>
       </div>
 
       {/* content */}

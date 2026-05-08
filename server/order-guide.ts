@@ -9,6 +9,7 @@ import {
 } from "@/lib/db/schema";
 import { db } from "@/lib/db";
 import { ERROR_MESSAGE } from "@/lib/helper/error-message";
+import { eq, inArray, sql } from "drizzle-orm";
 
 /**
  * Create order guide item
@@ -70,6 +71,71 @@ export const createOrderGuide = handleAction(
   },
 );
 
+export const updateOrderGuide = handleAction(
+  async (
+    id: number,
+    payload: Partial<OrderGuideInsertType> & {
+      productIds: number[];
+    },
+  ) => {
+    const { productIds, ...rest } = payload;
+
+    const existingItems = await db.query.orderGuideItem.findMany({
+      where: eq(orderGuideItem.orderGuideId, id),
+    });
+
+    const toDeleteIds = existingItems
+      .filter((item) => !productIds.includes(item.productId))
+      .map((item) => item.id);
+
+    const toUpsert = productIds.map((productId, i) => {
+      return {
+        productId: Number(productId),
+        orderGuideId: id,
+        position: i + 1,
+        quantity: "1",
+      };
+    });
+
+    // update guide
+    const promises: Promise<unknown>[] = [
+      db
+        .update(orderGuide)
+        .set({ ...rest })
+        .returning(),
+    ];
+
+    // delete items
+    if (toDeleteIds.length > 0) {
+      promises.push(
+        db
+          .delete(orderGuideItem)
+          .where(inArray(orderGuideItem.id, toDeleteIds)),
+      );
+    }
+
+    // update items/insert
+    if (toUpsert.length > 0) {
+      promises.push(
+        db
+          .insert(orderGuideItem)
+          .values(toUpsert)
+          .onConflictDoUpdate({
+            target: [orderGuideItem.orderGuideId, orderGuideItem.productId],
+            set: {
+              position: sql`excluded.position`,
+              quantity: sql`excluded.quantity`,
+            },
+          })
+          .returning(),
+      );
+    }
+
+    const [updatedGuide, deletedItems, insertedItems] =
+      await Promise.all(promises);
+    return { updatedGuide, items: insertedItems };
+  },
+);
 /**
  * Delete order guide item
  * @param id - ID of order guide item to be deleted

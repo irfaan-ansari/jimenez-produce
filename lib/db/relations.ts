@@ -123,6 +123,11 @@ export const customerInviteRelations = relations(customerInvite, ({ one }) => ({
   }),
 }));
 
+export const productRelations = relations(product, ({ many }) => ({
+  lineItems: many(lineItem),
+  orderGuideItems: many(orderGuideItem),
+}));
+
 export const priceLevelRelation = relations(priceLevel, ({ one, many }) => ({
   priceLevelItem: many(priceLevelItem),
   organization: one(organization, {
@@ -187,7 +192,7 @@ export const orderRelations = relations(order, ({ one, many }) => ({
   lineItems: many(lineItem),
 }));
 
-export const lineItemRelations = relations(lineItem, ({ one }) => ({
+export const lineItemRelations = relations(lineItem, ({ one, many }) => ({
   order: one(order, {
     fields: [lineItem.orderId],
     references: [order.id],
@@ -200,6 +205,10 @@ export const lineItemRelations = relations(lineItem, ({ one }) => ({
     fields: [lineItem.teamId],
     references: [team.id],
   }),
+  product: one(product, {
+    fields: [lineItem.productId],
+    references: [product.id],
+  }),
 }));
 
 export const orderGuideRelations = relations(orderGuide, ({ one, many }) => ({
@@ -211,7 +220,7 @@ export const orderGuideRelations = relations(orderGuide, ({ one, many }) => ({
     fields: [orderGuide.teamId],
     references: [team.id],
   }),
-  orderGuideItem: many(orderGuideItem),
+  orderGuideItems: many(orderGuideItem),
 }));
 
 export const orderGuideItemRelations = relations(orderGuideItem, ({ one }) => ({

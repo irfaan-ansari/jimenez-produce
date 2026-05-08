@@ -1,115 +1,84 @@
 "use client";
-
-import React from "react";
 import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { ColumnDef } from "@tanstack/react-table";
-import { DataTable } from "@/components/admin/data-table";
-import { PopoverXDrawer } from "@/components/popover-x-drawer";
-import { MoreVertical, SquarePen, Trash2 } from "lucide-react";
-import { OrderGuide, useOrderGuides } from "@/hooks/use-orders";
 import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardTitle,
 } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
+import { ArrowRight } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  EmptyComponent,
+  LoadingSkeleton,
+} from "@/components/admin/placeholder-component";
+import { useOrderGuides } from "@/hooks/use-orders";
+import { Pagination } from "@/components/admin/pagination";
+import { useRouterStuff } from "@/hooks/use-router-stuff";
 
 export const OrderGuidesClientPage = () => {
-  const { data, isPending, isError, error } = useOrderGuides();
+  const { queryParams } = useRouterStuff();
+  const { data: guide, isPending, isError, error } = useOrderGuides();
+
+  if (isPending) return <LoadingSkeleton />;
+  if (isError) return <EmptyComponent variant="error" title={error.message} />;
+
+  const { data } = guide;
+
+  if (data?.length === 0)
+    return <EmptyComponent variant="empty" title="No order guides found" />;
+
+  const { page, total, totalPages, limit } = guide.pagination;
 
   return (
-    <div className="grid grid-cols-1 gap-6 md:grid-cols-4">
-      {data?.data?.map((item) => (
-        <Card key={item.id}>
-          <CardContent className="space-y-3">
-            <CardTitle>{item.name}</CardTitle>
-            <CardDescription>{item.description}</CardDescription>
-            <Separator />
-            <div className="flex items-center justify-between">
-              <span>{item.itemCount}</span>
-              <span>Items</span>
-            </div>
-          </CardContent>
-        </Card>
-      ))}
-    </div>
+    <>
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-4">
+        {data?.map((item) => (
+          <Card key={item.id}>
+            <CardContent className="space-y-3 flex-1">
+              <CardTitle className="text-lg font-semibold">
+                {item.name}
+              </CardTitle>
+              {!item.teamId && (
+                <Badge
+                  variant="secondary"
+                  className="h-6 bg-amber-100 border border-amber-200"
+                >
+                  Suggested
+                </Badge>
+              )}
+              <CardDescription>{item.description}</CardDescription>
+            </CardContent>
+
+            <CardFooter className="border-t">
+              <Link
+                href={`/customer/order-guides/${item.id}`}
+                className="flex items-center justify-between w-full font-medium"
+                tabIndex={-1}
+              >
+                {item.itemCount} items
+                <Button size="icon-sm" variant="secondary">
+                  <ArrowRight />
+                </Button>
+              </Link>
+            </CardFooter>
+          </Card>
+        ))}
+      </div>
+      {/* pagination */}
+      {!isPending && !isError && (
+        <Pagination
+          page={page}
+          total={total}
+          totalPages={totalPages}
+          limit={limit}
+          onPageChange={(page) =>
+            queryParams({ set: { page: page.toString() } })
+          }
+        />
+      )}
+    </>
   );
 };
-
-export const columns: ColumnDef<OrderGuide>[] = [
-  {
-    accessorKey: "id",
-    header: "Guide",
-    cell: ({ row }) => {
-      const { id, name, teamId } = row.original;
-      return (
-        <Link
-          href={`/customer/order-guides/${id}`}
-          className="flex flex-col gap-1.5"
-        >
-          <div className="flex items-center gap-2 font-medium">
-            {name}
-            {!teamId && (
-              <Badge
-                variant="outline"
-                className="h-7 gap-1.5 rounded-xl border-amber-200 bg-amber-100 pr-2.5 pl-1.5 text-sm [&>svg]:size-3.5!"
-              >
-                Suggested
-              </Badge>
-            )}
-          </div>
-          <span className="text-sm font-medium text-muted-foreground">
-            Tap to view details
-          </span>
-        </Link>
-      );
-    },
-  },
-
-  {
-    id: "deliveryDate",
-    header: "Items",
-    cell: ({ row }) => {
-      return <span>{row.original.itemCount}</span>;
-    },
-  },
-
-  {
-    id: "action",
-    meta: {
-      className: "text-right w-10",
-    },
-    cell: ({ row }) => {
-      const [open, setOpen] = React.useState(false);
-      const { id, teamId } = row.original;
-
-      if (!teamId) return "-";
-
-      return (
-        <PopoverXDrawer
-          open={open}
-          setOpen={setOpen}
-          trigger={
-            <Button size="icon" variant="outline" className="rounded-lg">
-              <MoreVertical className="size-5" />
-            </Button>
-          }
-        >
-          <Button type="button" variant="ghost" asChild>
-            <Link href={`/customer/orders-guides/${id}`}>
-              <SquarePen />
-              Edit
-            </Link>
-          </Button>
-
-          <Button variant="destructive">
-            <Trash2 /> Delete
-          </Button>
-        </PopoverXDrawer>
-      );
-    },
-  },
-];

@@ -7,6 +7,7 @@ import {
   count,
   getTableColumns,
   ilike,
+  isNotNull,
 } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { getSession } from "@/server/auth";
@@ -45,17 +46,7 @@ export const GET = async (req: NextRequest) => {
         or(
           eq(orderGuide.target, "all"),
           eq(orderGuide.teamId, activeTeamId),
-          exists(
-            db
-              .select({ id: orderGuideTarget.id })
-              .from(orderGuideTarget)
-              .where(
-                and(
-                  eq(orderGuideTarget.orderGuideId, orderGuide.id),
-                  eq(orderGuideTarget.teamId, activeTeamId),
-                ),
-              ),
-          ),
+          isNotNull(orderGuideTarget.id),
         ),
         q ? ilike(orderGuide.name, `%${q}%`) : undefined,
       ),
@@ -81,6 +72,13 @@ export const GET = async (req: NextRequest) => {
       .leftJoin(
         itemsCountSubquery,
         eq(itemsCountSubquery.orderGuideId, orderGuide.id),
+      )
+      .leftJoin(
+        orderGuideTarget,
+        and(
+          eq(orderGuideTarget.orderGuideId, orderGuide.id),
+          eq(orderGuideTarget.teamId, activeTeamId),
+        ),
       )
       .where(filters)
       .limit(Number(limit))

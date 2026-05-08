@@ -6,15 +6,17 @@ import {
   desc,
   ilike,
   arrayContains,
-  getTableColumns,
   inArray,
   SQL,
   isNotNull,
   countDistinct,
+  exists,
 } from "drizzle-orm";
 import {
   lineItem,
+  orderGuide,
   orderGuideItem,
+  orderGuideTarget,
   priceLevelItem,
   product,
   ProductSelectType,
@@ -42,7 +44,7 @@ export async function GET(req: NextRequest) {
       q,
       cat,
       offset = 0,
-      saved = false,
+      orderGuideId,
     } = getQueryObject(search);
 
     const ids = await db.query.teamProduct.findMany({
@@ -64,10 +66,6 @@ export async function GET(req: NextRequest) {
       conditions.push(arrayContains(product.categories, [cat]));
     }
 
-    if (saved) {
-      conditions.push(isNotNull(orderGuideItem.id));
-    }
-
     if (q) {
       const searchCondition = or(
         ilike(product.title, `%${q}%`),
@@ -78,48 +76,69 @@ export async function GET(req: NextRequest) {
       conditions.push(searchCondition);
     }
 
+    if (orderGuideId) {
+      conditions.push(
+        inArray(
+          product.id,
+          db
+            .select({ id: orderGuideItem.productId })
+            .from(orderGuideItem)
+            .where(eq(orderGuideItem.orderGuideId, orderGuideId)),
+        ),
+      );
+    }
+
     const filters = and(...conditions);
 
-    // sub query to get line items
-    const lastLineItem = db
-      .select({
-        productId: lineItem.productId,
-        id: lineItem.id,
-        orderId: lineItem.orderId,
-        quantity: lineItem.quantity,
-        createdAt: lineItem.createdAt,
-      })
-      .from(lineItem)
-      .where(eq(lineItem.teamId, activeTeamId!))
-      .orderBy(desc(lineItem.createdAt))
-      .as("lastLineItem");
-
-    // main query to get products
-    const products = await db
-      .selectDistinctOn([product.id], {
-        ...getTableColumns(product),
-        lastPurchased: {
-          id: lastLineItem.id,
-          orderId: lastLineItem.orderId,
-          quantity: lastLineItem.quantity,
-          createdAt: lastLineItem.createdAt,
-        },
-        guide: {
-          id: lastLineItem.id,
-          quantity: lastLineItem.quantity,
-        },
-      })
-      .from(product)
-      .leftJoin(lastLineItem, eq(lastLineItem.productId, product.id))
-
-      .where(filters)
-      .orderBy(
-        product.id,
-        desc(lastLineItem.createdAt),
-        desc(lastLineItem.quantity),
+    const guideMeta = db
+      .select({ id: orderGuide.id })
+      .from(orderGuide)
+      .leftJoin(
+        orderGuideTarget,
+        eq(orderGuideTarget.orderGuideId, orderGuide.id),
       )
-      .limit(limit)
-      .offset(offset);
+      .where(
+        or(
+          eq(orderGuide.teamId, activeTeamId!),
+          eq(orderGuide.target, "all"),
+          eq(orderGuideTarget.teamId, activeTeamId!),
+        ),
+      )
+      .as("guideMeta");
+
+    const products = await db.query.product.findMany({
+      where: filters,
+      with: {
+        lineItems: {
+          limit: 1,
+          orderBy: (li, { desc }) => [desc(li.createdAt)],
+        },
+        orderGuideItems: {
+          limit: 1,
+          where: (ogi, { inArray }) => inArray(ogi.orderGuideId, guideMeta),
+        },
+      },
+      limit,
+      offset,
+      orderBy: [desc(product.createdAt), desc(product.id)],
+    });
+
+    const transformedProducts = products.map((product) => {
+      const { lineItems, ...rest } = product;
+      return {
+        ...rest,
+        lastPurchased: {
+          id: lineItems?.[0]?.id,
+          orderId: lineItems?.[0]?.orderId,
+          quantity: lineItems?.[0]?.quantity,
+          createdAt: lineItems?.[0]?.createdAt,
+        },
+      };
+    });
+    console.log(
+      transformedProducts,
+      transformedProducts.map((p) => p.id),
+    );
 
     // get total count for pagination
     const [{ total }] = await db
@@ -127,7 +146,10 @@ export async function GET(req: NextRequest) {
       .from(product)
       .where(filters);
 
-    const updatedProducts = await resolvePrice(activeTeamId!, products);
+    const updatedProducts = await resolvePrice(
+      activeTeamId!,
+      transformedProducts,
+    );
 
     return NextResponse.json(
       {

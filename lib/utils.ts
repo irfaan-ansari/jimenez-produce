@@ -122,7 +122,7 @@ export const formatPhone = (value: string) => {
   return "";
 };
 
-export const getInitialsAvatar = (name: string) => {
+export const getInitialsAvatar = (name: string | number | undefined = "") => {
   return `https://api.dicebear.com/9.x/glass/svg?seed=${encodeURIComponent(name)}`;
 };
 

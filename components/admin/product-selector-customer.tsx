@@ -22,28 +22,34 @@ import {
 } from "@/components/ui/input-group";
 import { Search } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { CoinStack } from "@duo-icons/react";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { useDebounce } from "@/hooks/use-debounce";
-import { ProductSelectType } from "@/lib/db/schema";
-import { useInfiniteProductsCustomer } from "@/hooks/use-product";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
+import { useInfiniteProductsCustomer } from "@/hooks/use-product";
 import { LoadingSkeleton } from "@/components/admin/placeholder-component";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatUSD, getAvatarFallback, getInitialsAvatar } from "@/lib/utils";
-import { CoinStack } from "@duo-icons/react";
+
+interface ProductType {
+  productId: number;
+  title: string;
+  categories: string[];
+  image?: string;
+  price: string;
+}
 
 export const ProductSelectorCustomer = ({
   selected,
   setSelectedChange,
   children,
 }: {
-  selected: ProductSelectType[];
-  setSelectedChange: (value: ProductSelectType) => void;
+  selected: ProductType[];
+  setSelectedChange: (value: ProductType) => void;
   children: React.ReactNode;
 }) => {
   const [search, setSearch] = React.useState("");
-
   const [filters, setFilters] = React.useState({
     q: "",
     page: "1",
@@ -62,12 +68,11 @@ export const ProductSelectorCustomer = ({
     const products = data?.pages.flatMap((page) => page.data) ?? [];
     return (
       products?.map((t) => ({
-        id: String(t.id),
+        productId: t.id,
         title: t.title,
-        identifier: t.identifier,
         categories: t.categories,
         image: t.image,
-        basePrice: t.basePrice,
+        price: t.basePrice,
       })) ?? []
     );
   }, [data]);
@@ -109,12 +114,12 @@ export const ProductSelectorCustomer = ({
         <div className="no-scrollbar flex-1 space-y-1 overflow-y-auto">
           {options.map((item) => {
             const checked =
-              selected.findIndex((s) => String(s.id) === String(item.id)) >= 0;
+              selected.findIndex((s) => s.productId === item.productId) >= 0;
             item.image = item.image ?? getInitialsAvatar(item.image!);
             return (
               <FieldLabel
-                key={item.id}
-                htmlFor={item.id}
+                key={item.productId}
+                htmlFor={String(item.productId)}
                 className="cursor-pointer rounded-xl! bg-secondary/20"
               >
                 <Field orientation="horizontal">
@@ -143,17 +148,22 @@ export const ProductSelectorCustomer = ({
                         </div>
                       </div>
                       <div className="w-28 self-center text-right font-semibold text-primary">
-                        {formatUSD(item.basePrice)}
+                        {formatUSD(item.price)}
                       </div>
                     </div>
                   </FieldContent>
 
                   <Checkbox
                     className="self-center"
-                    id={item.id}
+                    id={String(item.productId)}
                     checked={checked}
-                    // @ts-expect-error
-                    onCheckedChange={() => setSelectedChange(item)}
+                    onCheckedChange={() =>
+                      setSelectedChange({
+                        ...item,
+                        image: item.image!,
+                        categories: item.categories as string[],
+                      })
+                    }
                   />
                 </Field>
               </FieldLabel>

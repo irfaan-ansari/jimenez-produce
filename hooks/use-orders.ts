@@ -1,6 +1,6 @@
 import { Pagination } from "@/lib/types";
 import { fetcher } from "@/lib/helper/fetcher";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import {
   OrderGuideItemSelectType,
   OrderGuideSelectType,
@@ -29,11 +29,34 @@ interface OrderGuideResponse {
   };
 }
 
-export const useOrderGuides = () => {
+export const useOrderGuides = (enabled = true) => {
   return useQuery({
     queryKey: ["order-guides"],
     queryFn: () => {
       return fetcher<OrderGuidesResponse>(`/api/customer/order-guides`);
+    },
+    staleTime: 1000 * 60 * 5,
+    enabled,
+  });
+};
+
+export const useInfiniteOrderGuides = (query: string) => {
+  return useInfiniteQuery({
+    queryKey: ["order-guides", query],
+    initialPageParam: 1,
+    queryFn: ({ pageParam }) => {
+      const params = new URLSearchParams(query);
+
+      params.set("page", String(pageParam));
+
+      return fetcher<OrderGuidesResponse>(
+        `/api/customer/order-guides?${params.toString()}`,
+      );
+    },
+    getNextPageParam: ({ pagination }) => {
+      const { page, totalPages } = pagination;
+
+      return page < totalPages ? Number(page) + 1 : undefined;
     },
     staleTime: 1000 * 60 * 5,
   });

@@ -46,95 +46,90 @@ export const PageClient = () => {
 
   // data
   return (
-    <>
-      <div className="flex-1 space-y-3">
-        <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 lg:gap-6 xl:grid-cols-4 2xl:grid-cols-6">
-          {(data as AdminProductResponse)?.data?.map((product, i) => {
-            const map = STATUS_MAP[product.status as keyof typeof STATUS_MAP];
-            const defaultImage = getInitialsAvatar(product.title);
-            return (
-              <Card
-                size="sm"
-                key={i}
-                className="relative flex flex-col h-full rounded-xl pt-0! transition ease-out hover:ring-2 hover:ring-offset-1 hover:ring-offset-background"
-                style={{ "--color": map.color } as React.CSSProperties}
-              >
-                {/* actions */}
+    <div className="flex-1 space-y-3">
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 lg:gap-6 xl:grid-cols-4 2xl:grid-cols-6">
+        {(data as AdminProductResponse)?.data?.map((product, i) => {
+          const map = STATUS_MAP[product.status as keyof typeof STATUS_MAP];
+          const defaultImage = getInitialsAvatar(product.title);
+          return (
+            <Card
+              size="sm"
+              key={i}
+              className="relative flex flex-col h-full rounded-xl pt-0! transition ease-out hover:ring-2 hover:ring-offset-1 hover:ring-offset-background"
+              style={{ "--color": map.color } as React.CSSProperties}
+            >
+              {/* actions */}
 
-                <ProductDialog product={product}>
-                  <Button
-                    variant="outline"
-                    size="icon-xs"
-                    className="absolute top-2 right-2 z-2 rounded-sm shadow-sm h-6!"
-                  >
-                    <SquarePen />
-                  </Button>
-                </ProductDialog>
+              <ProductDialog product={product}>
+                <Button
+                  variant="outline"
+                  size="icon-xs"
+                  className="absolute top-2 right-2 z-2 rounded-sm shadow-sm h-6!"
+                >
+                  <SquarePen />
+                </Button>
+              </ProductDialog>
 
-                <div className="absolute top-2 left-2 z-2 flex flex-col gap-1">
-                  {/* status */}
-                  <Badge className="h-6 rounded-md  backdrop-blur-2xl bg-background/80 shadow-sm border border-(--color)/20 text-sm text-(--color)">
-                    <map.icon className="size-3.5" />
-                    {map.label}
-                  </Badge>
-                </div>
+              <div className="absolute top-2 left-2 z-2 flex flex-col gap-1">
+                {/* status */}
+                <Badge className="h-6 rounded-md  backdrop-blur-2xl bg-background/80 shadow-sm border border-(--color)/20 text-sm text-(--color)">
+                  <map.icon className="size-3.5" />
+                  {map.label}
+                </Badge>
+              </div>
 
-                <div className="relative aspect-[1.6/1] overflow-hidden rounded-xl bg-secondary">
-                  {product.image ? (
-                    <img
-                      width={100}
-                      height={100}
-                      src={product.image!}
-                      alt={product.title}
-                      loading={i <= 10 ? "eager" : "lazy"}
-                      className="relative z-1 aspect-[1.6/1] w-full h-auto rounded-lg object-contain transition ease-out"
-                    />
-                  ) : (
-                    <img
-                      width={100}
-                      height={100}
-                      src={defaultImage}
-                      alt={product.title}
-                      loading={i <= 10 ? "eager" : "lazy"}
-                      className="relative z-1 w-full rounded-lg object-cover transition ease-out"
-                    />
+              <div className="relative aspect-[1.6/1] overflow-hidden rounded-xl bg-secondary">
+                {product.image ? (
+                  <img
+                    width={100}
+                    height={100}
+                    src={product.image!}
+                    alt={product.title}
+                    loading={i <= 10 ? "eager" : "lazy"}
+                    className="relative z-1 aspect-[1.6/1] w-full h-auto rounded-lg object-contain transition ease-out"
+                  />
+                ) : (
+                  <img
+                    width={100}
+                    height={100}
+                    src={defaultImage}
+                    alt={product.title}
+                    loading={i <= 10 ? "eager" : "lazy"}
+                    className="relative z-1 w-full rounded-lg object-cover transition ease-out"
+                  />
+                )}
+              </div>
+              <CardContent className="flex flex-col flex-1 space-y-2">
+                <div className="flex gap-2 items-center">
+                  {/* tax status */}
+                  {product.isTaxable && (
+                    <Badge className="h-5 rounded-sm">Taxable</Badge>
                   )}
+                  {/* item code */}
+                  <Badge className="rounded-sm h-5">{product.identifier}</Badge>
                 </div>
-                <CardContent className="flex flex-col flex-1 space-y-2">
-                  <div className="flex gap-2 items-center">
-                    {/* tax status */}
-                    {product.isTaxable && (
-                      <Badge className="h-5 rounded-sm">Taxable</Badge>
-                    )}
-                    {/* item code */}
-                    <Badge className="rounded-sm h-5">
-                      {product.identifier}
-                    </Badge>
-                  </div>
-                  <div className="flex flex-wrap gap-1">
-                    {product.categories?.map((cat) => (
-                      <span
-                        key={cat}
-                        className="text-xs uppercase text-muted-foreground font-medium not-last:pr-2 not-last:border-r-2 leading-tight"
-                      >
-                        {cat}
-                      </span>
-                    ))}
-                  </div>
-                  <CardTitle className="font-semibold mt-auto">
-                    {product.title}
-                  </CardTitle>
+                <div className="flex flex-wrap gap-1">
+                  {product.categories?.map((cat) => (
+                    <span
+                      key={cat}
+                      className="text-xs uppercase text-muted-foreground font-medium not-last:pr-2 not-last:border-r-2 leading-tight"
+                    >
+                      {cat}
+                    </span>
+                  ))}
+                </div>
+                <CardTitle className="font-semibold mt-auto">
+                  {product.title}
+                </CardTitle>
 
-                  <span className="text-base font-semibold text-primary">
-                    {formatUSD(product.basePrice)}:
-                  </span>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
+                <span className="text-base font-semibold text-primary">
+                  {formatUSD(product.basePrice)}:
+                </span>
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
-
       {/* pagination */}
       {!isPending && !isError && (
         <Pagination
@@ -147,6 +142,6 @@ export const PageClient = () => {
           }
         />
       )}
-    </>
+    </div>
   );
 };

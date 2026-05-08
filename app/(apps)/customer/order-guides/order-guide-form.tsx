@@ -4,6 +4,7 @@ import z from "zod";
 import { toast } from "sonner";
 import Link from "next/link";
 import {
+  AlertCircleIcon,
   ChevronLeft,
   GripVerticalIcon,
   LayoutGrid,
@@ -15,6 +16,7 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardTitle,
 } from "@/components/ui/card";
 import {
@@ -27,57 +29,68 @@ import { Button } from "@/components/ui/button";
 import { useStore } from "@tanstack/react-form";
 import { useAppForm } from "@/hooks/form-context";
 import { FieldGroup } from "@/components/ui/field";
-import { Separator } from "@/components/ui/separator";
 import { createOrderGuide } from "@/server/order-guide";
 import { formatUSD, getAvatarFallback } from "@/lib/utils";
 import { ProductSelectorCustomer } from "../../../../components/admin/product-selector-customer";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useRouter } from "next/navigation";
+import React from "react";
+import {
+  Alert,
+  AlertAction,
+  AlertDescription,
+  AlertTitle,
+} from "@/components/ui/alert";
+import { useQueryClient } from "@tanstack/react-query";
 
 const schema = z.object({
   name: z.string().min(1, "Name is required"),
   description: z.string(),
   items: z.array(
     z.object({
-      id: z.string(),
+      productId: z.number(),
       title: z.string(),
       categories: z.array(z.string()),
       image: z.string(),
-      basePrice: z.string(),
+      price: z.string(),
     }),
   ),
-  layout: z.string(),
 });
 
 export const OrderGuideForm = ({
   initialData,
 }: {
-  initialData?: z.infer<typeof schema> & { id: number | undefined };
+  initialData?: z.infer<typeof schema> & {
+    id: number | undefined;
+    teamId: string | null;
+  };
 }) => {
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  const [layout, setLayout] = React.useState("list");
   const {
     id,
+    teamId,
     name = "",
     description = "",
     items = [],
-    layout: itemLayout = "list",
   } = initialData || {};
-  const router = useRouter();
+
   const form = useAppForm({
     defaultValues: {
       name,
       description,
       items,
-      layout: itemLayout,
     },
     validators: {
       onBlur: schema,
     },
     onSubmit: async ({ value }) => {
       const toastId = toast.loading("Please wait...");
-      const { items, layout, ...rest } = value;
+      const { items, ...rest } = value;
 
-      const productIds = items.map((item) => Number(item.id));
+      const productIds = items.map((item) => Number(item.productId));
 
       if (id) {
         // const { success } = await updateOrderGuide({ ...rest, productIds });
@@ -92,18 +105,21 @@ export const OrderGuideForm = ({
 
         if (success) {
           router.push(`/customer/order-guides/${data.id}`);
-          toast.success("Order guide created successfully", { id: toastId });
+          toast.success("Order guide saved successfully", { id: toastId });
         } else {
           toast.error(error.message, { id: toastId });
         }
       }
+
+      queryClient.invalidateQueries({
+        queryKey: ["order-guides"],
+      });
     },
   });
 
   const {
     name: valueName,
     description: valueDescription,
-    layout,
     items: valueItems,
   } = useStore(form.store, ({ values }) => values);
 
@@ -132,6 +148,15 @@ export const OrderGuideForm = ({
               <h1 className="text-lg font-semibold">
                 {valueName || "New Order Guide"}
               </h1>
+              {/* if read only */}
+              {id && !teamId && (
+                <Badge
+                  variant="secondary"
+                  className="bg-amber-100 border border-amber-200"
+                >
+                  Suggested
+                </Badge>
+              )}
             </div>
             <form.Subscribe
               selector={({ isSubmitting, canSubmit, isDirty }) => ({
@@ -144,7 +169,9 @@ export const OrderGuideForm = ({
                   type="submit"
                   size="xl"
                   className="w-32 rounded-lg"
-                  disabled={isSubmitting || !canSubmit || !isDirty}
+                  disabled={
+                    isSubmitting || !canSubmit || !isDirty || !!(id && !teamId)
+                  }
                 >
                   {isSubmitting ? <Loader className="animate-spin" /> : "Save"}
                 </Button>
@@ -186,17 +213,18 @@ export const OrderGuideForm = ({
                         <p className="text-lg font-semibold">Items</p>
                         <div className="flex gap-4">
                           <ProductSelectorCustomer
-                            // @ts-expect-error
-                            selected={form.getFieldValue("items")}
+                            selected={field.state.value}
                             setSelectedChange={(value) => {
                               const index = items.findIndex(
-                                (item) => String(item.id) === String(value.id),
+                                (item) => item.productId === value.productId,
                               );
                               if (index >= 0) {
                                 field.removeValue(index);
                               } else {
-                                // @ts-expect-error
-                                field.pushValue(value);
+                                field.pushValue({
+                                  ...value,
+                                  image: value.image ?? "",
+                                });
                               }
                             }}
                           >
@@ -211,30 +239,21 @@ export const OrderGuideForm = ({
                             </Button>
                           </ProductSelectorCustomer>
 
-                          <form.Field
-                            name="layout"
-                            children={(field) => (
-                              <ToggleGroup
-                                type="single"
-                                variant="outline"
-                                value={field.state.value}
-                                onValueChange={(v) => field.setValue(v)}
-                              >
-                                <ToggleGroupItem
-                                  value="list"
-                                  className="size-11"
-                                >
-                                  <TextAlignJustify />
-                                </ToggleGroupItem>
-                                <ToggleGroupItem
-                                  value="grid"
-                                  className="size-11"
-                                >
-                                  <LayoutGrid />
-                                </ToggleGroupItem>
-                              </ToggleGroup>
-                            )}
-                          />
+                          <ToggleGroup
+                            type="single"
+                            variant="outline"
+                            value={layout}
+                            onValueChange={(v) => {
+                              if (v) setLayout(v);
+                            }}
+                          >
+                            <ToggleGroupItem value="list" className="size-11">
+                              <TextAlignJustify />
+                            </ToggleGroupItem>
+                            <ToggleGroupItem value="grid" className="size-11">
+                              <LayoutGrid />
+                            </ToggleGroupItem>
+                          </ToggleGroup>
                         </div>
                       </div>
                     );
@@ -244,17 +263,21 @@ export const OrderGuideForm = ({
                   strategy={layout === "grid" ? "grid" : "vertical"}
                   value={valueItems}
                   onValueChange={(v) => {
-                    form.setFieldValue("items", v);
+                    const reordered = v.map((i) => ({
+                      ...i,
+                      productId: Number(i.productId),
+                    }));
+                    form.setFieldValue("items", reordered);
                   }}
-                  getItemValue={(item) => item.id}
+                  getItemValue={(item) => String(item.productId)}
                   className="group space-y-1"
                   data-layout={layout}
                 >
                   {valueItems?.map((item, index) => {
                     return (
                       <SortableItem
-                        key={item.id}
-                        value={String(item.id)}
+                        key={item.productId}
+                        value={String(item.productId)}
                         className="flex flex-1 items-center gap-3 rounded-lg border bg-background p-2"
                       >
                         <SortableItemHandle>
@@ -283,7 +306,7 @@ export const OrderGuideForm = ({
                           </div>
                         </div>
                         <div className="w-28 self-center text-right font-semibold text-primary">
-                          {formatUSD(item.basePrice)}
+                          {formatUSD(item.price)}
                         </div>
                         <Button
                           size="xs"
@@ -304,19 +327,55 @@ export const OrderGuideForm = ({
           </Card>
         </form>
       </div>
-      <div className="col-span-2 hidden flex-col lg:flex">
-        <Card>
-          <CardContent className="relative flex flex-col gap-3">
-            <CardTitle className="text-base font-semibold">
+      <div className="col-span-2 space-y-6">
+        <Card className="hidden lg:flex flex-col gap-6">
+          <CardContent className="space-y-3 flex-1">
+            <CardTitle className="text-lg font-semibold">
               {valueName || "New Order Guide"}
             </CardTitle>
+
+            {/* {!item.teamId && (
+              <Badge
+                variant="secondary"
+                className="h-6 bg-amber-100 border border-amber-200"
+              >
+                Suggested
+              </Badge>
+            )} */}
             <CardDescription>
               {valueDescription || "No description"}
             </CardDescription>
-            <Separator />
-            <span className="font-medium">{valueItems.length} Items</span>
           </CardContent>
+
+          <CardFooter className="border-t font-medium">
+            {valueItems.length} Items
+          </CardFooter>
         </Card>
+        <div className="bg-background">
+          {id && teamId && (
+            <Alert
+              variant="destructive"
+              className="border-destructive bg-destructive/2"
+            >
+              <AlertCircleIcon />
+              <AlertTitle>Delete this order guide</AlertTitle>
+              <AlertDescription className="text-muted-foreground!">
+                This action cannot be undone. This will permanently delete the
+                order guide.
+              </AlertDescription>
+              <AlertAction>
+                <Button
+                  size="sm"
+                  type="button"
+                  variant="destructive"
+                  // onClick={handleDeleteProduct}
+                >
+                  Delete
+                </Button>
+              </AlertAction>
+            </Alert>
+          )}
+        </div>
       </div>
     </div>
   );

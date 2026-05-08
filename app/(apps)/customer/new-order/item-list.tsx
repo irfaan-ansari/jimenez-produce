@@ -96,6 +96,8 @@ export const ItemList = withForm({
       }
     }, []);
 
+    console.log("products: ", products);
+
     return (
       <div
         data-layout={layout}
@@ -218,6 +220,7 @@ const ProductItem = withForm({
 
     return (
       <div className="relative">
+        {/* {JSON.stringify(product.orderGuideItems)} */}
         <SaveToGuideDialog>
           <Button
             size="icon-sm"
@@ -321,7 +324,7 @@ const LastPurchase = ({
   product: CustomerProductType;
   className?: string;
 }) => {
-  if (!product.lastPurchased) return;
+  if (!product.lastPurchased?.id) return;
   return (
     <Badge
       className={cn(

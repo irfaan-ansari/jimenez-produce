@@ -645,7 +645,9 @@ export const lineItem = pgTable(
     organizationId: text("organization_id"),
     teamId: text("team_id"),
     orderId: integer("order_id"),
-    productId: integer("product_id"),
+    productId: integer("product_id").references(() => product.id, {
+      onDelete: "set null",
+    }),
     title: text("title"),
     image: text("image"),
     type: text("type"),
