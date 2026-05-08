@@ -37,7 +37,7 @@ interface ProductType {
   title: string;
   categories: string[];
   image?: string;
-  price: string;
+  price: string | number;
 }
 
 export const ProductSelectorCustomer = ({

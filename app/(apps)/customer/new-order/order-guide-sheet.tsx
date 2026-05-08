@@ -21,11 +21,7 @@ import { useRouterStuff } from "@/hooks/use-router-stuff";
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
 import { OrderGuide, useInfiniteOrderGuides } from "@/hooks/use-orders";
 
-export const OrderGuideSheet = ({
-  children,
-}: {
-  children?: React.ReactNode;
-}) => {
+export const OrderGuideSheet = () => {
   const [open, setOpen] = React.useState(false);
 
   const {
@@ -55,12 +51,12 @@ export const OrderGuideSheet = ({
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
-      <ButtonGroup>
+      <ButtonGroup className="[&>[data-slot]:not(:has(~[data-slot]))]:rounded-r-xl!">
         <SheetTrigger asChild>
           <Button
             type="button"
             size="xl"
-            className="rounded-xl bg-sidebar-accent hover:bg-sidebar-accent/80"
+            className="rounded-xl border-2 border-sidebar-accent bg-sidebar-accent hover:bg-sidebar-accent/80"
           >
             <Star className="fill-primary-foreground" /> Order Guide
           </Button>
@@ -69,7 +65,8 @@ export const OrderGuideSheet = ({
         <Button
           size="icon-xl"
           type="button"
-          className="bg-sidebar-accent hover:bg-sidebar-accent/80"
+          variant="outline"
+          className="border-sidebar-accent border-2"
           onClick={() => {
             if (searchParamsObj.orderGuideId) {
               queryParams({ del: "orderGuideId" });
@@ -142,15 +139,15 @@ const GuideItem = ({
   const { searchParamsObj, queryParams } = useRouterStuff();
   const isActive = searchParamsObj.orderGuideId === String(item.id);
   return (
-    <div key={item.id} className="rounded-2xl border bg-muted/50 p-4 relative">
+    <div key={item.id} className="relative rounded-2xl border bg-muted/50 p-4">
       {!item.teamId && (
-        <Badge className="absolute right-4 top-4 bg-amber-100 text-foreground border-amber-200">
+        <Badge className="absolute top-4 right-4 border-amber-200 bg-amber-100 text-foreground">
           Suggested
         </Badge>
       )}
-      <p className="font-semibold mb-2 text-base">{item.name}</p>
-      <p className="text-muted-foreground text-sm">{item.description}</p>
-      <div className="flex items-center gap-2 mt-3">
+      <p className="mb-2 text-base font-semibold">{item.name}</p>
+      <p className="text-sm text-muted-foreground">{item.description}</p>
+      <div className="mt-3 flex items-center gap-2">
         <div className="flex-1">
           <span className="font-medium">{item.itemCount} items</span>
         </div>

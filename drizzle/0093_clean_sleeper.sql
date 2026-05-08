@@ -1,0 +1,1 @@
+ALTER TABLE "order_guide" DROP COLUMN "scope";

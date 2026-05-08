@@ -29,14 +29,13 @@ import z from "zod";
 const schema = z.object({
   name: z.string().min(1, "Name is required"),
   description: z.string(),
-  visibility: z.string(),
   items: z.array(
     z.object({
-      id: z.string(),
+      productId: z.number(),
       title: z.string(),
       categories: z.array(z.string()),
-      image: z.string(),
-      basePrice: z.string(),
+      image: z.any(),
+      price: z.string().or(z.number()),
     }),
   ),
 });
@@ -52,7 +51,6 @@ export const OrderGuideDialog = ({
     defaultValues: {
       name: "",
       description: "",
-      visibility: "shared",
       items: [] as z.infer<typeof schema>["items"],
     },
     validators: {
@@ -101,26 +99,6 @@ export const OrderGuideDialog = ({
                 />
               )}
             />
-            <form.AppField
-              name="visibility"
-              children={(field) => (
-                <field.RadioField
-                  options={[
-                    {
-                      value: "personal",
-                      label: "Private",
-                      description: "Only visible to me",
-                    },
-                    {
-                      value: "shared",
-                      label: "Shared",
-                      description: "Visible to all team members",
-                    },
-                  ]}
-                  label="Visibility"
-                />
-              )}
-            />
 
             <form.Field
               name="items"
@@ -129,19 +107,19 @@ export const OrderGuideDialog = ({
                 return (
                   <div className="space-y-4">
                     <ProductSelectorCustomer
-                      // @ts-expect-error
                       selected={field.state.value}
                       setSelectedChange={(value) => {
                         const current = field.state.value || [];
-
                         const index = current.findIndex(
-                          (item) => String(item.id) === String(value.id),
+                          (item) => item.productId === value.productId,
                         );
                         if (index >= 0) {
                           field.removeValue(index);
                         } else {
-                          // @ts-expect-error
-                          field.pushValue(value);
+                          field.pushValue({
+                            ...value,
+                            image: value.image ?? "",
+                          });
                         }
                       }}
                     >
@@ -166,14 +144,14 @@ export const OrderGuideDialog = ({
                               form.setFieldValue("items", v);
                               console.log(v);
                             }}
-                            getItemValue={(item) => item.id}
+                            getItemValue={(item) => String(item.productId)}
                             className="divide-y"
                           >
                             {items?.map((item, index) => {
                               return (
                                 <SortableItem
                                   key={index}
-                                  value={item.id}
+                                  value={String(item.productId)}
                                   className="flex flex-1 items-center gap-3 bg-background py-2 first:pt-0 last:pb-0"
                                 >
                                   <SortableItemHandle>
@@ -206,7 +184,7 @@ export const OrderGuideDialog = ({
                                     </div>
                                   </div>
                                   <div className="w-28 self-center text-right font-semibold text-primary">
-                                    {formatUSD(item.basePrice)}
+                                    {formatUSD(item.price)}
                                   </div>
                                   <Button
                                     size="xs"

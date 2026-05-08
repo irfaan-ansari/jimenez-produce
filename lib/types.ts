@@ -49,7 +49,8 @@ export type Pagination = {
 
 export type CustomerProductType = ProductSelectType & {
   lastPurchased: LineItemSelectType;
-  guide: { id: number; quantity: string | null } | null;
+  isGuide: boolean;
+  isSuggested: boolean;
 };
 
 export type AdminProductType = ProductSelectType;

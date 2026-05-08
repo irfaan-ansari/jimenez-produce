@@ -1,26 +1,23 @@
 import {
   eq,
   or,
-  and,
   ne,
+  and,
+  SQL,
   desc,
   ilike,
-  arrayContains,
   inArray,
-  SQL,
-  isNotNull,
+  arrayContains,
   countDistinct,
-  exists,
 } from "drizzle-orm";
 import {
-  lineItem,
+  product,
   orderGuide,
+  teamProduct,
+  priceLevelItem,
   orderGuideItem,
   orderGuideTarget,
-  priceLevelItem,
-  product,
   ProductSelectType,
-  teamProduct,
 } from "@/lib/db/schema";
 import { db } from "@/lib/db";
 import { getSession } from "@/server/auth";
@@ -38,6 +35,7 @@ export async function GET(req: NextRequest) {
 
     const { activeOrganizationId, activeTeamId } = session.session;
     const search = req.nextUrl.searchParams;
+
     const {
       page,
       limit,
@@ -100,11 +98,9 @@ export async function GET(req: NextRequest) {
       .where(
         or(
           eq(orderGuide.teamId, activeTeamId!),
-          eq(orderGuide.target, "all"),
           eq(orderGuideTarget.teamId, activeTeamId!),
         ),
-      )
-      .as("guideMeta");
+      );
 
     const products = await db.query.product.findMany({
       where: filters,
@@ -114,7 +110,11 @@ export async function GET(req: NextRequest) {
           orderBy: (li, { desc }) => [desc(li.createdAt)],
         },
         orderGuideItems: {
+          with: {
+            orderGuide: true,
+          },
           limit: 1,
+          orderBy: (ogi, { desc }) => [desc(ogi.position)],
           where: (ogi, { inArray }) => inArray(ogi.orderGuideId, guideMeta),
         },
       },
@@ -124,21 +124,23 @@ export async function GET(req: NextRequest) {
     });
 
     const transformedProducts = products.map((product) => {
-      const { lineItems, ...rest } = product;
+      const { lineItems, orderGuideItems, ...rest } = product;
+      const [lineItem] = lineItems;
+      const [orderGuideItem] = orderGuideItems;
+      const teamId = orderGuideItem?.orderGuide?.teamId;
+
       return {
         ...rest,
         lastPurchased: {
-          id: lineItems?.[0]?.id,
-          orderId: lineItems?.[0]?.orderId,
-          quantity: lineItems?.[0]?.quantity,
-          createdAt: lineItems?.[0]?.createdAt,
+          id: lineItem?.id,
+          orderId: lineItem?.orderId,
+          quantity: lineItem?.quantity,
+          createdAt: lineItem?.createdAt,
         },
+        isSuggested: !teamId,
+        isGuide: !!teamId,
       };
     });
-    console.log(
-      transformedProducts,
-      transformedProducts.map((p) => p.id),
-    );
 
     // get total count for pagination
     const [{ total }] = await db

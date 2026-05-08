@@ -1,0 +1,1 @@
+ALTER TABLE "order_guide" ADD COLUMN "scope" text DEFAULT 'team' NOT NULL;

@@ -36,7 +36,7 @@ import { useRouterStuff } from "@/hooks/use-router-stuff";
 import { PopoverXDrawer } from "@/components/popover-x-drawer";
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { SaveToGuideDialog } from "../order-guides/save-to-guide-dialog";
+import { AddToOrderGuideDialog } from "../order-guides/add-to-order-guide-dialog";
 
 const LAYOUTS = [
   {
@@ -220,18 +220,23 @@ const ProductItem = withForm({
 
     return (
       <div className="relative">
-        {/* {JSON.stringify(product.orderGuideItems)} */}
-        <SaveToGuideDialog>
-          <Button
-            size="icon-sm"
-            type="button"
-            variant="outline"
-            onClick={(e) => e.stopPropagation()}
-            className="absolute top-1 right-1 z-1 hidden group-data-[layout=grid]/card:inline-flex"
-          >
-            <Star />
-          </Button>
-        </SaveToGuideDialog>
+        {product.isGuide ? (
+          <span className="absolute top-1  right-1 z-1 inline-flex size-6 items-center justify-center rounded-full bg-background shadow-sm *:size-4">
+            <Star className="fill-amber-400" />
+          </span>
+        ) : (
+          <AddToOrderGuideDialog>
+            <Button
+              size="icon-xs"
+              type="button"
+              variant="outline"
+              onClick={(e) => e.stopPropagation()}
+              className="absolute top-1 right-1 z-1 hidden size-6 rounded-full  group-data-[layout=grid]/card:inline-flex"
+            >
+              <Star className="size-3.5 fill-foreground" />
+            </Button>
+          </AddToOrderGuideDialog>
+        )}
         <div
           className={cn(
             `flex animate-in cursor-pointer items-center gap-4 rounded-xl border py-2 transition fade-in-50 select-none slide-in-from-bottom-10 group-data-[layout=grid]/card:h-full group-data-[layout=grid]/card:flex-col

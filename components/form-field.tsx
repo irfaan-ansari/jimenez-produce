@@ -112,6 +112,7 @@ const TextAreaField = ({
         onChange={(e) => field.handleChange(e.target.value)}
         aria-invalid={isInvalid}
         placeholder={placeholder}
+        className="min-h-24 resize-none"
       />
       {description && <FieldDescription>{description}</FieldDescription>}
       {isInvalid && <FieldError errors={field.state.meta.errors} />}

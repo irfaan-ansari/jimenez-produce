@@ -1,15 +1,14 @@
 "use server";
-import { handleAction } from "@/lib/helper/error-handler";
-import { getSession } from "./auth";
 import {
   orderGuide,
   OrderGuideInsertType,
   orderGuideItem,
-  OrderGuideItemInsertType,
 } from "@/lib/db/schema";
 import { db } from "@/lib/db";
+import { getSession } from "./auth";
+import { and, eq, inArray, sql } from "drizzle-orm";
+import { handleAction } from "@/lib/helper/error-handler";
 import { ERROR_MESSAGE } from "@/lib/helper/error-message";
-import { eq, inArray, sql } from "drizzle-orm";
 
 /**
  * Create order guide item
@@ -20,6 +19,7 @@ export const createOrderGuide = handleAction(
   async (
     payload: Partial<OrderGuideInsertType> & {
       productIds: number[] | string[];
+      teamIds?: number[] | string[];
     },
   ) => {
     const auth = await getSession();
@@ -30,13 +30,7 @@ export const createOrderGuide = handleAction(
 
     const isCustomer = role === "customer";
 
-    const {
-      productIds = [],
-      name = "",
-      description = "",
-
-      target = "",
-    } = payload;
+    const { productIds = [], name = "", description = "" } = payload;
 
     if (productIds.length <= 0)
       throw new Error("At least one product is required.");
@@ -46,7 +40,6 @@ export const createOrderGuide = handleAction(
       .values({
         name,
         description,
-        target: isCustomer ? "team" : target,
         organizationId: activeOrganizationId!,
         teamId: isCustomer ? activeTeamId : null,
         createdBy: userId,
@@ -71,6 +64,12 @@ export const createOrderGuide = handleAction(
   },
 );
 
+/**
+ * update order guide
+ * @param id - ID of order guide to be updated
+ * @param payload - payload for updating order guide
+ * @returns updated order guide
+ */
 export const updateOrderGuide = handleAction(
   async (
     id: number,
@@ -78,11 +77,32 @@ export const updateOrderGuide = handleAction(
       productIds: number[];
     },
   ) => {
-    const { productIds, ...rest } = payload;
+    const auth = await getSession();
+    if (!auth) throw new Error("Authentication required");
+    const { role, activeTeamId, activeOrganizationId } = auth.session;
 
-    const existingItems = await db.query.orderGuideItem.findMany({
-      where: eq(orderGuideItem.orderGuideId, id),
-    });
+    if (!activeOrganizationId) throw new Error(ERROR_MESSAGE.BAD_REQUEST);
+
+    const isCustomer = role === "customer";
+
+    const { productIds = [], name = "", description = "" } = payload;
+
+    if (productIds.length <= 0)
+      throw new Error("At least one product is required.");
+
+    const [existingOrderGuide, existingItems] = await Promise.all([
+      db.query.orderGuide.findFirst({
+        where: eq(orderGuide.id, id),
+      }),
+      db.query.orderGuideItem.findMany({
+        where: eq(orderGuideItem.orderGuideId, id),
+      }),
+    ]);
+
+    if (!existingOrderGuide) throw new Error("Resource not found.");
+
+    if (isCustomer && existingOrderGuide.teamId !== activeTeamId)
+      throw new Error("Not authorized for this action");
 
     const toDeleteIds = existingItems
       .filter((item) => !productIds.includes(item.productId))
@@ -99,10 +119,7 @@ export const updateOrderGuide = handleAction(
 
     // update guide
     const promises: Promise<unknown>[] = [
-      db
-        .update(orderGuide)
-        .set({ ...rest })
-        .returning(),
+      db.update(orderGuide).set({ name, description }).returning(),
     ];
 
     // delete items
@@ -136,36 +153,82 @@ export const updateOrderGuide = handleAction(
     return { updatedGuide, items: insertedItems };
   },
 );
+
+/**
+ * add order guide item
+ * @param orderGuideId - ID of order guide to add item to
+ * @param productId - ID of product to add
+ * @returns added order guide item
+ */
+export const addOrderGuideItem = handleAction(
+  async ({
+    orderGuideId,
+    productId,
+  }: {
+    orderGuideId: number;
+    productId: number;
+  }) => {
+    const auth = await getSession();
+    if (!auth) throw new Error("Authentication required");
+    const { role, activeTeamId, activeOrganizationId } = auth.session;
+
+    if (!activeOrganizationId || !activeTeamId)
+      throw new Error(ERROR_MESSAGE.BAD_REQUEST);
+
+    const isCustomer = role === "customer";
+
+    const existing = await db.query.orderGuide.findFirst({
+      where: and(
+        eq(orderGuide.id, orderGuideId),
+        eq(orderGuide.teamId, activeTeamId),
+      ),
+    });
+
+    if (!existing) throw new Error("Resource not found.");
+
+    if (isCustomer && existing.teamId !== activeTeamId)
+      throw new Error("Not authorized for this action");
+
+    const [response] = await db
+      .insert(orderGuideItem)
+      .values({
+        productId,
+        orderGuideId,
+        quantity: "1",
+      })
+      .returning();
+
+    return response;
+  },
+);
+
 /**
  * Delete order guide item
  * @param id - ID of order guide item to be deleted
  * @returns ID of the deleted order guide item
  */
-export const deleteOrderGuideItem = handleAction(async (id: number) => {
-  const session = await getSession();
+export const deleteOrderGuide = handleAction(async (id: number) => {
+  const auth = await getSession();
+  if (!auth) throw new Error("Authentication required");
+  const { role, activeTeamId, activeOrganizationId } = auth.session;
 
-  if (!session) throw new Error("Authentication required");
+  if (!activeOrganizationId) throw new Error(ERROR_MESSAGE.BAD_REQUEST);
 
-  const { activeTeamId } = session.session;
+  const isCustomer = role === "customer";
 
-  if (!activeTeamId || session.user.accountType !== "customer")
-    throw new Error("Not authorized for this action.");
+  const existing = await db.query.orderGuide.findFirst({
+    where: eq(orderGuide.id, id),
+  });
 
-  // const existing = await db.query.orderGuideItem.findFirst({
-  //   where: and(
-  //     eq(orderGuideItem.id, id),
-  //     eq(orderGuideItem.teamId, activeTeamId),
-  //   ),
-  // });
+  if (!existing) throw new Error("Resource not found.");
 
-  // if (!existing) throw new Error("Item not found in your order guide.");
+  if (isCustomer && existing.teamId !== activeTeamId)
+    throw new Error("Not authorized for this action");
 
-  // const [res] = await db
-  //   .delete(orderGuideItem)
-  //   .where(eq(orderGuideItem.id, id))
-  //   .returning();
+  const [res] = await db
+    .delete(orderGuideItem)
+    .where(eq(orderGuideItem.id, id))
+    .returning();
 
-  // return res;
-
-  return null;
+  return res;
 });

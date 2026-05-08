@@ -631,6 +631,34 @@
       "when": 1778103283224,
       "tag": "0089_thick_cobalt_man",
       "breakpoints": true
+    },
+    {
+      "idx": 90,
+      "version": "7",
+      "when": 1778232929725,
+      "tag": "0090_tearful_steel_serpent",
+      "breakpoints": true
+    },
+    {
+      "idx": 91,
+      "version": "7",
+      "when": 1778236164735,
+      "tag": "0091_huge_cargill",
+      "breakpoints": true
+    },
+    {
+      "idx": 92,
+      "version": "7",
+      "when": 1778238945541,
+      "tag": "0092_wakeful_genesis",
+      "breakpoints": true
+    },
+    {
+      "idx": 93,
+      "version": "7",
+      "when": 1778263434414,
+      "tag": "0093_clean_sleeper",
+      "breakpoints": true
     }
   ]
 }

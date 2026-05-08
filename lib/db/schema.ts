@@ -512,11 +512,9 @@ export const orderGuide = pgTable(
     }),
     name: text("name").notNull(),
     description: text("description"),
-    target: text("target") /** all/team */,
     createdBy: text("created_by").references(() => user.id, {
       onDelete: "set null",
     }),
-    position: integer("position").notNull().default(0),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at")
       .defaultNow()
@@ -526,6 +524,33 @@ export const orderGuide = pgTable(
   (table) => [
     index("order_guides_team_idx").on(table.teamId),
     index("order_guides_organization_id_idx").on(table.organizationId),
+  ],
+);
+
+/* -----------------------------
+   order guide targets schema
+----------------------------- */
+export const orderGuideTarget = pgTable(
+  "order_guide_target",
+  {
+    id: serial("id").primaryKey(),
+    orderGuideId: integer("order_guide_id").references(() => orderGuide.id, {
+      onDelete: "cascade",
+    }),
+    teamId: text("team_id")
+      .notNull()
+      .references(() => team.id, {
+        onDelete: "cascade",
+      }),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => [
+    index("order_guide_targets_guide_idx").on(table.orderGuideId),
+    index("order_guide_targets_team_idx").on(table.teamId),
+    unique("order_guide_targets_guide_team_unique").on(
+      table.orderGuideId,
+      table.teamId,
+    ),
   ],
 );
 
@@ -561,30 +586,6 @@ export const orderGuideItem = pgTable(
     ),
   ],
 );
-
-/* -----------------------------
-   order guide targets schema
------------------------------ */
-export const orderGuideTarget = pgTable(
-  "order_guide_target",
-  {
-    id: serial("id").primaryKey(),
-    orderGuideId: integer("order_guide_id").references(() => orderGuide.id, {
-      onDelete: "cascade",
-    }),
-    teamId: text("team_id"), // target whole account
-    createdAt: timestamp("created_at").defaultNow().notNull(),
-  },
-  (table) => [
-    index("order_guide_targets_guide_idx").on(table.orderGuideId),
-    index("order_guide_targets_team_idx").on(table.teamId),
-    unique("order_guide_targets_guide_team_unique").on(
-      table.orderGuideId,
-      table.teamId,
-    ),
-  ],
-);
-
 /* -----------------------------
    order schema
 ----------------------------- */

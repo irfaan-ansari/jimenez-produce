@@ -1,7 +1,6 @@
 import {
   eq,
   and,
-  exists,
   or,
   desc,
   count,
@@ -20,7 +19,7 @@ export const GET = async (req: NextRequest) => {
     if (!auth) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
-    const { role, activeTeamId, activeOrganizationId, userId } = auth.session;
+    const { role, activeTeamId, activeOrganizationId } = auth.session;
 
     if (role !== "customer")
       return NextResponse.json(
@@ -37,18 +36,19 @@ export const GET = async (req: NextRequest) => {
     const searchParams = req.nextUrl.searchParams;
     const query = Object.fromEntries(searchParams.entries());
 
-    const { page = 1, limit = 24, q, status } = query;
+    const { page = 1, limit = 24, q } = query;
     const offset = (Number(page) - 1) * Number(limit);
 
     const filters = and(
       eq(orderGuide.organizationId, activeOrganizationId),
       and(
-        or(
-          eq(orderGuide.target, "all"),
-          eq(orderGuide.teamId, activeTeamId),
-          isNotNull(orderGuideTarget.id),
-        ),
-        q ? ilike(orderGuide.name, `%${q}%`) : undefined,
+        or(eq(orderGuide.teamId, activeTeamId), isNotNull(orderGuideTarget.id)),
+        q
+          ? or(
+              ilike(orderGuide.name, `%${q}%`),
+              ilike(orderGuide.description, `%${q}%`),
+            )
+          : undefined,
       ),
     );
 
@@ -86,7 +86,19 @@ export const GET = async (req: NextRequest) => {
       .orderBy(desc(orderGuide.createdAt));
 
     //   total
-    const total = await db.$count(orderGuide, filters);
+    const [{ count: total }] = await db
+      .select({
+        count: count(orderGuide.id),
+      })
+      .from(orderGuide)
+      .leftJoin(
+        orderGuideTarget,
+        and(
+          eq(orderGuideTarget.orderGuideId, orderGuide.id),
+          eq(orderGuideTarget.teamId, activeTeamId),
+        ),
+      )
+      .where(filters);
 
     return NextResponse.json(
       {

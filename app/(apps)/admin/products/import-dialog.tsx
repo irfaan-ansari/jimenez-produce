@@ -1,9 +1,12 @@
 "use client";
-import { Button } from "@/components/ui/button";
+
+import React from "react";
+import * as XLSX from "xlsx";
+import { toast } from "sonner";
+
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -11,259 +14,336 @@ import {
 import {
   Field,
   FieldError,
-  FieldGroup,
   FieldLabel,
   FieldLegend,
 } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import React from "react";
-import * as XLSX from "xlsx";
-import { toast } from "sonner";
-import { Download, Loader } from "lucide-react";
-import { useAppForm } from "@/hooks/form-context";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { useStore } from "@tanstack/react-form";
 import { importProducts } from "@/server/product";
+import { useAppForm } from "@/hooks/form-context";
+import { Download, Loader, Trash2, Upload } from "lucide-react";
 
-const HEADER_MAP = {
-  identifier: "Code",
-  title: "Title",
-  unit: "Unit",
-  description: "Description",
-  categories: "Categories",
-  basePrice: "Price",
-  isTaxable: "Is Taxable",
-};
+const IMPORT_FIELDS = [
+  {
+    key: "identifier",
+    label: "Code",
+    required: true,
+  },
+  {
+    key: "basePrice",
+    label: "Price",
+    required: true,
+  },
+] as const;
 
-const HEADER = Object.entries(HEADER_MAP);
+type ImportFieldKey = (typeof IMPORT_FIELDS)[number]["key"];
 
-type SpecialFields = {
-  categories: string[];
-  isTaxable: boolean;
-};
+type Mapping = Record<ImportFieldKey, string>;
 
-type Item = {
-  [K in keyof typeof HEADER_MAP]: K extends keyof SpecialFields
-    ? SpecialFields[K]
-    : string;
-};
+const processFile = async (file: File | undefined) => {
+  if (!file) return null;
+  try {
+    const isCSV = file.name.toLowerCase().endsWith(".csv");
 
-const mapRow = (row: any[]): Item => {
-  const obj = {} as Item;
+    let workbook;
 
-  for (let i = 0; i < HEADER.length; i++) {
-    const key = HEADER[i][0] as keyof Item;
-    let val = row[i] ?? "";
+    if (isCSV) {
+      const text = await file.text();
 
-    if (key === "categories") {
-      val = String(val)
-        .split(",")
-        .map((c) => c.trim())
-        .filter(Boolean);
-    } else if (key === "isTaxable") {
-      val = String(val).toLowerCase() === "true";
+      workbook = XLSX.read(text, {
+        type: "string",
+      });
+    } else {
+      const data = await file.arrayBuffer();
+
+      workbook = XLSX.read(data);
     }
 
-    (obj as any)[key] = val;
-  }
+    const sheet = workbook.Sheets[workbook.SheetNames[0]];
 
-  return obj;
+    const json: string[][] = XLSX.utils.sheet_to_json(sheet, {
+      header: 1,
+      raw: false,
+    });
+
+    const headerIndex = json.findIndex((row) =>
+      row.some((cell) => cell !== undefined && cell !== ""),
+    );
+
+    if (headerIndex === -1) {
+      toast.error("No data found in file");
+
+      return;
+    }
+
+    const headers = (json[headerIndex] || []).map((header) =>
+      String(header).trim(),
+    );
+
+    const rows = json
+      .slice(headerIndex + 1)
+      .filter((row) => row.some((cell) => cell !== undefined && cell !== ""));
+
+    const autoMapping: Partial<Mapping> = {};
+
+    IMPORT_FIELDS.forEach((field) => {
+      const matched = headers.find(
+        (header) =>
+          header.toLowerCase().trim() === field.label.toLowerCase().trim(),
+      );
+
+      if (matched) {
+        autoMapping[field.key] = matched;
+      }
+    });
+    return { headers, rows, autoMapping };
+  } catch {
+    toast.error("Please upload a valid CSV or Excel file.");
+    return null;
+  }
 };
 
 export const ImportDialog = ({ children }: { children: React.ReactNode }) => {
   const [open, setOpen] = React.useState(false);
+
   const form = useAppForm({
     defaultValues: {
-      file: undefined as any,
+      file: undefined as File | undefined,
       rows: [] as string[][],
-      loading: false,
+      headers: [] as string[],
+      mapping: {} as Partial<Mapping>,
     },
+
     validators: {
       onSubmit: ({ value }) => {
-        if (value.rows.length <= 0)
-          return {
-            fields: {
-              file: { message: "Upload a file" },
-            },
-          };
-
+        if (value.rows.length <= 0) {
+          toast.error("Upload a file");
+          return true;
+        }
+        for (const field of IMPORT_FIELDS) {
+          if (field.required && !value.mapping[field.key]) {
+            toast.error(`Please map ${field.label}`);
+            return true;
+          }
+        }
         return null;
       },
     },
+
     onSubmit: async ({ value }) => {
-      const items: Item[] = value.rows.map(mapRow);
-      const { error } = await importProducts(items);
+      const items = value.rows.map((row) => {
+        const rowObject = Object.fromEntries(
+          value.headers.map((header, index) => [header, row[index]]),
+        );
+
+        return {
+          identifier: rowObject[value.mapping.identifier as string],
+          basePrice: Number(rowObject[value.mapping.basePrice as string]),
+        };
+      });
+
       const toastId = toast.loading("Please wait...");
 
+      const { error } = await importProducts(items as any);
+
       if (error) {
-        toast.error(error?.message, { id: toastId });
+        toast.error(error.message, {
+          id: toastId,
+        });
       } else {
-        toast.success("Products imported successfully", { id: toastId });
+        toast.success("Price updated successfully.", {
+          id: toastId,
+        });
         setOpen(false);
         form.reset();
       }
     },
   });
 
-  //   handle file upload
-  const hanldeFileChange = async (file: File | undefined) => {
-    if (!file) return;
-    form.setFieldValue("loading", true);
-    const isCSV = file.name.toLowerCase().endsWith(".csv");
-
-    try {
-      let workbook;
-
-      if (isCSV) {
-        const text = await file.text();
-        workbook = XLSX.read(text, { type: "string" });
-      } else {
-        const data = await file.arrayBuffer();
-        workbook = XLSX.read(data);
-      }
-
-      const sheet = workbook.Sheets[workbook.SheetNames[0]];
-
-      const json: string[][] = XLSX.utils.sheet_to_json(sheet, {
-        header: 1,
-        raw: false,
-      });
-
-      const headerIndex = json.findIndex((row: any[]) =>
-        row.some((cell) => cell !== undefined && cell !== ""),
-      );
-      //   this removes the first index
-      const rows = json.slice(headerIndex + 1);
-
-      form.setFieldValue("rows", rows);
-    } catch {
-      toast.error("Please upload a valid CSV or Excel file.");
-    } finally {
-      form.setFieldValue("loading", false);
+  /**
+   * handle file change
+   * @param file
+   * @returns
+   */
+  const handleFileChange = async (file: File | undefined) => {
+    const result = await processFile(file);
+    if (!result) {
+      toast.error("File is required");
+      return;
     }
+    const { rows, headers, autoMapping } = result;
+    form.setFieldValue("headers", headers);
+    form.setFieldValue("rows", rows);
+    form.setFieldValue("mapping", autoMapping);
   };
 
-  const { rows, loading } = useStore(form.store, ({ values }) => values);
+  /**
+   * hanlde clear file field
+   */
+  const clearFile = () => {
+    form.setFieldValue("rows", []);
+    form.setFieldValue("headers", []);
+    form.setFieldValue("mapping", {});
+    form.setFieldValue("file", undefined);
+  };
+
+  const { rows, headers, mapping } = useStore(
+    form.store,
+    ({ values }) => values,
+  );
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="rounded-2xl px-0 ring-ring/10 sm:max-w-2xl">
-        <DialogHeader className="px-6 gap-1">
-          <DialogTitle className="text-2xl font-bold">
-            Import products
-          </DialogTitle>
-          <DialogDescription className="flex gap-2 items-end">
-            Download product list, fill it and upload to create or update
-            products.
-            <Button variant="link" size="xs" asChild>
-              <a href="/api/products/export" target="_blank">
-                <Download /> Download
-              </a>
-            </Button>
-          </DialogDescription>
-        </DialogHeader>
 
+      <DialogContent className="rounded-2xl ring-ring/10 sm:max-w-2xl">
         <form
           onSubmit={(e) => {
             e.preventDefault();
+
             form.handleSubmit();
           }}
-          className="flex max-h-[calc(100svh-200px)] flex-col"
+          className="flex h-[min(700px,90svh)] gap-6 flex-col"
         >
-          <div className="no-scrollbar flex-1 overflow-auto">
-            <FieldGroup className="px-6">
-              {/* rows */}
+          <DialogHeader className="flex gap-3 items-start flex-row">
+            <span className="inline-flex size-9 items-center justify-center rounded-lg border bg-secondary *:size-5">
+              $
+            </span>
 
-              {rows.length > 0 ? (
-                <div className="space-y-2 *:data-[slot=table-container]:border *:data-[slot=table-container]:rounded-xl">
-                  <div className="flex gap-2 items-center">
-                    <p>{rows.length} rows</p>
+            <DialogTitle className="text-2xl font-bold">
+              Price update
+            </DialogTitle>
+          </DialogHeader>
+          <form.Field
+            name="file"
+            children={(field) => {
+              const isInvalid =
+                field.state.meta.isTouched && !field.state.meta.isValid;
+
+              return (
+                <Field className="relative">
+                  <FieldLabel
+                    htmlFor={field.name}
+                    className="h-28 flex-col hover:*:data-[slot=field-legend]:underline pt-6 justify-center rounded-xl border-2 border-dashed bg-secondary/40 transition"
+                  >
+                    <span className="size-9 bg-background shadow-sm rounded-lg inline-flex items-center justify-center">
+                      <Upload className="size-5 text-muted-foreground" />
+                    </span>
+                    <FieldLegend className="text-muted-foreground text-sm! ">
+                      {field.state.value?.name || "Click to upload a file"}
+                    </FieldLegend>
+
+                    <Input
+                      className="sr-only"
+                      type="file"
+                      accept=".xlsx,.xls,.csv"
+                      id={field.name}
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        field.handleChange(file);
+                        handleFileChange(file);
+                      }}
+                    />
+                  </FieldLabel>
+
+                  {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                  {field.state.value ? (
                     <Button
-                      variant="link"
-                      size="sm"
-                      onClick={() => {
-                        form.setFieldValue("rows", []);
+                      variant="destructive"
+                      size="xs"
+                      type="button"
+                      onClick={clearFile}
+                      className="absolute w-auto! top-2 right-2"
+                    >
+                      <Trash2 />
+                      Remove file
+                    </Button>
+                  ) : (
+                    <div className="flex items-center gap-2 justify-start">
+                      Need a sample?
+                      <Button variant="link" size="xs" asChild>
+                        <a href="/api/products/export" target="_blank">
+                          <Download className="size-4" />
+                          Download
+                        </a>
+                      </Button>
+                      <span className="h-4 border-r-2 w-1"></span>
+                      <Button variant="link" size="xs" asChild>
+                        <a href="/api/products/export" target="_blank">
+                          <Download className="size-4" />
+                          Export list
+                        </a>
+                      </Button>
+                    </div>
+                  )}
+                </Field>
+              );
+            }}
+          />
+
+          {rows.length > 0 && (
+            <>
+              <div className="grid grid-cols-2 gap-6">
+                {IMPORT_FIELDS.map((field) => (
+                  <div key={field.key} className="space-y-1.5">
+                    <p className="font-medium">{field.label}</p>
+
+                    <Select
+                      value={mapping[field.key]}
+                      onValueChange={(value) => {
+                        form.setFieldValue(`mapping.${field.key}`, value);
                       }}
                     >
-                      Clear
-                    </Button>
-                  </div>
-                  <Table>
-                    <TableHeader>
-                      <TableRow className="bg-secondary uppercase text-muted-foreground">
-                        {HEADER.map(([_, v]) => (
-                          <TableHead key={v} className="w-[14%] truncate">
-                            {v}
-                          </TableHead>
-                        ))}
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {rows.slice(0, 12).map((row, i) => (
-                        <TableRow key={i}>
-                          {row.map((cell, j) => (
-                            <TableCell
-                              key={j}
-                              className="whitespace-normal align-top"
-                            >
-                              {cell}
-                            </TableCell>
-                          ))}
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
-              ) : (
-                <form.Field
-                  name="file"
-                  children={(field) => {
-                    const isInvalid =
-                      field.state.meta.isTouched && !field.state.meta.isValid;
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select column" />
+                      </SelectTrigger>
 
-                    return (
-                      <Field>
-                        <FieldLabel
-                          htmlFor={field.name}
-                          className="h-28 justify-center rounded-xl border border-dashed bg-secondary transition hover:border-solid hover:ring-1 hover:ring-ring/50"
-                        >
-                          <FieldLegend>
-                            {loading ? (
-                              <Loader className="animate-spin size-4" />
-                            ) : (
-                              "Upload File"
-                            )}
-                          </FieldLegend>
-                          <Input
-                            className="sr-only"
-                            type="file"
-                            accept=".xlsx, .xls, .csv"
-                            id={field.name}
-                            onChange={(e) => {
-                              const file = e.target.files?.[0];
-                              field.handleChange(file);
-                              hanldeFileChange(file);
-                            }}
-                          />
-                        </FieldLabel>
-                        {isInvalid && (
-                          <FieldError errors={field.state.meta.errors} />
-                        )}
-                      </Field>
-                    );
-                  }}
-                />
-              )}
-            </FieldGroup>
-          </div>
-          <Field className="flex flex-col-reverse gap-4 px-6 pt-6 sm:flex-row sm:justify-end  sm:[&>*]:w-28">
+                      <SelectContent>
+                        {headers.map((header) => (
+                          <SelectItem key={header} value={header}>
+                            {header}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                ))}
+              </div>
+              <div className="no-scrollbar flex-1 overflow-auto divide-y">
+                {rows.slice(0, 10).map((row, i) => {
+                  const rowObject = Object.fromEntries(
+                    headers.map((header, index) => [header, row[index]]),
+                  );
+
+                  return (
+                    <div key={i} className="grid py-2 grid-cols-2 gap-6">
+                      {IMPORT_FIELDS.map((field) => {
+                        const mappedColumn = mapping[field.key];
+                        return (
+                          <div
+                            key={field.key}
+                            className="align-top whitespace-normal"
+                          >
+                            {mappedColumn ? rowObject[mappedColumn] : "-"}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  );
+                })}
+              </div>
+            </>
+          )}
+
+          <Field className="flex mt-auto flex-col-reverse gap-4 sm:flex-row sm:justify-end sm:[&>*]:w-32">
             <Button
               variant="outline"
               size="xl"
@@ -275,9 +355,9 @@ export const ImportDialog = ({ children }: { children: React.ReactNode }) => {
             </Button>
 
             <form.Subscribe
-              selector={({ isSubmitting, canSubmit }) => ({
-                isSubmitting,
-                canSubmit,
+              selector={(state) => ({
+                isSubmitting: state.isSubmitting,
+                canSubmit: state.canSubmit,
               })}
               children={({ isSubmitting, canSubmit }) => (
                 <Button
@@ -287,7 +367,7 @@ export const ImportDialog = ({ children }: { children: React.ReactNode }) => {
                   disabled={isSubmitting || !canSubmit}
                 >
                   {isSubmitting ? (
-                    <Loader className="animate-spin" />
+                    <Loader className="size-4 animate-spin" />
                   ) : (
                     "Import"
                   )}

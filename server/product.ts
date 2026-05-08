@@ -1,16 +1,11 @@
 "use server";
 
-import {
-  customer,
-  customerInvite,
-  product,
-  ProductInsertType,
-} from "@/lib/db/schema";
 import { db } from "@/lib/db";
 import { getSession } from "./auth";
 import { cookies } from "next/headers";
-import { and, eq, ilike, desc, sql, countDistinct } from "drizzle-orm";
 import { handleAction } from "@/lib/helper/error-handler";
+import { product, ProductInsertType } from "@/lib/db/schema";
+import { and, eq, ilike, desc, sql, countDistinct } from "drizzle-orm";
 
 export const getProducts = handleAction(
   async (query: Record<string, string>) => {
@@ -96,7 +91,7 @@ export const importProducts = handleAction(
     const { activeOrganizationId } = session.session;
 
     const mappedData = data
-      .filter((i) => i.identifier)
+      .filter((i) => i.identifier && !isNaN(Number(i.basePrice!)))
       .map((item) => {
         return {
           ...item,
@@ -110,12 +105,7 @@ export const importProducts = handleAction(
       .onConflictDoUpdate({
         target: [product.identifier, product.organizationId],
         set: {
-          title: sql`COALESCE(excluded.title, ${product.title})`,
-          unit: sql`COALESCE(excluded.unit, ${product.unit})`,
-          description: sql`COALESCE(excluded.description, ${product.description})`,
-          categories: sql`COALESCE(excluded.categories, ${product.categories})`,
           basePrice: sql`COALESCE(excluded.basePrice, ${product.basePrice})`,
-          isTaxable: sql`COALESCE(excluded.isTaxable, ${product.isTaxable})`,
         },
       })
       .returning({ id: product.id });

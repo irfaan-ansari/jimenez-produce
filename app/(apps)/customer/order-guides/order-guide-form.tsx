@@ -29,9 +29,13 @@ import { Button } from "@/components/ui/button";
 import { useStore } from "@tanstack/react-form";
 import { useAppForm } from "@/hooks/form-context";
 import { FieldGroup } from "@/components/ui/field";
-import { createOrderGuide } from "@/server/order-guide";
+import {
+  createOrderGuide,
+  deleteOrderGuide,
+  updateOrderGuide,
+} from "@/server/order-guide";
 import { formatUSD, getAvatarFallback } from "@/lib/utils";
-import { ProductSelectorCustomer } from "../../../../components/admin/product-selector-customer";
+import { ProductSelectorCustomer } from "@/components/admin/product-selector-customer";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useRouter } from "next/navigation";
@@ -43,6 +47,7 @@ import {
   AlertTitle,
 } from "@/components/ui/alert";
 import { useQueryClient } from "@tanstack/react-query";
+import { useConfirm } from "@/hooks/use-confirm";
 
 const schema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -52,8 +57,8 @@ const schema = z.object({
       productId: z.number(),
       title: z.string(),
       categories: z.array(z.string()),
-      image: z.string(),
-      price: z.string(),
+      image: z.any(),
+      price: z.string().or(z.number()),
     }),
   ),
 });
@@ -66,6 +71,7 @@ export const OrderGuideForm = ({
     teamId: string | null;
   };
 }) => {
+  const confirm = useConfirm();
   const router = useRouter();
   const queryClient = useQueryClient();
   const [layout, setLayout] = React.useState("list");
@@ -93,10 +99,16 @@ export const OrderGuideForm = ({
       const productIds = items.map((item) => Number(item.productId));
 
       if (id) {
-        // const { success } = await updateOrderGuide({ ...rest, productIds });
-        toast.success("(Demo) Update order guide successfully", {
-          id: toastId,
+        const { success, error } = await updateOrderGuide(id, {
+          ...rest,
+          productIds,
         });
+
+        if (success) {
+          toast.success("Order guide saved successfully", { id: toastId });
+        } else {
+          toast.error(error.message, { id: toastId });
+        }
       } else {
         const { success, error, data } = await createOrderGuide({
           ...rest,
@@ -122,6 +134,25 @@ export const OrderGuideForm = ({
     description: valueDescription,
     items: valueItems,
   } = useStore(form.store, ({ values }) => values);
+
+  const handleDelete = async () => {
+    if (!id) return;
+    confirm.delete({
+      title: "Delete order guide",
+      description: "Are you sure you want to delete this order guide?",
+      action: async () => {
+        const toastId = toast.loading("Please wait...");
+        const { success, error } = await deleteOrderGuide(id);
+
+        if (success) {
+          toast.success("Order guide deleted successfully", { id: toastId });
+          router.replace("/customer/order-guides");
+        } else {
+          toast.error(error.message, { id: toastId });
+        }
+      },
+    });
+  };
 
   return (
     <div className="grid grid-cols-6 gap-6">
@@ -152,7 +183,7 @@ export const OrderGuideForm = ({
               {id && !teamId && (
                 <Badge
                   variant="secondary"
-                  className="bg-amber-100 border border-amber-200"
+                  className="border border-amber-200 bg-amber-100"
                 >
                   Suggested
                 </Badge>
@@ -328,8 +359,8 @@ export const OrderGuideForm = ({
         </form>
       </div>
       <div className="col-span-2 space-y-6">
-        <Card className="hidden lg:flex flex-col gap-6">
-          <CardContent className="space-y-3 flex-1">
+        <Card className="hidden flex-col gap-6 lg:flex">
+          <CardContent className="flex-1 space-y-3">
             <CardTitle className="text-lg font-semibold">
               {valueName || "New Order Guide"}
             </CardTitle>
@@ -337,7 +368,7 @@ export const OrderGuideForm = ({
             {/* {!item.teamId && (
               <Badge
                 variant="secondary"
-                className="h-6 bg-amber-100 border border-amber-200"
+                className="h-6 border border-amber-200 bg-amber-100"
               >
                 Suggested
               </Badge>
@@ -368,7 +399,7 @@ export const OrderGuideForm = ({
                   size="sm"
                   type="button"
                   variant="destructive"
-                  // onClick={handleDeleteProduct}
+                  onClick={handleDelete}
                 >
                   Delete
                 </Button>

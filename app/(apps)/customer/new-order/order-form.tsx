@@ -144,7 +144,7 @@ const StickyCart = withForm({
 
             return (
               <div
-                className={`sticky bottom-6 mx-auto h-16 w-full max-w-xl rounded-2xl bg-secondary px-6  py-4 shadow-lg ring-2 ring-primary/50 ring-offset-2 backdrop-blur-2xl ${totals.count <= 0 ? "hidden" : ""}`}
+                className={`sticky bottom-6 z-2 mx-auto h-16 w-full max-w-xl rounded-2xl bg-secondary px-6  py-4 shadow-lg ring-2 ring-primary/50 ring-offset-2 backdrop-blur-2xl ${totals.count <= 0 ? "hidden" : ""}`}
               >
                 <div className="flex h-full items-center gap-4">
                   <div className="gap-0.5e flex flex-col">

@@ -28,7 +28,7 @@ export const GET = async (
     if (!auth) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
-    const { role, activeTeamId, activeOrganizationId, userId } = auth.session;
+    const { role, activeTeamId, activeOrganizationId } = auth.session;
 
     if (role !== "customer")
       return NextResponse.json(
@@ -47,11 +47,7 @@ export const GET = async (
     const filters = and(
       eq(orderGuide.id, Number(id)),
       eq(orderGuide.organizationId, activeOrganizationId),
-      or(
-        eq(orderGuide.target, "all"),
-        eq(orderGuide.teamId, activeTeamId),
-        isNotNull(orderGuideTarget.id),
-      ),
+      or(eq(orderGuide.teamId, activeTeamId), isNotNull(orderGuideTarget.id)),
     );
 
     //  main query
