@@ -6,6 +6,7 @@ import { SITE_CONFIG } from "@/lib/config";
 import { Container } from "@/components/container";
 import { AppSidebar } from "@/components/admin/customer-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { MobileNavbar } from "@/components/mobile-navbar";
 
 export const metadata = {
   metadataBase: new URL(SITE_CONFIG.url),
@@ -39,6 +40,7 @@ const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
         <Container className="mx-0 h-full max-w-full p-5 md:p-8">
           {children}
         </Container>
+        <MobileNavbar />
       </SidebarInset>
     </SidebarProvider>
   );

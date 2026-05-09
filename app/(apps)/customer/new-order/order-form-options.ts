@@ -22,6 +22,13 @@ export const defaultValues = {
 };
 
 export const formOpt = formOptions({
+  validators: {
+    onSubmit: ({ value }) => {
+      if (value.lineItems.length <= 0) {
+        return true;
+      }
+    },
+  },
   defaultValues,
 });
 

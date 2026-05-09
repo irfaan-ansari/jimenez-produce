@@ -20,22 +20,21 @@ const OPTIONS = [
 const OrdersPage = async () => {
   return (
     <div className="flex h-full flex-col gap-6">
-      <div className="flex w-full items-center gap-4 **:data-[slot=input-group]:bg-background">
+      <div className="flex w-full flex-col items-start gap-4 **:data-[slot=input-group]:bg-background lg:flex-row lg:items-center">
         <div className="flex-1 space-y-1">
           <h1 className="text-2xl font-bold">Track your orders</h1>
           <p className="text-sm text-muted-foreground">
             Clear delivery windows and live order status in one place.
           </p>
         </div>
-        <SearchBar />
-        <Button size="xl" variant="outline">
-          Browse Catalog
-        </Button>
-        <Button size="xl" className="rounded-xl" asChild>
-          <Link href="/customer/new-order">
-            <Plus /> New Order
-          </Link>
-        </Button>
+        <div className="flex w-full items-center justify-between gap-4 lg:w-auto lg:flex-1 lg:justify-end">
+          <SearchBar />
+          <Button size="xl" className="rounded-xl" asChild>
+            <Link href="/customer/new-order">
+              <Plus /> New Order
+            </Link>
+          </Button>
+        </div>
       </div>
       <FilterTab tabs={OPTIONS} path="/api/customer/orders/count" />
       {/* content */}

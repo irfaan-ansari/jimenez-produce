@@ -95,11 +95,11 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
             </CardTitle>
           </CardHeader>
           <CardContent className="divide-y px-0">
-            <div className="flex items-center justify-between gap-4 bg-muted/40 px-6 py-4 font-medium text-muted-foreground uppercase">
+            <div className="flex items-center justify-between gap-4 px-6 py-4 font-medium text-muted-foreground uppercase">
               <div className="flex-1">Item</div>
-              <div className="w-20 text-right">Price</div>
-              <div className="w-20 text-right">Quantity</div>
-              <div className="w-20 text-right">Total</div>
+              <div className="w-16 text-right">Price</div>
+              <div className="w-16 text-right">Quantity</div>
+              <div className="w-16 text-right">Total</div>
             </div>
 
             {data.lineItems.map((line) => (
@@ -126,13 +126,13 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
                     )}
                   </div>
                 </div>
-                <div className="w-20 text-right text-muted-foreground">
+                <div className="w-16 text-right text-muted-foreground">
                   {formatUSD(line.price!)}
                 </div>
-                <div className="w-20 text-right text-muted-foreground">
+                <div className="w-16 text-right text-muted-foreground">
                   {line.quantity}
                 </div>
-                <div className="w-20 text-right font-semibold">
+                <div className="w-16 text-right font-semibold">
                   {formatUSD(line.total!)}
                 </div>
               </div>
@@ -142,7 +142,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
       </div>
 
       {/* order summary */}
-      <Card className="col-span-2 rounded-2xl">
+      <Card className="col-span-6 lg:col-span-2 rounded-2xl">
         <CardHeader>
           <CardTitle className="text-xl font-semibold">Order Summary</CardTitle>
         </CardHeader>

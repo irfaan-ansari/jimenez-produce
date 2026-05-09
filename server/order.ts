@@ -29,8 +29,9 @@ export const createOrder = handleAction(
 
     if (!auth) throw new Error("Authentication required");
 
-    const { activeTeamId, activeOrganizationId, userId } = auth.session;
     const { lineItems, ...rest } = data;
+    if (lineItems.length <= 0) throw new Error("Add atleast one item");
+    const { activeTeamId, activeOrganizationId, userId } = auth.session;
     const charges = { type: "Fuel Charge", amount: 15 };
 
     const { data: taxRules, error } = await getTeamTaxRules();
