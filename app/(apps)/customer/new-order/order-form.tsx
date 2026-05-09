@@ -17,12 +17,13 @@ import { Button } from "@/components/ui/button";
 import { useConfirm } from "@/hooks/use-confirm";
 import { TaxRule, type Session } from "@/lib/types";
 import { useSidebar } from "@/components/ui/sidebar";
-import { OrderGuideSheet } from "./order-guide-sheet";
+import { OrderGuideButton } from "./order-guide";
 import { useQueryClient } from "@tanstack/react-query";
-import { Loader, Minus, Plus, Star } from "lucide-react";
+import { Loader, Minus, Plus } from "lucide-react";
 import { formOpt, getTotals } from "./order-form-options";
 import { useAppForm, withForm } from "@/hooks/form-context";
 import { SearchBar } from "@/components/admin/search-filters";
+import { ShoppingBag } from "@duo-icons/react";
 
 export const OrderForm = ({
   session,
@@ -33,9 +34,11 @@ export const OrderForm = ({
 }) => {
   const router = useRouter();
   const confirm = useConfirm();
-  const { open, setOpen } = useSidebar();
-
   const queryClient = useQueryClient();
+
+  const [showCart, setShowCart] = React.useState(false);
+
+  const { open: sidebarOpen, setOpen: setSidebarOpen } = useSidebar();
 
   const form = useAppForm({
     ...formOpt,
@@ -85,8 +88,8 @@ export const OrderForm = ({
   });
 
   React.useEffect(() => {
-    if (open) {
-      setOpen(false);
+    if (sidebarOpen) {
+      setSidebarOpen(false);
     }
   }, []);
 
@@ -101,7 +104,23 @@ export const OrderForm = ({
         </div>
         <div className="flex w-full items-center justify-between gap-4 lg:w-auto lg:flex-1 lg:justify-end">
           <SearchBar placeholder="Search products..." />
-          <OrderGuideSheet />
+          <OrderGuideButton />
+          <form.Subscribe
+            selector={({ values }) => ({
+              lineItems: values.lineItems,
+            })}
+            children={({ lineItems }) => (
+              <Button
+                size="xl"
+                className="rounded-lg [&>svg]:size-5!"
+                onClick={() => setShowCart(true)}
+                disabled={lineItems.length === 0}
+              >
+                <ShoppingBag />
+                View cart ({lineItems.length})
+              </Button>
+            )}
+          />
         </div>
       </div>
 
@@ -117,7 +136,10 @@ export const OrderForm = ({
         <ItemList form={form} />
 
         {/* sticky cart  */}
-        <StickyCart form={form} />
+        <StickyCart form={form} showCart={showCart} setShowCart={setShowCart} />
+
+        {/* cart overlay */}
+        <OrderCart form={form} showCart={showCart} setShowCart={setShowCart} />
       </form>
     </div>
   );
@@ -125,14 +147,11 @@ export const OrderForm = ({
 
 const StickyCart = withForm({
   ...formOpt,
-  render: function ({ form }) {
-    const [open, setOpen] = React.useState(false);
-
+  props: {} as { showCart: boolean; setShowCart: (v: boolean) => void },
+  render: function ({ form, ...props }) {
+    const { setShowCart } = props;
     return (
       <>
-        {/* cart popup */}
-        <OrderCart form={form} showCart={open} setShowCart={setOpen} />
-
         {/* sticky bar */}
         <form.Subscribe
           selector={({ values }) => ({
@@ -160,7 +179,7 @@ const StickyCart = withForm({
                     type="button"
                     variant="link"
                     className="ml-auto"
-                    onClick={() => setOpen(true)}
+                    onClick={() => setShowCart(true)}
                   >
                     View cart
                   </Button>

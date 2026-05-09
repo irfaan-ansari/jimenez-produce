@@ -69,5 +69,6 @@ export const useOrderGuide = (id: number | string) => {
       return fetcher<OrderGuideResponse>(`/api/customer/order-guides/${id}`);
     },
     staleTime: 1000 * 60 * 5,
+    enabled: !!id,
   });
 };

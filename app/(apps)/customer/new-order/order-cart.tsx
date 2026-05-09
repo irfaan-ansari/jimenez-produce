@@ -7,7 +7,6 @@ import {
   SheetFooter,
   SheetHeader,
   SheetTitle,
-  SheetTrigger,
 } from "@/components/ui/sheet";
 import {
   Collapsible,
@@ -17,7 +16,7 @@ import {
 import { QuantityInput } from "./order-form";
 import { Button } from "@/components/ui/button";
 import { withForm } from "@/hooks/form-context";
-import { ChevronDown, Loader } from "lucide-react";
+import { ChevronDown, ImageOff, Loader } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { DELIVERY_TIME } from "@/lib/constants/customer";
 import { formOpt, getTotals } from "./order-form-options";
@@ -61,7 +60,7 @@ export const OrderCart = withForm({
                             <Avatar className="size-8 shrink-0 rounded-lg ring-2 ring-green-600/20 ring-offset-1 **:rounded-lg after:hidden">
                               <AvatarImage src={subField?.image!} />
                               <AvatarFallback>
-                                {getAvatarFallback(subField.title)}
+                                <ImageOff className="size-4" />
                               </AvatarFallback>
                             </Avatar>
 

@@ -88,14 +88,14 @@ export const GET = async (
       .sort((a, b) => a.position - b.position)
       .map((g) => {
         const { id, ...restProduct } = g.product || {};
-        const priceData = pricingMap.get(g.productId);
+        const { finalPrice = 0 } = pricingMap.get(g.productId) ?? {};
         return {
           ...restProduct,
           id: g.id,
           productId: g.productId,
           position: g.position,
           quantity: g.quantity,
-          finalPrice: priceData?.finalPrice ?? 0,
+          finalPrice: finalPrice ?? 0,
         };
       });
 

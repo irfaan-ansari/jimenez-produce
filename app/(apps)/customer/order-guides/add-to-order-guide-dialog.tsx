@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { useAppForm } from "@/hooks/form-context";
 import { Field, FieldGroup } from "@/components/ui/field";
 import { formatUSD } from "@/lib/utils";
+import { OrderGuideSelector } from "@/components/admin/order-guide-selector";
 
 const schema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -35,7 +36,7 @@ export const AddToOrderGuideDialog = ({
     defaultValues: {
       name: "",
       description: "",
-      orderGuideId: undefined,
+      orderGuideId: "",
     },
     validators: {
       onBlur: schema,
@@ -76,16 +77,22 @@ export const AddToOrderGuideDialog = ({
               </div>
               <span className="text-primary">{formatUSD(20)}</span>
             </div>
-            <Button
-              size="xl"
-              type="button"
-              variant="outline"
-              className="w-full justify-start text-muted-foreground"
+            <OrderGuideSelector
+              value={form.getFieldValue("orderGuideId")}
+              onValueChange={(value) =>
+                form.setFieldValue("orderGuideId", value)
+              }
             >
-              <Search />
-              Select existing
-            </Button>
-
+              <Button
+                size="xl"
+                type="button"
+                variant="outline"
+                className="w-full justify-start text-muted-foreground"
+              >
+                <Search />
+                Select existing
+              </Button>
+            </OrderGuideSelector>
             <div className="flex flex-row items-center justify-center gap-4">
               <div className="flex-[1_1_0] border-b "></div>
               <span className="shrink-0 text-xs font-medium text-muted-foreground">

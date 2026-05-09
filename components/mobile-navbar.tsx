@@ -56,7 +56,7 @@ export function MobileNavbar({ className }: MobileNavbarProps) {
   return (
     <nav
       className={cn(
-        "fixed bottom-0 left-0 right-0 h-20 bg-background shadow-[0_-2px_5px_rgba(0,0,0,0.1)]",
+        "fixed bottom-0 left-0 z-2 right-0 h-20 bg-background shadow-[0_-2px_5px_rgba(0,0,0,0.1)]",
         "flex items-center justify-around px-2 py-2",
         "md:hidden",
         className,

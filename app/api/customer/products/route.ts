@@ -36,14 +36,7 @@ export async function GET(req: NextRequest) {
     const { activeOrganizationId, activeTeamId } = session.session;
     const search = req.nextUrl.searchParams;
 
-    const {
-      page,
-      limit,
-      q,
-      cat,
-      offset = 0,
-      orderGuideId,
-    } = getQueryObject(search);
+    const { page, limit, q, cat, offset = 0 } = getQueryObject(search);
 
     const ids = await db.query.teamProduct.findMany({
       where: eq(teamProduct.teamId, activeTeamId!),
@@ -72,18 +65,6 @@ export async function GET(req: NextRequest) {
       ) as SQL<unknown>;
 
       conditions.push(searchCondition);
-    }
-
-    if (orderGuideId) {
-      conditions.push(
-        inArray(
-          product.id,
-          db
-            .select({ id: orderGuideItem.productId })
-            .from(orderGuideItem)
-            .where(eq(orderGuideItem.orderGuideId, orderGuideId)),
-        ),
-      );
     }
 
     const filters = and(...conditions);

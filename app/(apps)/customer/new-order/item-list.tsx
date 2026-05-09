@@ -1,55 +1,33 @@
 "use client";
 
-import {
-  Check,
-  LayoutGrid,
-  ListFilter,
-  Star,
-  TextAlignJustify,
-  X,
-} from "lucide-react";
 import React from "react";
-import {
-  useCategories,
-  useInfiniteProductsCustomer,
-} from "@/hooks/use-product";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
-import { format } from "date-fns/format";
-import { cn, formatUSD } from "@/lib/utils";
-import { QuantityInput } from "./order-form";
-import { Badge } from "@/components/ui/badge";
 import { formOpt } from "./order-form-options";
 import { withForm } from "@/hooks/form-context";
-import { useStore } from "@tanstack/react-form";
-import { Button } from "@/components/ui/button";
 import {
   EmptyComponent,
   LoadingSkeleton,
 } from "@/components/admin/placeholder-component";
-import { Skeleton } from "@/components/ui/skeleton";
 import { type CustomerProductType } from "@/lib/types";
+import { CategoryPills, ProductItem } from "./item-card";
 import { useRouterStuff } from "@/hooks/use-router-stuff";
-import { PopoverXDrawer } from "@/components/popover-x-drawer";
+import { LayoutGrid, TextAlignJustify } from "lucide-react";
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { AddToOrderGuideDialog } from "../order-guides/add-to-order-guide-dialog";
+import { useInfiniteProductsCustomer } from "@/hooks/use-product";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { OrderGuideList } from "./order-guide";
 
 const LAYOUTS = [
   {
     value: "list",
     icon: TextAlignJustify,
-    className: "grid-cols-1 bg-background p-4! rounded-xl border shadow-sm",
+    className: "grid-cols-1 ",
     itemClassName: "",
   },
   {
     value: "grid",
     icon: LayoutGrid,
     className:
-      "grid-cols-1 *:bg-background *:rounded-xl @md:grid-cols-2 @lg:grid-cols-3 @2xl:grid-cols-4 @5xl:grid-cols-5 @6xl:grid-cols-6 @8xl:grid-cols-8 gap-4",
+      "grid-cols-1 *:rounded-xl @md:grid-cols-2 @lg:grid-cols-3 @2xl:grid-cols-4 @5xl:grid-cols-5 @6xl:grid-cols-6 @8xl:grid-cols-8 gap-4",
     itemClassName: "",
   },
 ];
@@ -61,6 +39,7 @@ export const ItemList = withForm({
     const { searchParamsObj } = useRouterStuff();
     const [filter, setFilter] = React.useState<Record<string, any>>({});
     const [layout, setLayout] = React.useState<"list" | "grid">("grid");
+
     const query = new URLSearchParams({ ...filter, ...searchParamsObj });
 
     const {
@@ -96,49 +75,69 @@ export const ItemList = withForm({
       }
     }, []);
 
-    console.log("products: ", products);
-
     return (
       <div
         data-layout={layout}
-        className="group/card @container min-h-svh min-w-0 flex-1 space-y-3"
+        className="group/card @container min-h-svh min-w-0 flex-1 space-y-5"
       >
-        <div className="sticky top-0 z-2 flex flex-row gap-3 rounded-2xl border  bg-background p-4 shadow-sm">
+        <div className="flex gap-3 justify-between items-center">
           <CategoryPills filter={filter} setFilter={setFilter} />
 
-          <Tabs
+          <ToggleGroup
+            type="single"
+            variant="outline"
             value={layout}
-            onValueChange={(v) => handleLayoutChange(v)}
-            className="shrink-0"
+            onValueChange={(v) => {
+              handleLayoutChange(v || "grid");
+            }}
           >
-            <TabsList className="h-9 rounded-xl">
-              {LAYOUTS.map(({ value, icon }, i) => {
-                const Icon = icon;
-                return (
-                  <TabsTrigger value={value} key={i} asChild>
-                    <Button
-                      variant={layout === value ? "outline" : "secondary"}
-                      size="icon"
-                      type="button"
-                      className="size-8! rounded-xl p-0"
-                    >
-                      <Icon />
-                    </Button>
-                  </TabsTrigger>
-                );
-              })}
-            </TabsList>
-          </Tabs>
+            {LAYOUTS.map(({ value, icon }, i) => {
+              const Icon = icon;
+              return (
+                <ToggleGroupItem
+                  key={value}
+                  value={value}
+                  className="data-[state=on]:bg-sidebar-accent data-[state=on]:text-primary-foreground"
+                >
+                  <Icon />
+                </ToggleGroupItem>
+              );
+            })}
+          </ToggleGroup>
         </div>
 
+        {/* guide list */}
+        <OrderGuideList
+          form={form}
+          layout={LAYOUTS.find((l) => l.value === layout)}
+        />
+
+        {/* all products */}
+        {searchParamsObj.guideId && (
+          <div className="flex gap-3 items-center">
+            <span className="uppercase font-medium text-sm text-muted-foreground">
+              All Products ({data?.pages?.[0]?.pagination?.total})
+            </span>
+            <span className="flex-1 border-b"></span>
+          </div>
+        )}
+
         {/* error component */}
-        {isError && <EmptyComponent variant="error" title={error?.message} />}
+        {isError && (
+          <div className="py-20 rounded-2xl bg-background">
+            <EmptyComponent variant="error" title={error?.message} />
+          </div>
+        )}
 
         {/* empty component */}
-        {!products.length && !isPending && <EmptyComponent variant="empty" />}
+        {isPending && (
+          <div className="py-20 bg-background rounded-2xl">
+            <LoadingSkeleton />
+          </div>
+        )}
 
         {/* products */}
-        {products.length > 0 && (
+        {products.length > 0 ? (
           <div
             className={`flex-1 text-base overflow-auto no-scrollbar px-0 grid
             ${LAYOUTS.find((l) => l.value === layout)?.className}
@@ -152,6 +151,13 @@ export const ItemList = withForm({
               />
             ))}
           </div>
+        ) : (
+          !isError &&
+          !isPending && (
+            <div className="py-20 bg-background rounded-2xl">
+              <EmptyComponent variant="empty" />
+            </div>
+          )
         )}
 
         {/* INFINITE SCROLL SENTINEL */}
@@ -159,405 +165,9 @@ export const ItemList = withForm({
           ref={loadMoreRef}
           className="col-span-full flex min-h-10 w-full justify-center"
         >
-          {(isFetchingNextPage || isPending) && <LoadingSkeleton />}
+          {isFetchingNextPage && <LoadingSkeleton />}
         </div>
       </div>
     );
   },
 });
-
-const ProductItem = withForm({
-  ...formOpt,
-  props: {} as {
-    product: CustomerProductType;
-  },
-  render: function Render({ form, product }) {
-    const productId = product.id;
-
-    const qty = useStore(form.store, (state) => {
-      const item = state.values.lineItems.find(
-        (i) => i.productId === productId,
-      );
-      return Number(item?.quantity) || 0;
-    });
-
-    const isCartItem = qty > 0;
-
-    const updateQty = React.useCallback(
-      (qty: number | string) => {
-        const nextQty = Number(qty);
-        const lineItems = form.getFieldValue("lineItems") || [];
-
-        const index = lineItems.findIndex((i) => i.productId === productId);
-
-        if (nextQty <= 0) {
-          if (index >= 0) {
-            form.removeFieldValue("lineItems", index);
-          }
-          return;
-        }
-
-        if (index >= 0) {
-          form.setFieldValue(`lineItems[${index}].quantity`, String(nextQty));
-        } else {
-          form.pushFieldValue("lineItems", {
-            quantity: String(nextQty),
-            productId,
-            title: product.title,
-            price: product.basePrice,
-            total: product.basePrice,
-            image: product.image!,
-            type: product.type,
-            identifier: product.identifier,
-            pack: product.pack,
-            categories: product.categories,
-            isTaxable: product.isTaxable,
-          });
-        }
-      },
-      [form, productId, product, qty],
-    );
-
-    return (
-      <div className="relative">
-        {product.isGuide ? (
-          <span className="absolute top-1  right-1 z-1 inline-flex size-6 items-center justify-center rounded-full bg-background shadow-sm *:size-4">
-            <Star className="fill-amber-400" />
-          </span>
-        ) : (
-          <AddToOrderGuideDialog>
-            <Button
-              size="icon-xs"
-              type="button"
-              variant="outline"
-              onClick={(e) => e.stopPropagation()}
-              className="absolute top-1 right-1 z-1 hidden size-6 rounded-full  group-data-[layout=grid]/card:inline-flex"
-            >
-              <Star className="size-3.5 fill-foreground" />
-            </Button>
-          </AddToOrderGuideDialog>
-        )}
-        <div
-          className={cn(
-            `flex animate-in cursor-pointer items-center gap-4 rounded-xl border py-2 transition fade-in-50 select-none slide-in-from-bottom-10 group-data-[layout=grid]/card:h-full group-data-[layout=grid]/card:flex-col
-          group-data-[layout=grid]/card:items-stretch group-data-[layout=grid]/card:gap-0 group-data-[layout=grid]/card:p-0
-          group-data-[layout=list]/card:mb-1 group-data-[layout=list]/card:px-4 hover:shadow-md 
-          group-data-[layout=grid]/card:hover:-translate-y-1`,
-            isCartItem ? "shadow-sm" : "",
-          )}
-          onClick={() => updateQty(qty + 1)}
-        >
-          <div
-            className="relative aspect-square w-12 shrink-0 overflow-hidden rounded-xl bg-secondary
-             group-data-[layout=grid]/card:aspect-video group-data-[layout=grid]/card:w-full"
-          >
-            <Thumbnail
-              product={product}
-              qty={qty}
-              onChange={(newValue) => updateQty(newValue)}
-            />
-          </div>
-
-          <div
-            className="flex min-w-0 flex-1 items-start gap-4
-             group-data-[layout=grid]/card:w-full
-             group-data-[layout=grid]/card:flex-col
-             group-data-[layout=grid]/card:justify-between
-             group-data-[layout=grid]/card:p-4"
-          >
-            <div className="w-full min-w-0 space-y-1 group-data-[layout=grid]/card:space-y-2">
-              <h4 className="leading-tight font-medium">{product.title}</h4>
-
-              <div className="flex w-full items-center gap-2">
-                <div className="no-scrollbar flex min-w-0 flex-nowrap items-center gap-1 overflow-auto">
-                  {product.categories?.map((cat, i) => (
-                    <span
-                      key={cat + i}
-                      className="inline-block text-xs leading-tight font-medium whitespace-nowrap text-muted-foreground uppercase not-last:border-r-2 not-last:pr-1"
-                    >
-                      {cat}
-                    </span>
-                  ))}
-                </div>
-
-                <LastPurchase
-                  product={product}
-                  className="group-data-[layout=grid]/card:hidden"
-                />
-              </div>
-            </div>
-
-            <div className="ml-auto w-24 self-center text-xs text-muted-foreground group-data-[layout=grid]/card:hidden">
-              {product.pack ?? null}
-            </div>
-
-            <Price
-              price={product.basePrice ?? 0}
-              className="group-data-[layout=grid]/card:hidden"
-            />
-
-            <QuantityInput
-              value={qty}
-              onChange={updateQty}
-              className="group-data-[layout=grid]/card:hidden"
-            />
-
-            <div className="flex w-full items-center gap-2 group-data-[layout=list]/card:hidden">
-              <div className="flex flex-1 flex-col">
-                <div className="text-xs text-muted-foreground">
-                  {product.pack ?? null}
-                </div>
-
-                <Price
-                  price={product.basePrice ?? 0}
-                  className="w-auto self-start"
-                />
-              </div>
-              <QuantityInput value={qty} onChange={updateQty} />
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  },
-});
-
-const LastPurchase = ({
-  product,
-  className,
-}: {
-  product: CustomerProductType;
-  className?: string;
-}) => {
-  if (!product.lastPurchased?.id) return;
-  return (
-    <Badge
-      className={cn(
-        "h-5 shrink-0 rounded-xl bg-primary whitespace-nowrap uppercase",
-        className,
-      )}
-    >
-      {product.lastPurchased.quantity}cs •{" "}
-      {format(new Date(product.lastPurchased.createdAt!), "MM/dd")}
-    </Badge>
-  );
-};
-
-const Price = ({
-  price,
-  className,
-}: {
-  price: number | string;
-  className?: string;
-}) => {
-  return (
-    <div className={cn("w-24 self-center font-bold text-primary", className)}>
-      {formatUSD(price ?? 0)}
-    </div>
-  );
-};
-
-const Thumbnail = ({
-  qty,
-  product,
-  onChange,
-}: {
-  product: CustomerProductType;
-  qty: number;
-  onChange: (qty: number) => void;
-}) => {
-  return (
-    <HoverCard openDelay={500} closeDelay={10}>
-      <HoverCardTrigger asChild>
-        <div
-          className="relative aspect-square w-12 shrink-0 overflow-hidden rounded-xl bg-secondary
-             group-data-[layout=grid]/card:aspect-video group-data-[layout=grid]/card:w-full"
-        >
-          {product.image && (
-            <img
-              src={product.image}
-              alt={product.title}
-              width={200}
-              height={200}
-              className="absolute inset-0 h-full w-full object-contain"
-            />
-          )}
-
-          <LastPurchase
-            product={product}
-            className="absolute top-1 left-1 hidden group-data-[layout=grid]/card:inline-flex"
-          />
-        </div>
-      </HoverCardTrigger>
-      <HoverCardContent
-        className="flex w-80 flex-col overflow-hidden rounded-2xl p-0 text-base"
-        align="center"
-      >
-        <div className="aspect-video rounded-xl bg-secondary">
-          {product.image && (
-            <img
-              src={product.image}
-              alt={product.title}
-              width={500}
-              height={500}
-              className="aspect-video object-contain"
-            />
-          )}
-        </div>
-
-        <div className="space-y-3 p-4">
-          <h4 className="text-base leading-tight font-medium">
-            {product.title}
-          </h4>
-
-          <div className="flex w-full items-center gap-2">
-            <div className="no-scrollbar flex min-w-0 flex-nowrap items-center gap-1 overflow-auto">
-              {product.categories?.map((cat, i) => (
-                <Badge
-                  key={cat + i}
-                  variant="secondary"
-                  className="h-5 shrink-0 rounded-xl px-1.5"
-                >
-                  {cat}
-                </Badge>
-              ))}
-            </div>
-          </div>
-
-          <LastPurchase
-            product={product}
-            className="group-data-[layout=grid]/card:hidden"
-          />
-
-          <div className="flex w-full items-center gap-2 group-data-[layout=list]/card:hidden">
-            <div className="flex flex-1 flex-col">
-              <div className="text-xs text-muted-foreground">
-                {product.pack ?? null}
-              </div>
-
-              <Price
-                price={product.basePrice ?? 0}
-                className="w-auto self-start"
-              />
-            </div>
-            <QuantityInput value={qty} onChange={onChange} />
-          </div>
-        </div>
-      </HoverCardContent>
-    </HoverCard>
-  );
-};
-
-const CategoryPills = ({
-  filter,
-  setFilter,
-}: {
-  filter: Record<string, string>;
-  setFilter: any;
-}) => {
-  const [open, setOpen] = React.useState(false);
-  const { data, isPending } = useCategories();
-
-  const toggle = (cat: string) => {
-    setFilter((prev: any) => {
-      const next = { ...prev, page: "1" };
-      if (next.cat === cat) delete next.cat;
-      else next.cat = cat;
-      return next;
-    });
-  };
-
-  if (!data?.data)
-    return (
-      <div className="flex w-full flex-1 items-center gap-0.5">
-        {[...Array(5)].map((_, i) => (
-          <Skeleton key={i} className="h-9 w-18 rounded-xl" />
-        ))}
-      </div>
-    );
-
-  const categories = data.data.slice(0, 8);
-
-  const displayPills =
-    filter.cat && !categories.includes(filter.cat)
-      ? [...data.data.slice(0, 7), filter.cat]
-      : categories;
-
-  return (
-    <>
-      <PopoverXDrawer
-        open={open}
-        setOpen={setOpen}
-        trigger={
-          <Button type="button" variant="secondary" className="rounded-xl">
-            All Categories
-            <ListFilter />
-          </Button>
-        }
-        className="no-scrollbar max-h-80 overflow-auto"
-      >
-        {isPending ? (
-          <span className="h-8 animate-pulse bg-secondary"></span>
-        ) : (
-          <>
-            <Button
-              variant={!filter.cat ? "secondary" : "ghost"}
-              className="rounded-xl"
-              type="button"
-              onClick={() => setFilter({ ...filter, cat: "" })}
-            >
-              All
-              <Check
-                data-selected={!filter.cat}
-                className="ml-auto opacity-0 data-[selected=true]:opacity-100"
-              />
-            </Button>
-            {data?.data?.map((cat, i) => (
-              <Button
-                variant={filter.cat === cat ? "secondary" : "ghost"}
-                className="rounded-xl"
-                type="button"
-                key={cat + i}
-                onClick={() => setFilter({ ...filter, cat })}
-              >
-                {cat}
-                <Check
-                  data-selected={cat === filter.cat}
-                  className="ml-auto opacity-0 data-[selected=true]:opacity-100"
-                />
-              </Button>
-            ))}
-          </>
-        )}
-      </PopoverXDrawer>
-
-      <div className="no-scrollbar flex flex-1 items-center gap-2 overflow-x-auto">
-        {displayPills.map((cat: string) => (
-          <Button
-            key={cat}
-            type="button"
-            data-active={filter.cat === cat}
-            variant="secondary"
-            className="rounded-xl data-[active=true]:bg-foreground data-[active=true]:text-primary-foreground"
-            onClick={() => toggle(cat)}
-          >
-            {cat}
-            {filter.cat === cat && (
-              <Button
-                size="icon-xs"
-                className="rounded-xl"
-                variant="ghost"
-                type="button"
-                asChild
-              >
-                <span>
-                  <X />
-                </span>
-              </Button>
-            )}
-          </Button>
-        ))}
-      </div>
-    </>
-  );
-};

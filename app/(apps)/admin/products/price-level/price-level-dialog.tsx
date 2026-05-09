@@ -5,7 +5,9 @@ import {
   ArrowLeft,
   ArrowRight,
   Check,
+  ChevronDown,
   DollarSign,
+  Filter,
   ListFilter,
   Loader,
   Percent,
@@ -38,6 +40,7 @@ import {
 import {
   InputGroup,
   InputGroupAddon,
+  InputGroupButton,
   InputGroupInput,
 } from "@/components/ui/input-group";
 import React, { useState } from "react";
@@ -54,6 +57,7 @@ import { useCategories, useProducts } from "@/hooks/use-product";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { createPriceLevel, updatePriceLevel } from "@/server/price-level";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Input } from "@/components/ui/input";
 
 const numberString = z
   .string()
@@ -202,10 +206,10 @@ export const PriceLevelDialog = ({
             e.preventDefault();
             form.handleSubmit();
           }}
-          className="flex h-[calc(100svh-200px)] flex-col"
+          className="flex h-[min(700px,80svh)] flex-col"
         >
           <DialogHeader className="mb-4 px-6">
-            <DialogTitle className="text-2xl font-bold">
+            <DialogTitle className="text-xl font-bold">
               {isEdit ? "Update" : "Create"} price level
             </DialogTitle>
             <DialogDescription>
@@ -227,112 +231,56 @@ export const PriceLevelDialog = ({
                 )}
               />
               {/* scope */}
-              <form.Field
-                name="appliesTo"
-                children={(field) => {
-                  const isInvalid =
-                    field.state.meta.isTouched && !field.state.meta.isValid;
-                  return (
-                    <FieldSet
-                      data-invalid={isInvalid}
-                      className="lg:col-span-2"
-                    >
-                      <FieldLegend variant="label">Applies to</FieldLegend>
-                      <RadioGroup
-                        name={field.name}
-                        value={field.state.value}
-                        onValueChange={field.handleChange}
-                        aria-invalid={isInvalid}
-                        className="grid grid-cols-2"
-                      >
-                        <FieldLabel htmlFor="all" className="rounded-xl!">
-                          <Field orientation="horizontal">
-                            <FieldContent>
-                              <FieldTitle>All</FieldTitle>
-                              <FieldDescription>
-                                Apply to all items
-                              </FieldDescription>
-                            </FieldContent>
-                            <RadioGroupItem value="all" id="all" />
-                          </Field>
-                        </FieldLabel>
-                        <FieldLabel htmlFor="per_item" className="rounded-xl!">
-                          <Field orientation="horizontal">
-                            <FieldContent>
-                              <FieldTitle>Selected Items</FieldTitle>
-                              <FieldDescription>
-                                Apply to selected items
-                              </FieldDescription>
-                            </FieldContent>
-                            <RadioGroupItem value="per_item" id="per_item" />
-                          </Field>
-                        </FieldLabel>
-                      </RadioGroup>
-                      {isInvalid && (
-                        <FieldError errors={field.state.meta.errors} />
-                      )}
-                    </FieldSet>
-                  );
-                }}
-              />
+              <div className="lg:col-span-2">
+                <form.AppField
+                  name="appliesTo"
+                  children={(field) => (
+                    <field.RadioField
+                      label="Apply To"
+                      options={[
+                        {
+                          label: "All",
+                          value: "all",
+                          description: "Apply to all items",
+                        },
+                        {
+                          label: "Selected Items",
+                          value: "per_item",
+                          description: "Apply to selected items",
+                        },
+                      ]}
+                    />
+                  )}
+                />
+              </div>
+
               {/* type */}
-              <form.Field
-                name="adjustmentType"
-                children={(field) => {
-                  const isInvalid =
-                    field.state.meta.isTouched && !field.state.meta.isValid;
-                  return (
-                    <FieldSet
-                      data-invalid={isInvalid}
-                      className={`lg:col-span-2 ${appliesTo !== "all" ? "hidden" : ""}`}
-                    >
-                      <FieldLegend variant="label">Adjustment Type</FieldLegend>
-                      <RadioGroup
-                        name={field.name}
-                        value={field.state.value}
-                        onValueChange={field.handleChange}
-                        aria-invalid={isInvalid}
-                        className="grid grid-cols-2"
-                      >
-                        <FieldLabel htmlFor="fixed" className="rounded-xl!">
-                          <Field orientation="horizontal">
-                            <FieldContent>
-                              <FieldTitle>Fixed</FieldTitle>
-                              <FieldDescription>
-                                Adjust by fixed amount
-                              </FieldDescription>
-                            </FieldContent>
-                            <RadioGroupItem value="fixed" id="fixed" />
-                          </Field>
-                        </FieldLabel>
-                        <FieldLabel
-                          htmlFor="percentage"
-                          className="rounded-xl!"
-                        >
-                          <Field orientation="horizontal">
-                            <FieldContent>
-                              <FieldTitle>Percentage</FieldTitle>
-                              <FieldDescription>
-                                Adjust by percentage
-                              </FieldDescription>
-                            </FieldContent>
-                            <RadioGroupItem
-                              value="percentage"
-                              id="percentage"
-                            />
-                          </Field>
-                        </FieldLabel>
-                      </RadioGroup>
-                      {isInvalid && (
-                        <FieldError errors={field.state.meta.errors} />
-                      )}
-                    </FieldSet>
-                  );
-                }}
-              />
+              <div
+                className={`lg:col-span-2 ${appliesTo !== "all" ? "hidden" : ""}`}
+              >
+                <form.AppField
+                  name="adjustmentType"
+                  children={(field) => (
+                    <field.RadioField
+                      label="Adjustment Type"
+                      options={[
+                        {
+                          label: "Fixed Amount",
+                          value: "fixed",
+                          description: "Adjust by fixed amount",
+                        },
+                        {
+                          label: "Percentage",
+                          value: "percentage",
+                          description: "Adjust by percentage",
+                        },
+                      ]}
+                    />
+                  )}
+                />
+              </div>
 
               {/* all items */}
-
               <form.Field
                 name="adjustmentValue"
                 children={(field) => {
@@ -419,14 +367,9 @@ export const PriceLevelDialog = ({
 const ItemList = withForm({
   defaultValues,
   render: function Render({ form }) {
-    const { items } = useStore(form.store, (state) => state.values);
-
     return (
-      <div className="mt-6 flex flex-col">
-        <div className="mb-6 space-y-2 px-6">
-          <div className="text-base font-semibold">Browse Products</div>
-          <SelectItemDialog form={form} />
-        </div>
+      <div className="mt-6 flex flex-col px-6 space-y-4">
+        <SelectItemDialog form={form} />
 
         <form.Field
           name="items"
@@ -436,32 +379,13 @@ const ItemList = withForm({
               field.state.meta.isTouched && !field.state.meta.isValid;
             return (
               <>
-                {/* list header */}
-                {isInvalid && (
-                  <FieldError
-                    className="px-6"
-                    errors={field.state.meta.errors}
-                  />
-                )}
-                {items?.length === 0 ? (
-                  <div className="flex items-center justify-center py-12">
-                    <p className="text-muted-foreground">No items added</p>
-                  </div>
-                ) : (
-                  <div className="flex w-full gap-4 border-y bg-secondary px-6 py-3 text-sm text-muted-foreground uppercase">
-                    <span className="flex-1">item</span>
-                    <span className="w-28 shrink-0 truncate text-right">
-                      price
-                    </span>
-                    <span className="w-24 shrink-0 text-right">New Price</span>
-                    <span className="w-10 shrink-0 text-right" />
-                  </div>
-                )}
-                <div className="divide-y">
+                {isInvalid && <FieldError errors={field.state.meta.errors} />}
+
+                <div className="space-y-1">
                   {field.state.value.map((item, i) => {
                     return (
                       <div
-                        className="flex gap-4 px-6 py-2"
+                        className="flex gap-4 p-2 rounded-xl border"
                         key={item.productId}
                       >
                         <div className="flex flex-1 items-start gap-3">
@@ -477,39 +401,28 @@ const ItemList = withForm({
                             <h4 className="leading-tight font-medium whitespace-normal">
                               {item.title}
                             </h4>
-                            <Badge
-                              variant="secondary"
-                              className="rounded-xl border border-border uppercase"
-                            >
+                            <Badge className="rounded-md border border-border uppercase">
                               {item.identifier}
                             </Badge>
                           </div>
                         </div>
-                        <div
-                          className={`grid w-28 self-center text-right ${item.basePrice !== item.price ? "line-through text-muted-foreground" : ""}`}
-                        >
-                          {formatUSD(item.basePrice)}
-                        </div>
+
                         <div className="w-24 self-center text-right">
-                          <InputGroup className="h-10 rounded-xl">
-                            <form.Field
-                              name={`items[${i}].price`}
-                              children={(field) => (
-                                <InputGroupInput
-                                  name={field.name}
-                                  value={field.state.value}
-                                  onBlur={field.handleBlur}
-                                  className="text-right"
-                                  onChange={(e) => {
-                                    field.handleChange(e.target.value);
-                                  }}
-                                />
-                              )}
-                            />
-                            <InputGroupAddon align="inline-start">
-                              <DollarSign />
-                            </InputGroupAddon>
-                          </InputGroup>
+                          <form.Field
+                            name={`items[${i}].price`}
+                            children={(field) => (
+                              <Input
+                                name={field.name}
+                                value={field.state.value}
+                                onBlur={field.handleBlur}
+                                className="text-right"
+                                placeholder={formatUSD(item.basePrice ?? "0")}
+                                onChange={(e) => {
+                                  field.handleChange(e.target.value);
+                                }}
+                              />
+                            )}
+                          />
                         </div>
                         <div className="w-10 text-right">
                           <Button
@@ -565,15 +478,15 @@ const SelectItemDialog = withForm({
           </Button>
         </DialogTrigger>
 
-        <DialogContent className="flex h-[calc(100svh-200px)] flex-col gap-0 rounded-2xl px-0 ring-ring/10 sm:max-w-xl">
+        <DialogContent className="flex h-[min(700px,80svh)] flex-col gap-0 rounded-2xl px-0 ring-ring/10 sm:max-w-2xl">
           {/* header */}
           <DialogHeader className="mb-6 px-6">
-            <DialogTitle className="text-2xl font-bold">Add Items</DialogTitle>
+            <DialogTitle className="text-xl font-bold">Add Items</DialogTitle>
           </DialogHeader>
 
           {/* search and filter */}
           <div className="mb-6 flex items-center gap-6 px-6">
-            <InputGroup className="h-10 rounded-xl">
+            <InputGroup className="h-10 rounded-lg">
               <InputGroupInput
                 placeholder="Search..."
                 value={filters.q}
@@ -582,61 +495,50 @@ const SelectItemDialog = withForm({
               <InputGroupAddon align="inline-start">
                 <Search />
               </InputGroupAddon>
+              <InputGroupAddon align="inline-end">
+                <PopoverXDrawer
+                  open={open}
+                  setOpen={setOpen}
+                  trigger={
+                    <InputGroupButton variant="secondary" type="button">
+                      <Filter /> All Categories <ChevronDown />
+                    </InputGroupButton>
+                  }
+                  className="no-scrollbar max-h-80 overflow-auto"
+                >
+                  <Button
+                    variant={!filters.cat ? "secondary" : "ghost"}
+                    className="rounded-xl"
+                    type="button"
+                    onClick={() => setFilters({ ...filters, cat: "" })}
+                  >
+                    All
+                    <Check
+                      data-selected={!filters.cat}
+                      className="ml-auto opacity-0 data-[selected=true]:opacity-100"
+                    />
+                  </Button>
+                  {categories?.data?.map((cat, i) => (
+                    <Button
+                      variant={filters.cat === cat ? "secondary" : "ghost"}
+                      className="rounded-xl"
+                      type="button"
+                      key={cat + i}
+                      onClick={() => setFilters({ ...filters, cat })}
+                    >
+                      {cat}
+                      <Check
+                        data-selected={cat === filters.cat}
+                        className="ml-auto opacity-0 data-[selected=true]:opacity-100"
+                      />
+                    </Button>
+                  ))}
+                </PopoverXDrawer>
+              </InputGroupAddon>
             </InputGroup>
-
-            <PopoverXDrawer
-              open={open}
-              setOpen={setOpen}
-              trigger={
-                <Button
-                  variant="secondary"
-                  size="lg"
-                  type="button"
-                  className="rounded-xl border-border px-4 text-sm"
-                >
-                  All Categories <ListFilter />
-                </Button>
-              }
-              className="no-scrollbar max-h-80 overflow-auto"
-            >
-              <Button
-                variant={!filters.cat ? "secondary" : "ghost"}
-                className="rounded-xl"
-                type="button"
-                onClick={() => setFilters({ ...filters, cat: "" })}
-              >
-                All
-                <Check
-                  data-selected={!filters.cat}
-                  className="ml-auto opacity-0 data-[selected=true]:opacity-100"
-                />
-              </Button>
-              {categories?.data?.map((cat, i) => (
-                <Button
-                  variant={filters.cat === cat ? "secondary" : "ghost"}
-                  className="rounded-xl"
-                  type="button"
-                  key={cat + i}
-                  onClick={() => setFilters({ ...filters, cat })}
-                >
-                  {cat}
-                  <Check
-                    data-selected={cat === filters.cat}
-                    className="ml-auto opacity-0 data-[selected=true]:opacity-100"
-                  />
-                </Button>
-              ))}
-            </PopoverXDrawer>
           </div>
 
-          {/* item list */}
-          <div className="flex w-full gap-4 border-y bg-secondary px-6 py-3 text-sm text-muted-foreground uppercase">
-            <span className="flex-1">item</span>
-            <span className="w-28 shrink-0 text-right">price</span>
-            <span className="w-28 shrink-0 text-right">action</span>
-          </div>
-
-          <div className="no-scrollbar mb-6 flex-1 divide-y overflow-auto">
+          <div className="no-scrollbar mb-6 px-6 flex-1 space-y-1 overflow-auto">
             {isPending && (
               <div className="h-1 animate-pulse rounded-full bg-primary" />
             )}
@@ -648,7 +550,7 @@ const SelectItemDialog = withForm({
                     items?.findIndex((i) => i.productId === line.id) >= 0;
                   return (
                     <div
-                      className={`flex gap-4 px-6 py-2 ${
+                      className={`flex gap-4 rounded-lg border p-2 ${
                         isAdded ? "bg-primary/10" : ""
                       }`}
                       key={line.id}
@@ -666,10 +568,7 @@ const SelectItemDialog = withForm({
                           <h4 className="line-clamp-2 leading-tight font-medium whitespace-normal">
                             {line.title}
                           </h4>
-                          <Badge
-                            variant="secondary"
-                            className="rounded-xl border border-border uppercase"
-                          >
+                          <Badge className="rounded-md border border-border uppercase">
                             {line.identifier}
                           </Badge>
                         </div>
@@ -696,7 +595,7 @@ const SelectItemDialog = withForm({
                                 image: line.image as string,
                                 basePrice: line.basePrice,
                                 productId: line.id,
-                                price: line.basePrice,
+                                price: "",
                               });
                             }
                           }}
