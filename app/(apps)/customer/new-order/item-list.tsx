@@ -1,20 +1,19 @@
 "use client";
 
 import React from "react";
+import { OrderGuideList } from "./order-guide";
 import { formOpt } from "./order-form-options";
 import { withForm } from "@/hooks/form-context";
 import {
   EmptyComponent,
   LoadingSkeleton,
 } from "@/components/admin/placeholder-component";
-import { type CustomerProductType } from "@/lib/types";
 import { CategoryPills, ProductItem } from "./item-card";
 import { useRouterStuff } from "@/hooks/use-router-stuff";
 import { LayoutGrid, TextAlignJustify } from "lucide-react";
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
 import { useInfiniteProductsCustomer } from "@/hooks/use-product";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { OrderGuideList } from "./order-guide";
 
 const LAYOUTS = [
   {
@@ -143,13 +142,49 @@ export const ItemList = withForm({
             ${LAYOUTS.find((l) => l.value === layout)?.className}
             `}
           >
-            {products?.map((product, idx) => (
-              <ProductItem
-                key={product.id}
-                product={product as CustomerProductType}
-                form={form}
-              />
-            ))}
+            {products?.map((product, idx) => {
+              const {
+                id,
+                title,
+                image,
+                type,
+                identifier,
+                finalPrice,
+                pack,
+                categories,
+                isTaxable,
+                isGuide,
+                isSuggested,
+                lastPurchased,
+              } = product;
+
+              return (
+                <ProductItem
+                  key={product.id}
+                  product={{
+                    productId: id,
+                    title,
+                    image,
+                    type,
+                    identifier,
+                    pack,
+                    categories: categories!,
+                    price: finalPrice,
+                    total: finalPrice,
+                    quantity: "0",
+                    isTaxable: isTaxable!,
+                    lastPurchased: {
+                      id: lastPurchased.id,
+                      quantity: lastPurchased.quantity,
+                      createdAt: lastPurchased.createdAt,
+                    },
+                    isGuide,
+                    isSuggested,
+                  }}
+                  form={form}
+                />
+              );
+            })}
           </div>
         ) : (
           !isError &&

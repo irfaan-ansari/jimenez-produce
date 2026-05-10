@@ -1,5 +1,5 @@
 import React from "react";
-import { OrderGuideForm } from "../order-guide-form";
+import { OrderGuideForm } from "../_components/order-guide-form";
 
 export const metadata = {
   title: "New Order Guide",

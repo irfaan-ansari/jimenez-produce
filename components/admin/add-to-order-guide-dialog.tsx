@@ -10,42 +10,92 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
+import { formatUSD } from "@/lib/utils";
 import { File } from "@duo-icons/react";
-import { Loader, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAppForm } from "@/hooks/form-context";
+import { useQueryClient } from "@tanstack/react-query";
+import { addOrderGuideItem } from "@/server/order-guide";
 import { Field, FieldGroup } from "@/components/ui/field";
-import { formatUSD } from "@/lib/utils";
+import { ChevronsUpDown, ImageOff, Loader } from "lucide-react";
 import { OrderGuideSelector } from "@/components/admin/order-guide-selector";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-const schema = z.object({
-  name: z.string().min(1, "Name is required"),
-  description: z.string(),
-  orderGuideId: z.any(),
-  productId: z.number(),
-});
+const schema = z
+  .object({
+    item: z.object({
+      id: z.string(),
+      title: z.string(),
+      image: z.string(),
+      finalPrice: z.string(),
+    }),
+    name: z.string(),
+    description: z.string(),
+    orderGuide: z.object({
+      id: z.string(),
+      name: z.string(),
+    }),
+  })
+  .refine(
+    (data) => {
+      return (
+        data.name.trim().length > 0 || data.orderGuide.id.trim().length > 0
+      );
+    },
+    {
+      message: "Enter name or select existing order guide",
+      path: ["name"],
+    },
+  );
+
+type Form = z.infer<typeof schema>;
 
 export const AddToOrderGuideDialog = ({
   children,
+  item = {
+    id: "",
+    title: "",
+    image: "",
+    finalPrice: "",
+  },
 }: {
   children: React.ReactNode;
+  item: Form["item"];
 }) => {
   const [open, setOpen] = React.useState(false);
-
+  const queryClient = useQueryClient();
   const form = useAppForm({
     defaultValues: {
+      item,
       name: "",
       description: "",
-      orderGuideId: "",
+      orderGuide: {
+        id: "",
+        name: "",
+      },
     },
     validators: {
-      onBlur: schema,
+      onSubmit: schema,
     },
     onSubmit: async ({ value }) => {
       const toastId = toast.loading("Please wait...");
-      await new Promise((res) => setTimeout(res, 1000));
-      toast.success("(Demo) order guide saved successfully", { id: toastId });
-      setOpen(false);
+      const { item, orderGuide } = value;
+
+      const { error, success } = await addOrderGuideItem({
+        orderGuideId: Number(orderGuide.id),
+        productId: Number(item.id),
+      });
+      if (success) {
+        toast.success("Item added successfully", { id: toastId });
+
+        queryClient.invalidateQueries({
+          queryKey: ["customer-products", "customer-order-guides"],
+        });
+
+        setOpen(false);
+      } else {
+        toast.error(error.message, { id: toastId });
+      }
     },
   });
 
@@ -70,29 +120,52 @@ export const AddToOrderGuideDialog = ({
           </DialogHeader>
 
           <FieldGroup className="px-6 no-scrollbar flex-1 overflow-auto">
-            <div className="rounded-xl border bg-secondary/20 gap-3 p-2 flex items-center justify-center">
-              <span className="shrink-0 size-9 ring-1 inline-flex bg-black/80 rounded-xl"></span>
-              <div className="space-y-1 flex-1">
-                <p className="font-medium">Name</p>
-              </div>
-              <span className="text-primary">{formatUSD(20)}</span>
-            </div>
-            <OrderGuideSelector
-              value={form.getFieldValue("orderGuideId")}
-              onValueChange={(value) =>
-                form.setFieldValue("orderGuideId", value)
-              }
-            >
-              <Button
-                size="xl"
-                type="button"
-                variant="outline"
-                className="w-full justify-start text-muted-foreground"
-              >
-                <Search />
-                Select existing
-              </Button>
-            </OrderGuideSelector>
+            {/* selected product */}
+            <form.Field
+              name="item"
+              children={(field) => (
+                <div className="rounded-xl border bg-secondary/20 gap-3 p-2 flex items-center justify-center">
+                  <Avatar className="size-9 shrink-0 rounded-lg ring-2 ring-green-600/40 ring-offset-1 **:rounded-lg after:hidden">
+                    <AvatarImage src={field.state.value.image as string} />
+                    <AvatarFallback>
+                      <ImageOff className="size-4" />
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="space-y-1 flex-1">
+                    <p className="font-medium">{field.state.value.title}</p>
+                  </div>
+                  <span className="text-primary font-medium">
+                    {formatUSD(Number(field.state.value.finalPrice))}
+                  </span>
+                </div>
+              )}
+            />
+
+            <form.Field
+              name="orderGuide"
+              children={(field) => (
+                <OrderGuideSelector
+                  value={form.getFieldValue("orderGuide")?.id}
+                  onValueChange={(value) =>
+                    field.handleChange({
+                      id: String(value.id),
+                      name: value.name,
+                    })
+                  }
+                >
+                  <Button
+                    size="xl"
+                    type="button"
+                    variant="outline"
+                    className="w-full rounded-lg justify-start text-muted-foreground"
+                  >
+                    {field.state.value?.name || "Select existing"}
+
+                    <ChevronsUpDown className="ml-auto text-muted-foreground" />
+                  </Button>
+                </OrderGuideSelector>
+              )}
+            />
             <div className="flex flex-row items-center justify-center gap-4">
               <div className="flex-[1_1_0] border-b "></div>
               <span className="shrink-0 text-xs font-medium text-muted-foreground">
@@ -136,14 +209,10 @@ export const AddToOrderGuideDialog = ({
               })}
               children={({ isSubmitting, canSubmit, isDirty }) => (
                 <Button
-                  type="button"
+                  type="submit"
                   size="xl"
                   className="rounded-lg"
-                  disabled={isSubmitting || !canSubmit || !isDirty}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    form.handleSubmit();
-                  }}
+                  disabled={isSubmitting || !canSubmit}
                 >
                   {isSubmitting ? <Loader className="animate-spin" /> : "Save"}
                 </Button>

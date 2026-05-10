@@ -15,7 +15,7 @@ import { useRouter } from "next/navigation";
 import { createOrder } from "@/server/order";
 import { Button } from "@/components/ui/button";
 import { useConfirm } from "@/hooks/use-confirm";
-import { TaxRule, type Session } from "@/lib/types";
+import { type TaxRule } from "@/lib/types";
 import { useSidebar } from "@/components/ui/sidebar";
 import { OrderGuideButton } from "./order-guide";
 import { useQueryClient } from "@tanstack/react-query";
@@ -25,13 +25,7 @@ import { useAppForm, withForm } from "@/hooks/form-context";
 import { SearchBar } from "@/components/admin/search-filters";
 import { ShoppingBag } from "@duo-icons/react";
 
-export const OrderForm = ({
-  session,
-  taxRules,
-}: {
-  session?: Session;
-  taxRules: TaxRule[];
-}) => {
+export const OrderForm = ({ taxRules }: { taxRules: TaxRule[] }) => {
   const router = useRouter();
   const confirm = useConfirm();
   const queryClient = useQueryClient();
@@ -44,30 +38,13 @@ export const OrderForm = ({
     ...formOpt,
     defaultValues: {
       ...formOpt.defaultValues,
-      shippingAddress: {
-        street: "",
-        city: "",
-        state: "",
-        zip: "",
-      },
-      notes: "",
       taxRules: taxRules,
-      deliveryDate: "",
-      deliveryWindow: "",
-      deliveryInstruction: "",
     },
     onSubmit: async ({ value }) => {
-      const { lineItems } = value;
-
-      const orderLineItems = lineItems.map((item) => {
-        const { id, createdAt, updatedAt, ...rest } = item;
-        return { ...rest };
-      });
-
       const toastId = toast.loading("Submitting your order...");
+
       const { success, error, data } = await createOrder({
         ...value,
-        lineItems: orderLineItems,
       });
 
       if (success) {
@@ -105,19 +82,17 @@ export const OrderForm = ({
         <div className="flex w-full items-center justify-between gap-4 lg:w-auto lg:flex-1 lg:justify-end">
           <SearchBar placeholder="Search products..." />
           <OrderGuideButton />
-          <form.Subscribe
-            selector={({ values }) => ({
-              lineItems: values.lineItems,
-            })}
-            children={({ lineItems }) => (
+          <form.Field
+            name="lineItems"
+            children={(field) => (
               <Button
                 size="xl"
                 className="rounded-lg [&>svg]:size-5!"
                 onClick={() => setShowCart(true)}
-                disabled={lineItems.length === 0}
+                disabled={field.state.value.length === 0}
               >
                 <ShoppingBag />
-                View cart ({lineItems.length})
+                View cart ({field.state.value.length})
               </Button>
             )}
           />

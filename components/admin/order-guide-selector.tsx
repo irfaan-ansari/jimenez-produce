@@ -1,23 +1,13 @@
 "use client";
+import React from "react";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import React from "react";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupInput,
-} from "@/components/ui/input-group";
-import { Check, Search } from "lucide-react";
-import { useDebounce } from "@/hooks/use-debounce";
-import { useInfiniteOrderGuides } from "@/hooks/use-orders";
-import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
 import {
   Field,
   FieldContent,
@@ -25,9 +15,17 @@ import {
   FieldLabel,
   FieldTitle,
 } from "@/components/ui/field";
-
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "@/components/ui/input-group";
+import { Check, Search } from "lucide-react";
+import { useDebounce } from "@/hooks/use-debounce";
+import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
+import { OrderGuide, useInfiniteOrderGuides } from "@/hooks/use-orders";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { LoadingSkeleton } from "./placeholder-component";
+import { EmptyComponent, LoadingSkeleton } from "./placeholder-component";
 
 export const OrderGuideSelector = ({
   value,
@@ -36,7 +34,7 @@ export const OrderGuideSelector = ({
 }: {
   children: React.ReactNode;
   value: string;
-  onValueChange: (value: string) => void;
+  onValueChange: (value: OrderGuide) => void;
 }) => {
   const [open, setOpen] = React.useState(false);
   const [search, setSearch] = React.useState("");
@@ -47,6 +45,8 @@ export const OrderGuideSelector = ({
     setDebounced(val);
   }, 500);
 
+  const query = new URLSearchParams({ q: debounced });
+
   const {
     data,
     isError,
@@ -55,7 +55,7 @@ export const OrderGuideSelector = ({
     isFetchingNextPage,
     hasNextPage,
     fetchNextPage,
-  } = useInfiniteOrderGuides("");
+  } = useInfiniteOrderGuides(query.toString());
 
   const loadMoreRef = useInfiniteScroll(() => {
     if (hasNextPage && !isFetchingNextPage) {
@@ -97,54 +97,81 @@ export const OrderGuideSelector = ({
         </InputGroup>
         {/* List */}
         <div className="no-scrollbar flex-1 space-y-1 overflow-y-auto w-full">
-          {isPending ? (
-            <LoadingSkeleton />
-          ) : guides?.length === 0 ? (
-            <p className="px-2 py-4 text-sm text-muted-foreground">
-              No result found
-            </p>
-          ) : (
-            <RadioGroup
-              className="gap-1"
-              value={String(value)}
-              onValueChange={(value) => {
-                setOpen(false);
-                onValueChange?.(value);
-              }}
-            >
-              {guides?.map((guide) => {
-                return (
-                  <FieldLabel
-                    key={guide.id}
-                    htmlFor={String(guide.id)}
-                    className="cursor-pointer rounded-xl!"
-                  >
-                    <Field
-                      orientation="horizontal"
-                      className="rounded-xl has-data-checked:*:data-[slot=icon]:opacity-100"
-                    >
-                      <FieldContent>
-                        <FieldTitle>{guide.name}</FieldTitle>
-                        <FieldDescription className="text-xs font-medium">
-                          {guide.itemCount} items
-                        </FieldDescription>
-                      </FieldContent>
+          {/* is pending */}
+          {isPending && <LoadingSkeleton />}
 
-                      <RadioGroupItem
-                        value={String(guide.id)}
-                        id={String(guide.id)}
-                      />
-                      <span
-                        data-slot="icon"
-                        className="size-4 self-start inline-flex items-center justify-center rounded-full bg-primary text-primary-foreground opacity-0"
+          {/* error */}
+          {isError && (
+            <EmptyComponent
+              variant="error"
+              title={error.message}
+              description="Please try again later"
+            />
+          )}
+
+          <RadioGroup
+            className="gap-1"
+            value={value}
+            onValueChange={(value) => {
+              const index = guides.findIndex((g) => String(g.id) === value);
+              if (index >= 0) {
+                setOpen(false);
+                onValueChange?.(guides[index]);
+              }
+            }}
+          >
+            {guides.length > 0
+              ? guides?.map((guide) => {
+                  return (
+                    <FieldLabel
+                      key={guide.id}
+                      htmlFor={String(guide.id)}
+                      className="cursor-pointer rounded-xl! bg-secondary/20"
+                    >
+                      <Field
+                        orientation="horizontal"
+                        className=" has-data-checked:*:data-[slot=icon]:opacity-100"
                       >
-                        <Check className="size-3" />
-                      </span>
-                    </Field>
-                  </FieldLabel>
-                );
-              })}
-            </RadioGroup>
+                        <FieldContent>
+                          <FieldTitle>{guide.name}</FieldTitle>
+                          <FieldDescription className="text-xs font-medium">
+                            {guide.itemCount} items
+                          </FieldDescription>
+                        </FieldContent>
+
+                        <RadioGroupItem
+                          className="sr-only"
+                          value={String(guide.id)}
+                          id={String(guide.id)}
+                        />
+                        <span
+                          data-slot="icon"
+                          className="size-4 self-start inline-flex items-center justify-center rounded-full bg-primary text-primary-foreground opacity-0"
+                        >
+                          <Check className="size-3" />
+                        </span>
+                      </Field>
+                    </FieldLabel>
+                  );
+                })
+              : !isPending &&
+                !isError && (
+                  <EmptyComponent
+                    variant="empty"
+                    title="No products found"
+                    description="Try adjusting your search"
+                  />
+                )}
+          </RadioGroup>
+
+          {/* infinite loading ref */}
+          {hasNextPage && (
+            <div
+              ref={loadMoreRef}
+              className="col-span-full flex min-h-10 w-full justify-center"
+            >
+              {isFetchingNextPage && <LoadingSkeleton />}
+            </div>
           )}
         </div>
       </DialogContent>

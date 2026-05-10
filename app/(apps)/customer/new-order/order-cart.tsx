@@ -13,6 +13,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { formatUSD } from "@/lib/utils";
 import { QuantityInput } from "./order-form";
 import { Button } from "@/components/ui/button";
 import { withForm } from "@/hooks/form-context";
@@ -20,7 +21,6 @@ import { ChevronDown, ImageOff, Loader } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { DELIVERY_TIME } from "@/lib/constants/customer";
 import { formOpt, getTotals } from "./order-form-options";
-import { formatUSD, getAvatarFallback } from "@/lib/utils";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 

@@ -5,7 +5,7 @@ import {
   LoadingSkeleton,
 } from "@/components/admin/placeholder-component";
 import { useOrderGuide } from "@/hooks/use-orders";
-import { OrderGuideForm } from "../order-guide-form";
+import { OrderGuideForm } from "../_components/order-guide-form";
 
 export const PageClient = () => {
   const params = useParams();
@@ -33,7 +33,7 @@ export const PageClient = () => {
     description: data.description || "",
     items: data.items.map((item) => ({
       title: item.title,
-      categories: item.categories,
+      categories: item.categories || [],
       image: item.image,
       price: item.finalPrice,
       productId: item.productId,

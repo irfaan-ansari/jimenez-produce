@@ -22,7 +22,7 @@ import { Badge } from "@/components/reui/badge";
 import { useAppForm } from "@/hooks/form-context";
 import { Field, FieldGroup } from "@/components/ui/field";
 import { formatUSD, getAvatarFallback } from "@/lib/utils";
-import { ProductSelectorCustomer } from "../../../../components/admin/product-selector-customer";
+import { ProductSelectorCustomer } from "./product-selector-customer";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import z from "zod";
 

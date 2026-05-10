@@ -4,6 +4,7 @@ import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import {
   OrderGuideItemSelectType,
   OrderGuideSelectType,
+  ProductSelectType,
 } from "@/lib/db/schema";
 
 export interface OrderGuide extends OrderGuideSelectType {
@@ -15,12 +16,9 @@ interface OrderGuidesResponse {
   pagination: Pagination;
 }
 
-export interface OrderGuideItem extends OrderGuideItemSelectType {
-  finalPrice: string;
-  title: string;
-  image: string;
-  categories: string[];
-  identifier: string;
+export interface OrderGuideItem
+  extends OrderGuideItemSelectType, Omit<ProductSelectType, "basePrice"> {
+  finalPrice: ProductSelectType["basePrice"];
 }
 
 interface OrderGuideResponse {
@@ -31,7 +29,7 @@ interface OrderGuideResponse {
 
 export const useOrderGuides = (enabled = true) => {
   return useQuery({
-    queryKey: ["order-guides"],
+    queryKey: ["customer-order-guides"],
     queryFn: () => {
       return fetcher<OrderGuidesResponse>(`/api/customer/order-guides`);
     },
@@ -42,7 +40,7 @@ export const useOrderGuides = (enabled = true) => {
 
 export const useInfiniteOrderGuides = (query: string) => {
   return useInfiniteQuery({
-    queryKey: ["order-guides", query],
+    queryKey: ["customer-order-guides", query],
     initialPageParam: 1,
     queryFn: ({ pageParam }) => {
       const params = new URLSearchParams(query);

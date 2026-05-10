@@ -5,12 +5,11 @@ import {
   lineItem,
   OrderInsertType,
   LineItemInsertType,
-  orderGuideItem,
 } from "@/lib/db/schema";
 import { db } from "@/lib/db";
-import { getSession } from "./auth";
+import { eq } from "drizzle-orm";
 import { isBefore } from "date-fns";
-import { and, eq } from "drizzle-orm";
+import { getSession } from "./auth";
 import { getTeamTaxRules } from "./tax-rule";
 import { handleAction } from "@/lib/helper/error-handler";
 
@@ -30,10 +29,12 @@ export const createOrder = handleAction(
     if (!auth) throw new Error("Authentication required");
 
     const { lineItems, ...rest } = data;
-    if (lineItems.length <= 0) throw new Error("Add atleast one item");
-    const { activeTeamId, activeOrganizationId, userId } = auth.session;
-    const charges = { type: "Fuel Charge", amount: 15 };
 
+    if (lineItems.length <= 0) throw new Error("Add atleast one item");
+
+    const { activeTeamId, activeOrganizationId, userId } = auth.session;
+
+    // TOTO get price levels
     const { data: taxRules, error } = await getTeamTaxRules();
 
     if (error) throw new Error("Failed to submit your order, please try again");
@@ -47,6 +48,7 @@ export const createOrder = handleAction(
     const taxRate = String(totalTaxRate);
 
     //  totals
+    const charges = { type: "Fuel Charge", amount: 15 };
     const totals = {
       lineItemCount: 0,
       lineItemQuantity: 0,
@@ -66,15 +68,15 @@ export const createOrder = handleAction(
 
       const lineSubtotal = qty * price;
 
-      // 👉 line tax
+      //  line tax
       const lineTax = isTaxable ? (lineSubtotal * totalTaxRate) / 100 : 0;
 
       const lineTotal = lineSubtotal + lineTax;
 
       // assign line item fields
-      lineItems[index].subtotal = String(lineSubtotal);
-      lineItems[index].taxAmount = String(lineTax);
-      lineItems[index].total = String(lineTotal);
+      lineItems[index].subtotal = String(lineSubtotal.toFixed(2));
+      lineItems[index].taxAmount = String(lineTax.toFixed(2));
+      lineItems[index].total = String(lineTotal.toFixed(2));
 
       // accumulate totals
       totals.lineItemCount++;
@@ -99,9 +101,13 @@ export const createOrder = handleAction(
 
     // stringify for DB
     const stringTotals = Object.fromEntries(
-      Object.entries(totals).map(([key, value]) => [key, String(value)]),
+      Object.entries(totals).map(([key, value]) => [
+        key,
+        String(value.toFixed(2)),
+      ]),
     );
 
+    // create order
     const [orderRes] = await db
       .insert(order)
       .values({
@@ -120,6 +126,7 @@ export const createOrder = handleAction(
       })
       .returning();
 
+    // create order line items
     const [lineItemsres] = await db
       .insert(lineItem)
       .values(

@@ -14,16 +14,13 @@ import {
   product,
   orderGuide,
   teamProduct,
-  priceLevelItem,
-  orderGuideItem,
   orderGuideTarget,
-  ProductSelectType,
 } from "@/lib/db/schema";
 import { db } from "@/lib/db";
 import { getSession } from "@/server/auth";
-import { team } from "@/lib/db/auth-schema";
 import { getQueryObject } from "@/lib/helper/query";
 import { NextRequest, NextResponse } from "next/server";
+import { resolvePrices } from "@/lib/helper/resolve-price";
 
 export async function GET(req: NextRequest) {
   try {
@@ -63,7 +60,6 @@ export async function GET(req: NextRequest) {
         ilike(product.description, `%${q}%`),
         ilike(product.identifier, `%${q}%`),
       ) as SQL<unknown>;
-
       conditions.push(searchCondition);
     }
 
@@ -83,6 +79,7 @@ export async function GET(req: NextRequest) {
         ),
       );
 
+    // get data
     const products = await db.query.product.findMany({
       where: filters,
       with: {
@@ -104,14 +101,32 @@ export async function GET(req: NextRequest) {
       orderBy: [desc(product.createdAt), desc(product.id)],
     });
 
+    // get total count for pagination
+    const [{ total }] = await db
+      .select({ total: countDistinct(product.id) })
+      .from(product)
+      .where(filters);
+
+    // resolved prices
+    const prices = await resolvePrices({
+      teamId: activeTeamId!,
+      productIds: products.map((p) => p.id),
+    });
+
+    // pricing lookup
+    const pricingMap = new Map(prices.map((p) => [p.id, p]));
+
     const transformedProducts = products.map((product) => {
-      const { lineItems, orderGuideItems, ...rest } = product;
+      const { lineItems, orderGuideItems, basePrice, ...rest } = product;
       const [lineItem] = lineItems;
       const [orderGuideItem] = orderGuideItems;
       const teamId = orderGuideItem?.orderGuide?.teamId;
 
+      const { finalPrice = 0 } = pricingMap.get(product.id) ?? {};
+
       return {
         ...rest,
+        finalPrice,
         lastPurchased: {
           id: lineItem?.id,
           orderId: lineItem?.orderId,
@@ -123,20 +138,9 @@ export async function GET(req: NextRequest) {
       };
     });
 
-    // get total count for pagination
-    const [{ total }] = await db
-      .select({ total: countDistinct(product.id) })
-      .from(product)
-      .where(filters);
-
-    const updatedProducts = await resolvePrice(
-      activeTeamId!,
-      transformedProducts,
-    );
-
     return NextResponse.json(
       {
-        data: updatedProducts,
+        data: transformedProducts,
         pagination: {
           page,
           limit,
@@ -154,55 +158,3 @@ export async function GET(req: NextRequest) {
     );
   }
 }
-
-/**
- * Resolve price level for products
- * @param teamId
- * @param products
- * @returns Promise<ProductSelectType[]>
- */
-const resolvePrice = async (teamId: string, products: ProductSelectType[]) => {
-  // get price level data
-  const teamData = await db.query.team.findFirst({
-    where: eq(team.id, teamId),
-    with: { priceLevel: true },
-  });
-
-  const priceLevel = teamData?.priceLevel;
-
-  if (!priceLevel) return products;
-
-  if (priceLevel.appliesTo === "all") {
-    const { adjustmentType, adjustmentValue } = priceLevel;
-
-    return products.map((p) => {
-      let price = Number(p.basePrice);
-
-      if (adjustmentType === "percentage") {
-        price = price * (1 + Number(adjustmentValue) / 100);
-      } else {
-        price = price - Number(adjustmentValue);
-      }
-
-      return { ...p, basePrice: String(price) };
-    });
-  }
-
-  if (priceLevel.appliesTo === "per_item") {
-    const productIds = products.map((p) => p.id);
-
-    const prices = await db.query.priceLevelItem.findMany({
-      where: and(
-        inArray(priceLevelItem.productId, productIds),
-        eq(priceLevelItem.priceLevelId, priceLevel.id),
-      ),
-    });
-
-    const priceMap = new Map(prices.map((p) => [p.productId, p.price]));
-
-    return products.map((p) => ({
-      ...p,
-      basePrice: priceMap.get(p.id) ?? p.basePrice,
-    }));
-  }
-};

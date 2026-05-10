@@ -239,7 +239,7 @@ const SidebarTeam = ({ session: auth }: { session: Session }) => {
                       {activeTeam?.managerName}
                     </span>
                   ) : (
-                    <Skeleton className="h-3 w-3/4 rounded-lg bg-sidebar-accent/10" />
+                    <Skeleton className="h-3 w-3/4 mt-1.5 rounded-lg bg-sidebar-accent/10" />
                   )}
                 </div>
                 <ChevronsUpDown className="ml-auto size-4" />

@@ -75,6 +75,7 @@ export const OrderGuideForm = ({
   const router = useRouter();
   const queryClient = useQueryClient();
   const [layout, setLayout] = React.useState("list");
+
   const {
     id,
     teamId,
@@ -124,7 +125,7 @@ export const OrderGuideForm = ({
       }
 
       queryClient.invalidateQueries({
-        queryKey: ["order-guides"],
+        queryKey: ["customer-order-guides"],
       });
     },
   });
@@ -147,6 +148,9 @@ export const OrderGuideForm = ({
         if (success) {
           toast.success("Order guide deleted successfully", { id: toastId });
           router.replace("/customer/order-guides");
+          queryClient.invalidateQueries({
+            queryKey: ["customer-order-guides"],
+          });
         } else {
           toast.error(error.message, { id: toastId });
         }
@@ -176,9 +180,7 @@ export const OrderGuideForm = ({
                   <ChevronLeft /> Back
                 </Link>
               </Button>
-              <h1 className="text-lg font-semibold">
-                {valueName || "New Order Guide"}
-              </h1>
+              <h1 className="text-lg font-semibold">{valueName || "New"}</h1>
               {/* if read only */}
               {id && !teamId && (
                 <Badge
@@ -189,25 +191,31 @@ export const OrderGuideForm = ({
                 </Badge>
               )}
             </div>
-            <form.Subscribe
-              selector={({ isSubmitting, canSubmit, isDirty }) => ({
-                isSubmitting,
-                canSubmit,
-                isDirty,
-              })}
-              children={({ isSubmitting, canSubmit, isDirty }) => (
-                <Button
-                  type="submit"
-                  size="xl"
-                  className="w-32 rounded-lg"
-                  disabled={
-                    isSubmitting || !canSubmit || !isDirty || !!(id && !teamId)
-                  }
-                >
-                  {isSubmitting ? <Loader className="animate-spin" /> : "Save"}
-                </Button>
-              )}
-            />
+
+            {/* show edit save button if owned */}
+            {((id && teamId) || (!id && !teamId)) && (
+              <form.Subscribe
+                selector={({ isSubmitting, canSubmit, isDirty }) => ({
+                  isSubmitting,
+                  canSubmit,
+                  isDirty,
+                })}
+                children={({ isSubmitting, canSubmit, isDirty }) => (
+                  <Button
+                    type="submit"
+                    size="xl"
+                    className="w-32 rounded-lg"
+                    disabled={isSubmitting || !canSubmit || !isDirty}
+                  >
+                    {isSubmitting ? (
+                      <Loader className="animate-spin" />
+                    ) : (
+                      <>{id ? "Update" : "Save"}</>
+                    )}
+                  </Button>
+                )}
+              />
+            )}
           </div>
           <Card className="rounded-2xl">
             <FieldGroup className="px-6">
@@ -309,7 +317,7 @@ export const OrderGuideForm = ({
                       <SortableItem
                         key={item.productId}
                         value={String(item.productId)}
-                        className="flex flex-1 items-center gap-3 rounded-lg border bg-background p-2"
+                        className="flex flex-1 items-center gap-3 rounded-lg border bg-background p-2 data-[dragging=true]:bg-secondary data-[dragging=true]:scale-105"
                       >
                         <SortableItemHandle>
                           <GripVerticalIcon className="size-4" />
@@ -322,17 +330,16 @@ export const OrderGuideForm = ({
                             </AvatarFallback>
                           </Avatar>
                         </div>
-                        <div className="min-w-0 flex-1 space-y-1">
-                          <p>{item.title}</p>
-                          <div className="flex items-center gap-1">
+                        <div className="min-w-0 flex-1 space-y-1.5">
+                          <p className="font-medium">{item.title}</p>
+                          <div className="flex items-center gap-2">
                             {item.categories?.map((cat, i) => (
-                              <Badge
+                              <span
                                 key={cat + i}
-                                variant="outline"
-                                className="rounded-xl border border-border bg-primary/20"
+                                className="text-xs uppercase text-muted-foreground font-medium border-r-2 pr-2 last:border-r-0 leading-3"
                               >
                                 {cat}
-                              </Badge>
+                              </span>
                             ))}
                           </div>
                         </div>
@@ -360,19 +367,22 @@ export const OrderGuideForm = ({
       </div>
       <div className="col-span-2 space-y-6">
         <Card className="hidden flex-col gap-6 lg:flex">
-          <CardContent className="flex-1 space-y-3">
+          <CardContent className="flex-1 space-y-3 relative">
             <CardTitle className="text-lg font-semibold">
-              {valueName || "New Order Guide"}
+              {valueName || "New"}
             </CardTitle>
 
-            {/* {!item.teamId && (
+            {id && !teamId && (
               <Badge
                 variant="secondary"
                 className="h-6 border border-amber-200 bg-amber-100"
               >
                 Suggested
               </Badge>
-            )} */}
+            )}
+            {!id && (
+              <Badge className="h-6 border absolute right-2 top-2">New</Badge>
+            )}
             <CardDescription>
               {valueDescription || "No description"}
             </CardDescription>
@@ -382,6 +392,8 @@ export const OrderGuideForm = ({
             {valueItems.length} Items
           </CardFooter>
         </Card>
+
+        {/* show delete button if owned */}
         <div className="bg-background">
           {id && teamId && (
             <Alert

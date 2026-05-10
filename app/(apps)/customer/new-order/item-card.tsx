@@ -10,24 +10,23 @@ import { format } from "date-fns/format";
 import { cn, formatUSD } from "@/lib/utils";
 import { QuantityInput } from "./order-form";
 import { Badge } from "@/components/ui/badge";
-import { formOpt } from "./order-form-options";
+import { formOpt, OrderItem } from "./order-form-options";
 import { Button } from "@/components/ui/button";
 import { withForm } from "@/hooks/form-context";
 import { useStore } from "@tanstack/react-form";
 import { useCategories } from "@/hooks/use-product";
 import { Skeleton } from "@/components/ui/skeleton";
-import { type CustomerProductType } from "@/lib/types";
 import { PopoverXDrawer } from "@/components/popover-x-drawer";
 import { Check, ChevronDown, Filter, ImageOff, Star, X } from "lucide-react";
-import { AddToOrderGuideDialog } from "../order-guides/add-to-order-guide-dialog";
+import { AddToOrderGuideDialog } from "../../../../components/admin/add-to-order-guide-dialog";
 
 export const ProductItem = withForm({
   ...formOpt,
   props: {} as {
-    product: CustomerProductType;
+    product: OrderItem;
   },
   render: function Render({ form, product }) {
-    const productId = product.id;
+    const { productId } = product;
 
     const qty = useStore(form.store, (state) => {
       const item = state.values.lineItems.find(
@@ -56,17 +55,8 @@ export const ProductItem = withForm({
           form.setFieldValue(`lineItems[${index}].quantity`, String(nextQty));
         } else {
           form.pushFieldValue("lineItems", {
+            ...product,
             quantity: String(nextQty),
-            productId,
-            title: product.title,
-            price: product.basePrice,
-            total: product.basePrice,
-            image: product.image!,
-            type: product.type,
-            identifier: product.identifier,
-            pack: product.pack,
-            categories: product.categories,
-            isTaxable: product.isTaxable,
           });
         }
       },
@@ -92,7 +82,14 @@ export const ProductItem = withForm({
           {product.isGuide ? (
             <Star className="fill-amber-400 size-4" />
           ) : (
-            <AddToOrderGuideDialog>
+            <AddToOrderGuideDialog
+              item={{
+                id: String(product.productId),
+                title: product.title,
+                image: product.image || "",
+                finalPrice: product.price,
+              }}
+            >
               <Button
                 size="icon-xs"
                 type="button"
@@ -150,7 +147,14 @@ export const ProductItem = withForm({
             {product.isGuide ? (
               <Star className="fill-amber-400 size-4" />
             ) : (
-              <AddToOrderGuideDialog>
+              <AddToOrderGuideDialog
+                item={{
+                  id: String(product.productId),
+                  title: product.title,
+                  image: product.image || "",
+                  finalPrice: product.price,
+                }}
+              >
                 <Button
                   size="icon-xs"
                   type="button"
@@ -169,7 +173,7 @@ export const ProductItem = withForm({
           </div>
 
           <Price
-            price={product.basePrice ?? 0}
+            price={product.price}
             className="group-data-[layout=grid]/card:hidden"
           />
 
@@ -185,10 +189,7 @@ export const ProductItem = withForm({
                 {product.pack ?? null}
               </div>
 
-              <Price
-                price={product.basePrice ?? 0}
-                className="w-auto self-start"
-              />
+              <Price price={product.price} className="w-auto self-start" />
             </div>
             <QuantityInput value={qty} onChange={updateQty} />
           </div>
@@ -198,11 +199,12 @@ export const ProductItem = withForm({
   },
 });
 
+/* Last Purchased */
 const LastPurchase = ({
   product,
   className,
 }: {
-  product: CustomerProductType;
+  product: OrderItem;
   className?: string;
 }) => {
   if (!product.lastPurchased?.id) return;
@@ -219,6 +221,7 @@ const LastPurchase = ({
   );
 };
 
+/* Product Price */
 export const Price = ({
   price,
   className,
@@ -233,12 +236,13 @@ export const Price = ({
   );
 };
 
+/* Product Image Thumbnail */
 export const Thumbnail = ({
   qty,
   product,
   onChange,
 }: {
-  product: CustomerProductType;
+  product: OrderItem;
   qty: number;
   onChange: (qty: number) => void;
 }) => {
@@ -311,10 +315,7 @@ export const Thumbnail = ({
                   {product.pack ?? null}
                 </div>
 
-                <Price
-                  price={product.basePrice ?? 0}
-                  className="w-auto self-start"
-                />
+                <Price price={product.price} className="w-auto self-start" />
               </div>
               <QuantityInput value={qty} onChange={onChange} />
             </div>
@@ -325,6 +326,7 @@ export const Thumbnail = ({
   );
 };
 
+/* Filter By Category */
 export const CategoryPills = ({
   filter,
   setFilter,

@@ -1,13 +1,33 @@
-import { formOptions } from "@tanstack/react-form";
-import { LineItemInsertType } from "@/lib/db/schema";
 import { TaxRule } from "@/lib/types";
+import { formOptions } from "@tanstack/react-form";
+
+export type OrderItem = {
+  productId: number;
+  title: string;
+  price: string;
+  total: string;
+  quantity: string;
+  image: string | null;
+  type: string | null;
+  identifier: string;
+  pack: string | null;
+  categories: string[];
+  isTaxable: boolean;
+  isGuide: boolean;
+  isSuggested: boolean;
+  lastPurchased?: {
+    id: number | null;
+    quantity: string | null;
+    createdAt: Date | string | null;
+  };
+};
 
 export const defaultValues = {
   shippingAddress: { street: "", city: "", state: "", zip: "" },
   lineItemCount: "0",
   lineItemQuantity: "0",
   lineItemTotal: "0",
-  lineItems: [] as (LineItemInsertType & { image: string | undefined })[],
+  lineItems: [] as OrderItem[],
   subtotal: "0",
   discount: "0",
   taxRules: [] as TaxRule[],

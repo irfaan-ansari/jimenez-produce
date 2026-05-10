@@ -214,17 +214,39 @@ export const OrderGuideList = withForm({
             `}
           >
             {data?.data?.items.map((item) => {
-              const product = {
-                ...item,
-                lastPurchased: {},
-                basePrice: item.finalPrice,
-                isGuide: data?.data?.teamId ? true : false,
-                isSuggested: data?.data?.teamId ? true : false,
-              };
+              const {
+                productId,
+                title,
+                finalPrice,
+                quantity,
+                image,
+                type,
+                identifier,
+                pack,
+                categories,
+                isTaxable,
+              } = item;
 
               return (
-                // @ts-expect-error
-                <ProductItem key={item.id} product={product} form={form} />
+                <ProductItem
+                  key={productId}
+                  product={{
+                    productId,
+                    title,
+                    price: finalPrice,
+                    total: finalPrice,
+                    quantity: quantity || "0",
+                    image,
+                    type,
+                    identifier,
+                    pack,
+                    categories: categories!,
+                    isTaxable: !!isTaxable,
+                    isGuide: !!data?.data?.teamId,
+                    isSuggested: !data?.data?.teamId,
+                  }}
+                  form={form}
+                />
               );
             })}
           </div>

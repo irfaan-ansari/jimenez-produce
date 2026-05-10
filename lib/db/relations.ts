@@ -221,6 +221,7 @@ export const orderGuideRelations = relations(orderGuide, ({ one, many }) => ({
     references: [team.id],
   }),
   orderGuideItems: many(orderGuideItem),
+  orderGuideTargets: many(orderGuideTarget),
 }));
 
 export const orderGuideItemRelations = relations(orderGuideItem, ({ one }) => ({

@@ -20,7 +20,7 @@ import {
   InputGroupAddon,
   InputGroupInput,
 } from "@/components/ui/input-group";
-import { Search } from "lucide-react";
+import { Check, ImageOff, Search } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { CoinStack } from "@duo-icons/react";
 import { Button } from "@/components/ui/button";
@@ -28,7 +28,10 @@ import { useDebounce } from "@/hooks/use-debounce";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
 import { useInfiniteProductsCustomer } from "@/hooks/use-product";
-import { LoadingSkeleton } from "@/components/admin/placeholder-component";
+import {
+  EmptyComponent,
+  LoadingSkeleton,
+} from "@/components/admin/placeholder-component";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatUSD, getAvatarFallback, getInitialsAvatar } from "@/lib/utils";
 
@@ -57,8 +60,15 @@ export const ProductSelectorCustomer = ({
 
   const query = new URLSearchParams(filters);
 
-  const { data, isPending, isFetchingNextPage, fetchNextPage, hasNextPage } =
-    useInfiniteProductsCustomer(query.toString());
+  const {
+    data,
+    isPending,
+    isError,
+    error,
+    isFetchingNextPage,
+    fetchNextPage,
+    hasNextPage,
+  } = useInfiniteProductsCustomer(query.toString());
 
   const debounceFn = useDebounce((value: string) => {
     setFilters({ ...filters, q: value });
@@ -72,7 +82,7 @@ export const ProductSelectorCustomer = ({
         title: t.title,
         categories: t.categories,
         image: t.image,
-        price: t.basePrice,
+        price: t.finalPrice,
       })) ?? []
     );
   }, [data]);
@@ -112,75 +122,92 @@ export const ProductSelectorCustomer = ({
 
         {/* List */}
         <div className="no-scrollbar flex-1 space-y-1 overflow-y-auto">
-          {options.map((item) => {
-            const checked =
-              selected.findIndex((s) => s.productId === item.productId) >= 0;
-            item.image = item.image ?? getInitialsAvatar(item.image!);
-            return (
-              <FieldLabel
-                key={item.productId}
-                htmlFor={String(item.productId)}
-                className="cursor-pointer rounded-xl! bg-secondary/20"
-              >
-                <Field orientation="horizontal">
-                  <FieldContent>
-                    <div className="flex flex-1 items-start gap-3">
-                      <div className="shrink-0 pt-1">
-                        <Avatar className="size-9 rounded-lg ring-2 ring-green-600/40 ring-offset-1 **:rounded-lg after:hidden">
-                          <AvatarImage src={item?.image as string} />
-                          <AvatarFallback>
-                            {getAvatarFallback((item.title as string)?.[0])}
-                          </AvatarFallback>
-                        </Avatar>
-                      </div>
-                      <div className="min-w-0 flex-1 space-y-1">
-                        <FieldTitle>{item.title}</FieldTitle>
-                        <div className="flex items-center gap-1">
-                          {item.categories?.map((cat, i) => (
-                            <Badge
-                              key={cat + i}
-                              variant="outline"
-                              className="rounded-xl border border-border bg-primary/20"
-                            >
-                              {cat}
-                            </Badge>
-                          ))}
-                        </div>
-                      </div>
-                      <div className="w-28 self-center text-right font-semibold text-primary">
-                        {formatUSD(item.price)}
-                      </div>
-                    </div>
-                  </FieldContent>
+          {/* initial loading state */}
+          {isPending && <LoadingSkeleton />}
 
-                  <Checkbox
-                    className="self-center"
-                    id={String(item.productId)}
-                    checked={checked}
-                    onCheckedChange={() =>
-                      setSelectedChange({
-                        ...item,
-                        image: item.image!,
-                        categories: item.categories as string[],
-                      })
-                    }
-                  />
-                </Field>
-              </FieldLabel>
-            );
-          })}
-          <div
-            ref={loadMoreRef}
-            className="flex min-h-10 w-full justify-center "
-          >
-            {isFetchingNextPage || isPending ? (
-              <LoadingSkeleton />
-            ) : options.length === 0 ? (
-              <div className="text-center text-sm text-muted-foreground">
-                No result found
-              </div>
-            ) : null}
-          </div>
+          {/* error state */}
+          {isError && <EmptyComponent variant="error" title={error?.message} />}
+
+          {/* success state */}
+          {options.length > 0
+            ? options.map((item) => {
+                const checked =
+                  selected.findIndex((s) => s.productId === item.productId) >=
+                  0;
+                item.image = item.image ?? getInitialsAvatar(item.image!);
+                return (
+                  <FieldLabel
+                    key={item.productId}
+                    htmlFor={String(item.productId)}
+                    className="cursor-pointer rounded-xl! bg-secondary/20"
+                  >
+                    <Field
+                      orientation="horizontal"
+                      className="has-data-checked:*:data-[slot=icon]:opacity-100"
+                    >
+                      <FieldContent>
+                        <div className="flex flex-1 items-start gap-3">
+                          <div className="shrink-0 pt-1">
+                            <Avatar className="size-9 rounded-lg ring-2 ring-green-600/40 ring-offset-1 **:rounded-lg after:hidden">
+                              <AvatarImage src={item?.image as string} />
+                              <AvatarFallback>
+                                <ImageOff className="size-4" />
+                              </AvatarFallback>
+                            </Avatar>
+                          </div>
+                          <div className="min-w-0 flex-1 space-y-1.5">
+                            <FieldTitle>{item.title}</FieldTitle>
+                            <div className="flex items-center gap-1">
+                              {item.categories?.map((cat, i) => (
+                                <span
+                                  key={cat + i}
+                                  className="text-xs uppercase text-muted-foreground font-medium border-r-2 pr-2 last:border-r-0 leading-3"
+                                >
+                                  {cat}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                          <div className="w-28 self-center text-right font-semibold text-primary">
+                            {formatUSD(item.price)}
+                          </div>
+                        </div>
+                      </FieldContent>
+
+                      <Checkbox
+                        className="self-center"
+                        id={String(item.productId)}
+                        checked={checked}
+                        onCheckedChange={() =>
+                          setSelectedChange({
+                            ...item,
+                            image: item.image!,
+                            categories: item.categories as string[],
+                          })
+                        }
+                      />
+                    </Field>
+                  </FieldLabel>
+                );
+              })
+            : !isPending &&
+              !isError && (
+                <EmptyComponent
+                  variant="empty"
+                  title="No products found"
+                  description="Try adjusting your search"
+                />
+              )}
+
+          {/* next page loading */}
+          {hasNextPage && (
+            <div
+              ref={loadMoreRef}
+              className="flex py-10 w-full justify-center "
+            >
+              {isFetchingNextPage ? <LoadingSkeleton /> : null}
+            </div>
+          )}
         </div>
 
         {/* Footer */}

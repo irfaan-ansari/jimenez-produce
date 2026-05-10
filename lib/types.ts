@@ -47,8 +47,14 @@ export type Pagination = {
   totalPages: number;
 };
 
-export type CustomerProductType = ProductSelectType & {
-  lastPurchased: LineItemSelectType;
+export type CustomerProductType = Omit<ProductSelectType, "basePrice"> & {
+  finalPrice: string;
+  lastPurchased: {
+    id: number | null;
+    orderId: number | null;
+    quantity: string | null;
+    createdAt: Date | null;
+  };
   isGuide: boolean;
   isSuggested: boolean;
 };
