@@ -12,12 +12,13 @@ import {
 import { toast } from "sonner";
 import { formatUSD } from "@/lib/utils";
 import { File } from "@duo-icons/react";
+import { Tooltip } from "@/components/tooltip";
 import { Button } from "@/components/ui/button";
 import { useAppForm } from "@/hooks/form-context";
 import { useQueryClient } from "@tanstack/react-query";
-import { addOrderGuideItem } from "@/server/order-guide";
 import { Field, FieldGroup } from "@/components/ui/field";
-import { ChevronsUpDown, ImageOff, Loader } from "lucide-react";
+import { ChevronsUpDown, ImageOff, Loader, X } from "lucide-react";
+import { addOrderGuideItem, createOrderGuide } from "@/server/order-guide";
 import { OrderGuideSelector } from "@/components/admin/order-guide-selector";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
@@ -81,20 +82,43 @@ export const AddToOrderGuideDialog = ({
       const toastId = toast.loading("Please wait...");
       const { item, orderGuide } = value;
 
-      const { error, success } = await addOrderGuideItem({
-        orderGuideId: Number(orderGuide.id),
-        productId: Number(item.id),
-      });
-      if (success) {
-        toast.success("Item added successfully", { id: toastId });
-
-        queryClient.invalidateQueries({
-          queryKey: ["customer-products", "customer-order-guides"],
+      // if selected existing order guide
+      if (orderGuide.id) {
+        const { error, success } = await addOrderGuideItem({
+          orderGuideId: Number(orderGuide.id),
+          productId: Number(item.id),
         });
 
-        setOpen(false);
+        if (success) {
+          toast.success("Item added successfully", { id: toastId });
+
+          queryClient.invalidateQueries({
+            queryKey: ["customer-products", "customer-order-guides"],
+          });
+
+          setOpen(false);
+        } else {
+          toast.error(error.message, { id: toastId });
+        }
       } else {
-        toast.error(error.message, { id: toastId });
+        // create new order guide
+        const { error, success } = await createOrderGuide({
+          name: value.name,
+          description: value.description,
+          productIds: [Number(item.id)],
+        });
+
+        if (success) {
+          toast.success("Order guide created successfully", { id: toastId });
+
+          queryClient.invalidateQueries({
+            queryKey: ["customer-order-guides"],
+          });
+
+          setOpen(false);
+        } else {
+          toast.error(error.message, { id: toastId });
+        }
       }
     },
   });
@@ -119,22 +143,22 @@ export const AddToOrderGuideDialog = ({
             </DialogTitle>
           </DialogHeader>
 
-          <FieldGroup className="px-6 no-scrollbar flex-1 overflow-auto">
+          <FieldGroup className="no-scrollbar flex-1 overflow-auto px-6">
             {/* selected product */}
             <form.Field
               name="item"
               children={(field) => (
-                <div className="rounded-xl border bg-secondary/20 gap-3 p-2 flex items-center justify-center">
+                <div className="flex items-center justify-center gap-3 rounded-xl border bg-secondary/20 p-2">
                   <Avatar className="size-9 shrink-0 rounded-lg ring-2 ring-green-600/40 ring-offset-1 **:rounded-lg after:hidden">
                     <AvatarImage src={field.state.value.image as string} />
                     <AvatarFallback>
                       <ImageOff className="size-4" />
                     </AvatarFallback>
                   </Avatar>
-                  <div className="space-y-1 flex-1">
+                  <div className="flex-1 space-y-1">
                     <p className="font-medium">{field.state.value.title}</p>
                   </div>
-                  <span className="text-primary font-medium">
+                  <span className="font-medium text-primary">
                     {formatUSD(Number(field.state.value.finalPrice))}
                   </span>
                 </div>
@@ -144,28 +168,48 @@ export const AddToOrderGuideDialog = ({
             <form.Field
               name="orderGuide"
               children={(field) => (
-                <OrderGuideSelector
-                  value={form.getFieldValue("orderGuide")?.id}
-                  onValueChange={(value) =>
-                    field.handleChange({
-                      id: String(value.id),
-                      name: value.name,
-                    })
-                  }
-                >
-                  <Button
-                    size="xl"
-                    type="button"
-                    variant="outline"
-                    className="w-full rounded-lg justify-start text-muted-foreground"
+                <div className="relative">
+                  <OrderGuideSelector
+                    value={form.getFieldValue("orderGuide")?.id}
+                    onValueChange={(value) =>
+                      field.handleChange({
+                        id: String(value.id),
+                        name: value.name,
+                      })
+                    }
                   >
-                    {field.state.value?.name || "Select existing"}
+                    <Button
+                      size="xl"
+                      type="button"
+                      variant="outline"
+                      className="w-full justify-start rounded-lg text-muted-foreground"
+                    >
+                      {field.state.value?.name || "Select existing"}
 
-                    <ChevronsUpDown className="ml-auto text-muted-foreground" />
-                  </Button>
-                </OrderGuideSelector>
+                      <ChevronsUpDown className="ml-auto text-muted-foreground" />
+                    </Button>
+                  </OrderGuideSelector>
+
+                  <Tooltip content="Clear">
+                    <Button
+                      type="button"
+                      size="icon-xs"
+                      className={`absolute top-1/2 right-8 -translate-y-1/2 [&>svg]:size-4! ${field.state.value.id ? "" : "hidden"}`}
+                      variant="ghost"
+                      onClick={() => {
+                        field.handleChange({
+                          id: "",
+                          name: "",
+                        });
+                      }}
+                    >
+                      <X />
+                    </Button>
+                  </Tooltip>
+                </div>
               )}
             />
+
             <div className="flex flex-row items-center justify-center gap-4">
               <div className="flex-[1_1_0] border-b "></div>
               <span className="shrink-0 text-xs font-medium text-muted-foreground">

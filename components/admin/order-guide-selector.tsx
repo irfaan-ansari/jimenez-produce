@@ -70,14 +70,12 @@ export const OrderGuideSelector = ({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="h-full items-start flex flex-col max-h-[min(700px,90svh)] overflow-hidden rounded-2xl ring-ring/10 sm:max-w-xl">
+      <DialogContent className="flex h-full max-h-[min(700px,90svh)] flex-col items-start overflow-hidden rounded-2xl ring-ring/10 sm:max-w-xl">
         <DialogHeader className="gap-0">
           <DialogTitle className="text-xl font-bold">
             Select order guide
           </DialogTitle>
-          <DialogDescription>
-            Select the order guide you want to add item to
-          </DialogDescription>
+          <DialogDescription>Search or select an order guide</DialogDescription>
         </DialogHeader>
 
         {/* Search */}
@@ -96,7 +94,7 @@ export const OrderGuideSelector = ({
           />
         </InputGroup>
         {/* List */}
-        <div className="no-scrollbar flex-1 space-y-1 overflow-y-auto w-full">
+        <div className="no-scrollbar w-full flex-1 space-y-1 overflow-y-auto">
           {/* is pending */}
           {isPending && <LoadingSkeleton />}
 
@@ -134,7 +132,7 @@ export const OrderGuideSelector = ({
                       >
                         <FieldContent>
                           <FieldTitle>{guide.name}</FieldTitle>
-                          <FieldDescription className="text-xs font-medium">
+                          <FieldDescription className="text-xs font-medium text-primary">
                             {guide.itemCount} items
                           </FieldDescription>
                         </FieldContent>
@@ -146,7 +144,7 @@ export const OrderGuideSelector = ({
                         />
                         <span
                           data-slot="icon"
-                          className="size-4 self-start inline-flex items-center justify-center rounded-full bg-primary text-primary-foreground opacity-0"
+                          className="inline-flex size-4 items-center justify-center self-start rounded-full bg-primary text-primary-foreground opacity-0"
                         >
                           <Check className="size-3" />
                         </span>

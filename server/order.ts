@@ -103,10 +103,13 @@ export const createOrder = handleAction(
     const stringTotals = Object.fromEntries(
       Object.entries(totals).map(([key, value]) => [
         key,
-        String(value.toFixed(2)),
+        String(
+          key === "lineItemCount" || key === "lineItemQuantity"
+            ? value
+            : value.toFixed(2),
+        ),
       ]),
     );
-
     // create order
     const [orderRes] = await db
       .insert(order)
