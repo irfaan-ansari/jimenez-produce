@@ -1,53 +1,58 @@
 "use client";
 
 import z from "zod";
-import { toast } from "sonner";
 import Link from "next/link";
+import { toast } from "sonner";
 import {
-  AlertCircleIcon,
   ChevronLeft,
+  ChevronsUpDown,
   GripVerticalIcon,
+  ImageOff,
   LayoutGrid,
   Loader,
   Search,
   TextAlignJustify,
+  Trash2,
 } from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardTitle,
-} from "@/components/ui/card";
+import React from "react";
 import {
   Sortable,
   SortableItem,
   SortableItemHandle,
 } from "@/components/reui/sortable";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { useStore } from "@tanstack/react-form";
-import { useAppForm } from "@/hooks/form-context";
-import { FieldGroup } from "@/components/ui/field";
 import {
   createOrderGuide,
   deleteOrderGuide,
   updateOrderGuide,
 } from "@/server/order-guide";
-import { formatUSD, getAvatarFallback } from "@/lib/utils";
-import { ProductSelectorCustomer } from "@/components/admin/product-selector-customer";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { formatUSD } from "@/lib/utils";
 import { useRouter } from "next/navigation";
-import React from "react";
-import {
-  Alert,
-  AlertAction,
-  AlertDescription,
-  AlertTitle,
-} from "@/components/ui/alert";
-import { useQueryClient } from "@tanstack/react-query";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { useConfirm } from "@/hooks/use-confirm";
+import { FieldGroup } from "@/components/ui/field";
+import { useQueryClient } from "@tanstack/react-query";
+import { Card, CardContent } from "@/components/ui/card";
+import { useAppForm, withForm } from "@/hooks/form-context";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { ProductSelectorCustomer } from "@/components/admin/product-selector-customer";
+import { EmptyComponent } from "@/components/admin/placeholder-component";
+
+const LAYOUTS = [
+  {
+    value: "list",
+    icon: TextAlignJustify,
+    className: "grid-cols-1 gap-1",
+    itemClassName: "",
+  },
+  {
+    value: "grid",
+    icon: LayoutGrid,
+    className:
+      "grid-cols-1 *:rounded-xl @md:grid-cols-2 @lg:grid-cols-3 @2xl:grid-cols-4 @5xl:grid-cols-5 @6xl:grid-cols-6 @8xl:grid-cols-8 gap-4",
+    itemClassName: "",
+  },
+];
 
 const schema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -63,6 +68,7 @@ const schema = z.object({
   ),
 });
 
+type OrderGuide = z.infer<typeof schema>;
 export const OrderGuideForm = ({
   initialData,
 }: {
@@ -74,6 +80,7 @@ export const OrderGuideForm = ({
   const confirm = useConfirm();
   const router = useRouter();
   const queryClient = useQueryClient();
+
   const [layout, setLayout] = React.useState("list");
 
   const {
@@ -130,11 +137,9 @@ export const OrderGuideForm = ({
     },
   });
 
-  const {
-    name: valueName,
-    description: valueDescription,
-    items: valueItems,
-  } = useStore(form.store, ({ values }) => values);
+  const isOwned = !!id && !!teamId;
+  const isSuggested = !!id && !teamId;
+  const isNew = !id && !teamId;
 
   const handleDelete = async () => {
     if (!id) return;
@@ -159,8 +164,8 @@ export const OrderGuideForm = ({
   };
 
   return (
-    <div className="grid grid-cols-6 gap-6">
-      <div className="col-span-6 space-y-6 lg:col-span-4">
+    <div className="grid grid-cols-1 gap-6">
+      <div className="space-y-6">
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -168,8 +173,9 @@ export const OrderGuideForm = ({
           }}
           className="flex h-full flex-col gap-6"
         >
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
+          {/* actions */}
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 flex-1">
               <Button
                 size="sm"
                 asChild
@@ -180,9 +186,18 @@ export const OrderGuideForm = ({
                   <ChevronLeft /> Back
                 </Link>
               </Button>
-              <h1 className="text-lg font-semibold">{valueName || "New"}</h1>
+
+              <form.Field
+                name="name"
+                children={(field) => (
+                  <h1 className="text-lg font-semibold flex-1">
+                    {field.state.value || "New"}
+                  </h1>
+                )}
+              />
+
               {/* if read only */}
-              {id && !teamId && (
+              {isSuggested && (
                 <Badge
                   variant="secondary"
                   className="border border-amber-200 bg-amber-100"
@@ -192,234 +207,265 @@ export const OrderGuideForm = ({
               )}
             </div>
 
-            {/* show edit save button if owned */}
-            {((id && teamId) || (!id && !teamId)) && (
-              <form.Subscribe
-                selector={({ isSubmitting, canSubmit, isDirty }) => ({
-                  isSubmitting,
-                  canSubmit,
-                  isDirty,
-                })}
-                children={({ isSubmitting, canSubmit, isDirty }) => (
-                  <Button
-                    type="submit"
-                    size="xl"
-                    className="w-32 rounded-lg"
-                    disabled={isSubmitting || !canSubmit || !isDirty}
-                  >
-                    {isSubmitting ? (
-                      <Loader className="animate-spin" />
-                    ) : (
-                      <>{id ? "Update" : "Save"}</>
-                    )}
-                  </Button>
-                )}
-              />
-            )}
-          </div>
-          <Card className="rounded-2xl">
-            <FieldGroup className="px-6">
-              <form.AppField
-                name="name"
-                children={(field) => (
-                  <field.TextField
-                    label="Name"
-                    placeholder="Weekly essentials"
-                  />
-                )}
-              />
-              <form.AppField
-                name="description"
-                children={(field) => (
-                  <field.TextAreaField
-                    label="Description"
-                    placeholder="Daily produce, dairy and basic dry goods for line service"
-                  />
-                )}
-              />
-            </FieldGroup>
-          </Card>
-          <Card className="rounded-2xl">
-            <CardContent>
-              <div className="space-y-4">
-                <form.Field
-                  name="items"
-                  mode="array"
-                  children={(field) => {
-                    const items = field.state.value || [];
-                    return (
-                      <div className="space-y-2">
-                        <p className="text-lg font-semibold">Items</p>
-                        <div className="flex gap-4">
-                          <ProductSelectorCustomer
-                            selected={field.state.value}
-                            setSelectedChange={(value) => {
-                              const index = items.findIndex(
-                                (item) => item.productId === value.productId,
-                              );
-                              if (index >= 0) {
-                                field.removeValue(index);
-                              } else {
-                                field.pushValue({
-                                  ...value,
-                                  image: value.image ?? "",
-                                });
-                              }
-                            }}
-                          >
-                            <Button
-                              variant="outline"
-                              size="xl"
-                              type="button"
-                              className="flex-1 justify-start text-muted-foreground"
-                            >
-                              <Search />
-                              Browse catalog
-                            </Button>
-                          </ProductSelectorCustomer>
+            {/* show remove and  button if owned */}
+            <form.Subscribe
+              selector={({ isSubmitting, canSubmit, isDirty }) => ({
+                isSubmitting,
+                canSubmit,
+                isDirty,
+              })}
+            >
+              {({ isSubmitting, canSubmit, isDirty }) => {
+                const showSubmit = isOwned || isNew;
 
-                          <ToggleGroup
-                            type="single"
-                            variant="outline"
-                            value={layout}
-                            onValueChange={(v) => {
-                              if (v) setLayout(v);
-                            }}
-                          >
-                            <ToggleGroupItem value="list" className="size-11">
-                              <TextAlignJustify />
-                            </ToggleGroupItem>
-                            <ToggleGroupItem value="grid" className="size-11">
-                              <LayoutGrid />
-                            </ToggleGroupItem>
-                          </ToggleGroup>
-                        </div>
-                      </div>
-                    );
-                  }}
-                />
-                <Sortable
-                  strategy={layout === "grid" ? "grid" : "vertical"}
-                  value={valueItems}
-                  onValueChange={(v) => {
-                    const reordered = v.map((i) => ({
-                      ...i,
-                      productId: Number(i.productId),
-                    }));
-                    form.setFieldValue("items", reordered);
-                  }}
-                  getItemValue={(item) => String(item.productId)}
-                  className="group space-y-1"
-                  data-layout={layout}
-                >
-                  {valueItems?.map((item, index) => {
-                    return (
-                      <SortableItem
-                        key={item.productId}
-                        value={String(item.productId)}
-                        className="flex flex-1 items-center gap-3 rounded-lg border bg-background p-2 data-[dragging=true]:bg-secondary data-[dragging=true]:scale-105"
+                return (
+                  <>
+                    {showSubmit && (
+                      <Button
+                        type="submit"
+                        size="xl"
+                        className="w-32 rounded-lg"
+                        disabled={
+                          isSubmitting || !canSubmit || (isOwned && !isDirty)
+                        }
                       >
-                        <SortableItemHandle>
-                          <GripVerticalIcon className="size-4" />
-                        </SortableItemHandle>
-                        <div className="shrink-0">
-                          <Avatar className="size-9 rounded-lg ring-2 ring-green-600/40 ring-offset-1 **:rounded-lg after:hidden">
-                            <AvatarImage src={item?.image || undefined} />
-                            <AvatarFallback>
-                              {getAvatarFallback((item.title as string)?.[0])}
-                            </AvatarFallback>
-                          </Avatar>
-                        </div>
-                        <div className="min-w-0 flex-1 space-y-1.5">
-                          <p className="font-medium">{item.title}</p>
-                          <div className="flex items-center gap-2">
-                            {item.categories?.map((cat, i) => (
-                              <span
-                                key={cat + i}
-                                className="text-xs uppercase text-muted-foreground font-medium border-r-2 pr-2 last:border-r-0 leading-3"
-                              >
-                                {cat}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                        <div className="w-28 self-center text-right font-semibold text-primary">
-                          {formatUSD(item.price)}
-                        </div>
-                        <Button
-                          size="xs"
-                          variant="destructive"
-                          type="button"
-                          onClick={() => {
-                            form.removeFieldValue("items", index);
-                          }}
-                        >
-                          Remove
-                        </Button>
-                      </SortableItem>
-                    );
-                  })}
-                </Sortable>
-              </div>
+                        {isSubmitting ? (
+                          <Loader className="animate-spin" />
+                        ) : isOwned ? (
+                          "Update"
+                        ) : (
+                          "Save"
+                        )}
+                      </Button>
+                    )}
+
+                    {isOwned && (
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="xl"
+                        className="w-32 rounded-lg"
+                        onClick={handleDelete}
+                      >
+                        <Trash2 />
+                        Delete
+                      </Button>
+                    )}
+                  </>
+                );
+              }}
+            </form.Subscribe>
+          </div>
+
+          <Card className="rounded-2xl border shadow-sm">
+            <CardContent>
+              <FieldGroup>
+                <form.AppField
+                  name="name"
+                  children={(field) => (
+                    <field.TextField
+                      label="Name"
+                      placeholder="Weekly essentials"
+                    />
+                  )}
+                />
+                <form.AppField
+                  name="description"
+                  children={(field) => (
+                    <field.TextAreaField
+                      label="Description"
+                      placeholder="Daily produce, dairy and basic dry goods for line service"
+                    />
+                  )}
+                />
+              </FieldGroup>
             </CardContent>
           </Card>
-        </form>
-      </div>
-      <div className="col-span-2 space-y-6">
-        <Card className="hidden flex-col gap-6 lg:flex">
-          <CardContent className="flex-1 space-y-3 relative">
-            <CardTitle className="text-lg font-semibold">
-              {valueName || "New"}
-            </CardTitle>
 
-            {id && !teamId && (
-              <Badge
-                variant="secondary"
-                className="h-6 border border-amber-200 bg-amber-100"
+          {/* item list */}
+          <div
+            className="group/card @container bg-background p-6 rounded-2xl border shadow-sm"
+            data-layout={layout}
+          >
+            <div className="flex gap-4 items-center mb-6">
+              <form.Field
+                name="items"
+                mode="array"
+                children={(field) => (
+                  <ProductSelectorCustomer
+                    selected={field.state.value}
+                    setSelectedChange={(value) => {
+                      const index = field.state.value.findIndex(
+                        (item) =>
+                          Number(item.productId) === Number(value.productId),
+                      );
+                      if (index >= 0) {
+                        field.removeValue(index);
+                      } else {
+                        field.pushValue({
+                          ...value,
+                          image: value.image ?? "",
+                        });
+                      }
+                    }}
+                  >
+                    <Button
+                      variant="outline"
+                      size="lg"
+                      type="button"
+                      className="flex-1 justify-start text-muted-foreground"
+                    >
+                      <Search />
+                      Browse products...
+                      <ChevronsUpDown className="ml-auto" />
+                    </Button>
+                  </ProductSelectorCustomer>
+                )}
+              />
+              <ToggleGroup
+                type="single"
+                variant="outline"
+                value={layout}
+                onValueChange={(v) => {
+                  setLayout(v || "grid");
+                }}
               >
-                Suggested
-              </Badge>
-            )}
-            {!id && (
-              <Badge className="h-6 border absolute right-2 top-2">New</Badge>
-            )}
-            <CardDescription>
-              {valueDescription || "No description"}
-            </CardDescription>
-          </CardContent>
+                {LAYOUTS.map(({ value, icon }, i) => {
+                  const Icon = icon;
+                  return (
+                    <ToggleGroupItem
+                      key={value}
+                      value={value}
+                      className="data-[state=on]:bg-sidebar-accent data-[state=on]:text-primary-foreground"
+                    >
+                      <Icon />
+                    </ToggleGroupItem>
+                  );
+                })}
+              </ToggleGroup>
+            </div>
 
-          <CardFooter className="border-t font-medium">
-            {valueItems.length} Items
-          </CardFooter>
-        </Card>
+            <form.Subscribe
+              selector={({ values }) => ({ items: values.items })}
+              children={({ items }) => {
+                if (items.length === 0)
+                  return (
+                    <EmptyComponent
+                      variant="empty"
+                      title="No items added yet"
+                      description="Start by adding items to your order guide"
+                    />
+                  );
 
-        {/* show delete button if owned */}
-        <div className="bg-background">
-          {id && teamId && (
-            <Alert
-              variant="destructive"
-              className="border-destructive bg-destructive/2"
-            >
-              <AlertCircleIcon />
-              <AlertTitle>Delete this order guide</AlertTitle>
-              <AlertDescription className="text-muted-foreground!">
-                This action cannot be undone. This will permanently delete the
-                order guide.
-              </AlertDescription>
-              <AlertAction>
-                <Button
-                  size="sm"
-                  type="button"
-                  variant="destructive"
-                  onClick={handleDelete}
-                >
-                  Delete
-                </Button>
-              </AlertAction>
-            </Alert>
-          )}
-        </div>
+                return (
+                  <Sortable
+                    value={items}
+                    onValueChange={(v) => {
+                      const reordered = v.map((i) => ({
+                        ...i,
+                        productId: Number(i.productId),
+                      }));
+                      form.setFieldValue("items", reordered);
+                    }}
+                    getItemValue={(item) => String(item.productId)}
+                    strategy={layout === "grid" ? "grid" : "vertical"}
+                    className={`text-base px-0 grid ${LAYOUTS.find((l) => l.value === layout)?.className}`}
+                  >
+                    {items.map((subField, idx) => (
+                      <ItemCard
+                        key={subField.productId}
+                        form={form}
+                        index={idx}
+                      />
+                    ))}
+                  </Sortable>
+                );
+              }}
+            />
+          </div>
+        </form>
       </div>
     </div>
   );
 };
+
+const ItemCard = withForm({
+  defaultValues: {} as OrderGuide,
+  props: {} as { index: number },
+  render: function Render({ form, index }) {
+    const item = form.getFieldValue("items")[index];
+
+    const handleRemove = React.useCallback(() => {
+      const items = form.getFieldValue("items") || [];
+      const next = items.filter((_, i) => i !== index);
+      form.setFieldValue("items", next);
+    }, [form, index]);
+
+    return (
+      <SortableItem
+        value={String(item.productId)}
+        className="flex data-[dragging=true]:opacity-100! overflow-hidden animate-in relative cursor-pointer items-center bg-background gap-4 rounded-xl border p-3 transition fade-in-50 select-none slide-in-from-bottom-10 group-data-[layout=grid]/card:h-full group-data-[layout=grid]/card:flex-col group-data-[layout=grid]/card:items-stretch group-data-[layout=grid]/card:gap-0 group-data-[layout=grid]/card:p-0"
+      >
+        <SortableItemHandle className="group-data-[layout=grid]/card:absolute group-data-[layout=grid]/card:top-3 group-data-[layout=grid]/card:left-3 z-1">
+          <GripVerticalIcon className="size-4" />
+        </SortableItemHandle>
+        <div className="relative aspect-square inline-flex items-center justify-center w-12 shrink-0 overflow-hidden rounded-t-lg group-data-[layout=list]/card:rounded-lg bg-secondary group-data-[layout=grid]/card:aspect-video group-data-[layout=grid]/card:w-full">
+          {item.image ? (
+            <img
+              src={item.image}
+              alt={item.title}
+              width={200}
+              height={200}
+              className="absolute inset-0 h-full w-full object-contain mix-blend-multiply"
+            />
+          ) : (
+            <ImageOff className="opacity-40 size-4 group-data-[layout=grid]/card:size-6" />
+          )}
+        </div>
+
+        <div className="flex min-w-0 flex-1 items-start gap-4 group-data-[layout=grid]/card:w-full group-data-[layout=grid]/card:flex-col group-data-[layout=grid]/card:justify-between group-data-[layout=grid]/card:p-3">
+          <div className="w-full min-w-0 flex flex-col gap-1">
+            <h4 className="leading-tight text-sm font-medium group-data-[layout=grid]/card:order-2">
+              {item.title}
+            </h4>
+
+            <div className="flex w-full items-center gap-2">
+              <div className="no-scrollbar flex min-w-0 flex-nowrap items-center gap-1 overflow-auto">
+                {item.categories?.map((cat, i) => (
+                  <span
+                    key={cat + i}
+                    className="inline-block text-xs leading-[1.1] font-medium whitespace-nowrap text-muted-foreground uppercase not-last:border-r-2 not-last:pr-1"
+                  >
+                    {cat}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="w-24 self-center font-bold text-primary text-right group-data-[layout=grid]/card:hidden">
+            {formatUSD(item.price ?? 0)}
+          </div>
+          {/* remove action */}
+          <Button
+            type="submit"
+            size="icon-xs"
+            variant="destructive"
+            className="group-data-[layout=grid]/card:absolute group-data-[layout=grid]/card:top-2 group-data-[layout=grid]/card:right-2 group-data-[layout=grid]/card:z-1 self-center"
+            onClick={handleRemove}
+          >
+            <Trash2 />
+          </Button>
+
+          <div className="flex w-full items-center gap-2 group-data-[layout=list]/card:hidden">
+            <div className="flex flex-1 flex-col">
+              <div className="font-bold text-primary w-auto self-start">
+                {formatUSD(item.price ?? 0)}
+              </div>
+            </div>
+          </div>
+        </div>
+      </SortableItem>
+    );
+  },
+});

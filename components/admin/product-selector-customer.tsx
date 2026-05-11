@@ -200,14 +200,10 @@ export const ProductSelectorCustomer = ({
               )}
 
           {/* next page loading */}
-          {hasNextPage && (
-            <div
-              ref={loadMoreRef}
-              className="flex py-10 w-full justify-center "
-            >
-              {isFetchingNextPage ? <LoadingSkeleton /> : null}
-            </div>
-          )}
+
+          <div ref={loadMoreRef} className="flex py-10 w-full justify-center">
+            {isFetchingNextPage ? <LoadingSkeleton /> : null}
+          </div>
         </div>
 
         {/* Footer */}
