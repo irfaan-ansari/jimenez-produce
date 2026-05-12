@@ -5,7 +5,7 @@ export const LAYOUT_MAP = {
   list: {
     value: "list",
     icon: TextAlignJustify,
-    className: "grid-cols-1",
+    className: "grid-cols-1 gap-1",
   },
 
   grid: {

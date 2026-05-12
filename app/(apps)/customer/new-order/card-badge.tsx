@@ -1,7 +1,11 @@
-import { OrderItem } from "./order-form-options";
-import { Badge } from "@/components/ui/badge";
-import { cn, formatUSD } from "@/lib/utils";
 import { format } from "date-fns/format";
+import { cn, formatUSD } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
+import { OrderItem } from "./order-form-options";
+import {
+  EmptyComponent,
+  LoadingSkeleton,
+} from "@/components/admin/placeholder-component";
 
 export const LastPurchase = ({
   product,
@@ -38,3 +42,41 @@ export const Price = ({
     </div>
   );
 };
+
+export function ProductsState({
+  isError,
+  isPending,
+  error,
+  hasProducts,
+}: {
+  isError: boolean;
+  isPending: boolean;
+  error: Error | null;
+  hasProducts: boolean;
+}) {
+  if (isError) {
+    return (
+      <div className="rounded-2xl bg-background py-20 border">
+        <EmptyComponent variant="error" title={error?.message} />
+      </div>
+    );
+  }
+
+  if (isPending) {
+    return (
+      <div className="rounded-2xl bg-background py-20 border">
+        <LoadingSkeleton />
+      </div>
+    );
+  }
+
+  if (!hasProducts) {
+    return (
+      <div className="rounded-2xl bg-background py-20 border">
+        <EmptyComponent variant="empty" />
+      </div>
+    );
+  }
+
+  return null;
+}

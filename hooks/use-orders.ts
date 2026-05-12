@@ -62,7 +62,7 @@ export const useInfiniteOrderGuides = (query: string) => {
 
 export const useOrderGuide = (id: number | string) => {
   return useQuery({
-    queryKey: ["order-guides", id],
+    queryKey: ["order-guide", id],
     queryFn: () => {
       return fetcher<OrderGuideResponse>(`/api/customer/order-guides/${id}`);
     },

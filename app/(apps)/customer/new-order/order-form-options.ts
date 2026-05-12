@@ -15,11 +15,11 @@ export type OrderItem = {
   isTaxable: boolean;
   isGuide: boolean;
   isSuggested: boolean;
-  lastPurchased?: {
+  lastPurchased: {
     id: number | null;
     quantity: string | null;
     createdAt: Date | string | null;
-  };
+  } | null;
 };
 
 export const defaultValues = {

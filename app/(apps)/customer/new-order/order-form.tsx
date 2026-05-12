@@ -2,8 +2,7 @@
 
 import React from "react";
 import { toast } from "sonner";
-import { Loader, Plus } from "lucide-react";
-import { ItemList } from "./item-list";
+import { Loader } from "lucide-react";
 import { OrderCart } from "./order-cart";
 import { formatUSD } from "@/lib/utils";
 import { type TaxRule } from "@/lib/types";
@@ -19,6 +18,7 @@ import { formOpt, getTotals } from "./order-form-options";
 import { useAppForm, withForm } from "@/hooks/form-context";
 import { SearchBar } from "@/components/admin/search-filters";
 import { useProductSelection } from "./selection-content";
+import { ProductsSection } from "./products-section";
 
 export const OrderForm = ({ taxRules }: { taxRules: TaxRule[] }) => {
   const router = useRouter();
@@ -97,31 +97,18 @@ export const OrderForm = ({ taxRules }: { taxRules: TaxRule[] }) => {
         </div>
       </div>
 
-      {/* form content */}
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          form.handleSubmit();
-        }}
-        className="relative"
-      >
-        {/* items list */}
-        <ItemList form={form} />
+      {/* items list */}
+      <ProductsSection form={form} />
 
-        {/* sticky buttons  */}
-        {isSelecting ? (
-          <StickySave />
-        ) : (
-          <StickyCart
-            form={form}
-            showCart={showCart}
-            setShowCart={setShowCart}
-          />
-        )}
+      {/* sticky buttons  */}
+      {isSelecting ? (
+        <StickySave />
+      ) : (
+        <StickyCart form={form} showCart={showCart} setShowCart={setShowCart} />
+      )}
 
-        {/* cart overlay */}
-        <OrderCart form={form} showCart={showCart} setShowCart={setShowCart} />
-      </form>
+      {/* cart overlay */}
+      <OrderCart form={form} showCart={showCart} setShowCart={setShowCart} />
     </div>
   );
 };
