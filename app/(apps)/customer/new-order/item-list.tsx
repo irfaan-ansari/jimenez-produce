@@ -92,12 +92,7 @@ export const ItemList = withForm({
         />
 
         {/* item grid */}
-        <ProductGrid
-          items={mappedProduct}
-          form={form}
-          layout={layout}
-          selectable={true}
-        />
+        <ProductGrid items={mappedProduct} form={form} layout={layout} />
 
         {/* render grid with sortable */}
         <div
