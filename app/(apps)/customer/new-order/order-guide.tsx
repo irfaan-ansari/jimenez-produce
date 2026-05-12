@@ -1,10 +1,10 @@
 import React from "react";
 
 import Link from "next/link";
-import { X } from "lucide-react";
+import { Plus, X } from "lucide-react";
 import { formatUSD } from "@/lib/utils";
 import { File } from "@duo-icons/react";
-import { ProductItem } from "./item-card";
+import { ProductItem } from "./product-item";
 import { Badge } from "@/components/ui/badge";
 import { formOpt } from "./order-form-options";
 import { withForm } from "@/hooks/form-context";
@@ -17,10 +17,15 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useRouterStuff } from "@/hooks/use-router-stuff";
 import { useInfiniteOrderGuides, useOrderGuide } from "@/hooks/use-orders";
 import { OrderGuideSelector } from "@/components/admin/order-guide-selector";
+import {
+  ButtonGroup,
+  ButtonGroupSeparator,
+} from "@/components/ui/button-group";
+import { useProductSelection } from "./selection-content";
 
 export const OrderGuideButton = () => {
   const { data, isError, isPending } = useInfiniteOrderGuides("");
-
+  const { startSelection, resetSelection, isSelecting } = useProductSelection();
   const { queryParams, searchParamsObj } = useRouterStuff();
 
   const totalRecord = React.useMemo(() => {
@@ -34,30 +39,41 @@ export const OrderGuideButton = () => {
         type="button"
         variant="secondary"
         className="rounded-lg bg-yellow-500 hover:bg-yellow-500/90 aria-expanded:bg-yellow-500/90 [&>svg]:size-5!"
-        asChild
       >
-        <Link href="/customer/order-guides/new">
-          <File /> New order guide
-        </Link>
+        <File /> New guide
       </Button>
     );
 
   return (
-    <OrderGuideSelector
-      value={searchParamsObj.guideId}
-      onValueChange={(value) =>
-        queryParams({ set: { guideId: String(value.id) } })
-      }
-    >
+    <ButtonGroup className="">
+      <OrderGuideSelector
+        value={searchParamsObj.guideId}
+        onValueChange={(value) =>
+          queryParams({ set: { guideId: String(value.id) } })
+        }
+      >
+        <Button
+          size="xl"
+          type="button"
+          variant="secondary"
+          className="rounded-lg bg-yellow-500 hover:bg-yellow-500/90 aria-expanded:bg-yellow-500/90 [&>svg]:size-5!"
+        >
+          <File /> Order Guide ({totalRecord})
+        </Button>
+      </OrderGuideSelector>
+      <ButtonGroupSeparator />
       <Button
-        size="xl"
+        size="icon-xl"
         type="button"
         variant="secondary"
-        className="rounded-lg bg-yellow-500 hover:bg-yellow-500/90 aria-expanded:bg-yellow-500/90 [&>svg]:size-5!"
+        className="bg-yellow-500 hover:bg-yellow-500/90 aria-expanded:bg-yellow-500/90"
+        onClick={() => {
+          isSelecting ? resetSelection() : startSelection();
+        }}
       >
-        <File /> Order Guide ({totalRecord})
+        {isSelecting ? <X /> : <Plus />}
       </Button>
-    </OrderGuideSelector>
+    </ButtonGroup>
   );
 };
 

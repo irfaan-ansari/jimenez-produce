@@ -1,45 +1,40 @@
-"use client";
-
 import React from "react";
-import { OrderGuideList } from "./order-guide";
+import { cn } from "@/lib/utils";
+import {
+  LAYOUT_MAP,
+  LayoutType,
+  useLayoutPreference,
+} from "@/hooks/use-layout-prefrence";
+import { ProductItem } from "./product-item";
 import { formOpt } from "./order-form-options";
 import { withForm } from "@/hooks/form-context";
+import { OrderGuideList } from "./order-guide";
 import {
   EmptyComponent,
   LoadingSkeleton,
 } from "@/components/admin/placeholder-component";
-import { CategoryPills, ProductItem } from "./item-card";
+import { CategoryFilter } from "./category-filter";
 import { useRouterStuff } from "@/hooks/use-router-stuff";
-import { LayoutGrid, TextAlignJustify } from "lucide-react";
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
 import { useInfiniteProductsCustomer } from "@/hooks/use-product";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-
-const LAYOUTS = [
-  {
-    value: "list",
-    icon: TextAlignJustify,
-    className: "grid-cols-1 ",
-    itemClassName: "",
-  },
-  {
-    value: "grid",
-    icon: LayoutGrid,
-    className:
-      "grid-cols-1 *:rounded-xl @md:grid-cols-2 @lg:grid-cols-3 @2xl:grid-cols-4 @5xl:grid-cols-5 @6xl:grid-cols-6 @8xl:grid-cols-8 gap-4",
-    itemClassName: "",
-  },
-];
 
 export const ItemList = withForm({
   ...formOpt,
 
   render: function Render({ form }) {
     const { searchParamsObj } = useRouterStuff();
-    const [filter, setFilter] = React.useState<Record<string, any>>({});
-    const [layout, setLayout] = React.useState<"list" | "grid">("grid");
+    const [layout, setLayout] = useLayoutPreference();
+    const [filter, setFilter] = React.useState<Record<string, string>>({});
 
-    const query = new URLSearchParams({ ...filter, ...searchParamsObj });
+    const queryString = React.useMemo(() => {
+      const { guideId, ...rest } = searchParamsObj;
+
+      return new URLSearchParams({
+        ...filter,
+        ...rest,
+      }).toString();
+    }, [filter, searchParamsObj]);
 
     const {
       data,
@@ -49,9 +44,7 @@ export const ItemList = withForm({
       hasNextPage,
       isFetchingNextPage,
       fetchNextPage,
-    } = useInfiniteProductsCustomer(query?.toString());
-
-    const products = data?.pages.flatMap((page) => page.data) ?? [];
+    } = useInfiniteProductsCustomer(queryString);
 
     const loadMoreRef = useInfiniteScroll(() => {
       if (hasNextPage && !isFetchingNextPage) {
@@ -59,143 +52,71 @@ export const ItemList = withForm({
       }
     }, true);
 
-    const handleLayoutChange = (newLayout: string) => {
-      const val = newLayout as "list" | "grid";
-      setLayout(val);
-      localStorage.setItem("layout-state", val);
-    };
+    const layoutConfig = LAYOUT_MAP[layout];
 
-    React.useEffect(() => {
-      const savedLayout = localStorage.getItem("layout-state") as
-        | "list"
-        | "grid";
-      if (savedLayout) {
-        setLayout(savedLayout);
-      }
-    }, []);
+    const mappedProduct = React.useMemo(() => {
+      return (
+        data?.pages
+          .flatMap((page) => page.data)
+          .map((product) => {
+            return {
+              productId: product.id,
+              title: product.title,
+              image: product.image,
+              type: product.type,
+              identifier: product.identifier,
+              pack: product.pack,
+              categories: product.categories ?? [],
+              price: product.finalPrice,
+              total: product.finalPrice,
+              quantity: "0",
+              isTaxable: product.isTaxable ?? false,
+              lastPurchased: {
+                id: product.lastPurchased.id,
+                quantity: product.lastPurchased.quantity,
+                createdAt: product.lastPurchased.createdAt,
+              },
+              isGuide: product.isGuide,
+              isSuggested: product.isSuggested,
+            };
+          }) ?? []
+      );
+    }, [data]);
 
     return (
       <div
         data-layout={layout}
         className="group/card @container min-h-svh min-w-0 flex-1 space-y-5"
       >
-        <div className="flex gap-3 justify-between items-center">
-          <CategoryPills filter={filter} setFilter={setFilter} />
-
-          <ToggleGroup
-            type="single"
-            variant="outline"
-            value={layout}
-            onValueChange={(v) => {
-              handleLayoutChange(v || "grid");
-            }}
-          >
-            {LAYOUTS.map(({ value, icon }, i) => {
-              const Icon = icon;
-              return (
-                <ToggleGroupItem
-                  key={value}
-                  value={value}
-                  className="data-[state=on]:bg-sidebar-accent data-[state=on]:text-primary-foreground"
-                >
-                  <Icon />
-                </ToggleGroupItem>
-              );
-            })}
-          </ToggleGroup>
+        {/* toolbar */}
+        <div className="flex items-center justify-between gap-3">
+          <CategoryFilter filter={filter} setFilter={setFilter} />
+          <LayoutSwitcher layout={layout} onChange={setLayout} />
         </div>
 
         {/* guide list */}
-        <OrderGuideList
-          form={form}
-          layout={LAYOUTS.find((l) => l.value === layout)}
+        <OrderGuideList form={form} layout={layoutConfig} />
+
+        {/* products state */}
+        <ProductsState
+          isError={isError}
+          isPending={isPending}
+          error={error}
+          hasProducts={mappedProduct?.length > 0}
         />
 
-        {/* all products */}
-        {searchParamsObj.guideId && (
-          <div className="flex gap-3 items-center">
-            <span className="uppercase font-medium text-sm text-muted-foreground">
-              All Products ({data?.pages?.[0]?.pagination?.total})
-            </span>
-            <span className="flex-1 border-b"></span>
-          </div>
-        )}
+        {/* conditions all products render */}
 
-        {/* error component */}
-        {isError && (
-          <div className="py-20 rounded-2xl bg-background">
-            <EmptyComponent variant="error" title={error?.message} />
-          </div>
-        )}
+        <div className={`grid flex-1 text-base ${layoutConfig.className}`}>
+          {mappedProduct.map((product) => (
+            <ProductItem
+              key={product.productId}
+              product={product}
+              form={form}
+            />
+          ))}
+        </div>
 
-        {/* empty component */}
-        {isPending && (
-          <div className="py-20 bg-background rounded-2xl">
-            <LoadingSkeleton />
-          </div>
-        )}
-
-        {/* products */}
-        {products.length > 0 ? (
-          <div
-            className={`flex-1 text-base overflow-auto no-scrollbar px-0 grid
-            ${LAYOUTS.find((l) => l.value === layout)?.className}
-            `}
-          >
-            {products?.map((product, idx) => {
-              const {
-                id,
-                title,
-                image,
-                type,
-                identifier,
-                finalPrice,
-                pack,
-                categories,
-                isTaxable,
-                isGuide,
-                isSuggested,
-                lastPurchased,
-              } = product;
-
-              return (
-                <ProductItem
-                  key={product.id}
-                  product={{
-                    productId: id,
-                    title,
-                    image,
-                    type,
-                    identifier,
-                    pack,
-                    categories: categories!,
-                    price: finalPrice,
-                    total: finalPrice,
-                    quantity: "0",
-                    isTaxable: isTaxable!,
-                    lastPurchased: {
-                      id: lastPurchased.id,
-                      quantity: lastPurchased.quantity,
-                      createdAt: lastPurchased.createdAt,
-                    },
-                    isGuide,
-                    isSuggested,
-                  }}
-                  form={form}
-                />
-              );
-            })}
-          </div>
-        ) : (
-          !isError &&
-          !isPending && (
-            <div className="py-20 bg-background rounded-2xl">
-              <EmptyComponent variant="empty" />
-            </div>
-          )
-        )}
-
-        {/* INFINITE SCROLL SENTINEL */}
         <div
           ref={loadMoreRef}
           className="col-span-full flex min-h-10 w-full justify-center"
@@ -206,3 +127,77 @@ export const ItemList = withForm({
     );
   },
 });
+
+const LayoutSwitcher = React.memo(
+  ({
+    layout,
+    onChange,
+  }: {
+    layout: LayoutType;
+    onChange: (v: LayoutType) => void;
+  }) => {
+    return (
+      <ToggleGroup
+        type="single"
+        variant="outline"
+        value={layout}
+        onValueChange={(v) => {
+          if (!v) return;
+          onChange(v as LayoutType);
+        }}
+      >
+        {Object.values(LAYOUT_MAP).map((item) => {
+          const Icon = item.icon;
+
+          return (
+            <ToggleGroupItem
+              key={item.value}
+              value={item.value}
+              className="data-[state=on]:bg-sidebar-accent data-[state=on]:text-primary-foreground"
+            >
+              <Icon />
+            </ToggleGroupItem>
+          );
+        })}
+      </ToggleGroup>
+    );
+  },
+);
+
+function ProductsState({
+  isError,
+  isPending,
+  error,
+  hasProducts,
+}: {
+  isError: boolean;
+  isPending: boolean;
+  error: Error | null;
+  hasProducts: boolean;
+}) {
+  if (isError) {
+    return (
+      <div className="rounded-2xl bg-background py-20">
+        <EmptyComponent variant="error" title={error?.message} />
+      </div>
+    );
+  }
+
+  if (isPending) {
+    return (
+      <div className="rounded-2xl bg-background py-20">
+        <LoadingSkeleton />
+      </div>
+    );
+  }
+
+  if (!hasProducts) {
+    return (
+      <div className="rounded-2xl bg-background py-20">
+        <EmptyComponent variant="empty" />
+      </div>
+    );
+  }
+
+  return null;
+}

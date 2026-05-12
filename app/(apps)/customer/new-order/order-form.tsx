@@ -2,33 +2,30 @@
 
 import React from "react";
 import { toast } from "sonner";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupButton,
-  InputGroupInput,
-} from "@/components/ui/input-group";
+import { Loader, Plus } from "lucide-react";
 import { ItemList } from "./item-list";
 import { OrderCart } from "./order-cart";
-import { cn, formatUSD } from "@/lib/utils";
+import { formatUSD } from "@/lib/utils";
+import { type TaxRule } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import { createOrder } from "@/server/order";
+import { ShoppingBag } from "@duo-icons/react";
 import { Button } from "@/components/ui/button";
 import { useConfirm } from "@/hooks/use-confirm";
-import { type TaxRule } from "@/lib/types";
 import { useSidebar } from "@/components/ui/sidebar";
 import { OrderGuideButton } from "./order-guide";
 import { useQueryClient } from "@tanstack/react-query";
-import { Loader, Minus, Plus } from "lucide-react";
 import { formOpt, getTotals } from "./order-form-options";
 import { useAppForm, withForm } from "@/hooks/form-context";
 import { SearchBar } from "@/components/admin/search-filters";
-import { ShoppingBag } from "@duo-icons/react";
+import { useProductSelection } from "./selection-content";
 
 export const OrderForm = ({ taxRules }: { taxRules: TaxRule[] }) => {
   const router = useRouter();
   const confirm = useConfirm();
   const queryClient = useQueryClient();
+
+  const { isSelecting } = useProductSelection();
 
   const [showCart, setShowCart] = React.useState(false);
 
@@ -82,6 +79,7 @@ export const OrderForm = ({ taxRules }: { taxRules: TaxRule[] }) => {
         <div className="flex w-full items-center justify-between gap-4 lg:w-auto lg:flex-1 lg:justify-end">
           <SearchBar placeholder="Search products..." />
           <OrderGuideButton />
+
           <form.Field
             name="lineItems"
             children={(field) => (
@@ -110,8 +108,16 @@ export const OrderForm = ({ taxRules }: { taxRules: TaxRule[] }) => {
         {/* items list */}
         <ItemList form={form} />
 
-        {/* sticky cart  */}
-        <StickyCart form={form} showCart={showCart} setShowCart={setShowCart} />
+        {/* sticky buttons  */}
+        {isSelecting ? (
+          <StickySave />
+        ) : (
+          <StickyCart
+            form={form}
+            showCart={showCart}
+            setShowCart={setShowCart}
+          />
+        )}
 
         {/* cart overlay */}
         <OrderCart form={form} showCart={showCart} setShowCart={setShowCart} />
@@ -122,114 +128,94 @@ export const OrderForm = ({ taxRules }: { taxRules: TaxRule[] }) => {
 
 const StickyCart = withForm({
   ...formOpt,
-  props: {} as { showCart: boolean; setShowCart: (v: boolean) => void },
-  render: function ({ form, ...props }) {
-    const { setShowCart } = props;
+  props: {} as {
+    showCart: boolean;
+    setShowCart: (v: boolean) => void;
+  },
+
+  render: function ({ form, setShowCart }) {
     return (
-      <>
-        {/* sticky bar */}
-        <form.Subscribe
-          selector={({ values }) => ({
-            lineItems: values.lineItems,
-            taxRules: values.taxRules,
-          })}
-          children={({ lineItems, taxRules }) => {
-            const totals = getTotals(lineItems, taxRules);
+      <form.Subscribe
+        selector={({ values, isSubmitting, canSubmit }) => {
+          const totals = getTotals(values.lineItems, values.taxRules);
 
-            return (
-              <div
-                className={`sticky bottom-6 z-2 mx-auto h-16 w-full max-w-xl rounded-2xl bg-secondary px-6  py-4 shadow-lg ring-2 ring-primary/50 ring-offset-2 backdrop-blur-2xl ${totals.count <= 0 ? "hidden" : ""}`}
-              >
-                <div className="flex h-full items-center gap-4">
-                  <div className="gap-0.5e flex flex-col">
-                    <span className="text-xs uppercase">
-                      {totals.count} items in cart
-                    </span>
-                    <span className="text-base font-bold text-primary">
-                      {formatUSD(totals.total)}
-                    </span>
-                  </div>
+          return {
+            totals,
+            isSubmitting,
+            canSubmit,
+          };
+        }}
+      >
+        {({ totals, isSubmitting, canSubmit }) => {
+          if (totals.count <= 0) return null;
 
-                  <Button
-                    type="button"
-                    variant="link"
-                    className="ml-auto"
-                    onClick={() => setShowCart(true)}
-                  >
-                    View cart
-                  </Button>
-                  <form.Subscribe
-                    selector={({ isSubmitting, canSubmit }) => ({
-                      isSubmitting,
-                      canSubmit,
-                    })}
-                    children={({ isSubmitting, canSubmit }) => (
-                      <Button
-                        type="submit"
-                        size="lg"
-                        className="w-32 rounded-xl bg-sidebar-accent hover:bg-sidebar-accent/80"
-                        disabled={isSubmitting || !canSubmit}
-                      >
-                        {isSubmitting ? (
-                          <Loader className="animate-spin" />
-                        ) : (
-                          "Submit Order"
-                        )}
-                      </Button>
-                    )}
-                  />
+          return (
+            <div className="sticky bottom-6 z-2 mx-auto w-full max-w-xl">
+              <div className="flex h-16 items-center gap-4 rounded-2xl bg-secondary px-6 py-4 shadow-lg ring-2 ring-primary/50 ring-offset-2 backdrop-blur-2xl">
+                <div className="flex flex-col">
+                  <span className="text-xs uppercase">
+                    {totals.count} items in cart
+                  </span>
+
+                  <span className="text-base font-bold text-primary">
+                    {formatUSD(totals.total)}
+                  </span>
                 </div>
+
+                <Button
+                  type="button"
+                  variant="link"
+                  className="ml-auto"
+                  onClick={() => setShowCart(true)}
+                >
+                  View cart
+                </Button>
+
+                <Button
+                  type="submit"
+                  size="lg"
+                  className="w-32 rounded-xl bg-sidebar-accent hover:bg-sidebar-accent/80"
+                  disabled={isSubmitting || !canSubmit}
+                >
+                  {isSubmitting ? (
+                    <Loader className="animate-spin" />
+                  ) : (
+                    "Submit Order"
+                  )}
+                </Button>
               </div>
-            );
-          }}
-        />
-      </>
+            </div>
+          );
+        }}
+      </form.Subscribe>
     );
   },
 });
 
-export const QuantityInput = ({
-  value = 0,
-  onChange,
-  className,
-}: {
-  value: number;
-  onChange: (arg: number) => void;
-  className?: string;
-}) => {
+const StickySave = () => {
+  const { selectedCount } = useProductSelection();
   return (
-    <InputGroup
-      className={cn("h-8 w-24 shrink-0 self-center rounded-xl", className)}
-      onClick={(e) => e.stopPropagation()}
-    >
-      <InputGroupInput
-        value={value}
-        className="px-0 text-center text-xs"
-        onChange={(e) => onChange?.(Number(e.target.value))}
-      />
+    <div className="sticky bottom-6 z-3 mx-auto w-full max-w-xl">
+      <div className="flex h-16 items-center gap-4 rounded-2xl bg-secondary px-6 py-4 shadow-lg ring-2 ring-primary/50 ring-offset-2 backdrop-blur-2xl">
+        <div className="flex flex-1 flex-col">
+          <span className="text-xs uppercase">
+            {selectedCount} item
+            {selectedCount > 1 ? "s" : ""} selected
+          </span>
+        </div>
 
-      <InputGroupAddon align="inline-start">
-        <InputGroupButton
+        <Button type="button" variant="link" size="lg">
+          Discard
+        </Button>
+        <Button
           type="button"
-          size="icon-xs"
-          className="rounded-xl bg-secondary"
-          onClick={() => onChange(Math.max(0, value - 1))}
+          size="lg"
+          disabled={selectedCount <= 0}
+          className="w-32 rounded-xl bg-sidebar-accent hover:bg-sidebar-accent/80"
         >
-          <Minus />
-        </InputGroupButton>
-      </InputGroupAddon>
-
-      <InputGroupAddon align="inline-end">
-        <InputGroupButton
-          type="button"
-          size="icon-xs"
-          variant="default"
-          className="rounded-xl bg-foreground hover:bg-foreground/80"
-          onClick={() => onChange(value + 1)}
-        >
-          <Plus className="size-3" />
-        </InputGroupButton>
-      </InputGroupAddon>
-    </InputGroup>
+          Save guide
+        </Button>
+      </div>
+    </div>
   );
 };

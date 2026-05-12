@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Sheet,
   SheetClose,
@@ -14,13 +13,13 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { formatUSD } from "@/lib/utils";
-import { QuantityInput } from "./order-form";
 import { Button } from "@/components/ui/button";
 import { withForm } from "@/hooks/form-context";
-import { ChevronDown, ImageOff, Loader } from "lucide-react";
+import { ProductItemQty } from "./product-item-qty";
 import { Textarea } from "@/components/ui/textarea";
 import { DELIVERY_TIME } from "@/lib/constants/customer";
 import { formOpt, getTotals } from "./order-form-options";
+import { ChevronDown, ImageOff, Loader } from "lucide-react";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
@@ -72,7 +71,7 @@ export const OrderCart = withForm({
                               <form.Field
                                 name={`lineItems[${i}].quantity`}
                                 children={(subField) => (
-                                  <QuantityInput
+                                  <ProductItemQty
                                     value={Number(subField.state.value)}
                                     className="self-start"
                                     onChange={(qty) => {
