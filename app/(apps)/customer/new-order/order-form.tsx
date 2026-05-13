@@ -11,23 +11,26 @@ import { createOrder } from "@/server/order";
 import { ShoppingBag } from "@duo-icons/react";
 import { Button } from "@/components/ui/button";
 import { useConfirm } from "@/hooks/use-confirm";
-import { useSidebar } from "@/components/ui/sidebar";
 import { OrderGuideButton } from "./order-guide";
-import { useQueryClient } from "@tanstack/react-query";
-import { formOpt, getTotals } from "./order-form-options";
-import { useAppForm, withForm } from "@/hooks/form-context";
-import { SearchBar } from "@/components/admin/search-filters";
-import { useProductSelection } from "./selection-content";
+import { useAppForm } from "@/hooks/form-context";
 import { ProductsSection } from "./products-section";
+import { useSidebar } from "@/components/ui/sidebar";
+import { formOpt, getTotals } from "./order-form-options";
+import { useOrderUIStore } from "@/lib/store/order-store";
+import { SearchBar } from "@/components/admin/search-filters";
+import { OrderGuideDialog } from "@/components/admin/order-guide-dialog";
 
 export const OrderForm = ({ taxRules }: { taxRules: TaxRule[] }) => {
   const router = useRouter();
   const confirm = useConfirm();
-  const queryClient = useQueryClient();
 
-  const { isSelecting } = useProductSelection();
+  const setShowCart = useOrderUIStore((s) => s.setShowCart);
 
-  const [showCart, setShowCart] = React.useState(false);
+  const isSelecting = useOrderUIStore((s) => s.isSelecting);
+  const setIsSelecting = useOrderUIStore((s) => s.setIsSelecting);
+  const unselectAll = useOrderUIStore((s) => s.unselectAll);
+  const selectedItems = useOrderUIStore((s) => s.selectedItems);
+  const selectedCount = selectedItems.size;
 
   const { open: sidebarOpen, setOpen: setSidebarOpen } = useSidebar();
 
@@ -39,7 +42,6 @@ export const OrderForm = ({ taxRules }: { taxRules: TaxRule[] }) => {
     },
     onSubmit: async ({ value }) => {
       const toastId = toast.loading("Submitting your order...");
-
       const { success, error, data } = await createOrder({
         ...value,
       });
@@ -53,13 +55,27 @@ export const OrderForm = ({ taxRules }: { taxRules: TaxRule[] }) => {
           action: () => router.push(`/customer/orders/${data.id}`),
         });
         form.reset();
-        router.refresh();
-        queryClient.invalidateQueries({
-          queryKey: ["products"],
-        });
+        setShowCart(false);
       } else toast.error(error.message, { id: toastId });
     },
   });
+
+  const createGuideValue = React.useMemo(() => {
+    return {
+      name: "",
+      description: "",
+      items: Array.from(selectedItems.values()).map((item) => ({
+        ...item,
+        categories: item.categories ?? [],
+        image: item.image ?? "",
+      })),
+    };
+  }, [selectedItems]);
+
+  const selectedTotal = createGuideValue.items.reduce(
+    (acc, item) => acc + item.price,
+    0,
+  );
 
   React.useEffect(() => {
     if (sidebarOpen) {
@@ -100,32 +116,10 @@ export const OrderForm = ({ taxRules }: { taxRules: TaxRule[] }) => {
       {/* items list */}
       <ProductsSection form={form} />
 
-      {/* sticky buttons  */}
-      {isSelecting ? (
-        <StickySave />
-      ) : (
-        <StickyCart form={form} showCart={showCart} setShowCart={setShowCart} />
-      )}
-
-      {/* cart overlay */}
-      <OrderCart form={form} showCart={showCart} setShowCart={setShowCart} />
-    </div>
-  );
-};
-
-const StickyCart = withForm({
-  ...formOpt,
-  props: {} as {
-    showCart: boolean;
-    setShowCart: (v: boolean) => void;
-  },
-
-  render: function ({ form, setShowCart }) {
-    return (
+      {/* sticky cart  */}
       <form.Subscribe
         selector={({ values, isSubmitting, canSubmit }) => {
           const totals = getTotals(values.lineItems, values.taxRules);
-
           return {
             totals,
             isSubmitting,
@@ -134,10 +128,10 @@ const StickyCart = withForm({
         }}
       >
         {({ totals, isSubmitting, canSubmit }) => {
-          if (totals.count <= 0) return null;
+          if (totals.count <= 0 || isSelecting) return null;
 
           return (
-            <div className="sticky bottom-6 z-2 mx-auto w-full max-w-xl">
+            <div className="sticky bottom-6 z-3 mx-auto w-full max-w-xl">
               <div className="flex h-16 items-center gap-4 rounded-2xl bg-secondary px-6 py-4 shadow-lg ring-2 ring-primary/50 ring-offset-2 backdrop-blur-2xl">
                 <div className="flex flex-col">
                   <span className="text-xs uppercase">
@@ -175,34 +169,51 @@ const StickyCart = withForm({
           );
         }}
       </form.Subscribe>
-    );
-  },
-});
 
-const StickySave = () => {
-  const { selectedCount } = useProductSelection();
-  return (
-    <div className="sticky bottom-6 z-3 mx-auto w-full max-w-xl">
-      <div className="flex h-16 items-center gap-4 rounded-2xl bg-secondary px-6 py-4 shadow-lg ring-2 ring-primary/50 ring-offset-2 backdrop-blur-2xl">
-        <div className="flex flex-1 flex-col">
-          <span className="text-xs uppercase">
-            {selectedCount} item
-            {selectedCount > 1 ? "s" : ""} selected
-          </span>
+      {/* sticky save */}
+      <div
+        data-active={isSelecting && selectedCount > 0}
+        className="sticky hidden bottom-6 z-3 mx-auto w-full max-w-xl data-[active=true]:block"
+      >
+        <div className="flex h-16 items-center gap-4 rounded-2xl bg-secondary px-6 py-4 shadow-lg ring-2 ring-primary/50 ring-offset-2 backdrop-blur-2xl">
+          <div className="flex flex-1 flex-col">
+            <span className="text-xs uppercase">
+              {selectedCount} item
+              {selectedCount > 1 ? "s" : ""} selected
+            </span>
+
+            <span className="text-base font-bold text-primary">
+              {formatUSD(selectedTotal)}
+            </span>
+          </div>
+
+          <Button
+            type="button"
+            variant="link"
+            size="lg"
+            onClick={() => setIsSelecting(false)}
+          >
+            Cancel
+          </Button>
+
+          <OrderGuideDialog
+            onSuccess={unselectAll}
+            initialValue={createGuideValue}
+          >
+            <Button
+              type="button"
+              size="lg"
+              disabled={selectedCount <= 0}
+              className="w-32 rounded-xl bg-sidebar-accent hover:bg-sidebar-accent/80"
+            >
+              Save guide
+            </Button>
+          </OrderGuideDialog>
         </div>
-
-        <Button type="button" variant="link" size="lg">
-          Discard
-        </Button>
-        <Button
-          type="button"
-          size="lg"
-          disabled={selectedCount <= 0}
-          className="w-32 rounded-xl bg-sidebar-accent hover:bg-sidebar-accent/80"
-        >
-          Save guide
-        </Button>
       </div>
+
+      {/* cart overlay */}
+      <OrderCart form={form} />
     </div>
   );
 };

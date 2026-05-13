@@ -1,4 +1,6 @@
 "use client";
+
+import z from "zod";
 import React from "react";
 import {
   Dialog,
@@ -24,7 +26,8 @@ import { Field, FieldGroup } from "@/components/ui/field";
 import { formatUSD, getAvatarFallback } from "@/lib/utils";
 import { ProductSelectorCustomer } from "./product-selector-customer";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import z from "zod";
+import { createOrderGuide } from "@/server/order-guide";
+import { useQueryClient } from "@tanstack/react-query";
 
 const schema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -42,13 +45,18 @@ const schema = z.object({
 
 export const OrderGuideDialog = ({
   children,
+  initialValue,
+  onSuccess,
 }: {
   children: React.ReactNode;
+  initialValue?: z.infer<typeof schema>;
+  onSuccess?: () => void;
 }) => {
+  const queryClient = useQueryClient();
   const [open, setOpen] = React.useState(false);
 
   const form = useAppForm({
-    defaultValues: {
+    defaultValues: initialValue ?? {
       name: "",
       description: "",
       items: [] as z.infer<typeof schema>["items"],
@@ -57,9 +65,31 @@ export const OrderGuideDialog = ({
       onBlur: schema,
     },
     onSubmit: async ({ value }) => {
+      const { name, description, items } = value;
       const toastId = toast.loading("Please wait...");
-      await new Promise((res) => setTimeout(res, 1000));
-      toast.success("(Demo) order guide saved successfully", { id: toastId });
+      const productIds = items.map((p) => Number(p.productId));
+
+      const { success, error } = await createOrderGuide({
+        name,
+        description,
+        productIds,
+      });
+
+      if (success) {
+        toast.success("Order guide saved successfully!", { id: toastId });
+        setOpen(false);
+        form.reset();
+        onSuccess?.();
+        queryClient.invalidateQueries({
+          queryKey: [
+            "customer-products",
+            "customer-order-guides",
+            "order-guide",
+          ],
+        });
+      } else {
+        toast.error(error.message, { id: toastId });
+      }
     },
   });
 
@@ -110,8 +140,10 @@ export const OrderGuideDialog = ({
                       selected={field.state.value}
                       setSelectedChange={(value) => {
                         const current = field.state.value || [];
+
                         const index = current.findIndex(
-                          (item) => item.productId === value.productId,
+                          (item) =>
+                            String(item.productId) === String(value.productId),
                         );
                         if (index >= 0) {
                           field.removeValue(index);
@@ -140,17 +172,16 @@ export const OrderGuideDialog = ({
                           <Sortable
                             strategy="vertical"
                             value={items}
-                            onValueChange={(v) => {
-                              form.setFieldValue("items", v);
-                              console.log(v);
+                            onValueChange={(value) => {
+                              form.setFieldValue("items", value);
                             }}
                             getItemValue={(item) => String(item.productId)}
                             className="divide-y"
                           >
-                            {items?.map((item, index) => {
+                            {items?.map((item) => {
                               return (
                                 <SortableItem
-                                  key={index}
+                                  key={item.productId}
                                   value={String(item.productId)}
                                   className="flex flex-1 items-center gap-3 bg-background py-2 first:pt-0 last:pb-0"
                                 >
@@ -170,16 +201,17 @@ export const OrderGuideDialog = ({
                                     </Avatar>
                                   </div>
                                   <div className="min-w-0 flex-1 space-y-1">
-                                    <p>{item.title}</p>
-                                    <div className="flex items-center gap-1">
+                                    <p className="font-medium text-[15px]">
+                                      {item.title}
+                                    </p>
+                                    <div className="flex items-center gap-1 flex-wrap">
                                       {item.categories?.map((cat, i) => (
-                                        <Badge
+                                        <span
                                           key={cat + i}
-                                          variant="outline"
-                                          className="rounded-xl border border-border bg-primary/20"
+                                          className="text-muted-foreground text-xs uppercase min-w-0 whitespace-nowrap font-medium not-last:border-r-2 leading-3.5 not-first:pl-1 not-last:pr-1"
                                         >
                                           {cat}
-                                        </Badge>
+                                        </span>
                                       ))}
                                     </div>
                                   </div>

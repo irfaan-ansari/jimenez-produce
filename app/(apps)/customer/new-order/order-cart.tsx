@@ -19,14 +19,17 @@ import { ProductItemQty } from "./product-item-qty";
 import { Textarea } from "@/components/ui/textarea";
 import { DELIVERY_TIME } from "@/lib/constants/customer";
 import { formOpt, getTotals } from "./order-form-options";
+import { useOrderUIStore } from "@/lib/store/order-store";
 import { ChevronDown, ImageOff, Loader } from "lucide-react";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export const OrderCart = withForm({
   ...formOpt,
-  props: {} as { showCart?: boolean; setShowCart?: (value: boolean) => void },
-  render: function Render({ form, showCart, setShowCart }) {
+  render: function Render({ form }) {
+    const showCart = useOrderUIStore((s) => s.showCart);
+    const setShowCart = useOrderUIStore((s) => s.setShowCart);
+
     return (
       <Sheet open={showCart} onOpenChange={setShowCart}>
         <form.Subscribe

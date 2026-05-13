@@ -60,7 +60,8 @@
     "twilio": "^6.0.0",
     "vaul": "^1.1.2",
     "xlsx": "^0.18.5",
-    "zod": "^4.3.6"
+    "zod": "^4.3.6",
+    "zustand": "^5.0.13"
   },
   "devDependencies": {
     "@react-email/preview-server": "^5.2.8",

@@ -1,6 +1,5 @@
 "use client";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
 import { Thumbnail } from "./thumbnail";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -11,7 +10,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { ProductItemQty } from "./product-item-qty";
 import { SortableItem, SortableItemHandle } from "@/components/reui/sortable";
 import { AddToOrderGuideDialog } from "@/components/admin/add-to-order-guide-dialog";
-import { Tooltip } from "@/components/tooltip";
+import { useOrderUIStore } from "@/lib/store/order-store";
 
 interface ProductItemProps {
   product: OrderItem;
@@ -30,14 +29,15 @@ export const ProductItem = ({
   product,
   quantity,
   onUpdateQty,
-  // for creating new guide
-  selectable,
-  selected,
-  toggleSelected,
-  // for dragging
+
   sortable,
+  selectable,
 }: ProductItemProps) => {
-  const [checked, setChecked] = useState(false);
+  const selected = useOrderUIStore(
+    (s) => !!s.selectedItems.get(product.productId),
+  );
+  const toggleSelected = useOrderUIStore((s) => s.toggleSelected);
+
   return (
     <SortableItem
       value={String(product.productId)}
@@ -48,10 +48,10 @@ export const ProductItem = ({
         "transition duration-200 ring-2 ring-offset-background ring-transparent",
         "has-data-checked:ring-sidebar-accent has-data-checked:ring-offset-1",
         "data-[dragging=true]:ring-offset-1 data-[dragging=true]:ring-black/50 data-[dragging=true]:opacity-100",
-        selected ? "ring-2 ring-black/50" : "",
+        selected && selectable ? "ring-2 ring-black/50" : "",
       )}
       onClick={() => {
-        if (!selectable) onUpdateQty(quantity + 1);
+        onUpdateQty(quantity + 1);
       }}
     >
       {/* sortable item handle */}
@@ -77,8 +77,16 @@ export const ProductItem = ({
           <Checkbox
             id={String(product.productId)}
             className="bg-background p-3 rounded-md data-checked:bg-sidebar-accent"
-            checked={checked}
-            onCheckedChange={(checked) => setChecked(!!checked)}
+            checked={selected}
+            onCheckedChange={() =>
+              toggleSelected({
+                productId: product.productId,
+                title: product.title,
+                image: product.image,
+                categories: product.categories,
+                price: Number(product.price),
+              })
+            }
           />
         </Label>
       )}
@@ -99,17 +107,15 @@ export const ProductItem = ({
               finalPrice: product.price,
             }}
           >
-            <Tooltip content="Add to guide">
-              <Button
-                size="icon-xs"
-                type="button"
-                variant="outline"
-                onClick={(e) => e.stopPropagation()}
-                className="size-7 rounded-lg"
-              >
-                <Star className="size-3.5 fill-foreground" />
-              </Button>
-            </Tooltip>
+            <Button
+              size="icon-xs"
+              type="button"
+              variant="outline"
+              onClick={(e) => e.stopPropagation()}
+              className="size-7 rounded-lg"
+            >
+              <Star className="size-3.5 fill-foreground" />
+            </Button>
           </AddToOrderGuideDialog>
         )}
       </div>

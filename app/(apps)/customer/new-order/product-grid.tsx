@@ -9,8 +9,8 @@ import { Sortable } from "@/components/reui/sortable";
 type ProductGridProps = {
   items: OrderItem[];
   layout: string;
-  selectable?: boolean;
   sortable?: boolean;
+  selectable?: boolean;
   onMoveComplete?: (items: OrderItem[]) => void;
 };
 
@@ -21,18 +21,35 @@ export const ProductGrid = withForm({
     form,
     items,
     layout,
-    sortable,
     selectable,
+    sortable,
     onMoveComplete,
   }) {
     const currentLayout = LAYOUT_MAP[layout as keyof typeof LAYOUT_MAP];
-    const lineItems = useStore(form.store, (state) => state.values.lineItems);
+
+    const lineItems = useStore(form.store, (s) => s.values.lineItems);
+
+    const lineItemMap = React.useMemo(() => {
+      return new Map<
+        number,
+        {
+          qty: number;
+          index: number;
+        }
+      >(
+        lineItems.map((item, index) => [
+          item.productId,
+          {
+            qty: Number(item.quantity),
+            index,
+          },
+        ]),
+      );
+    }, [lineItems]);
 
     const updateQty = React.useCallback(
       (product: OrderItem, qty: number) => {
-        const index = lineItems.findIndex(
-          (i) => i.productId === product.productId,
-        );
+        const index = lineItemMap.get(product.productId)?.index ?? -1;
 
         if (qty <= 0) {
           if (index >= 0) {
@@ -70,22 +87,15 @@ export const ProductGrid = withForm({
         className={`grid @container group/card ${currentLayout.className}`}
       >
         {items.map((product) => {
-          const qty =
-            Number(
-              lineItems.find((i) => i.productId === product.productId)
-                ?.quantity,
-            ) || 0;
-
+          const qty = lineItemMap.get(product.productId)?.qty ?? 0;
           return (
             <ProductItem
               key={product.productId}
               product={product}
               quantity={qty}
               onUpdateQty={(newQty) => updateQty(product, newQty)}
-              selectable={selectable}
               sortable={sortable}
-              selected={false}
-              toggleSelected={() => {}}
+              selectable={selectable}
             />
           );
         })}

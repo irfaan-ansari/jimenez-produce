@@ -8,14 +8,17 @@ import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
 import { useInfiniteProductsCustomer } from "@/hooks/use-product";
 import { LoadingSkeleton } from "@/components/admin/placeholder-component";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Plus, X } from "lucide-react";
+import { useOrderUIStore } from "@/lib/store/order-store";
 
 export const ItemList = withForm({
   ...formOpt,
   props: {} as { layout: string; filters: Record<string, string> },
   render: function Render({ form, layout, filters }) {
-    const { searchParamsObj } = useRouterStuff();
+    const isSelecting = useOrderUIStore((s) => s.isSelecting);
+    const setIsSelecting = useOrderUIStore((s) => s.setIsSelecting);
 
+    const { searchParamsObj } = useRouterStuff();
     const queryString = React.useMemo(() => {
       const { guideId, ...rest } = searchParamsObj;
 
@@ -78,8 +81,20 @@ export const ItemList = withForm({
               All products
             </span>
             <span className="flex-1 border-b" />
-            <Button className="rounded-lg">
-              <Plus /> New guide
+            <Button
+              className="rounded-lg"
+              variant={isSelecting ? "destructive" : "default"}
+              onClick={() => setIsSelecting(!isSelecting)}
+            >
+              {isSelecting ? (
+                <>
+                  <X /> Cancel
+                </>
+              ) : (
+                <>
+                  <Plus /> New guide
+                </>
+              )}
             </Button>
           </div>
         )}
@@ -92,7 +107,12 @@ export const ItemList = withForm({
         />
 
         {/* item grid */}
-        <ProductGrid items={mappedProduct} form={form} layout={layout} />
+        <ProductGrid
+          items={mappedProduct}
+          form={form}
+          layout={layout}
+          selectable={isSelecting}
+        />
 
         {/* render grid with sortable */}
         <div

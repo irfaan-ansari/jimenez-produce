@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Plus } from "lucide-react";
+import { Plus, X } from "lucide-react";
 import {
   ButtonGroup,
   ButtonGroupSeparator,
@@ -8,30 +8,48 @@ import {
 import { File } from "@duo-icons/react";
 import { Tooltip } from "@/components/tooltip";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useRouterStuff } from "@/hooks/use-router-stuff";
+import { useOrderUIStore } from "@/lib/store/order-store";
 import { useInfiniteOrderGuides } from "@/hooks/use-orders";
 import { OrderGuideSelector } from "@/components/admin/order-guide-selector";
 
 export const OrderGuideButton = () => {
+  const { queryParams, searchParamsObj } = useRouterStuff();
   const { data, isError, isPending } = useInfiniteOrderGuides("");
 
-  const { queryParams, searchParamsObj } = useRouterStuff();
+  const isSelecting = useOrderUIStore((s) => s.isSelecting);
+  const setIsSelecting = useOrderUIStore((s) => s.setIsSelecting);
 
   const totalRecord = React.useMemo(() => {
     return data?.pages?.[0]?.pagination?.total ?? 0;
   }, [data]);
 
-  if (totalRecord <= 0 && !isPending && !isError)
+  if (isPending) {
+    return <Skeleton className="h-11 bg-yellow-500 w-36" />;
+  }
+
+  if (isError || totalRecord <= 0) {
     return (
       <Button
         size="xl"
         type="button"
         variant="secondary"
-        className="rounded-lg bg-yellow-500 hover:bg-yellow-500/90 aria-expanded:bg-yellow-500/90 [&>svg]:size-5!"
+        className="rounded-lg bg-yellow-500 hover:bg-yellow-500/90 aria-expanded:bg-yellow-500/90"
+        onClick={() => setIsSelecting(!isSelecting)}
       >
-        <File /> New guide
+        {isSelecting ? (
+          <>
+            <X /> Cancel
+          </>
+        ) : (
+          <>
+            <Plus /> New guide
+          </>
+        )}
       </Button>
     );
+  }
 
   return (
     <ButtonGroup className="">
@@ -47,18 +65,19 @@ export const OrderGuideButton = () => {
           variant="secondary"
           className="rounded-lg bg-yellow-500 hover:bg-yellow-500/90 aria-expanded:bg-yellow-500/90 [&>svg]:size-5!"
         >
-          <File /> Order Guide ({totalRecord})
+          <File /> View guides ({totalRecord})
         </Button>
       </OrderGuideSelector>
       <ButtonGroupSeparator />
-      <Tooltip content="Create new guide">
+
+      <Tooltip content={isSelecting ? "Cancel" : "Create new guide"}>
         <Button
           size="icon-xl"
           type="button"
-          variant="secondary"
-          className="bg-yellow-500 hover:bg-yellow-500/90 aria-expanded:bg-yellow-500/90"
+          className="bg-sidebar-accent hover:bg-sidebar-accent/90"
+          onClick={() => setIsSelecting(!isSelecting)}
         >
-          <Plus />
+          {isSelecting ? <X /> : <Plus />}
         </Button>
       </Tooltip>
     </ButtonGroup>

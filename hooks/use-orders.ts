@@ -29,7 +29,7 @@ interface OrderGuideResponse {
 
 export const useOrderGuides = (enabled = true) => {
   return useQuery({
-    queryKey: ["customer-order-guides"],
+    queryKey: ["customer-order-guides-normal"],
     queryFn: () => {
       return fetcher<OrderGuidesResponse>(`/api/customer/order-guides`);
     },

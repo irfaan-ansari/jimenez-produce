@@ -138,7 +138,7 @@ export const ProductSelectorCustomer = ({
                 return (
                   <FieldLabel
                     key={item.productId}
-                    htmlFor={String(item.productId)}
+                    htmlFor={String("product-selector" + item.productId)}
                     className="cursor-pointer rounded-xl! bg-secondary/20"
                   >
                     <Field
@@ -176,15 +176,15 @@ export const ProductSelectorCustomer = ({
 
                       <Checkbox
                         className="self-center"
-                        id={String(item.productId)}
+                        id={String("product-selector" + item.productId)}
                         checked={checked}
-                        onCheckedChange={() =>
+                        onCheckedChange={() => {
                           setSelectedChange({
                             ...item,
                             image: item.image!,
                             categories: item.categories as string[],
-                          })
-                        }
+                          });
+                        }}
                       />
                     </Field>
                   </FieldLabel>
