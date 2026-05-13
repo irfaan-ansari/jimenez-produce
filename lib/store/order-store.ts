@@ -1,11 +1,11 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { LayoutGrid, TextAlignJustify } from "lucide-react";
+import { LayoutGrid, LayoutList } from "lucide-react";
 
 export const LAYOUT_MAP = {
   list: {
     value: "list",
-    icon: TextAlignJustify,
+    icon: LayoutList,
     className: "grid-cols-1 gap-1",
   },
 

@@ -39,7 +39,7 @@ export const sales = ac.newRole({
 });
 
 export const customer = ac.newRole({
-  team: ["create"],
+  team: ["create", "update"],
 });
 
 export const access = {

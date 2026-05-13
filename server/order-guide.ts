@@ -119,7 +119,11 @@ export const updateOrderGuide = handleAction(
 
     // update guide
     const promises: Promise<unknown>[] = [
-      db.update(orderGuide).set({ name, description }).returning(),
+      db
+        .update(orderGuide)
+        .set({ name, description })
+        .where(eq(orderGuide.id, id))
+        .returning(),
     ];
 
     // delete items

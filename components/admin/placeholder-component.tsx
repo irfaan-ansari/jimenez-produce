@@ -1,15 +1,10 @@
 "use client";
-import {
-  Empty,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-} from "../ui/empty";
-import { Loader } from "../animate-ui/icons/loader";
-import { Inbox, OctagonX } from "lucide-react";
-import { AnimateIcon } from "../animate-ui/icons/icon";
+
 import { cn } from "@/lib/utils";
+import { Inbox, OctagonX } from "lucide-react";
+import { Loader } from "../animate-ui/icons/loader";
+import { AnimateIcon } from "../animate-ui/icons/icon";
+import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from "../ui/empty";
 
 export const EmptyComponent = ({
   title = "No Data Available",
@@ -39,8 +34,8 @@ export const EmptyComponent = ({
 export const LoadingSkeleton = ({ className }: { className?: string }) => {
   return (
     <div className={cn("flex flex-col items-center justify-center", className)}>
-      <AnimateIcon animate persistOnAnimateEnd>
-        <Loader />
+      <AnimateIcon animate={true} persistOnAnimateEnd animateOnView>
+        <Loader className="size-6" />
       </AnimateIcon>
     </div>
   );
