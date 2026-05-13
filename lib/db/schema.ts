@@ -512,6 +512,7 @@ export const orderGuide = pgTable(
     }),
     name: text("name").notNull(),
     description: text("description"),
+    position: integer("position").notNull().default(0),
     createdBy: text("created_by").references(() => user.id, {
       onDelete: "set null",
     }),

@@ -1,32 +1,23 @@
 import React from "react";
-import { ProductsState } from "./card-badge";
 import { ProductGrid } from "./product-grid";
 import { formOpt } from "./order-form-options";
 import { withForm } from "@/hooks/form-context";
-import { useRouterStuff } from "@/hooks/use-router-stuff";
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
 import { useInfiniteProductsCustomer } from "@/hooks/use-product";
-import { LoadingSkeleton } from "@/components/admin/placeholder-component";
-import { Button } from "@/components/ui/button";
-import { Plus, X } from "lucide-react";
+import {
+  EmptyComponent,
+  LoadingSkeleton,
+} from "@/components/admin/placeholder-component";
 import { useOrderUIStore } from "@/lib/store/order-store";
 
 export const ItemList = withForm({
   ...formOpt,
-  props: {} as { layout: string; filters: Record<string, string> },
-  render: function Render({ form, layout, filters }) {
+
+  render: function Render({ form }) {
+    const layout = useOrderUIStore((s) => s.layout);
     const isSelecting = useOrderUIStore((s) => s.isSelecting);
-    const setIsSelecting = useOrderUIStore((s) => s.setIsSelecting);
 
-    const { searchParamsObj } = useRouterStuff();
-    const queryString = React.useMemo(() => {
-      const { guideId, ...rest } = searchParamsObj;
-
-      return new URLSearchParams({
-        ...filters,
-        ...rest,
-      }).toString();
-    }, [filters, searchParamsObj]);
+    const queryString = new URLSearchParams({}).toString();
 
     const {
       data,
@@ -75,30 +66,6 @@ export const ItemList = withForm({
 
     return (
       <div className="space-y-6">
-        {searchParamsObj.guideId && (
-          <div className="flex items-center justify-center gap-1">
-            <span className="text-xs font-medium text-muted-foreground uppercase">
-              All products
-            </span>
-            <span className="flex-1 border-b" />
-            <Button
-              className="rounded-lg"
-              variant={isSelecting ? "destructive" : "default"}
-              onClick={() => setIsSelecting(!isSelecting)}
-            >
-              {isSelecting ? (
-                <>
-                  <X /> Cancel
-                </>
-              ) : (
-                <>
-                  <Plus /> New guide
-                </>
-              )}
-            </Button>
-          </div>
-        )}
-
         <ProductsState
           isError={isError}
           isPending={isPending}
@@ -107,13 +74,17 @@ export const ItemList = withForm({
         />
 
         {/* item grid */}
-        <ProductGrid
-          items={mappedProduct}
-          form={form}
-          layout={layout}
-          selectable={isSelecting}
-        />
-
+        <div
+          data-layout={layout}
+          className="group/card @container min-h-svh min-w-0 flex-1 space-y-5"
+        >
+          <ProductGrid
+            items={mappedProduct}
+            form={form}
+            layout={layout}
+            selectable={isSelecting}
+          />
+        </div>
         {/* render grid with sortable */}
         <div
           ref={loadMoreRef}
@@ -125,3 +96,41 @@ export const ItemList = withForm({
     );
   },
 });
+
+function ProductsState({
+  isError,
+  isPending,
+  error,
+  hasProducts,
+}: {
+  isError: boolean;
+  isPending: boolean;
+  error: Error | null;
+  hasProducts: boolean;
+}) {
+  if (isError) {
+    return (
+      <div className="rounded-2xl border bg-background py-20">
+        <EmptyComponent variant="error" title={error?.message} />
+      </div>
+    );
+  }
+
+  if (isPending) {
+    return (
+      <div className="rounded-2xl border bg-background py-20">
+        <LoadingSkeleton />
+      </div>
+    );
+  }
+
+  if (!hasProducts) {
+    return (
+      <div className="rounded-2xl border bg-background py-20">
+        <EmptyComponent variant="empty" />
+      </div>
+    );
+  }
+
+  return null;
+}

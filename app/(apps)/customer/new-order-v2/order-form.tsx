@@ -2,36 +2,33 @@
 
 import React from "react";
 import { toast } from "sonner";
-import { List, Loader, Menu, Plus, Star } from "lucide-react";
-import { OrderCart } from "./order-cart";
 import { formatUSD } from "@/lib/utils";
+import { ItemList } from "./item-list";
+import { OrderCart } from "./order-cart";
 import { type TaxRule } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import { createOrder } from "@/server/order";
 import { ShoppingBag } from "@duo-icons/react";
 import { Button } from "@/components/ui/button";
 import { useConfirm } from "@/hooks/use-confirm";
-import { OrderGuideButton } from "./order-guide";
 import { useAppForm } from "@/hooks/form-context";
-import { ProductsSection } from "./products-section";
 import { useSidebar } from "@/components/ui/sidebar";
+import { Loader, Menu, Plus, Star } from "lucide-react";
+import { OrderTab, useOrderUIStore } from "@/lib/store/order-store";
 import { formOpt, getTotals } from "./order-form-options";
-import { useOrderUIStore } from "@/lib/store/order-store";
-import { SearchBar } from "@/components/admin/search-filters";
+import { OrderFormToolbar, ToolbarSearch } from "./order-from-toolbar";
 import { OrderGuideDialog } from "@/components/admin/order-guide-dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
-import {
-  ButtonGroup,
-  ButtonGroupSeparator,
-} from "@/components/ui/button-group";
-import { GuideItems } from "./guide-items";
+import { GuideBoard } from "./guide-board";
 
 export const OrderForm = ({ taxRules }: { taxRules: TaxRule[] }) => {
   const router = useRouter();
   const confirm = useConfirm();
 
   const setShowCart = useOrderUIStore((s) => s.setShowCart);
+
+  const selectedTab = useOrderUIStore((s) => s.selectedTab);
+  const setSelectedTab = useOrderUIStore((s) => s.setSelectedTab);
 
   const isSelecting = useOrderUIStore((s) => s.isSelecting);
   const setIsSelecting = useOrderUIStore((s) => s.setIsSelecting);
@@ -91,37 +88,34 @@ export const OrderForm = ({ taxRules }: { taxRules: TaxRule[] }) => {
   }, []);
 
   return (
-    <Tabs defaultValue="all" className="flex w-full flex-col gap-6">
+    <Tabs
+      value={selectedTab}
+      onValueChange={(value) => setSelectedTab(value as OrderTab)}
+      className="flex w-full flex-col gap-6"
+    >
       <div className="flex w-full flex-col items-start gap-4 **:data-[slot=input-group]:bg-background lg:flex-row lg:items-center">
-        <TabsList className="bg-background p-0 shadow-sm *:h-10 *:text-foreground group-data-horizontal/tabs:h-10 *:data-active:bg-primary *:data-active:text-primary-foreground *:data-active:hover:bg-primary/80 *:data-active:hover:text-primary-foreground">
-          <TabsTrigger value="all">
-            <Menu />
-            All Products
-          </TabsTrigger>
-          <TabsTrigger value="order-guides">
-            <Star className="fill-current" />
-            Order Guides
-          </TabsTrigger>
-          <TabsTrigger
-            value="new-guide"
-            onClick={(e) => {
-              e.preventDefault();
-              console.log("new tab clicked");
-            }}
+        <div className="flex-1 space-y-1">
+          <h1 className="text-2xl font-bold">Build a new order</h1>
+          <p className="text-sm text-muted-foreground">
+            Search products, update quantities, and send an order faster.
+          </p>
+        </div>
+        <div className="flex w-full items-center justify-between gap-4 lg:w-auto lg:flex-1 lg:justify-end">
+          <ToolbarSearch />
+          <Button
+            size="xl"
+            variant="secondary"
+            className="bg-yellow-500 hover:bg-yellow-500/90 rounded-lg"
+            onCanPlay={() => setIsSelecting(true)}
           >
             <Plus />
             New Guide
-          </TabsTrigger>
-        </TabsList>
-
-        <div className="flex w-full items-center justify-between gap-4 lg:w-auto lg:flex-1 lg:justify-end">
-          <SearchBar className="h-10" placeholder="Search products..." />
-
+          </Button>
           <form.Field
             name="lineItems"
             children={(field) => (
               <Button
-                size="lg"
+                size="xl"
                 className="rounded-lg [&>svg]:size-5!"
                 onClick={() => setShowCart(true)}
                 disabled={field.state.value.length === 0}
@@ -133,14 +127,34 @@ export const OrderForm = ({ taxRules }: { taxRules: TaxRule[] }) => {
           />
         </div>
       </div>
+
+      {/* toolbar */}
+
+      <div className="flex gap-4 items-center w-full">
+        <TabsList className="bg-background p-0 shadow-sm *:h-10 *:text-foreground group-data-horizontal/tabs:h-10 *:data-active:bg-primary *:data-active:text-primary-foreground *:data-active:hover:bg-primary/80 *:data-active:hover:text-primary-foreground">
+          <TabsTrigger value="all">
+            <Menu />
+            All Products
+          </TabsTrigger>
+          <TabsTrigger value="guides">
+            <Star className="fill-current" />
+            Order Guides
+          </TabsTrigger>
+        </TabsList>
+        <OrderFormToolbar />
+      </div>
+
+      {/* <ProductsSection form={form} /> */}
+
       <TabsContent value="all">
-        {/* items list */}
-        <ProductsSection form={form} />
+        {/* item list */}
+        <ItemList form={form} />
       </TabsContent>
-      <TabsContent value="order-guides">
-        <GuideItems form={form} layout="grid" />
+
+      <TabsContent value="guides">
+        {/* item list */}
+        <GuideBoard form={form} />
       </TabsContent>
-      <TabsContent value="new-guide"></TabsContent>
 
       {/* sticky cart  */}
       <form.Subscribe

@@ -19,6 +19,8 @@ export const LAYOUT_MAP = {
 
 export type LayoutType = keyof typeof LAYOUT_MAP;
 
+export type OrderTab = "all" | "guides";
+
 type SelectedProduct = {
   productId: number;
   title: string;
@@ -33,6 +35,9 @@ type OrderUIStore = {
 
   showCart: boolean;
   setShowCart: (value: boolean) => void;
+
+  selectedTab: OrderTab;
+  setSelectedTab: (value: OrderTab) => void;
 
   isSelecting: boolean;
   setIsSelecting: (value: boolean) => void;
@@ -55,7 +60,11 @@ export const useOrderUIStore = create<OrderUIStore>()(
       setShowCart: (value) => {
         set({ showCart: value });
       },
-
+      // tab
+      selectedTab: "all",
+      setSelectedTab: (value) => {
+        set({ selectedTab: value });
+      },
       // selection
       isSelecting: false,
       setIsSelecting: (value) => {
@@ -91,6 +100,7 @@ export const useOrderUIStore = create<OrderUIStore>()(
       name: "order-ui-store",
       partialize: (state) => ({
         layout: state.layout,
+        selectedTab: state.selectedTab,
       }),
     },
   ),

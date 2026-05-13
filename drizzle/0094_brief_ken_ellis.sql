@@ -1,0 +1,1 @@
+ALTER TABLE "order_guide" ADD COLUMN "position" integer DEFAULT 0 NOT NULL;
