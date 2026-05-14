@@ -45,6 +45,10 @@ type OrderUIStore = {
   unselectAll: () => void;
   toggleSelected: (product: SelectedProduct) => void;
   isSelected: (id: number) => boolean;
+
+  // filters
+  filter: Record<string, string | undefined>;
+  setFilter: ({ key, value }: Record<string, string | undefined>) => void;
 };
 
 export const useOrderUIStore = create<OrderUIStore>()(
@@ -71,7 +75,6 @@ export const useOrderUIStore = create<OrderUIStore>()(
         set({ isSelecting: value });
       },
       selectedItems: new Map(),
-
       toggleSelected: (product) => {
         set((state) => {
           const next = new Map(state.selectedItems);
@@ -93,14 +96,22 @@ export const useOrderUIStore = create<OrderUIStore>()(
           isSelecting: false,
         });
       },
-
       isSelected: (id) => get().selectedItems.has(id),
+
+      // filters
+      filter: {},
+      setFilter: (filter) => {
+        set({
+          filter,
+        });
+      },
     }),
     {
       name: "order-ui-store",
       partialize: (state) => ({
         layout: state.layout,
         selectedTab: state.selectedTab,
+        filter: state.filter,
       }),
     },
   ),

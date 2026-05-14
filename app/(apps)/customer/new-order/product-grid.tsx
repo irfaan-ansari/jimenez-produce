@@ -2,29 +2,22 @@ import React from "react";
 import { ProductItem } from "./product-item";
 import { withForm } from "@/hooks/form-context";
 import { useStore } from "@tanstack/react-form";
+import { KanbanItem } from "@/components/ui/kanban";
 import { LAYOUT_MAP } from "@/hooks/use-layout-prefrence";
 import { formOpt, OrderItem } from "./order-form-options";
-import { Sortable } from "@/components/reui/sortable";
+import { useOrderUIStore } from "@/lib/store/order-store";
 
 type ProductGridProps = {
   items: OrderItem[];
-  layout: string;
-  sortable?: boolean;
   selectable?: boolean;
-  onMoveComplete?: (items: OrderItem[]) => void;
+  draggable?: boolean;
 };
 
 export const ProductGrid = withForm({
   ...formOpt,
   props: {} as ProductGridProps,
-  render: function Render({
-    form,
-    items,
-    layout,
-    selectable,
-    sortable,
-    onMoveComplete,
-  }) {
+  render: function Render({ form, items, selectable, draggable }) {
+    const layout = useOrderUIStore((s) => s.layout);
     const currentLayout = LAYOUT_MAP[layout as keyof typeof LAYOUT_MAP];
 
     const lineItems = useStore(form.store, (s) => s.values.lineItems);
@@ -72,34 +65,43 @@ export const ProductGrid = withForm({
     );
 
     return (
-      <Sortable
+      <div
+        className="group/card @container min-w-0 flex-1 space-y-5"
         data-layout={layout}
-        value={items}
-        onValueChange={(v) => {
-          const reordered = v.map((i) => ({
-            ...i,
-            productId: Number(i.productId),
-          }));
-          onMoveComplete?.(reordered);
-        }}
-        getItemValue={(item) => String(item.productId)}
-        strategy={layout === "grid" ? "grid" : "vertical"}
-        className={`grid @container group/card ${currentLayout.className}`}
       >
-        {items.map((product) => {
-          const qty = lineItemMap.get(product.productId)?.qty ?? 0;
-          return (
-            <ProductItem
-              key={product.productId}
-              product={product}
-              quantity={qty}
-              onUpdateQty={(newQty) => updateQty(product, newQty)}
-              sortable={sortable}
-              selectable={selectable}
-            />
-          );
-        })}
-      </Sortable>
+        <div className={`grid ${currentLayout.className}`}>
+          {items.map((product) => {
+            const qty = lineItemMap.get(product.productId)?.qty ?? 0;
+
+            const content = (
+              <ProductItem
+                product={product}
+                quantity={qty}
+                onUpdateQty={(newQty) => updateQty(product, newQty)}
+                selectable={selectable}
+                draggable={draggable}
+              />
+            );
+
+            if (!draggable) {
+              return (
+                <React.Fragment key={product.productId}>
+                  {content}
+                </React.Fragment>
+              );
+            }
+
+            return (
+              <KanbanItem
+                key={product.productId}
+                value={String(product.productId)}
+              >
+                {content}
+              </KanbanItem>
+            );
+          })}
+        </div>
+      </div>
     );
   },
 });

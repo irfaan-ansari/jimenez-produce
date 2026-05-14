@@ -2,29 +2,33 @@
 
 import React from "react";
 import { toast } from "sonner";
-import { Loader } from "lucide-react";
-import { OrderCart } from "./order-cart";
 import { formatUSD } from "@/lib/utils";
+import { ItemList } from "./item-list";
+import { GuideList } from "./guide-list";
+import { OrderCart } from "./order-cart";
 import { type TaxRule } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import { createOrder } from "@/server/order";
 import { ShoppingBag } from "@duo-icons/react";
 import { Button } from "@/components/ui/button";
 import { useConfirm } from "@/hooks/use-confirm";
-import { OrderGuideButton } from "./order-guide";
 import { useAppForm } from "@/hooks/form-context";
-import { ProductsSection } from "./products-section";
 import { useSidebar } from "@/components/ui/sidebar";
+import { Loader, Menu, Plus, Star } from "lucide-react";
+import { OrderTab, useOrderUIStore } from "@/lib/store/order-store";
 import { formOpt, getTotals } from "./order-form-options";
-import { useOrderUIStore } from "@/lib/store/order-store";
-import { SearchBar } from "@/components/admin/search-filters";
+import { OrderFormToolbar, ToolbarSearch } from "./order-from-toolbar";
 import { OrderGuideDialog } from "@/components/admin/order-guide-dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export const OrderForm = ({ taxRules }: { taxRules: TaxRule[] }) => {
   const router = useRouter();
   const confirm = useConfirm();
 
   const setShowCart = useOrderUIStore((s) => s.setShowCart);
+
+  const selectedTab = useOrderUIStore((s) => s.selectedTab);
+  const setSelectedTab = useOrderUIStore((s) => s.setSelectedTab);
 
   const isSelecting = useOrderUIStore((s) => s.isSelecting);
   const setIsSelecting = useOrderUIStore((s) => s.setIsSelecting);
@@ -84,18 +88,36 @@ export const OrderForm = ({ taxRules }: { taxRules: TaxRule[] }) => {
   }, []);
 
   return (
-    <div className="flex flex-col gap-6">
+    <Tabs
+      value={selectedTab}
+      onValueChange={(value) => setSelectedTab(value as OrderTab)}
+      className="flex w-full flex-col gap-6"
+    >
       <div className="flex w-full flex-col items-start gap-4 **:data-[slot=input-group]:bg-background lg:flex-row lg:items-center">
-        <div className="flex-1 space-y-1">
-          <h1 className="text-2xl font-bold">Build a new order</h1>
-          <p className="text-sm text-muted-foreground">
-            Search products, update quantities, and send an order faster.
-          </p>
-        </div>
+        <TabsList className="bg-background p-0 shadow-sm *:h-11 *:text-foreground group-data-horizontal/tabs:h-11 *:data-active:bg-primary *:data-active:text-primary-foreground *:data-active:hover:bg-primary/80 *:data-active:hover:text-primary-foreground">
+          <TabsTrigger value="all">
+            <Menu />
+            All Products
+          </TabsTrigger>
+          <TabsTrigger value="guides">
+            <Star className="fill-current" />
+            Order Guides
+          </TabsTrigger>
+        </TabsList>
         <div className="flex w-full items-center justify-between gap-4 lg:w-auto lg:flex-1 lg:justify-end">
-          <SearchBar placeholder="Search products..." />
-          <OrderGuideButton />
-
+          <ToolbarSearch />
+          <Button
+            size="xl"
+            variant="secondary"
+            className="bg-yellow-500 hover:bg-yellow-500/90 rounded-lg"
+            onClick={() => {
+              setIsSelecting(true);
+              setSelectedTab("all");
+            }}
+          >
+            <Plus />
+            New Guide
+          </Button>
           <form.Field
             name="lineItems"
             children={(field) => (
@@ -113,8 +135,21 @@ export const OrderForm = ({ taxRules }: { taxRules: TaxRule[] }) => {
         </div>
       </div>
 
-      {/* items list */}
-      <ProductsSection form={form} />
+      {/* toolbar */}
+
+      <div className="flex flex-col gap-3">
+        <div className="flex gap-4 items-center w-full">
+          <OrderFormToolbar />
+        </div>
+
+        <TabsContent value="all">
+          <ItemList form={form} />
+        </TabsContent>
+
+        <TabsContent value="guides">
+          <GuideList form={form} />
+        </TabsContent>
+      </div>
 
       {/* sticky cart  */}
       <form.Subscribe
@@ -172,8 +207,8 @@ export const OrderForm = ({ taxRules }: { taxRules: TaxRule[] }) => {
 
       {/* sticky save */}
       <div
-        data-active={isSelecting && selectedCount > 0}
-        className="sticky hidden bottom-6 z-3 mx-auto w-full max-w-xl data-[active=true]:block"
+        data-active={isSelecting}
+        className="sticky bottom-6 z-3 mx-auto hidden w-full max-w-xl data-[active=true]:block"
       >
         <div className="flex h-16 items-center gap-4 rounded-2xl bg-secondary px-6 py-4 shadow-lg ring-2 ring-primary/50 ring-offset-2 backdrop-blur-2xl">
           <div className="flex flex-1 flex-col">
@@ -197,7 +232,10 @@ export const OrderForm = ({ taxRules }: { taxRules: TaxRule[] }) => {
           </Button>
 
           <OrderGuideDialog
-            onSuccess={unselectAll}
+            onSuccess={() => {
+              unselectAll();
+              setSelectedTab("guides");
+            }}
             initialValue={createGuideValue}
           >
             <Button
@@ -214,6 +252,6 @@ export const OrderForm = ({ taxRules }: { taxRules: TaxRule[] }) => {
 
       {/* cart overlay */}
       <OrderCart form={form} />
-    </div>
+    </Tabs>
   );
 };

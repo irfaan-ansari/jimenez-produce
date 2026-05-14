@@ -3,12 +3,12 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
-import { Badge } from "@/components/ui/badge";
 import { ImageOff } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { OrderItem } from "./order-form-options";
-
 import { ProductItemQty } from "./product-item-qty";
-import { LastPurchase, Price } from "./card-badge";
+import { cn, formatUSD } from "@/lib/utils";
+import { format } from "date-fns/format";
 
 export const Thumbnail = ({
   qty,
@@ -37,7 +37,7 @@ export const Thumbnail = ({
 
           <LastPurchase
             product={product}
-            className="absolute top-1 left-1 hidden group-data-[layout=grid]/card:inline-flex"
+            className="absolute bottom-1 left-2 rounded-sm hidden group-data-[layout=grid]/card:inline-flex"
           />
         </div>
       </HoverCardTrigger>
@@ -82,19 +82,49 @@ export const Thumbnail = ({
               className="group-data-[layout=grid]/card:hidden"
             />
 
-            <div className="flex w-full items-center gap-2 group-data-[layout=list]/card:hidden">
-              <div className="flex flex-1 flex-col">
-                <div className="text-xs text-muted-foreground">
-                  {product.pack ?? null}
-                </div>
-
-                <Price price={product.price} className="w-auto self-start" />
-              </div>
+            <div className="flex w-full items-center justify-between gap-2 group-data-[layout=list]/card:hidden">
+              <Price price={product.price} className="w-auto self-start" />
               <ProductItemQty value={qty} onChange={onChange} />
             </div>
           </div>
         </HoverCardContent>
       )}
     </HoverCard>
+  );
+};
+
+export const LastPurchase = ({
+  product,
+  className,
+}: {
+  product: OrderItem;
+  className?: string;
+}) => {
+  if (!product.lastPurchased?.id) return;
+  return (
+    <Badge
+      className={cn(
+        "h-4 shrink-0 rounded-sm whitespace-nowrap uppercase",
+        className,
+      )}
+    >
+      {product.lastPurchased.quantity}cs •{" "}
+      {format(new Date(product.lastPurchased.createdAt!), "MM/dd")}
+    </Badge>
+  );
+};
+
+/* Product Price */
+export const Price = ({
+  price,
+  className,
+}: {
+  price: number | string;
+  className?: string;
+}) => {
+  return (
+    <div className={cn("w-24 self-center font-bold text-primary", className)}>
+      {formatUSD(price ?? 0)}
+    </div>
   );
 };

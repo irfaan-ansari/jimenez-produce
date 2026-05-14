@@ -8,13 +8,9 @@ export type OrderItem = {
   total: string;
   quantity: string;
   image: string | null;
-  type: string | null;
   identifier: string;
-  pack: string | null;
   categories: string[];
   isTaxable: boolean;
-  isGuide: boolean;
-  isSuggested: boolean;
   lastPurchased: {
     id: number | null;
     quantity: string | null;

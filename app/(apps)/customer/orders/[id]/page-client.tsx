@@ -16,7 +16,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 
-import { Badge } from "@/components/reui/badge";
+import { Badge } from "@/components/ui/badge";
 
 type StatusIndex = keyof typeof STATUS_MAP;
 

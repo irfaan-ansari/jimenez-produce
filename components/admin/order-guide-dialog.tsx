@@ -20,7 +20,7 @@ import { File } from "@duo-icons/react";
 import { Loader, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { GripVerticalIcon } from "lucide-react";
-import { Badge } from "@/components/reui/badge";
+import { Badge } from "@/components/ui/badge";
 import { useAppForm } from "@/hooks/form-context";
 import { Field, FieldGroup } from "@/components/ui/field";
 import { formatUSD, getAvatarFallback } from "@/lib/utils";

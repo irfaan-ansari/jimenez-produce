@@ -3,12 +3,12 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
-import { ImageOff } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { ImageOff } from "lucide-react";
 import { OrderItem } from "./order-form-options";
+
 import { ProductItemQty } from "./product-item-qty";
-import { cn, formatUSD } from "@/lib/utils";
-import { format } from "date-fns/format";
+import { LastPurchase, Price } from "./card-badge";
 
 export const Thumbnail = ({
   qty,
@@ -37,7 +37,7 @@ export const Thumbnail = ({
 
           <LastPurchase
             product={product}
-            className="absolute bottom-1 left-2 rounded-sm hidden group-data-[layout=grid]/card:inline-flex"
+            className="absolute top-1 left-1 hidden group-data-[layout=grid]/card:inline-flex"
           />
         </div>
       </HoverCardTrigger>
@@ -96,41 +96,5 @@ export const Thumbnail = ({
         </HoverCardContent>
       )}
     </HoverCard>
-  );
-};
-
-export const LastPurchase = ({
-  product,
-  className,
-}: {
-  product: OrderItem;
-  className?: string;
-}) => {
-  if (!product.lastPurchased?.id) return;
-  return (
-    <Badge
-      className={cn(
-        "h-4 shrink-0 rounded-sm whitespace-nowrap uppercase",
-        className,
-      )}
-    >
-      {product.lastPurchased.quantity}cs •{" "}
-      {format(new Date(product.lastPurchased.createdAt!), "MM/dd")}
-    </Badge>
-  );
-};
-
-/* Product Price */
-export const Price = ({
-  price,
-  className,
-}: {
-  price: number | string;
-  className?: string;
-}) => {
-  return (
-    <div className={cn("w-24 self-center font-bold text-primary", className)}>
-      {formatUSD(price ?? 0)}
-    </div>
   );
 };

@@ -177,7 +177,7 @@ export function OTPLoginForm({
                     <InputGroupAddon>
                       <Badge
                         className="h-4 hover:bg-transparent! mr-2 pr-4 rounded-none relative after:absolute after:right-0 after:inset-y-0 after:w-0.5 after:bg-foreground/30 "
-                        variant="ghost"
+                        variant="secondary"
                       >
                         +1
                       </Badge>

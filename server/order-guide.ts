@@ -85,7 +85,12 @@ export const updateOrderGuide = handleAction(
 
     const isCustomer = role === "customer";
 
-    const { productIds = [], name = "", description = "" } = payload;
+    const {
+      productIds = [],
+      name = "",
+      description = "",
+      position = "",
+    } = payload;
 
     if (productIds.length <= 0)
       throw new Error("At least one product is required.");
@@ -121,7 +126,7 @@ export const updateOrderGuide = handleAction(
     const promises: Promise<unknown>[] = [
       db
         .update(orderGuide)
-        .set({ name, description })
+        .set({ name, description, position: Number(position ?? 0) })
         .where(eq(orderGuide.id, id))
         .returning(),
     ];
@@ -230,9 +235,59 @@ export const deleteOrderGuide = handleAction(async (id: number) => {
     throw new Error("Not authorized for this action");
 
   const [res] = await db
-    .delete(orderGuideItem)
-    .where(eq(orderGuideItem.id, id))
+    .delete(orderGuide)
+    .where(eq(orderGuide.id, id))
     .returning();
 
   return res;
 });
+
+/**
+ * Updates multiple order guides.
+ */
+export const updateOrderGuides = handleAction(
+  async (
+    guides: {
+      id: number;
+      productIds: number[];
+    }[],
+  ) => {
+    const auth = await getSession();
+
+    if (!auth) {
+      throw new Error("Authentication required");
+    }
+
+    const { activeOrganizationId } = auth.session;
+
+    if (!activeOrganizationId) {
+      throw new Error(ERROR_MESSAGE.BAD_REQUEST);
+    }
+
+    const existingGuides = await db.query.orderGuide.findMany({
+      where: inArray(
+        orderGuide.id,
+        guides.map((g) => g.id),
+      ),
+    });
+
+    const existingGuideMap = new Map(
+      existingGuides.map((guide) => [guide.id, guide]),
+    );
+
+    const promises = guides
+      .filter((guide) => guide.productIds.length > 0)
+      .map((guide, index) => {
+        const existingGuide = existingGuideMap.get(guide.id);
+
+        return updateOrderGuide(guide.id, {
+          name: existingGuide?.name,
+          description: existingGuide?.description,
+          position: index + 1,
+          productIds: guide.productIds,
+        });
+      });
+
+    return Promise.all(promises);
+  },
+);

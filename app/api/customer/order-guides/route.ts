@@ -7,6 +7,7 @@ import {
   getTableColumns,
   ilike,
   isNotNull,
+  asc,
 } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { getSession } from "@/server/auth";
@@ -83,7 +84,7 @@ export const GET = async (req: NextRequest) => {
       .where(filters)
       .limit(Number(limit))
       .offset(offset)
-      .orderBy(desc(orderGuide.createdAt));
+      .orderBy(asc(orderGuide.position));
 
     //   total
     const [{ count: total }] = await db

@@ -4,6 +4,7 @@ import { withForm } from "@/hooks/form-context";
 import { useStore } from "@tanstack/react-form";
 import { LAYOUT_MAP } from "@/hooks/use-layout-prefrence";
 import { formOpt, OrderItem } from "./order-form-options";
+import { Sortable } from "@/components/reui/sortable";
 
 type ProductGridProps = {
   items: OrderItem[];
@@ -71,7 +72,20 @@ export const ProductGrid = withForm({
     );
 
     return (
-      <div className={`grid ${currentLayout.className}`}>
+      <Sortable
+        data-layout={layout}
+        value={items}
+        onValueChange={(v) => {
+          const reordered = v.map((i) => ({
+            ...i,
+            productId: Number(i.productId),
+          }));
+          onMoveComplete?.(reordered);
+        }}
+        getItemValue={(item) => String(item.productId)}
+        strategy={layout === "grid" ? "grid" : "vertical"}
+        className={`grid @container group/card ${currentLayout.className}`}
+      >
         {items.map((product) => {
           const qty = lineItemMap.get(product.productId)?.qty ?? 0;
           return (
@@ -85,7 +99,7 @@ export const ProductGrid = withForm({
             />
           );
         })}
-      </div>
+      </Sortable>
     );
   },
 });
