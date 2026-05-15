@@ -84,52 +84,51 @@ export const ConfirmDialog = ({
         if (!loading) setOpen(v);
       }}
     >
-      <AlertDialogContent className="py-12 sm:px-8 ring-ring/10 rounded-2xl data-[size=default]:sm:max-w-md">
-        <div className="flex flex-col gap-6 text-center items-center">
+      <AlertDialogContent className="rounded-2xl py-8 ring-ring/10 sm:px-8 data-[size=default]:sm:max-w-md">
+        <div className="flex flex-col items-center gap-3 text-center">
           <span
             className={cn(
-              "inline-flex justify-center items-center size-14 rounded-2xl mb-4",
-              config.iconClass
+              "inline-flex size-12 items-center justify-center rounded-xl",
+              config.iconClass,
             )}
           >
-            <config.icon className="size-7" />
+            <config.icon className="size-5" />
           </span>
 
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             <AlertDialogTitle className="text-xl font-semibold">
               {title}
             </AlertDialogTitle>
 
             {description && (
-              <AlertDialogDescription className="text-base">
+              <AlertDialogDescription className="text-sm">
                 {description}
               </AlertDialogDescription>
             )}
           </div>
 
           {children}
-
-          <AlertDialogFooter className="flex gap-4 sm:[&_button]:flex-1 w-full sm:justify-between">
-            <AlertDialogCancel className="rounded-xl" size="xl">
-              {cancelLabel}
-            </AlertDialogCancel>
-
-            {onAction && (
-              <AlertDialogAction
-                onClick={(e) => {
-                  e.preventDefault();
-                  onAction?.();
-                }}
-                className="rounded-xl"
-                size="xl"
-                disabled={loading}
-                variant={variant === "delete" ? "destructive" : "default"}
-              >
-                {loading ? <Loader className=" animate-spin" /> : actionLabel}
-              </AlertDialogAction>
-            )}
-          </AlertDialogFooter>
         </div>
+        <AlertDialogFooter className="mt-6 flex w-full gap-4 sm:justify-between sm:[&_button]:flex-1">
+          <AlertDialogCancel className="rounded-xl" size="xl">
+            {cancelLabel}
+          </AlertDialogCancel>
+
+          {onAction && (
+            <AlertDialogAction
+              onClick={(e) => {
+                e.preventDefault();
+                onAction?.();
+              }}
+              className="rounded-xl"
+              size="xl"
+              disabled={loading}
+              variant={variant === "delete" ? "destructive" : "default"}
+            >
+              {loading ? <Loader className=" animate-spin" /> : actionLabel}
+            </AlertDialogAction>
+          )}
+        </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
   );

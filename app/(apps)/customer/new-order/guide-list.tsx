@@ -25,15 +25,15 @@ import {
   LoadingSkeleton,
 } from "@/components/admin/placeholder-component";
 import { useQueryClient } from "@tanstack/react-query";
-import { Copy, GripVertical, Plus, Trash2 } from "lucide-react";
+import { Copy, GripVertical, Loader, Plus, Trash2 } from "lucide-react";
 import { Columns, useOrderGuideStore } from "@/lib/store/order-guide-store";
 import { useInfiniteOrderGuides, useOrderGuide } from "@/hooks/use-orders";
 
 export const GuideList = withForm({
   ...formOpt,
   render: function Render({ form }) {
+    const queryClient = useQueryClient();
     const { data, isPending, isError, error } = useInfiniteOrderGuides("");
-
     const columns = useOrderGuideStore((s) => s.columns);
     const setColumns = useOrderGuideStore((s) => s.setColumns);
     const setColumnMeta = useOrderGuideStore((s) => s.setColumnMeta);
@@ -73,6 +73,9 @@ export const GuideList = withForm({
       setColumnMeta(colMeta);
     }, [mappedData]);
 
+    /**
+     * Handles the reordering of columns (order guides)
+     */
     const handleReorder = async (value: Columns) => {
       setColumns(value);
 
@@ -85,9 +88,12 @@ export const GuideList = withForm({
         };
       });
 
-      const { error } = await updateOrderGuides(guides);
-
-      if (error) {
+      const { success, error } = await updateOrderGuides(guides);
+      if (success) {
+        queryClient.invalidateQueries({
+          queryKey: ["customer-order-guides"],
+        });
+      } else {
         toast.error(error?.message);
       }
     };
@@ -127,10 +133,15 @@ export const GuideList = withForm({
 const ColumnHeader = ({ value }: { value: string }) => {
   const confirm = useConfirm();
   const queryClient = useQueryClient();
+  const [disabled, setDisabled] = React.useState(false);
+  const [cloning, setCloning] = React.useState(false);
+
   const meta = useOrderGuideStore((s) => s.columnMeta[value]);
   const column = useOrderGuideStore((s) => s.columns[value]);
 
   const duplicate = async () => {
+    setCloning(true);
+    setDisabled(true);
     const guideData = {
       name: `${meta.name} copy`,
       description: meta.description,
@@ -144,6 +155,8 @@ const ColumnHeader = ({ value }: { value: string }) => {
         queryKey: ["customer-order-guides"],
       });
     }
+    setCloning(false);
+    setDisabled(false);
   };
 
   const hanldeDelete = async () => {
@@ -181,13 +194,18 @@ const ColumnHeader = ({ value }: { value: string }) => {
       </div>
       <div className="flex items-center gap-1 self-center [&>svg]:size-4">
         <Tooltip content="Add item">
-          <Button size="icon-sm" variant="ghost">
+          <Button size="icon-sm" variant="ghost" disabled={disabled}>
             <Plus />
           </Button>
         </Tooltip>
         <Tooltip content="Duplicate">
-          <Button size="icon-sm" variant="ghost" onClick={duplicate}>
-            <Copy />
+          <Button
+            size="icon-sm"
+            variant="ghost"
+            onClick={duplicate}
+            disabled={disabled}
+          >
+            {cloning ? <Loader className="animate-spin" /> : <Copy />}
           </Button>
         </Tooltip>
         <Tooltip content="Delete">
@@ -196,6 +214,7 @@ const ColumnHeader = ({ value }: { value: string }) => {
             variant="ghost"
             className="text-destructive"
             onClick={hanldeDelete}
+            disabled={disabled}
           >
             <Trash2 />
           </Button>
