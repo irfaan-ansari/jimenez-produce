@@ -20,14 +20,13 @@ import { File } from "@duo-icons/react";
 import { Loader, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { GripVerticalIcon } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { useAppForm } from "@/hooks/form-context";
+import { useQueryClient } from "@tanstack/react-query";
 import { Field, FieldGroup } from "@/components/ui/field";
 import { formatUSD, getAvatarFallback } from "@/lib/utils";
 import { ProductSelectorCustomer } from "./product-selector-customer";
+import { createOrderGuide, updateOrderGuide } from "@/server/order-guide";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { createOrderGuide } from "@/server/order-guide";
-import { useQueryClient } from "@tanstack/react-query";
 
 const schema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -49,10 +48,12 @@ export const OrderGuideDialog = ({
   onSuccess,
 }: {
   children: React.ReactNode;
-  initialValue?: z.infer<typeof schema>;
+  initialValue?: z.infer<typeof schema> & { id?: number };
   onSuccess?: () => void;
 }) => {
   const queryClient = useQueryClient();
+  const isEdit = initialValue?.id !== undefined;
+
   const [open, setOpen] = React.useState(false);
 
   const form = useAppForm({
@@ -69,11 +70,25 @@ export const OrderGuideDialog = ({
       const toastId = toast.loading("Please wait...");
       const productIds = items.map((p) => Number(p.productId));
 
-      const { success, error } = await createOrderGuide({
-        name,
-        description,
-        productIds,
-      });
+      let success, error;
+
+      if (isEdit) {
+        const res = await updateOrderGuide(initialValue.id!, {
+          name,
+          description,
+          productIds,
+        });
+        success = res.success;
+        error = res.error;
+      } else {
+        const res = await createOrderGuide({
+          name,
+          description,
+          productIds,
+        });
+        success = res.success;
+        error = res.error;
+      }
 
       if (success) {
         toast.success("Order guide saved successfully!", { id: toastId });
@@ -88,7 +103,7 @@ export const OrderGuideDialog = ({
           ],
         });
       } else {
-        toast.error(error.message, { id: toastId });
+        toast.error(error?.message, { id: toastId });
       }
     },
   });
@@ -109,7 +124,7 @@ export const OrderGuideDialog = ({
               <File />
             </span>
             <DialogTitle className="text-xl font-bold">
-              Add order guide
+              {isEdit ? "Edit guide" : "Create guide"}
             </DialogTitle>
           </DialogHeader>
 
@@ -253,14 +268,13 @@ export const OrderGuideDialog = ({
               selector={({ isSubmitting, canSubmit, isDirty }) => ({
                 isSubmitting,
                 canSubmit,
-                isDirty,
               })}
-              children={({ isSubmitting, canSubmit, isDirty }) => (
+              children={({ isSubmitting, canSubmit }) => (
                 <Button
                   type="submit"
                   size="xl"
                   className="rounded-lg"
-                  disabled={isSubmitting || !canSubmit || !isDirty}
+                  disabled={isSubmitting || !canSubmit}
                 >
                   {isSubmitting ? <Loader className="animate-spin" /> : "Save"}
                 </Button>

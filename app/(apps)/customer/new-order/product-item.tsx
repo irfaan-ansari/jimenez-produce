@@ -1,16 +1,16 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { LastPurchase, Price, Thumbnail } from "./thumbnail";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { OrderItem } from "./order-form-options";
 import { GripVertical, Star } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ProductItemQty } from "./product-item-qty";
-import { AddToOrderGuideDialog } from "@/components/admin/add-to-order-guide-dialog";
 import { useOrderUIStore } from "@/lib/store/order-store";
 import { KanbanItemHandle } from "@/components/ui/kanban";
+import { LastPurchase, Price, Thumbnail } from "./thumbnail";
+import { AddToOrderGuideDialog } from "@/components/admin/add-to-order-guide-dialog";
 
 interface ProductItemProps {
   product: OrderItem;
@@ -25,14 +25,25 @@ export const ProductItem = ({
   product,
   quantity,
   onUpdateQty,
-
-  selectable,
   draggable,
 }: ProductItemProps) => {
+  const isSelectable = useOrderUIStore((s) => s.selectionState.mode !== "idle");
+
   const selected = useOrderUIStore(
-    (s) => !!s.selectedItems.get(product.productId),
+    (s) => !!s.selectionState.items[product.productId],
   );
+
   const toggleSelected = useOrderUIStore((s) => s.toggleSelected);
+
+  const handleCheckedChange = () => {
+    toggleSelected({
+      productId: product.productId,
+      title: product.title,
+      image: product.image,
+      categories: product.categories,
+      price: product.price,
+    });
+  };
 
   return (
     <div
@@ -43,7 +54,7 @@ export const ProductItem = ({
         "ring-2 ring-transparent ring-offset-background transition duration-200",
         "has-data-checked:ring-sidebar-accent has-data-checked:ring-offset-1",
         "data-[dragging=true]:opacity-100 data-[dragging=true]:ring-black/50 data-[dragging=true]:ring-offset-1",
-        selected && selectable ? "ring-2 ring-black/50" : "",
+        selected && isSelectable ? "ring-2 ring-black/50" : "",
       )}
       onClick={() => {
         onUpdateQty(quantity + 1);
@@ -61,7 +72,7 @@ export const ProductItem = ({
         </KanbanItemHandle>
       )}
       {/* selectable item for creating new guide */}
-      {selectable && (
+      {isSelectable && (
         <Label
           htmlFor={String(product.productId)}
           className="inset-0 z-2 flex flex-col items-start justify-start bg-transparent group-data-[layout=grid]/card:absolute group-data-[layout=grid]/card:p-2"
@@ -74,15 +85,7 @@ export const ProductItem = ({
             id={String(product.productId)}
             className="bg-background p-2 data-checked:bg-sidebar-accent"
             checked={selected}
-            onCheckedChange={() =>
-              toggleSelected({
-                productId: product.productId,
-                title: product.title,
-                image: product.image,
-                categories: product.categories,
-                price: Number(product.price),
-              })
-            }
+            onCheckedChange={handleCheckedChange}
           />
         </Label>
       )}
@@ -120,7 +123,7 @@ export const ProductItem = ({
 
         <div className="flex w-full justify-between gap-4 @2xl:w-auto">
           {/* guide item action for both layouts */}
-          {!draggable && (
+          {!draggable && !isSelectable && (
             <div
               className="absolute top-2 right-2 z-2 @2xl:group-data-[layout=list]/card:relative @2xl:group-data-[layout=list]/card:top-0"
               onClick={(e) => e.stopPropagation()}

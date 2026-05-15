@@ -15,7 +15,6 @@ export const ItemList = withForm({
 
   render: function Render({ form }) {
     const filter = useOrderUIStore((s) => s.filter);
-    const isSelecting = useOrderUIStore((s) => s.isSelecting);
 
     const queryString = new URLSearchParams(filter as any).toString();
 
@@ -70,12 +69,7 @@ export const ItemList = withForm({
         />
 
         {/* item grid */}
-
-        <ProductGrid
-          items={mappedProduct}
-          form={form}
-          selectable={isSelecting}
-        />
+        <ProductGrid items={mappedProduct} form={form} />
 
         {/* render grid with sortable */}
         <div

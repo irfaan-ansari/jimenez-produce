@@ -17,38 +17,43 @@ export const LAYOUT_MAP = {
   },
 } as const;
 
-export type LayoutType = keyof typeof LAYOUT_MAP;
-
 export type OrderTab = "all" | "guides";
+export type LayoutType = keyof typeof LAYOUT_MAP;
+export type SelectionMode = "create" | "update" | "idle";
 
 type SelectedProduct = {
   productId: number;
   title: string;
   image?: string | null;
   categories?: string[];
-  price: number;
+  price: string;
+};
+
+type SelectionState = {
+  mode: SelectionMode;
+  guideId: number | null;
+  name?: string;
+  description?: string;
+  items: Record<number, SelectedProduct>;
 };
 
 type OrderUIStore = {
+  // layout
   layout: LayoutType;
   setLayout: (layout: LayoutType) => void;
 
+  // cart
   showCart: boolean;
   setShowCart: (value: boolean) => void;
-
+  // tab
   selectedTab: OrderTab;
   setSelectedTab: (value: OrderTab) => void;
 
-  isSelecting: boolean;
-  setIsSelecting: (value: boolean) => void;
-  selectedItems: Map<number, SelectedProduct>;
-  setSelectedItems: (value: Map<number, SelectedProduct>) => void;
-  unselectAll: () => void;
+  // selection
+  selectionState: SelectionState;
+  setSelectionState: (selectionState: Partial<SelectionState>) => void;
+  clearSelectionState: () => void;
   toggleSelected: (product: SelectedProduct) => void;
-  isSelected: (id: number) => boolean;
-
-  selectedGuide: number | null;
-  setSelectedGuide: (id: number | null) => void;
 
   // filters
   filter: Record<string, string | undefined>;
@@ -68,49 +73,60 @@ export const useOrderUIStore = create<OrderUIStore>()(
       setShowCart: (value) => {
         set({ showCart: value });
       },
+
       // tab
       selectedTab: "all",
       setSelectedTab: (value) => {
         set({ selectedTab: value });
       },
+
       // selection
-      isSelecting: false,
-      setIsSelecting: (value) => {
-        set({ isSelecting: value });
+      selectionState: {
+        mode: "idle",
+        guideId: null,
+        items: {},
       },
-      selectedItems: new Map(),
-      setSelectedItems: (value) => {
+      setSelectionState: (newState) => {
+        const {
+          mode = "idle",
+          guideId = null,
+          name = "",
+          description = "",
+          items = {},
+        } = newState;
+        set({ selectionState: { mode, guideId, name, description, items } });
+      },
+      clearSelectionState: () => {
         set({
-          selectedItems: value,
+          selectionState: {
+            mode: "idle",
+            guideId: null,
+            items: {},
+          },
         });
       },
-      toggleSelected: (product) => {
-        set((state) => {
-          const next = new Map(state.selectedItems);
 
-          if (next.has(product.productId)) {
-            next.delete(product.productId);
+      toggleSelected: (product: SelectedProduct) => {
+        set((state) => {
+          const exists = !!state.selectionState.items[product.productId];
+
+          const nextItems = {
+            ...state.selectionState.items,
+          };
+
+          if (exists) {
+            delete nextItems[product.productId];
           } else {
-            next.set(product.productId, product);
+            nextItems[product.productId] = product;
           }
 
           return {
-            selectedItems: next,
+            selectionState: {
+              ...state.selectionState,
+              items: nextItems,
+            },
           };
         });
-      },
-      unselectAll: () => {
-        set({
-          selectedItems: new Map(),
-          isSelecting: false,
-        });
-      },
-      isSelected: (id) => get().selectedItems.has(id),
-
-      // selected guide for  view guide feature
-      selectedGuide: null,
-      setSelectedGuide: (value) => {
-        set({ selectedGuide: value });
       },
 
       // filters

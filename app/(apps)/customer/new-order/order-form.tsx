@@ -15,8 +15,8 @@ import { useConfirm } from "@/hooks/use-confirm";
 import { useAppForm } from "@/hooks/form-context";
 import { useSidebar } from "@/components/ui/sidebar";
 import { Loader, Menu, Plus, Star } from "lucide-react";
-import { OrderTab, useOrderUIStore } from "@/lib/store/order-store";
 import { formOpt, getTotals } from "./order-form-options";
+import { OrderTab, useOrderUIStore } from "@/lib/store/order-store";
 import { OrderFormToolbar, ToolbarSearch } from "./order-from-toolbar";
 import { OrderGuideDialog } from "@/components/admin/order-guide-dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -30,11 +30,10 @@ export const OrderForm = ({ taxRules }: { taxRules: TaxRule[] }) => {
   const selectedTab = useOrderUIStore((s) => s.selectedTab);
   const setSelectedTab = useOrderUIStore((s) => s.setSelectedTab);
 
-  const isSelecting = useOrderUIStore((s) => s.isSelecting);
-  const setIsSelecting = useOrderUIStore((s) => s.setIsSelecting);
-  const unselectAll = useOrderUIStore((s) => s.unselectAll);
-  const selectedItems = useOrderUIStore((s) => s.selectedItems);
-  const selectedCount = selectedItems.size;
+  // for selection store
+  const setSelectionState = useOrderUIStore((s) => s.setSelectionState);
+  const selectionState = useOrderUIStore((s) => s.selectionState);
+  const selectedCount = Object.keys(selectionState.items).length;
 
   const { open: sidebarOpen, setOpen: setSidebarOpen } = useSidebar();
 
@@ -64,22 +63,18 @@ export const OrderForm = ({ taxRules }: { taxRules: TaxRule[] }) => {
     },
   });
 
+  // create value from selection store
   const createGuideValue = React.useMemo(() => {
     return {
-      name: "",
-      description: "",
-      items: Array.from(selectedItems.values()).map((item) => ({
+      name: selectionState.name ?? "",
+      description: selectionState.description ?? "",
+      items: Object.values(selectionState.items).map((item) => ({
         ...item,
         categories: item.categories ?? [],
         image: item.image ?? "",
       })),
     };
-  }, [selectedItems]);
-
-  const selectedTotal = createGuideValue.items.reduce(
-    (acc, item) => acc + item.price,
-    0,
-  );
+  }, [selectionState.items]);
 
   React.useEffect(() => {
     if (sidebarOpen) {
@@ -99,7 +94,7 @@ export const OrderForm = ({ taxRules }: { taxRules: TaxRule[] }) => {
             <Menu />
             All Products
           </TabsTrigger>
-          <TabsTrigger value="guides">
+          <TabsTrigger value="guides" disabled={selectionState.mode !== "idle"}>
             <Star className="fill-current" />
             Order Guides
           </TabsTrigger>
@@ -111,7 +106,9 @@ export const OrderForm = ({ taxRules }: { taxRules: TaxRule[] }) => {
             variant="secondary"
             className="rounded-lg bg-yellow-500 hover:bg-yellow-500/90"
             onClick={() => {
-              setIsSelecting(true);
+              setSelectionState({
+                mode: "create",
+              });
               setSelectedTab("all");
             }}
           >
@@ -163,7 +160,7 @@ export const OrderForm = ({ taxRules }: { taxRules: TaxRule[] }) => {
         }}
       >
         {({ totals, isSubmitting, canSubmit }) => {
-          if (totals.count <= 0 || isSelecting) return null;
+          if (totals.count <= 0 || selectionState.mode !== "idle") return null;
 
           return (
             <div className="sticky bottom-6 z-3 mx-auto w-full max-w-xl">
@@ -207,7 +204,7 @@ export const OrderForm = ({ taxRules }: { taxRules: TaxRule[] }) => {
 
       {/* sticky save */}
       <div
-        data-active={isSelecting}
+        data-active={selectionState.mode !== "idle"}
         className="sticky bottom-6 z-3 mx-auto hidden w-full max-w-xl data-[active=true]:block"
       >
         <div className="flex h-16 items-center gap-4 rounded-2xl bg-secondary px-6 py-4 shadow-lg ring-2 ring-primary/50 ring-offset-2 backdrop-blur-2xl">
@@ -224,17 +221,24 @@ export const OrderForm = ({ taxRules }: { taxRules: TaxRule[] }) => {
             type="button"
             variant="link"
             size="lg"
-            onClick={() => setIsSelecting(false)}
+            onClick={() => setSelectionState({ mode: "idle" })}
           >
             Cancel
           </Button>
 
           <OrderGuideDialog
             onSuccess={() => {
-              unselectAll();
+              setSelectionState({ mode: "idle" });
               setSelectedTab("guides");
             }}
-            initialValue={createGuideValue}
+            initialValue={{
+              ...createGuideValue,
+              ...(selectionState.mode === "update"
+                ? {
+                    id: selectionState.guideId!,
+                  }
+                : {}),
+            }}
           >
             <Button
               type="button"
