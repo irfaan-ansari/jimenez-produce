@@ -90,27 +90,48 @@ export const importProducts = handleAction(
 
     const { activeOrganizationId } = session.session;
 
-    const mappedData = data
-      .filter((i) => i.identifier && !isNaN(Number(i.basePrice!)))
-      .map((item) => {
-        return {
-          ...item,
-          organizationId: activeOrganizationId,
-        };
-      });
+    const mappedData = data.filter(
+      (i) => i.identifier && !isNaN(Number(i.basePrice!)),
+    );
 
-    const result = await db
-      .insert(product)
-      .values(mappedData as ProductInsertType[])
-      .onConflictDoUpdate({
-        target: [product.identifier, product.organizationId],
-        set: {
-          basePrice: sql`COALESCE(excluded.basePrice, ${product.basePrice})`,
-        },
-      })
-      .returning({ id: product.id });
+    const existingProducts = await db.query.product.findMany({
+      where: (p, { inArray, and, eq }) =>
+        and(
+          inArray(
+            p.identifier,
+            mappedData.map((i) => i.identifier!),
+          ),
+          eq(product.organizationId, activeOrganizationId!),
+        ),
+      columns: {
+        id: true,
+        identifier: true,
+      },
+    });
 
-    return result.length;
+    const existingMap = new Map(
+      existingProducts.map((p) => [p.identifier, p.id]),
+    );
+
+    const updateData = mappedData
+      .filter((item) => existingMap.has(item.identifier!))
+      .map((item) => ({
+        ...item,
+        id: existingMap.get(item.identifier!),
+      }));
+
+    const res = await Promise.all(
+      updateData.map((item) =>
+        db
+          .update(product)
+          .set({
+            basePrice: item.basePrice,
+          })
+          .where(eq(product.id, item.id!)),
+      ),
+    );
+
+    return res.length;
   },
 );
 
