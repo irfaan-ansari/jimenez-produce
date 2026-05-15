@@ -30,6 +30,7 @@ import { useStore } from "@tanstack/react-form";
 import { importProducts } from "@/server/product";
 import { useAppForm } from "@/hooks/form-context";
 import { Download, Loader, Trash2, Upload } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 
 const IMPORT_FIELDS = [
   {
@@ -113,7 +114,7 @@ const processFile = async (file: File | undefined) => {
 
 export const ImportDialog = ({ children }: { children: React.ReactNode }) => {
   const [open, setOpen] = React.useState(false);
-
+  const queryClient = useQueryClient();
   const form = useAppForm({
     defaultValues: {
       file: undefined as File | undefined,
@@ -159,6 +160,9 @@ export const ImportDialog = ({ children }: { children: React.ReactNode }) => {
           id: toastId,
         });
       } else {
+        queryClient.invalidateQueries({
+          queryKey: ["products"],
+        });
         toast.success("Price updated successfully.", {
           id: toastId,
         });
@@ -318,7 +322,7 @@ export const ImportDialog = ({ children }: { children: React.ReactNode }) => {
                 ))}
               </div>
               <div className="no-scrollbar flex-1 overflow-auto divide-y">
-                {rows.slice(0, 10).map((row, i) => {
+                {rows.map((row, i) => {
                   const rowObject = Object.fromEntries(
                     headers.map((header, index) => [header, row[index]]),
                   );
@@ -339,11 +343,14 @@ export const ImportDialog = ({ children }: { children: React.ReactNode }) => {
                     </div>
                   );
                 })}
+                <div className="bg-secondary rounded-xl p-4 text-muted-foreground text-sm">
+                  {rows.length - 1} items
+                </div>
               </div>
             </>
           )}
 
-          <Field className="flex mt-auto flex-col-reverse gap-4 sm:flex-row sm:justify-end sm:[&>*]:w-32">
+          <Field className="flex mt-auto relative flex-col-reverse gap-4 sm:flex-row sm:justify-end sm:[&>*]:w-32">
             <Button
               variant="outline"
               size="xl"
