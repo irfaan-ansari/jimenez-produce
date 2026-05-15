@@ -201,14 +201,14 @@ export const OrderGuideDialog = ({
                                     </Avatar>
                                   </div>
                                   <div className="min-w-0 flex-1 space-y-1">
-                                    <p className="font-medium text-[15px]">
+                                    <p className="text-[15px] font-medium">
                                       {item.title}
                                     </p>
-                                    <div className="flex items-center gap-1 flex-wrap">
+                                    <div className="flex flex-wrap items-center gap-1">
                                       {item.categories?.map((cat, i) => (
                                         <span
                                           key={cat + i}
-                                          className="text-muted-foreground text-xs uppercase min-w-0 whitespace-nowrap font-medium not-last:border-r-2 leading-3.5 not-first:pl-1 not-last:pr-1"
+                                          className="min-w-0 text-xs leading-3.5 font-medium whitespace-nowrap text-muted-foreground uppercase not-first:pl-1 not-last:border-r-2 not-last:pr-1"
                                         >
                                           {cat}
                                         </span>

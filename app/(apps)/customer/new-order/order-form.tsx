@@ -109,7 +109,7 @@ export const OrderForm = ({ taxRules }: { taxRules: TaxRule[] }) => {
           <Button
             size="xl"
             variant="secondary"
-            className="bg-yellow-500 hover:bg-yellow-500/90 rounded-lg"
+            className="rounded-lg bg-yellow-500 hover:bg-yellow-500/90"
             onClick={() => {
               setIsSelecting(true);
               setSelectedTab("all");
@@ -138,7 +138,7 @@ export const OrderForm = ({ taxRules }: { taxRules: TaxRule[] }) => {
       {/* toolbar */}
 
       <div className="flex flex-col gap-3">
-        <div className="flex gap-4 items-center w-full">
+        <div className="flex w-full items-center gap-4">
           <OrderFormToolbar />
         </div>
 
@@ -212,13 +212,11 @@ export const OrderForm = ({ taxRules }: { taxRules: TaxRule[] }) => {
       >
         <div className="flex h-16 items-center gap-4 rounded-2xl bg-secondary px-6 py-4 shadow-lg ring-2 ring-primary/50 ring-offset-2 backdrop-blur-2xl">
           <div className="flex flex-1 flex-col">
-            <span className="text-xs uppercase">
-              {selectedCount} item
-              {selectedCount > 1 ? "s" : ""} selected
-            </span>
+            <span className="text-xs uppercase">selected</span>
 
-            <span className="text-base font-bold text-primary">
-              {formatUSD(selectedTotal)}
+            <span className="text-base font-semibold">
+              {selectedCount} item
+              {selectedCount > 1 ? "s" : ""}
             </span>
           </div>
 

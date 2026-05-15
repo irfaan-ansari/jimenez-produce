@@ -28,6 +28,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Copy, GripVertical, Loader, Plus, Trash2 } from "lucide-react";
 import { Columns, useOrderGuideStore } from "@/lib/store/order-guide-store";
 import { useInfiniteOrderGuides, useOrderGuide } from "@/hooks/use-orders";
+import { useOrderUIStore } from "@/lib/store/order-store";
 
 export const GuideList = withForm({
   ...formOpt,
@@ -135,9 +136,33 @@ const ColumnHeader = ({ value }: { value: string }) => {
   const queryClient = useQueryClient();
   const [disabled, setDisabled] = React.useState(false);
   const [cloning, setCloning] = React.useState(false);
-
   const meta = useOrderGuideStore((s) => s.columnMeta[value]);
   const column = useOrderGuideStore((s) => s.columns[value]);
+
+  // add item
+  const setIsSelecting = useOrderUIStore((s) => s.setIsSelecting);
+  const setSelectedTab = useOrderUIStore((s) => s.setSelectedTab);
+  const setSelectedItems = useOrderUIStore((s) => s.setSelectedItems);
+  const setSelectedGuide = useOrderUIStore((s) => s.setSelectedGuide);
+
+  const handleAddItem = () => {
+    setSelectedTab("all");
+    setIsSelecting(true);
+    setSelectedGuide(Number(value.split("-")[0]));
+
+    const items = new Map<number, any>();
+    column.forEach((c) => {
+      items.set(c.productId, {
+        productId: c.productId,
+        title: c.title,
+        image: c.image,
+        categories: c.categories,
+        price: c.price,
+      });
+    });
+
+    setSelectedItems(items);
+  };
 
   const duplicate = async () => {
     setCloning(true);
@@ -194,7 +219,12 @@ const ColumnHeader = ({ value }: { value: string }) => {
       </div>
       <div className="flex items-center gap-1 self-center [&>svg]:size-4">
         <Tooltip content="Add item">
-          <Button size="icon-sm" variant="ghost" disabled={disabled}>
+          <Button
+            size="icon-sm"
+            variant="ghost"
+            disabled={disabled}
+            onClick={handleAddItem}
+          >
             <Plus />
           </Button>
         </Tooltip>

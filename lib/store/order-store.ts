@@ -42,13 +42,13 @@ type OrderUIStore = {
   isSelecting: boolean;
   setIsSelecting: (value: boolean) => void;
   selectedItems: Map<number, SelectedProduct>;
+  setSelectedItems: (value: Map<number, SelectedProduct>) => void;
   unselectAll: () => void;
   toggleSelected: (product: SelectedProduct) => void;
   isSelected: (id: number) => boolean;
 
-  // to show order guide information
-  // selectedGuide: number | null;
-  // setSelectedGuide: (id: number | null) => void;
+  selectedGuide: number | null;
+  setSelectedGuide: (id: number | null) => void;
 
   // filters
   filter: Record<string, string | undefined>;
@@ -79,6 +79,11 @@ export const useOrderUIStore = create<OrderUIStore>()(
         set({ isSelecting: value });
       },
       selectedItems: new Map(),
+      setSelectedItems: (value) => {
+        set({
+          selectedItems: value,
+        });
+      },
       toggleSelected: (product) => {
         set((state) => {
           const next = new Map(state.selectedItems);
@@ -101,6 +106,12 @@ export const useOrderUIStore = create<OrderUIStore>()(
         });
       },
       isSelected: (id) => get().selectedItems.has(id),
+
+      // selected guide for  view guide feature
+      selectedGuide: null,
+      setSelectedGuide: (value) => {
+        set({ selectedGuide: value });
+      },
 
       // filters
       filter: {},
