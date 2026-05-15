@@ -1,5 +1,4 @@
 import React from "react";
-
 import { toast } from "sonner";
 import {
   Kanban,
@@ -8,10 +7,16 @@ import {
   KanbanColumnHandle,
   KanbanOverlay,
 } from "@/components/ui/kanban";
+import {
+  createOrderGuide,
+  deleteOrderGuide,
+  updateOrderGuides,
+} from "@/server/order-guide";
 import { ProductsState } from "./item-list";
 import { ProductGrid } from "./product-grid";
 import { Badge } from "@/components/ui/badge";
 import { formOpt } from "./order-form-options";
+import { Tooltip } from "@/components/tooltip";
 import { withForm } from "@/hooks/form-context";
 import { Button } from "@/components/ui/button";
 import { useConfirm } from "@/hooks/use-confirm";
@@ -20,11 +25,6 @@ import {
   LoadingSkeleton,
 } from "@/components/admin/placeholder-component";
 import { useQueryClient } from "@tanstack/react-query";
-import {
-  createOrderGuide,
-  deleteOrderGuide,
-  updateOrderGuides,
-} from "@/server/order-guide";
 import { Copy, GripVertical, Plus, Trash2 } from "lucide-react";
 import { Columns, useOrderGuideStore } from "@/lib/store/order-guide-store";
 import { useInfiniteOrderGuides, useOrderGuide } from "@/hooks/use-orders";
@@ -95,7 +95,7 @@ export const GuideList = withForm({
     return (
       <Kanban
         value={columns}
-        getItemValue={(item) => String(item?.productId)}
+        getItemValue={(item) => String(item.dndId ?? item?.productId)}
         onValueChange={handleReorder}
         orientation="vertical"
       >
@@ -110,14 +110,14 @@ export const GuideList = withForm({
             <KanbanColumn
               key={colKey}
               value={colKey}
-              className="bg-background rounded-xl shadow-sm border"
+              className="rounded-xl border bg-background shadow-sm"
             >
               <ColumnHeader value={colKey} />
               <GuideItems form={form} guideId={colKey} />
             </KanbanColumn>
           ))}
         </KanbanBoard>
-        <KanbanOverlay className="bg-muted/10 rounded-xl border-2 border-dashed " />
+        <KanbanOverlay className="rounded-xl border-2 border-dashed bg-muted/10 " />
       </Kanban>
     );
   },
@@ -129,10 +129,6 @@ const ColumnHeader = ({ value }: { value: string }) => {
   const queryClient = useQueryClient();
   const meta = useOrderGuideStore((s) => s.columnMeta[value]);
   const column = useOrderGuideStore((s) => s.columns[value]);
-  const setColumnMeta = useOrderGuideStore((s) => s.setColumnMeta);
-  const removeColumn = useOrderGuideStore((s) => s.removeColumn);
-
-  const addColumn = useOrderGuideStore((s) => s.addColumn);
 
   const duplicate = async () => {
     const guideData = {
@@ -152,55 +148,58 @@ const ColumnHeader = ({ value }: { value: string }) => {
 
   const hanldeDelete = async () => {
     const [id] = value.split("-");
-
     confirm.delete({
       title: "Delete order guide",
       description: "Are you sure you want to delete this order guide?",
-      action: () => {
-        removeColumn(value);
-        Promise.resolve(deleteOrderGuide(Number(id))).then((res) => {
-          console.log(res);
-          if (res.success) {
-            queryClient.invalidateQueries({
-              queryKey: ["customer-order-guides"],
-            });
-          } else {
-            toast.error(res.error?.message);
-          }
-        });
+      action: async () => {
+        const { success, error } = await deleteOrderGuide(Number(id));
+        if (success) {
+          toast.success("Order guide deleted successfully");
+          queryClient.invalidateQueries({
+            queryKey: ["customer-order-guides"],
+          });
+        } else {
+          toast.error(error?.message);
+        }
       },
     });
   };
 
   return (
-    <div className="flex items-center gap-2 px-2 justify-between py-2 bg-secondary rounded-lg">
+    <div className="flex items-center justify-between gap-2 rounded-lg bg-secondary px-2 py-2">
       <KanbanColumnHandle asChild>
         <Button variant="ghost" size="icon-sm" className="opacity-100">
           <GripVertical className="h-4 w-4" />
         </Button>
       </KanbanColumnHandle>
 
-      <div className="flex items-center gap-2 flex-1">
+      <div className="flex flex-1 items-center gap-2">
         <span className="font-medium">{meta?.name}</span>
         <Badge variant="warning" className="pointer-events-none rounded-sm">
           {meta?.itemCount}
         </Badge>
       </div>
-      <div className="flex gap-1 items-center self-center [&>svg]:size-4">
-        <Button size="icon-sm" variant="ghost">
-          <Plus />
-        </Button>
-        <Button size="icon-sm" variant="ghost" onClick={duplicate}>
-          <Copy />
-        </Button>
-        <Button
-          size="icon-sm"
-          variant="ghost"
-          className="text-destructive"
-          onClick={hanldeDelete}
-        >
-          <Trash2 />
-        </Button>
+      <div className="flex items-center gap-1 self-center [&>svg]:size-4">
+        <Tooltip content="Add item">
+          <Button size="icon-sm" variant="ghost">
+            <Plus />
+          </Button>
+        </Tooltip>
+        <Tooltip content="Duplicate">
+          <Button size="icon-sm" variant="ghost" onClick={duplicate}>
+            <Copy />
+          </Button>
+        </Tooltip>
+        <Tooltip content="Delete">
+          <Button
+            size="icon-sm"
+            variant="ghost"
+            className="text-destructive"
+            onClick={hanldeDelete}
+          >
+            <Trash2 />
+          </Button>
+        </Tooltip>
       </div>
     </div>
   );
@@ -221,6 +220,7 @@ export const GuideItems = withForm({
     const mappedProduct = React.useMemo(() => {
       return (
         data?.data?.items.map((item) => ({
+          dndId: item.id,
           productId: item.productId,
           title: item.title,
           image: item.image,

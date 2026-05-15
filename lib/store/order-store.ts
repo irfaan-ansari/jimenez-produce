@@ -13,7 +13,7 @@ export const LAYOUT_MAP = {
     value: "grid",
     icon: LayoutGrid,
     className:
-      "grid-cols-1 @md:grid-cols-2 @lg:grid-cols-3 @2xl:grid-cols-4 @5xl:grid-cols-5 @6xl:grid-cols-6 @8xl:grid-cols-8 gap-4",
+      "grid-cols-2 gap-2 @md:grid-cols-2 @lg:grid-cols-3 @2xl:grid-cols-4 @5xl:grid-cols-5 @6xl:grid-cols-6 @8xl:grid-cols-8 @lg:gap-4",
   },
 } as const;
 
@@ -45,6 +45,10 @@ type OrderUIStore = {
   unselectAll: () => void;
   toggleSelected: (product: SelectedProduct) => void;
   isSelected: (id: number) => boolean;
+
+  // to show order guide information
+  // selectedGuide: number | null;
+  // setSelectedGuide: (id: number | null) => void;
 
   // filters
   filter: Record<string, string | undefined>;

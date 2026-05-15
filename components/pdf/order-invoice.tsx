@@ -6,7 +6,7 @@ import {
 } from "@/lib/db/schema";
 import { format } from "date-fns";
 import { styles } from "./styles";
-import { formatUSD } from "@/lib/utils";
+import { formatPhone, formatUSD } from "@/lib/utils";
 import { Document, Page, Text, View, Image } from "@react-pdf/renderer";
 
 interface OrderInvoiceProps {
@@ -58,7 +58,7 @@ export const OrderInvoice = ({ data }: OrderInvoiceProps) => {
                 </Text>
                 <Text>{metadata?.street || ""}</Text>
                 <Text>{`${metadata?.city || ""}, ${metadata?.state || ""} ${metadata?.zip || ""}`}</Text>
-                <Text>Phone: {data.organization?.phone}</Text>
+                <Text>Phone: +1 {formatPhone(data.organization?.phone)}</Text>
                 <Text>Email: {data.organization?.email}</Text>
               </View>
             </View>
@@ -69,13 +69,64 @@ export const OrderInvoice = ({ data }: OrderInvoiceProps) => {
               >
                 ESTIMATE
               </Text>
-              <View style={{ gap: 2 }}>
-                <Text style={{ fontSize: 10 }}>
-                  Invoice #:{" "}
-                  <Text style={{ fontWeight: "bold" }}>{data.id}</Text>
+            </View>
+          </View>
+
+          {/* Invoice details */}
+          <View
+            style={[
+              styles.tableRow,
+              { borderBottomWidth: 1, fontSize: 9, lineHeight: 1.5 },
+            ]}
+          >
+            {/* invoice detail */}
+            <View
+              style={{
+                width: "50%",
+                padding: 6,
+                paddingBottom: 10,
+                borderRightWidth: 1,
+              }}
+            >
+              <View style={{ display: "flex", flexDirection: "row", gap: 6 }}>
+                <Text style={{ fontSize: 10, width: "60%" }}>Invoice #</Text>
+                <Text style={{ fontWeight: "bold" }}>{data.id}</Text>
+              </View>
+              <View style={{ display: "flex", flexDirection: "row", gap: 6 }}>
+                <Text style={{ fontSize: 10, width: "60%" }}>Invoice Date</Text>
+                <Text style={{ fontWeight: "bold" }}>
+                  {format(new Date(data.createdAt!), "MMM dd, yyyy")}
                 </Text>
-                <Text style={{ fontSize: 10 }}>
-                  Date: {format(new Date(data.createdAt!), "MMM dd, yyyy")}
+              </View>
+              <View style={{ display: "flex", flexDirection: "row", gap: 6 }}>
+                <Text style={{ fontSize: 10, width: "60%" }}>P.O. Number</Text>
+                <Text style={{ fontWeight: "bold" }}>{data.po ?? "-"}</Text>
+              </View>
+            </View>
+            {/* delivery prefrence */}
+            <View
+              style={{
+                width: "50%",
+                padding: 6,
+                paddingBottom: 10,
+              }}
+            >
+              <View style={{ display: "flex", flexDirection: "row", gap: 6 }}>
+                <Text style={{ fontSize: 10, width: "60%" }}>
+                  Delivery Date
+                </Text>
+                <Text style={{ fontWeight: "bold" }}>
+                  {data.deliveryDate
+                    ? format(new Date(data.deliveryDate!), "MMM dd, yyyy")
+                    : "-"}
+                </Text>
+              </View>
+              <View style={{ display: "flex", flexDirection: "row", gap: 6 }}>
+                <Text style={{ fontSize: 10, width: "60%" }}>
+                  Delivery Time
+                </Text>
+                <Text style={{ fontWeight: "bold" }}>
+                  {data?.deliveryWindow ?? "Anytime"}
                 </Text>
               </View>
             </View>
@@ -85,55 +136,63 @@ export const OrderInvoice = ({ data }: OrderInvoiceProps) => {
           <View style={[styles.tableRow]}>
             <View
               style={{
-                width: "33%",
-                padding: 6,
-                paddingBottom: 40,
+                width: "50%",
                 borderRightWidth: 1,
               }}
             >
               <Text
-                style={{
-                  fontSize: 10,
-                  marginBottom: 5,
-                }}
-              >
-                P.O. Number
-              </Text>
-
-              <Text style={{ fontSize: 10 }}>{data.po}</Text>
-            </View>
-            <View
-              style={{
-                width: "33%",
-                borderRightWidth: 1,
-                padding: 6,
-                paddingBottom: 40,
-              }}
-            >
-              <Text
-                style={{
-                  fontSize: 10,
-                  marginBottom: 5,
-                }}
+                style={[
+                  styles.tableColHeader,
+                  {
+                    borderRightWidth: 0,
+                    borderBottomWidth: 1,
+                    backgroundColor: "#EEEEEE",
+                  },
+                ]}
               >
                 Bill To
               </Text>
 
-              <Text style={{ fontSize: 10 }}>{data.team.name}</Text>
-              <Text style={{ fontSize: 10 }}>{data.team.phone}</Text>
-              <Text style={{ fontSize: 10 }}>{data.team.email}</Text>
+              <View
+                style={{
+                  padding: 6,
+                  paddingBottom: 40,
+                }}
+              >
+                <Text style={{ fontSize: 9 }}>{data.team.name}</Text>
+                <Text style={{ fontSize: 9 }}>{data.team.phone}</Text>
+                <Text style={{ fontSize: 9 }}>{data.team.email}</Text>
+              </View>
             </View>
+
             <View
               style={{
-                width: "33%",
-                padding: 6,
-                paddingBottom: 40,
+                width: "50%",
               }}
             >
-              <Text style={{ fontSize: 10, marginBottom: 5 }}>Ship To</Text>
-              <Text style={{ fontSize: 10 }}>{data.team.name}</Text>
-              <Text style={{ fontSize: 10 }}>{data.team.phone}</Text>
-              <Text style={{ fontSize: 10 }}>{data.team.email}</Text>
+              <Text
+                style={[
+                  styles.tableColHeader,
+                  {
+                    borderRightWidth: 0,
+                    borderBottomWidth: 1,
+                    backgroundColor: "#EEEEEE",
+                  },
+                ]}
+              >
+                Ship To
+              </Text>
+
+              <View
+                style={{
+                  padding: 6,
+                  paddingBottom: 40,
+                }}
+              >
+                <Text style={{ fontSize: 9 }}>{data.team.name}</Text>
+                <Text style={{ fontSize: 9 }}>{data.team.phone}</Text>
+                <Text style={{ fontSize: 9 }}>{data.team.email}</Text>
+              </View>
             </View>
           </View>
 

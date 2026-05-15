@@ -10,6 +10,7 @@ type ColumnMeta = {
   position: number;
   itemCount: number;
 };
+
 type OrderGuideStore = {
   columns: Columns;
   setColumns: (columns: Columns) => void;

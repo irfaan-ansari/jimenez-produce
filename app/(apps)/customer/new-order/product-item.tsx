@@ -37,9 +37,9 @@ export const ProductItem = ({
   return (
     <div
       className={cn(
-        `relative flex animate-in items-start @2xl:items-center cursor-pointer gap-4 overflow-hidden rounded-xl border bg-background p-3 transition fade-in-50 select-none slide-in-from-bottom-10 group-data-[layout=grid]/card:h-full group-data-[layout=grid]/card:flex-col
-        group-data-[layout=grid]/card:items-stretch group-data-[layout=grid]/card:gap-0 group-data-[layout=grid]/card:p-0 
-        hover:-translate-y-0.5 hover:shadow-md`,
+        `relative flex animate-in cursor-pointer items-start gap-4 overflow-hidden rounded-xl border bg-background p-3 transition fade-in-50 select-none slide-in-from-bottom-10 group-data-[layout=grid]/card:h-full group-data-[layout=grid]/card:flex-col group-data-[layout=grid]/card:items-stretch
+        group-data-[layout=grid]/card:gap-0 group-data-[layout=grid]/card:p-0 hover:-translate-y-0.5 
+        hover:shadow-md @2xl:items-center`,
         "ring-2 ring-transparent ring-offset-background transition duration-200",
         "has-data-checked:ring-sidebar-accent has-data-checked:ring-offset-1",
         "data-[dragging=true]:opacity-100 data-[dragging=true]:ring-black/50 data-[dragging=true]:ring-offset-1",
@@ -54,7 +54,7 @@ export const ProductItem = ({
           <Button
             size="icon-sm"
             variant="ghost"
-            className="px-0 w-auto group-data-[layout=grid]/card:absolute group-data-[layout=grid]/card:size-7! bg-background/50 backdrop-blur-lg hover:bg-background/80 z-1 left-2 top-2 [&>svg]:size-3.5"
+            className="top-2 left-2 z-1 w-auto bg-background/50 px-0 backdrop-blur-lg group-data-[layout=grid]/card:absolute group-data-[layout=grid]/card:size-7! hover:bg-background/80 [&>svg]:size-3.5"
           >
             <GripVertical />
           </Button>
@@ -93,13 +93,13 @@ export const ProductItem = ({
         onChange={(newValue) => onUpdateQty(newValue)}
       />
 
-      <div className="flex min-w-0 flex-col @2xl:flex-row flex-1 items-start gap-4 group-data-[layout=grid]/card:w-full group-data-[layout=grid]/card:flex-col group-data-[layout=grid]/card:justify-between group-data-[layout=grid]/card:p-3">
+      <div className="flex min-w-0 flex-1 flex-col items-start gap-4 group-data-[layout=grid]/card:w-full group-data-[layout=grid]/card:flex-col group-data-[layout=grid]/card:justify-between group-data-[layout=grid]/card:p-3 @2xl:flex-row">
         <div className="flex w-full min-w-0 flex-col gap-1">
           <h4 className="text-sm leading-tight font-medium group-data-[layout=grid]/card:order-2">
             {product.title}
           </h4>
 
-          <div className="flex flex-col @2xl:flex-row w-full items-start @2xl:items-center gap-2">
+          <div className="flex w-full flex-col items-start gap-2 @2xl:flex-row @2xl:items-center">
             <div className="no-scrollbar flex min-w-0 flex-nowrap items-center gap-1 overflow-auto">
               {product.categories?.map((cat, i) => (
                 <span
@@ -118,7 +118,7 @@ export const ProductItem = ({
           </div>
         </div>
 
-        <div className="flex gap-4 justify-between w-full @2xl:w-auto">
+        <div className="flex w-full justify-between gap-4 @2xl:w-auto">
           {/* guide item action for both layouts */}
           {!draggable && (
             <div
@@ -158,8 +158,8 @@ export const ProductItem = ({
         </div>
 
         {/* card layout */}
-        <div className="flex w-full items-center gap-2 justify-between group-data-[layout=list]/card:hidden">
-          <Price price={product.price} className="w-auto self-start" />
+        <div className="flex w-full items-center justify-between gap-2 group-data-[layout=list]/card:hidden">
+          <Price price={product.price} className="w-auto" />
           <ProductItemQty value={quantity} onChange={onUpdateQty} />
         </div>
       </div>

@@ -2,6 +2,7 @@ import { TaxRule } from "@/lib/types";
 import { formOptions } from "@tanstack/react-form";
 
 export type OrderItem = {
+  dndId?: number;
   productId: number;
   title: string;
   price: string;

@@ -26,11 +26,11 @@ export const OrderFormToolbar = () => {
   const selectedTab = useOrderUIStore((s) => s.selectedTab);
 
   return (
-    <div className="flex gap-4 flex-1 justify-between">
+    <div className="flex flex-1 justify-between gap-4">
       <ToggleGroup
         type="single"
         variant="default"
-        className="h-9 px-0.5 bg-background shadow-none rounded-lg items-center justify-center border"
+        className="h-9 items-center justify-center rounded-lg border bg-background px-0.5 shadow-none"
         value={layout}
         size="sm"
         spacing={0.5}
@@ -46,7 +46,7 @@ export const OrderFormToolbar = () => {
             <ToggleGroupItem
               key={item.value}
               value={item.value}
-              className="capitalize text-muted-foreground data-[state=on]:text-foreground"
+              className="text-muted-foreground capitalize data-[state=on]:text-foreground"
             >
               <Icon className="size-3.5" /> {item.value}
             </ToggleGroupItem>
@@ -71,7 +71,7 @@ export const ToolbarSearch = ({ className }: { className?: string }) => {
 
   return (
     <InputGroup
-      className={cn("h-11 bg-background max-w-2xs rounded-lg ", className)}
+      className={cn("h-11 max-w-2xs rounded-lg bg-background ", className)}
     >
       <InputGroupAddon>
         <Search />
@@ -137,9 +137,8 @@ export const CategoryFilter = () => {
             <ChevronDown className="opacity-80" />
           </Button>
         }
-        className="no-scrollbar max-h-80 overflow-auto *:gap-0"
       >
-        <>
+        <div className="no-scrollbar flex flex-col gap-0 overflow-y-auto lg:max-h-80">
           <Button
             variant={!filter.cat ? "secondary" : "ghost"}
             className="rounded-lg!"
@@ -167,10 +166,10 @@ export const CategoryFilter = () => {
               />
             </Button>
           ))}
-        </>
+        </div>
       </PopoverXDrawer>
 
-      <div className="no-scrollbar flex-1 items-center gap-2 overflow-x-auto hidden lg:flex">
+      <div className="no-scrollbar hidden flex-1 items-center gap-2 overflow-x-auto lg:flex">
         {displayPills.map((cat: string) => (
           <Button
             key={cat}

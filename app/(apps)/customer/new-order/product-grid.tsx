@@ -3,9 +3,8 @@ import { ProductItem } from "./product-item";
 import { withForm } from "@/hooks/form-context";
 import { useStore } from "@tanstack/react-form";
 import { KanbanItem } from "@/components/ui/kanban";
-import { LAYOUT_MAP } from "@/hooks/use-layout-prefrence";
 import { formOpt, OrderItem } from "./order-form-options";
-import { useOrderUIStore } from "@/lib/store/order-store";
+import { LAYOUT_MAP, useOrderUIStore } from "@/lib/store/order-store";
 
 type ProductGridProps = {
   items: OrderItem[];
@@ -92,10 +91,7 @@ export const ProductGrid = withForm({
             }
 
             return (
-              <KanbanItem
-                key={product.productId}
-                value={String(product.productId)}
-              >
+              <KanbanItem key={product.dndId} value={String(product.dndId)}>
                 {content}
               </KanbanItem>
             );

@@ -35,11 +35,10 @@ export const PopoverXDrawer = ({
         <DrawerTrigger asChild>{trigger}</DrawerTrigger>
         <DrawerContent className={cn("p-2 pt-0", className)}>
           <DrawerTitle className={!title ? "sr-only" : ""}>
-            {title ?? "Popover"}
+            {title ?? "Dropdown menu"}
           </DrawerTitle>
-          <div className="flex flex-col gap-0.5 justify-start **:data-[slot=button]:justify-start **:data-[slot=button]:rounded-xl mt-4">
-            {children}
-          </div>
+
+          {children}
         </DrawerContent>
       </Drawer>
     );
@@ -51,7 +50,7 @@ export const PopoverXDrawer = ({
       <PopoverContent
         className={cn(
           "max-w-40 rounded-2xl p-2 **:data-[slot=button]:justify-start **:data-[slot=button]:rounded-xl data-[slot=popover-content]:max-w-52",
-          className
+          className,
         )}
         align="end"
       >
@@ -59,7 +58,7 @@ export const PopoverXDrawer = ({
           {title ?? "Popover"}
         </PopoverTitle>
 
-        <div className="flex flex-col gap-0.5 justify-start">{children}</div>
+        <div className="flex flex-col justify-start gap-0.5">{children}</div>
       </PopoverContent>
     </Popover>
   );
