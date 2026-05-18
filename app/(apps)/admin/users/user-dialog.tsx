@@ -26,6 +26,14 @@ import { signupWithOrganization } from "@/server/auth";
 import { useQueryClient } from "@tanstack/react-query";
 import { capitalizeWords } from "@/lib/utils";
 import { CustomersSelector } from "@/components/admin/customers-selector";
+import {
+  AppDialog,
+  AppDialogClose,
+  AppDialogContent,
+  AppDialogHeader,
+  AppDialogTitle,
+  AppDialogTrigger,
+} from "@/components/app-dialog";
 
 const schema = z
   .object({
@@ -115,22 +123,24 @@ export const UserDialog = ({
   const role = useStore(form.store, (state) => state.values.role);
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="overflow-hidden rounded-2xl ring-ring/10 sm:max-w-xl">
+    <AppDialog open={open} onOpenChange={setOpen}>
+      <AppDialogTrigger asChild>{children}</AppDialogTrigger>
+      <AppDialogContent className="overflow-hidden rounded-2xl ring-ring/10 sm:max-w-xl">
         <form
           onSubmit={(e) => {
             e.preventDefault();
             form.handleSubmit();
           }}
-          className="flex h-full max-h-[min(700px,90svh)] flex-col gap-6"
+          className="flex h-full max-h-[min(700px,90svh)] flex-col gap-6 overflow-auto"
         >
-          <DialogHeader className="flex-row items-center gap-3">
+          <AppDialogHeader className="flex-row items-center gap-3 data-[slot=drawer-header]:hidden">
             <span className="inline-flex size-9 items-center justify-center rounded-lg border bg-secondary *:size-4">
               <UserLock />
             </span>
-            <DialogTitle className="text-xl font-bold">Add user</DialogTitle>
-          </DialogHeader>
+            <AppDialogTitle className="text-xl font-bold">
+              Add user
+            </AppDialogTitle>
+          </AppDialogHeader>
 
           <FieldGroup className="no-scrollbar grid flex-1 grid-cols-2 overflow-y-auto">
             <form.AppField
@@ -235,7 +245,7 @@ export const UserDialog = ({
                 <field.PasswordField
                   label="Password"
                   placeholder="••••••••"
-                  className="**:data-[slot=input]:rounded-xl"
+                  className="**:data-[slot=input]:rounded-xl col-span-2 lg:col-span-2"
                 />
               )}
             />
@@ -245,23 +255,23 @@ export const UserDialog = ({
                 <field.PasswordField
                   label="Confirm Password"
                   placeholder="••••••••"
-                  className="**:data-[slot=input]:rounded-xl"
+                  className="**:data-[slot=input]:rounded-xl col-span-2 lg:col-span-2"
                 />
               )}
             />
           </FieldGroup>
 
           <Field className="flex flex-col-reverse gap-4 sm:flex-row sm:justify-end sm:[&>button]:w-32">
-            <DialogClose asChild>
+            <AppDialogClose asChild>
               <Button
                 variant="outline"
                 size="xl"
                 type="button"
-                className="rounded-lg"
+                className="rounded-xl"
               >
                 Cancel
               </Button>
-            </DialogClose>
+            </AppDialogClose>
             <form.Subscribe
               selector={({ isSubmitting, canSubmit }) => ({
                 isSubmitting,
@@ -271,7 +281,7 @@ export const UserDialog = ({
                 <Button
                   type="submit"
                   size="xl"
-                  className="rounded-lg"
+                  className="rounded-xl"
                   disabled={isSubmitting || !canSubmit}
                 >
                   {isSubmitting ? <Loader className="animate-spin" /> : "Save"}
@@ -280,7 +290,7 @@ export const UserDialog = ({
             />
           </Field>
         </form>
-      </DialogContent>
-    </Dialog>
+      </AppDialogContent>
+    </AppDialog>
   );
 };

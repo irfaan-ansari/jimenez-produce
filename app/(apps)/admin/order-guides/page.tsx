@@ -3,6 +3,7 @@ import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PageClient } from "./page-client";
 import { SearchBar } from "@/components/admin/search-filters";
+import { OrderGuideAdmin } from "@/components/order-guide-admin";
 
 const OrderGuidesPage = () => {
   return (
@@ -21,6 +22,11 @@ const OrderGuidesPage = () => {
             <Plus /> New Guide
           </Link>
         </Button>
+        <OrderGuideAdmin>
+          <Button size="xl" className="rounded-xl">
+            <Plus /> New Guide
+          </Button>
+        </OrderGuideAdmin>
       </div>
 
       {/* content */}
