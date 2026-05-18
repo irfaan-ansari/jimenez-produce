@@ -1,14 +1,19 @@
+import {
+  ProductSelectType,
+  OrderGuideSelectType,
+  OrderGuideItemSelectType,
+} from "@/lib/db/schema";
 import { Pagination } from "@/lib/types";
 import { fetcher } from "@/lib/helper/fetcher";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import {
-  OrderGuideItemSelectType,
-  OrderGuideSelectType,
-  ProductSelectType,
-} from "@/lib/db/schema";
 
 export interface OrderGuide extends OrderGuideSelectType {
   itemCount: number;
+}
+
+export interface AdminOrderGuide extends OrderGuideSelectType {
+  itemCount: number;
+  customerCount: number;
 }
 
 interface OrderGuidesResponse {
@@ -16,14 +21,28 @@ interface OrderGuidesResponse {
   pagination: Pagination;
 }
 
+interface AdminOrderGuidesResponse {
+  data: AdminOrderGuide[];
+  pagination: Pagination;
+}
+
 export interface OrderGuideItem
   extends OrderGuideItemSelectType, Omit<ProductSelectType, "basePrice"> {
   finalPrice: ProductSelectType["basePrice"];
 }
+export interface AdminOrderGuideItem
+  extends OrderGuideItemSelectType, ProductSelectType {}
 
 interface OrderGuideResponse {
   data: OrderGuide & {
     items: OrderGuideItem[];
+  };
+}
+
+interface AdminOrderGuideResponse {
+  data: OrderGuide & {
+    items: OrderGuideItem[];
+    teams: { id: number; name: string }[];
   };
 }
 
@@ -68,5 +87,25 @@ export const useOrderGuide = (id: number | string) => {
     },
     staleTime: 1000 * 60 * 5,
     enabled: !!id,
+  });
+};
+
+export const useAdminOrderGuides = (query?: string) => {
+  return useQuery({
+    queryKey: ["admin-order-guides", query],
+    queryFn: () => {
+      return fetcher<AdminOrderGuidesResponse>(`/api/order-guides?${query}`);
+    },
+    staleTime: 1000 * 60 * 5,
+  });
+};
+
+export const useAdminOrderGuide = (id: string | number) => {
+  return useQuery({
+    queryKey: ["admin-order-guide", id],
+    queryFn: () => {
+      return fetcher<AdminOrderGuideResponse>(`/api/order-guides/${id}`);
+    },
+    staleTime: 1000 * 60 * 5,
   });
 };

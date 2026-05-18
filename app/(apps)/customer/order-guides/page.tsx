@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { OrderGuidesClientPage } from "./page-client";
+import { PageClient } from "./page-client";
 import { SearchBar } from "@/components/admin/search-filters";
 
 const OrderGuidesPage = () => {
@@ -24,7 +24,7 @@ const OrderGuidesPage = () => {
       </div>
 
       {/* content */}
-      <OrderGuidesClientPage />
+      <PageClient />
     </div>
   );
 };

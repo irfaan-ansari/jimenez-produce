@@ -17,6 +17,7 @@ import { PopoverXDrawer } from "@/components/popover-x-drawer";
 import { PriceLevelDialog } from "@/app/(apps)/admin/products/price-level/price-level-dialog";
 import { useConfirm } from "@/hooks/use-confirm";
 import { deletePriceLevel } from "@/server/price-level";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const PageClient = () => {
   const { searchParams } = useRouterStuff();
@@ -44,7 +45,7 @@ export const columns: ColumnDef<PriceLevelType>[] = [
     cell: ({ row }) => {
       return (
         <div className="flex items-center gap-2">
-          <span className="font-medium text-sm leading-none">
+          <span className="text-sm leading-none font-medium">
             {row.original.name}
           </span>
           <Badge variant="secondary" className="h-5 px-2 text-xs capitalize">
@@ -124,6 +125,7 @@ export const columns: ColumnDef<PriceLevelType>[] = [
     cell: ({ row }) => {
       const [open, setOpen] = React.useState(false);
       const confirm = useConfirm();
+      const queryClient = useQueryClient();
 
       const handleDelete = () => {
         confirm.delete({
@@ -136,6 +138,7 @@ export const columns: ColumnDef<PriceLevelType>[] = [
             if (error) {
               toast.error(error.message, { id: toastId });
             } else {
+              queryClient.invalidateQueries({ queryKey: ["price-level"] });
               toast.success("Price level deleted successfully", {
                 id: toastId,
               });
@@ -155,7 +158,7 @@ export const columns: ColumnDef<PriceLevelType>[] = [
           }
         >
           <PriceLevelDialog data={row.original as any}>
-            <Button variant="ghost" className="justify-start w-full rounded-lg">
+            <Button variant="ghost" className="w-full justify-start rounded-lg">
               <SquarePen /> Edit
             </Button>
           </PriceLevelDialog>

@@ -11,13 +11,13 @@ const OrderGuidesPage = () => {
         <div className="flex-1 space-y-1">
           <h1 className="text-2xl font-bold">Order guides</h1>
           <p className="text-sm text-muted-foreground">
-            Manage your saved order guides for quick reordering.
+            Create and nmanage order guides for your customers.
           </p>
         </div>
         <SearchBar />
 
         <Button size="xl" className="rounded-xl" asChild>
-          <Link href="/customer/order-guides/new">
+          <Link href="/admin/order-guides/new">
             <Plus /> New Guide
           </Link>
         </Button>

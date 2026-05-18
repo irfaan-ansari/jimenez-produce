@@ -123,6 +123,12 @@ export const SIDEBAR_MENU = [
     ],
   },
   {
+    label: "Order Guides",
+    icon: FolderUpload,
+    href: "/admin/order-guides",
+    items: [],
+  },
+  {
     label: "Warehouses",
     icon: Building,
     href: "/admin/warehouses",

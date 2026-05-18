@@ -10,30 +10,23 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-
 import {
   Field,
   FieldContent,
-  FieldDescription,
   FieldLabel,
   FieldTitle,
 } from "@/components/ui/field";
-
 import {
   InputGroup,
   InputGroupAddon,
-  InputGroupButton,
   InputGroupInput,
 } from "@/components/ui/input-group";
-
-import { Plus, Search } from "lucide-react";
-import { Button } from "@/components/ui/button";
-
-import { Checkbox } from "@/components/ui/checkbox";
-import { TaxRuleDialog } from "../../app/(apps)/admin/products/tax-rules/tax-rule-dialog";
-import { LoadingSkeleton } from "@/components/admin/placeholder-component";
-import { useDebounce } from "@/hooks/use-debounce";
+import { Search } from "lucide-react";
 import { useTeams } from "@/hooks/use-teams";
+import { Button } from "@/components/ui/button";
+import { useDebounce } from "@/hooks/use-debounce";
+import { Checkbox } from "@/components/ui/checkbox";
+import { LoadingSkeleton } from "@/components/admin/placeholder-component";
 
 interface Customer {
   id: string;
@@ -96,14 +89,6 @@ export const CustomersSelector = ({
               debounceFn(e.target.value);
             }}
           />
-
-          <InputGroupAddon align="inline-end">
-            <TaxRuleDialog>
-              <InputGroupButton size="icon-sm">
-                <Plus />
-              </InputGroupButton>
-            </TaxRuleDialog>
-          </InputGroupAddon>
         </InputGroup>
 
         {/* List */}
