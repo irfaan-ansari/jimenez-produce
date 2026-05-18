@@ -376,7 +376,7 @@ export const priceLevel = pgTable("price_level", {
   }),
   name: text("name").notNull(),
   adjustmentType: text("adjustment_type").notNull(), // "fixed" | "percentage"
-  appliesTo: text("applies_to").default("all").notNull(), // "all" | "products"
+  appliesTo: text("applies_to").default("all").notNull(), // "all" | "per_item"
   adjustmentValue: text("adjustment_value"), // +10, -10, 50 etc
   status: text("status").default("active"), // "active" | "inactive"
   createdAt: timestamp("created_at").defaultNow(),

@@ -189,6 +189,7 @@ export const OrderForm = ({ taxRules }: { taxRules: TaxRule[] }) => {
                   size="lg"
                   className="w-32 rounded-xl bg-sidebar-accent hover:bg-sidebar-accent/80"
                   disabled={isSubmitting || !canSubmit}
+                  onClick={() => form.handleSubmit()}
                 >
                   {isSubmitting ? (
                     <Loader className="animate-spin" />
