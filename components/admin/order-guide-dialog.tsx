@@ -152,7 +152,7 @@ export const OrderGuideDialog = ({
                 return (
                   <div className="space-y-4">
                     <ProductSelectorCustomer
-                      selected={field.state.value}
+                      selected={field.state.value.map((item) => item.productId)}
                       setSelectedChange={(value) => {
                         const current = field.state.value || [];
 
@@ -165,6 +165,7 @@ export const OrderGuideDialog = ({
                         } else {
                           field.pushValue({
                             ...value,
+                            price: Number(value.price),
                             image: value.image ?? "",
                           });
                         }

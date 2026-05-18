@@ -20,27 +20,26 @@ import {
   InputGroupAddon,
   InputGroupInput,
 } from "@/components/ui/input-group";
-import { Check, ImageOff, Search } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { CoinStack } from "@duo-icons/react";
 import { Button } from "@/components/ui/button";
-import { useDebounce } from "@/hooks/use-debounce";
-import { Checkbox } from "@/components/ui/checkbox";
-import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
-import { useInfiniteProductsCustomer } from "@/hooks/use-product";
+import { ImageOff, Search } from "lucide-react";
 import {
   EmptyComponent,
   LoadingSkeleton,
 } from "@/components/admin/placeholder-component";
+import { useDebounce } from "@/hooks/use-debounce";
+import { Checkbox } from "@/components/ui/checkbox";
+import { formatUSD, getInitialsAvatar } from "@/lib/utils";
+import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
+import { useInfiniteProductsCustomer } from "@/hooks/use-product";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { formatUSD, getAvatarFallback, getInitialsAvatar } from "@/lib/utils";
 
 interface ProductType {
   productId: number;
   title: string;
   categories: string[];
   image?: string;
-  price: string | number;
+  price: string | undefined;
 }
 
 export const ProductSelectorCustomer = ({
@@ -48,7 +47,7 @@ export const ProductSelectorCustomer = ({
   setSelectedChange,
   children,
 }: {
-  selected: ProductType[];
+  selected: number[];
   setSelectedChange: (value: ProductType) => void;
   children: React.ReactNode;
 }) => {
@@ -96,7 +95,7 @@ export const ProductSelectorCustomer = ({
   return (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="flex h-full max-h-[min(800px,90svh)] flex-col justify-start overflow-hidden rounded-2xl ring-ring/10 sm:max-w-2xl">
+      <DialogContent className="flex h-full max-h-[min(800px,90svh)] flex-col justify-start overflow-hidden rounded-2xl ring-ring/10 sm:max-w-xl">
         <DialogHeader className="flex-row items-center gap-3">
           <span className="inline-flex size-9 items-center justify-center rounded-lg border bg-secondary *:size-4">
             <CoinStack />
@@ -109,7 +108,6 @@ export const ProductSelectorCustomer = ({
           <InputGroupAddon>
             <Search />
           </InputGroupAddon>
-
           <InputGroupInput
             placeholder="Search..."
             value={search}
@@ -131,51 +129,20 @@ export const ProductSelectorCustomer = ({
           {/* success state */}
           {options.length > 0
             ? options.map((item) => {
-                const checked =
-                  selected.findIndex((s) => s.productId === item.productId) >=
-                  0;
-                item.image = item.image ?? getInitialsAvatar(item.image!);
+                const checked = selected.includes(Number(item.productId));
+                item.image = item.image ?? getInitialsAvatar(item.title!);
                 return (
                   <FieldLabel
                     key={item.productId}
                     htmlFor={String("product-selector" + item.productId)}
-                    className="cursor-pointer rounded-xl! bg-secondary/20"
+                    className="cursor-pointer"
                   >
                     <Field
                       orientation="horizontal"
                       className="has-data-checked:*:data-[slot=icon]:opacity-100"
                     >
-                      <FieldContent>
-                        <div className="flex flex-1 items-start gap-3">
-                          <div className="shrink-0 pt-1">
-                            <Avatar className="size-9 rounded-lg ring-2 ring-green-600/40 ring-offset-1 **:rounded-lg after:hidden">
-                              <AvatarImage src={item?.image as string} />
-                              <AvatarFallback>
-                                <ImageOff className="size-4" />
-                              </AvatarFallback>
-                            </Avatar>
-                          </div>
-                          <div className="min-w-0 flex-1 space-y-1.5">
-                            <FieldTitle>{item.title}</FieldTitle>
-                            <div className="flex items-center gap-1">
-                              {item.categories?.map((cat, i) => (
-                                <span
-                                  key={cat + i}
-                                  className="text-xs uppercase text-muted-foreground font-medium border-r-2 pr-2 last:border-r-0 leading-3"
-                                >
-                                  {cat}
-                                </span>
-                              ))}
-                            </div>
-                          </div>
-                          <div className="w-28 self-center text-right font-semibold text-primary">
-                            {formatUSD(item.price)}
-                          </div>
-                        </div>
-                      </FieldContent>
-
                       <Checkbox
-                        className="self-center"
+                        className="self-start"
                         id={String("product-selector" + item.productId)}
                         checked={checked}
                         onCheckedChange={() => {
@@ -186,6 +153,29 @@ export const ProductSelectorCustomer = ({
                           });
                         }}
                       />
+                      <FieldContent className="flex w-full items-start gap-3 flex-row min-w-0">
+                        <div className="shrink-0 pt-1">
+                          <Avatar className="size-9 rounded-lg ring-2 ring-ring ring-offset-1 **:rounded-lg after:hidden">
+                            <AvatarImage src={item?.image as string} />
+                            <AvatarFallback>
+                              <ImageOff className="size-4" />
+                            </AvatarFallback>
+                          </Avatar>
+                        </div>
+
+                        <div className="flex-1 min-w-0 space-y-1">
+                          <FieldTitle className="truncate">
+                            {item.title}
+                          </FieldTitle>
+                          <p className="truncate line-clamp-1 text-xs uppercase text-muted-foreground font-medium">
+                            {item.categories?.join(" • ")}
+                          </p>
+                        </div>
+
+                        <div className="self-center text-right font-semibold text-primary">
+                          {formatUSD(item.price)}
+                        </div>
+                      </FieldContent>
                     </Field>
                   </FieldLabel>
                 );
@@ -209,7 +199,7 @@ export const ProductSelectorCustomer = ({
         {/* Footer */}
         <Field className="flex flex-col-reverse gap-4 sm:flex-row sm:justify-end sm:[&>button]:w-32">
           <DialogClose asChild>
-            <Button size="lg">Done</Button>
+            <Button size="lg">Add</Button>
           </DialogClose>
         </Field>
       </DialogContent>

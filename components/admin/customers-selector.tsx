@@ -5,7 +5,6 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -13,6 +12,7 @@ import {
 import {
   Field,
   FieldContent,
+  FieldDescription,
   FieldLabel,
   FieldTitle,
 } from "@/components/ui/field";
@@ -31,6 +31,8 @@ import { LoadingSkeleton } from "@/components/admin/placeholder-component";
 interface Customer {
   id: string;
   name: string;
+  phone: string;
+  email: string;
 }
 
 export const CustomersSelector = ({
@@ -38,7 +40,7 @@ export const CustomersSelector = ({
   setSelectedChange,
   children,
 }: {
-  selected: Customer[];
+  selected: Pick<Customer, "id">[];
   setSelectedChange: (value: Customer) => void;
   children: React.ReactNode;
 }) => {
@@ -57,6 +59,8 @@ export const CustomersSelector = ({
       teams?.data?.map((t) => ({
         id: String(t.id),
         name: t.name,
+        phone: t.phone,
+        email: t.email,
       })) ?? []
     );
   }, [teams]);
@@ -65,14 +69,11 @@ export const CustomersSelector = ({
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
 
-      <DialogContent className="h-full max-h-[min(700px,90svh)] overflow-hidden rounded-2xl ring-ring/10 sm:max-w-xl">
+      <DialogContent className="h-full max-h-[min(700px,90svh)] flex flex-col overflow-hidden rounded-2xl ring-ring/10 sm:max-w-xl">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold">
             Select accounts
           </DialogTitle>
-          <DialogDescription>
-            Select the accounts you want to assign access
-          </DialogDescription>
         </DialogHeader>
 
         {/* Search */}
@@ -96,8 +97,8 @@ export const CustomersSelector = ({
           {isPending ? (
             <LoadingSkeleton />
           ) : options.length === 0 ? (
-            <p className="px-2 py-4 text-sm text-muted-foreground">
-              No accounts found
+            <p className="text-sm text-center text-muted-foreground">
+              No result
             </p>
           ) : (
             options.map((team) => {
@@ -107,18 +108,20 @@ export const CustomersSelector = ({
                 <FieldLabel
                   key={team.id}
                   htmlFor={team.id}
-                  className="cursor-pointer rounded-xl! bg-secondary/20"
+                  className="cursor-pointer rounded-lg"
                 >
                   <Field orientation="horizontal">
-                    <FieldContent>
-                      <FieldTitle>{team.name}</FieldTitle>
-                    </FieldContent>
-
                     <Checkbox
                       id={team.id}
                       checked={checked}
                       onCheckedChange={() => setSelectedChange(team)}
                     />
+                    <FieldContent>
+                      <FieldTitle>{team.name}</FieldTitle>
+                      <FieldDescription className="flex gap-3 flex-nowrap text-xs">
+                        {team.email} • {team.phone}
+                      </FieldDescription>
+                    </FieldContent>
                   </Field>
                 </FieldLabel>
               );
@@ -129,7 +132,7 @@ export const CustomersSelector = ({
         {/* Footer */}
         <Field className="flex flex-col-reverse gap-4 sm:flex-row sm:justify-end sm:[&>button]:w-32">
           <DialogClose asChild>
-            <Button size="lg">Done</Button>
+            <Button size="lg">Add</Button>
           </DialogClose>
         </Field>
       </DialogContent>

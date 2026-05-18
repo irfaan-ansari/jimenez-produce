@@ -38,8 +38,10 @@ export const PageClient = () => {
       productId: item.productId,
     })),
     teams: data.teams.map((team) => ({
-      id: String(team.id),
+      teamId: team.teamId,
       name: team.name,
+      phone: team.phone,
+      email: team.email,
     })),
   };
 

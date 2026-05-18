@@ -293,7 +293,7 @@ export const OrderGuideForm = ({
                 mode="array"
                 children={(field) => (
                   <ProductSelectorCustomer
-                    selected={field.state.value}
+                    selected={field.state.value.map((item) => item.productId)}
                     setSelectedChange={(value) => {
                       const index = field.state.value.findIndex(
                         (item) =>
@@ -304,6 +304,8 @@ export const OrderGuideForm = ({
                       } else {
                         field.pushValue({
                           ...value,
+                          productId: Number(value.productId),
+                          price: Number(value.price),
                           image: value.image ?? "",
                         });
                       }

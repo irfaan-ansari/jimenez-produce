@@ -60,8 +60,10 @@ const schema = z.object({
   description: z.string(),
   teams: z
     .object({
-      id: z.string(),
-      name: z.string(),
+      teamId: z.string(),
+      name: z.string().optional(),
+      phone: z.string().optional(),
+      email: z.string().optional(),
     })
     .array(),
   items: z.array(
@@ -70,7 +72,7 @@ const schema = z.object({
       title: z.string(),
       categories: z.array(z.string()),
       image: z.any(),
-      price: z.string().or(z.number()),
+      price: z.string().optional(),
     }),
   ),
 });
@@ -112,12 +114,13 @@ export const OrderGuideForm = ({
       const toastId = toast.loading("Please wait...");
       const { items, teams, ...rest } = value;
 
+      const teamIds = teams.map((t) => t.teamId);
       const productIds = items.map((item) => Number(item.productId));
-
       if (id) {
         const { success, error } = await updateOrderGuide(id, {
           ...rest,
           productIds,
+          teamIds,
         });
 
         if (success) {
@@ -129,6 +132,7 @@ export const OrderGuideForm = ({
         const { success, error, data } = await createOrderGuide({
           ...rest,
           productIds,
+          teamIds,
         });
 
         if (success) {
@@ -156,9 +160,9 @@ export const OrderGuideForm = ({
 
         if (success) {
           toast.success("Order guide deleted successfully", { id: toastId });
-          router.replace("/customer/order-guides");
+          router.replace("/admin/order-guides");
           queryClient.invalidateQueries({
-            queryKey: ["customer-order-guides"],
+            queryKey: ["admin-order-guides"],
           });
         } else {
           toast.error(error.message, { id: toastId });
@@ -274,12 +278,17 @@ export const OrderGuideForm = ({
                           <div className="space-y-1">
                             {teams?.map((team, i) => (
                               <div
-                                key={team.id}
-                                className="flex items-center gap-2 rounded-lg border bg-secondary/20 p-2 py-2"
+                                key={team.teamId}
+                                className="flex items-center gap-2 rounded-lg border p-3"
                               >
-                                <span className="flex-1 font-medium">
-                                  {team.name}
-                                </span>
+                                <div className="flex-1 flex flex-col gap-1">
+                                  <span className="font-medium">
+                                    {team.name}
+                                  </span>
+                                  <span className="text-sm text-muted-foreground">
+                                    {team.email} • {team.phone}
+                                  </span>
+                                </div>
 
                                 <Button
                                   size="icon-xs"
@@ -297,17 +306,19 @@ export const OrderGuideForm = ({
                           </div>
                         ) : null}
                         <CustomersSelector
-                          selected={field.state.value}
+                          selected={field.state.value.map((t) => ({
+                            id: t.teamId,
+                          }))}
                           setSelectedChange={(value) => {
                             const index = field.state.value.findIndex(
-                              (s) => String(s.id) === String(value.id),
+                              (s) => s.teamId === value.id,
                             );
                             if (index >= 0) {
                               field.removeValue(index);
                             } else {
                               field.pushValue({
                                 ...value,
-                                id: String(value.id),
+                                teamId: value.id,
                               });
                             }
                           }}
@@ -339,12 +350,13 @@ export const OrderGuideForm = ({
                 mode="array"
                 children={(field) => (
                   <ProductSelectorCustomer
-                    selected={field.state.value}
+                    selected={field.state.value.map((item) => item.productId)}
                     setSelectedChange={(value) => {
                       const index = field.state.value.findIndex(
                         (item) =>
                           Number(item.productId) === Number(value.productId),
                       );
+
                       if (index >= 0) {
                         field.removeValue(index);
                       } else {
@@ -470,22 +482,13 @@ const ItemCard = withForm({
         </div>
 
         <div className="flex min-w-0 flex-1 items-start gap-4 group-data-[layout=grid]/card:w-full group-data-[layout=grid]/card:flex-col group-data-[layout=grid]/card:justify-between group-data-[layout=grid]/card:p-3">
-          <div className="flex w-full min-w-0 flex-col gap-1">
+          <div className="flex-1 space-y-1">
             <h4 className="text-sm leading-tight font-medium group-data-[layout=grid]/card:order-2">
               {item.title}
             </h4>
 
-            <div className="flex w-full items-center gap-2">
-              <div className="no-scrollbar flex min-w-0 flex-nowrap items-center gap-1 overflow-auto">
-                {item.categories?.map((cat, i) => (
-                  <span
-                    key={cat + i}
-                    className="inline-block text-xs leading-[1.1] font-medium whitespace-nowrap text-muted-foreground uppercase not-last:border-r-2 not-last:pr-1"
-                  >
-                    {cat}
-                  </span>
-                ))}
-              </div>
+            <div className="text-xs text-muted-foreground uppercase font-medium">
+              {item.categories?.join(" • ")}
             </div>
           </div>
 

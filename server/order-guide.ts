@@ -3,6 +3,7 @@ import {
   orderGuide,
   OrderGuideInsertType,
   orderGuideItem,
+  orderGuideTarget,
 } from "@/lib/db/schema";
 import { db } from "@/lib/db";
 import { getSession } from "./auth";
@@ -18,8 +19,8 @@ import { ERROR_MESSAGE } from "@/lib/helper/error-message";
 export const createOrderGuide = handleAction(
   async (
     payload: Partial<OrderGuideInsertType> & {
-      productIds: number[] | string[];
-      teamIds?: number[] | string[];
+      productIds: number[];
+      teamIds?: string[];
     },
   ) => {
     const auth = await getSession();
@@ -30,7 +31,7 @@ export const createOrderGuide = handleAction(
 
     const isCustomer = role === "customer";
 
-    const { productIds = [], name = "", description = "" } = payload;
+    const { productIds = [], teamIds, name = "", description = "" } = payload;
 
     if (productIds.length <= 0)
       throw new Error("At least one product is required.");
@@ -60,6 +61,16 @@ export const createOrderGuide = handleAction(
       .values(guideItemValue)
       .returning();
 
+    const teamValues =
+      teamIds?.map((teamId) => ({
+        orderGuideId: createdGuide.id,
+        teamId: String(teamId),
+      })) ?? [];
+
+    if (teamValues?.length > 0) {
+      await db.insert(orderGuideTarget).values(teamValues);
+    }
+
     return { ...createdGuide, items: createdOrderGuideItems };
   },
 );
@@ -75,6 +86,7 @@ export const updateOrderGuide = handleAction(
     id: number,
     payload: Partial<OrderGuideInsertType> & {
       productIds: number[];
+      teamIds?: string[];
     },
   ) => {
     const auth = await getSession();
@@ -87,13 +99,11 @@ export const updateOrderGuide = handleAction(
 
     const {
       productIds = [],
+      teamIds = [],
       name = "",
       description = "",
       position = "",
     } = payload;
-
-    if (productIds.length <= 0)
-      throw new Error("At least one product is required.");
 
     const [existingOrderGuide, existingItems] = await Promise.all([
       db.query.orderGuide.findFirst({
@@ -157,9 +167,52 @@ export const updateOrderGuide = handleAction(
       );
     }
 
-    const [updatedGuide, deletedItems, insertedItems] =
-      await Promise.all(promises);
-    return { updatedGuide, items: insertedItems };
+    if (teamIds.length > 0 && !isCustomer) {
+      const targets = await db.query.orderGuideTarget.findMany({
+        where: eq(orderGuideTarget.orderGuideId, id),
+      });
+
+      const toDeleteIds = targets
+        .filter((target) => !teamIds.includes(target.teamId))
+        .map((target) => target.id);
+
+      const toUpsert = teamIds.map((teamId) => ({
+        orderGuideId: id,
+        teamId: String(teamId),
+      }));
+
+      if (toDeleteIds.length > 0) {
+        promises.push(
+          db
+            .delete(orderGuideTarget)
+            .where(inArray(orderGuideTarget.id, toDeleteIds)),
+        );
+      }
+
+      if (toUpsert.length > 0) {
+        promises.push(
+          db
+            .insert(orderGuideTarget)
+            .values(toUpsert)
+            .onConflictDoUpdate({
+              target: [orderGuideTarget.orderGuideId, orderGuideTarget.teamId],
+              set: {
+                teamId: sql`excluded.team_id`,
+              },
+            }),
+        );
+      }
+    }
+
+    const [
+      updatedGuide,
+      deletedItems,
+      insertedItems,
+      deletedTargets,
+      insertedTargets,
+    ] = await Promise.all(promises);
+
+    return { updatedGuide };
   },
 );
 
@@ -178,7 +231,9 @@ export const addOrderGuideItem = handleAction(
     productId: number;
   }) => {
     const auth = await getSession();
+
     if (!auth) throw new Error("Authentication required");
+
     const { role, activeTeamId, activeOrganizationId } = auth.session;
 
     if (!activeOrganizationId || !activeTeamId)
@@ -287,7 +342,8 @@ export const updateOrderGuides = handleAction(
           productIds: guide.productIds,
         });
       });
+    await Promise.all(promises);
 
-    return Promise.all(promises);
+    return { success: true };
   },
 );

@@ -42,7 +42,13 @@ interface OrderGuideResponse {
 interface AdminOrderGuideResponse {
   data: OrderGuide & {
     items: OrderGuideItem[];
-    teams: { id: number; name: string }[];
+    teams: {
+      teamId: string;
+      name: string;
+      phone: string;
+      email: string;
+      managerName: string;
+    }[];
   };
 }
 

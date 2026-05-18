@@ -49,6 +49,28 @@ export const GET = async (
       );
     const { orderGuideItems, orderGuideTargets, ...rest } = guide;
 
+    const targets = orderGuideTargets.map((target) => target.teamId);
+
+    const teamsResponse = await db.query.team.findMany({
+      where: (team, { inArray }) => inArray(team.id, targets),
+      columns: {
+        id: true,
+        name: true,
+        phone: true,
+        email: true,
+        managerName: true,
+      },
+    });
+
+    const teams = orderGuideTargets.map((target) => {
+      const team = teamsResponse.find((t) => t.id === target.teamId);
+      const { id, ...rest } = team || {};
+      return {
+        ...target,
+        ...rest,
+      };
+    });
+
     const items = orderGuideItems.map((item) => {
       const { product, ...rest } = item;
       const { id, ...restProduct } = product;
@@ -59,7 +81,7 @@ export const GET = async (
     });
 
     return NextResponse.json(
-      { data: { ...rest, items, teams: orderGuideTargets } },
+      { data: { ...rest, items, teams } },
       { status: 200 },
     );
   } catch (error) {
