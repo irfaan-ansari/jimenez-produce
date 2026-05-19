@@ -2,32 +2,26 @@
 
 import React from "react";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardTitle,
-} from "@/components/ui/card";
+import { SquarePen } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   EmptyComponent,
   LoadingSkeleton,
 } from "@/components/admin/placeholder-component";
-import { useProducts } from "@/hooks/use-product";
-import { STATUS_MAP } from "@/lib/constants/product";
-import { useRouterStuff } from "@/hooks/use-router-stuff";
-import { Pagination } from "@/components/admin/pagination";
-import { ProductAction } from "@/app/(apps)/admin/products/product-actions";
 import { AdminProductResponse } from "@/lib/types";
+import { STATUS_MAP } from "@/lib/constants/product";
+import { useAdminProducts } from "@/hooks/use-product";
+import { useRouterStuff } from "@/hooks/use-router-stuff";
 import { formatUSD, getInitialsAvatar } from "@/lib/utils";
+import { Pagination } from "@/components/admin/pagination";
 import { ProductDialog } from "@/components/admin/product-dialog";
-import { Button } from "@/components/ui/button";
-import { SquarePen } from "lucide-react";
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
 
 export const PageClient = () => {
   const { searchParams, queryParams } = useRouterStuff();
 
-  const { data, error, isPending, isError } = useProducts(
+  const { data, error, isPending, isError } = useAdminProducts(
     searchParams.toString(),
   );
 
@@ -55,7 +49,7 @@ export const PageClient = () => {
             <Card
               size="sm"
               key={i}
-              className="relative flex flex-col h-full rounded-xl pt-0! transition ease-out hover:ring-2 hover:ring-offset-1 hover:ring-offset-background"
+              className="relative flex h-full flex-col rounded-xl pt-0! transition ease-out hover:ring-2 hover:ring-offset-1 hover:ring-offset-background"
               style={{ "--color": map.color } as React.CSSProperties}
             >
               {/* actions */}
@@ -64,7 +58,7 @@ export const PageClient = () => {
                 <Button
                   variant="outline"
                   size="icon-xs"
-                  className="absolute top-2 right-2 z-2 rounded-sm shadow-sm h-6!"
+                  className="absolute top-2 right-2 z-2 h-6! rounded-sm shadow-sm"
                 >
                   <SquarePen />
                 </Button>
@@ -72,7 +66,7 @@ export const PageClient = () => {
 
               <div className="absolute top-2 left-2 z-2 flex flex-col gap-1">
                 {/* status */}
-                <Badge className="h-6 rounded-md  backdrop-blur-2xl bg-background/80 shadow-sm border border-(--color)/20 text-sm text-(--color)">
+                <Badge className="h-6 rounded-md  border border-(--color)/20 bg-background/80 text-sm text-(--color) shadow-sm backdrop-blur-2xl">
                   <map.icon className="size-3.5" />
                   {map.label}
                 </Badge>
@@ -86,7 +80,7 @@ export const PageClient = () => {
                     src={product.image!}
                     alt={product.title}
                     loading={i <= 10 ? "eager" : "lazy"}
-                    className="relative z-1 aspect-[1.6/1] w-full h-auto rounded-lg object-contain transition ease-out"
+                    className="relative z-1 aspect-[1.6/1] h-auto w-full rounded-lg object-contain transition ease-out"
                   />
                 ) : (
                   <img
@@ -99,26 +93,26 @@ export const PageClient = () => {
                   />
                 )}
               </div>
-              <CardContent className="flex flex-col flex-1 space-y-2">
-                <div className="flex gap-2 items-center">
+              <CardContent className="flex flex-1 flex-col space-y-2">
+                <div className="flex items-center gap-2">
                   {/* tax status */}
                   {product.isTaxable && (
                     <Badge className="h-5 rounded-sm">Taxable</Badge>
                   )}
                   {/* item code */}
-                  <Badge className="rounded-sm h-5">{product.identifier}</Badge>
+                  <Badge className="h-5 rounded-sm">{product.identifier}</Badge>
                 </div>
                 <div className="flex flex-wrap gap-1">
                   {product.categories?.map((cat) => (
                     <span
                       key={cat}
-                      className="text-xs uppercase text-muted-foreground font-medium not-last:pr-2 not-last:border-r-2 leading-tight"
+                      className="text-xs leading-tight font-medium text-muted-foreground uppercase not-last:border-r-2 not-last:pr-2"
                     >
                       {cat}
                     </span>
                   ))}
                 </div>
-                <CardTitle className="font-semibold mt-auto">
+                <CardTitle className="mt-auto font-semibold">
                   {product.title}
                 </CardTitle>
 

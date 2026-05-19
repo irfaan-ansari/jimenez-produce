@@ -8,6 +8,7 @@ import {
   ChevronDown,
   DollarSign,
   Filter,
+  ImageOff,
   ListFilter,
   Loader,
   Percent,
@@ -53,11 +54,11 @@ import { useQueryClient } from "@tanstack/react-query";
 import { formatUSD, getAvatarFallback } from "@/lib/utils";
 import { useAppForm, withForm } from "@/hooks/form-context";
 import { PopoverXDrawer } from "@/components/popover-x-drawer";
-import { useCategories, useProducts } from "@/hooks/use-product";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { useCategories, useInfiniteProducts } from "@/hooks/use-product";
 import { createPriceLevel, updatePriceLevel } from "@/server/price-level";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
+import { ProductSelectorAdmin } from "@/components/admin/product-selector-admin";
 
 const numberString = z
   .string()
@@ -150,11 +151,10 @@ export const PriceLevelDialog = ({
 
     validators: {
       onSubmit: ({ value, formApi }) => {
-        console.log(value);
         if (value.appliesTo === "per_item") {
           value.adjustmentValue = "";
           value.adjustmentType = "";
-          value.items.filter(
+          value.items = value.items.filter(
             (item) => Number(item.price) !== Number(item.basePrice),
           );
         } else if (value.appliesTo === "all") {
@@ -209,17 +209,10 @@ export const PriceLevelDialog = ({
           className="flex h-[min(700px,80svh)] flex-col"
         >
           <DialogHeader className="mb-4 px-6">
-            <DialogTitle className="text-xl font-bold">
-              {isEdit ? "Update" : "Create"} price level
-            </DialogTitle>
-            <DialogDescription>
-              {isEdit ? "Update" : "Create"} price levels for specific customer
-              groups to offer specialized pricing.
-            </DialogDescription>
+            <DialogTitle className="text-xl font-bold">Price level</DialogTitle>
           </DialogHeader>
           <div className="no-scrollbar flex-1 overflow-auto">
             <FieldGroup className="grid grid-cols-1 px-6 lg:grid-cols-2">
-              {/* name */}
               <form.AppField
                 name="name"
                 children={(field) => (
@@ -230,7 +223,7 @@ export const PriceLevelDialog = ({
                   />
                 )}
               />
-              {/* scope */}
+
               <div className="lg:col-span-2">
                 <form.AppField
                   name="appliesTo"
@@ -368,297 +361,119 @@ const ItemList = withForm({
   defaultValues,
   render: function Render({ form }) {
     return (
-      <div className="mt-6 flex flex-col px-6 space-y-4">
-        <SelectItemDialog form={form} />
+      <div className="mt-6 flex flex-col space-y-4 px-6">
+        <form.Field
+          name="items"
+          mode="array"
+          children={(field) => (
+            <ProductSelectorAdmin
+              selected={field.state.value.map((t) => t.productId)}
+              setSelectedChange={(value) => {
+                const {
+                  id: productId,
+                  title,
+                  identifier,
+                  basePrice,
+                  image,
+                } = value;
+
+                const index = field.state.value.findIndex(
+                  (t) => t.productId == productId,
+                );
+
+                if (index === -1) {
+                  field.pushValue({
+                    productId,
+                    title,
+                    identifier,
+                    image,
+                    basePrice,
+                    price: "",
+                  });
+                }
+              }}
+            >
+              <Button
+                size="xl"
+                variant="outline"
+                className="justify-start rounded-xl text-muted-foreground"
+              >
+                <Search /> Browse products...
+              </Button>
+            </ProductSelectorAdmin>
+          )}
+        />
 
         <form.Field
           name="items"
           mode="array"
           children={(field) => {
-            const isInvalid =
-              field.state.meta.isTouched && !field.state.meta.isValid;
             return (
-              <>
-                {isInvalid && <FieldError errors={field.state.meta.errors} />}
-
-                <div className="space-y-1">
-                  {field.state.value.map((item, i) => {
-                    return (
-                      <div
-                        className="flex gap-4 p-2 rounded-xl border"
-                        key={item.productId}
-                      >
-                        <div className="flex flex-1 items-start gap-3">
-                          <div className="shrink-0 pt-1">
-                            <Avatar className="size-9 rounded-lg ring-2 ring-green-600/40 ring-offset-1 **:rounded-xl after:hidden">
-                              <AvatarImage src={item?.image as string} />
-                              <AvatarFallback>
-                                {getAvatarFallback((item.title as string)?.[0])}
-                              </AvatarFallback>
-                            </Avatar>
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <h4 className="leading-tight font-medium whitespace-normal">
-                              {item.title}
-                            </h4>
-                            <Badge className="rounded-md border border-border uppercase">
-                              {item.identifier}
-                            </Badge>
-                          </div>
+              <div className="divide-y">
+                {field.state.value.map((item, i) => {
+                  return (
+                    <div
+                      className="flex gap-3 not-first:pt-2 not-last:pb-2"
+                      key={item.productId}
+                    >
+                      <div className="flex flex-1 items-start gap-3">
+                        <div className="shrink-0 pt-1">
+                          <Avatar className="size-9 rounded-lg ring-2 ring-ring ring-offset-1 **:rounded-lg after:hidden">
+                            <AvatarImage src={item?.image as string} />
+                            <AvatarFallback>
+                              <ImageOff className="size-4" />
+                            </AvatarFallback>
+                          </Avatar>
                         </div>
+                        <div className="min-w-0 flex-1 space-y-1">
+                          <h4 className="leading-tight font-medium whitespace-normal">
+                            {item.title}
+                          </h4>
+                          <span className="text-xs font-medium text-muted-foreground">
+                            {item.identifier}
+                          </span>
+                        </div>
+                      </div>
 
-                        <div className="w-24 self-center text-right">
-                          <form.Field
-                            name={`items[${i}].price`}
-                            children={(field) => (
-                              <Input
+                      <div className="w-20 self-center text-right">
+                        <form.Field
+                          name={`items[${i}].price`}
+                          children={(field) => (
+                            <InputGroup className="h-9">
+                              <InputGroupAddon>$</InputGroupAddon>
+                              <InputGroupInput
                                 name={field.name}
                                 value={field.state.value}
                                 onBlur={field.handleBlur}
-                                className="text-right"
-                                placeholder={formatUSD(item.basePrice ?? "0")}
+                                className="h-9 text-right"
+                                placeholder={item.basePrice ?? "0"}
                                 onChange={(e) => {
                                   field.handleChange(e.target.value);
                                 }}
                               />
-                            )}
-                          />
-                        </div>
-                        <div className="w-10 text-right">
-                          <Button
-                            size="icon-sm"
-                            variant="outline"
-                            onClick={() => {
-                              field.removeValue(i);
-                            }}
-                          >
-                            <Trash2 />
-                          </Button>
-                        </div>
+                            </InputGroup>
+                          )}
+                        />
                       </div>
-                    );
-                  })}
-                </div>
-              </>
-            );
-          }}
-        />
-      </div>
-    );
-  },
-});
-
-const SelectItemDialog = withForm({
-  defaultValues,
-  render: function Render({ form }) {
-    const [open, setOpen] = useState(false);
-    const [filters, setFilters] = useState({ q: "", cat: "", page: "1" });
-
-    const query = new URLSearchParams(filters);
-
-    const { data: categories } = useCategories();
-    const { data, isPending } = useProducts(query.toString());
-    const { items } = useStore(form.store, (state) => state.values);
-
-    return (
-      <Dialog
-        onOpenChange={() => {
-          setFilters({ q: "", cat: "", page: "1" });
-        }}
-      >
-        <DialogTrigger asChild>
-          <Button
-            variant="outline"
-            type="button"
-            className="w-full justify-start rounded-xl"
-            size="lg"
-          >
-            <Search />
-            <span className="text-muted-foreground">Browse...</span>
-          </Button>
-        </DialogTrigger>
-
-        <DialogContent className="flex h-[min(700px,80svh)] flex-col gap-0 rounded-2xl px-0 ring-ring/10 sm:max-w-2xl">
-          {/* header */}
-          <DialogHeader className="mb-6 px-6">
-            <DialogTitle className="text-xl font-bold">Add Items</DialogTitle>
-          </DialogHeader>
-
-          {/* search and filter */}
-          <div className="mb-6 flex items-center gap-6 px-6">
-            <InputGroup className="h-10 rounded-lg">
-              <InputGroupInput
-                placeholder="Search..."
-                value={filters.q}
-                onChange={(e) => setFilters({ ...filters, q: e.target.value })}
-              />
-              <InputGroupAddon align="inline-start">
-                <Search />
-              </InputGroupAddon>
-              <InputGroupAddon align="inline-end">
-                <PopoverXDrawer
-                  open={open}
-                  setOpen={setOpen}
-                  trigger={
-                    <InputGroupButton variant="secondary" type="button">
-                      <Filter /> All Categories <ChevronDown />
-                    </InputGroupButton>
-                  }
-                  className="no-scrollbar max-h-80 overflow-auto"
-                >
-                  <Button
-                    variant={!filters.cat ? "secondary" : "ghost"}
-                    className="rounded-xl"
-                    type="button"
-                    onClick={() => setFilters({ ...filters, cat: "" })}
-                  >
-                    All
-                    <Check
-                      data-selected={!filters.cat}
-                      className="ml-auto opacity-0 data-[selected=true]:opacity-100"
-                    />
-                  </Button>
-                  {categories?.data?.map((cat, i) => (
-                    <Button
-                      variant={filters.cat === cat ? "secondary" : "ghost"}
-                      className="rounded-xl"
-                      type="button"
-                      key={cat + i}
-                      onClick={() => setFilters({ ...filters, cat })}
-                    >
-                      {cat}
-                      <Check
-                        data-selected={cat === filters.cat}
-                        className="ml-auto opacity-0 data-[selected=true]:opacity-100"
-                      />
-                    </Button>
-                  ))}
-                </PopoverXDrawer>
-              </InputGroupAddon>
-            </InputGroup>
-          </div>
-
-          <div className="no-scrollbar mb-6 px-6 flex-1 space-y-1 overflow-auto">
-            {isPending && (
-              <div className="h-1 animate-pulse rounded-full bg-primary" />
-            )}
-            <form.Field
-              name="items"
-              children={(field) =>
-                data?.data?.map((line, i) => {
-                  const isAdded =
-                    items?.findIndex((i) => i.productId === line.id) >= 0;
-                  return (
-                    <div
-                      className={`flex gap-4 rounded-lg border p-2 ${
-                        isAdded ? "bg-primary/10" : ""
-                      }`}
-                      key={line.id}
-                    >
-                      <div className="flex flex-1 items-start gap-3">
-                        <div className="shrink-0 pt-1">
-                          <Avatar className="size-9 rounded-lg ring-2 ring-green-600/40 ring-offset-1 **:rounded-xl after:hidden">
-                            <AvatarImage src={line?.image!} />
-                            <AvatarFallback>
-                              {getAvatarFallback(line.title)}
-                            </AvatarFallback>
-                          </Avatar>
-                        </div>
-                        <div className="min-w-0">
-                          <h4 className="line-clamp-2 leading-tight font-medium whitespace-normal">
-                            {line.title}
-                          </h4>
-                          <Badge className="rounded-md border border-border uppercase">
-                            {line.identifier}
-                          </Badge>
-                        </div>
-                      </div>
-                      <div className="w-28 self-center text-right">
-                        {formatUSD(15)}
-                      </div>
-                      <div className="w-28 self-center text-right">
+                      <div className="w-10 self-center text-right">
                         <Button
-                          type="button"
-                          variant={isAdded ? "outline" : "default"}
-                          className="rounded-lg"
-                          size="icon-sm"
+                          size="icon-xs"
+                          variant="destructive"
                           onClick={() => {
-                            if (isAdded) {
-                              const filtered = items?.filter(
-                                (i) => i.productId !== line.id,
-                              );
-                              form.setFieldValue("items", filtered);
-                            } else {
-                              field.pushValue({
-                                title: line.title,
-                                identifier: line.identifier,
-                                image: line.image as string,
-                                basePrice: line.basePrice,
-                                productId: line.id,
-                                price: "",
-                              });
-                            }
+                            field.removeValue(i);
                           }}
                         >
-                          {isAdded ? <X /> : <Plus />}
+                          <Trash2 />
                         </Button>
                       </div>
                     </div>
                   );
-                })
-              }
-            />
-          </div>
-
-          <Field className="flex flex-col-reverse gap-4 px-6 sm:flex-row sm:justify-start">
-            <Tooltip content="Previous page">
-              <Button
-                className="size-8! rounded-lg"
-                size="icon"
-                variant="outline"
-                disabled={Number(filters.page) <= 1}
-                onClick={() => {
-                  setFilters({
-                    ...filters,
-                    page: String(Number(filters.page) - 1),
-                  });
-                }}
-              >
-                <ArrowLeft />
-              </Button>
-            </Tooltip>
-
-            <Tooltip content="Next page">
-              <Button
-                className="size-8! rounded-lg"
-                size="icon"
-                variant="outline"
-                disabled={
-                  Number(filters.page) >= (data?.pagination?.totalPages ?? 1)
-                }
-                onClick={() => {
-                  setFilters({
-                    ...filters,
-                    page: String(Number(filters.page) + 1),
-                  });
-                }}
-              >
-                <ArrowRight />
-              </Button>
-            </Tooltip>
-
-            <DialogClose asChild>
-              <Button
-                type="button"
-                className="ml-auto w-20! rounded-lg"
-                size="lg"
-              >
-                Done
-              </Button>
-            </DialogClose>
-          </Field>
-        </DialogContent>
-      </Dialog>
+                })}
+              </div>
+            );
+          }}
+        />
+      </div>
     );
   },
 });

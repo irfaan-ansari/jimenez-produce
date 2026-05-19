@@ -47,7 +47,7 @@ import {
 } from "@/lib/utils";
 import { authClient } from "@/lib/auth/client";
 import { CustomerActions } from "../customer-actions";
-import { ProductSelector } from "@/components/admin/product-selector";
+import { ProductSelectorAdmin } from "@/components/admin/product-selector-admin";
 import { TaxRulesSelector } from "@/components/admin/tax-rules-selector";
 import { PriceLevelSelectType, ProductSelectType } from "@/lib/db/schema";
 import { updateProductsToTeam, updateTaxRulesToTeam } from "@/server/auth";
@@ -117,7 +117,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
 
         {/* stats cards */}
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <Card className="flex-row items-start px-6 rounded-2xl">
+          <Card className="flex-row items-start rounded-2xl px-6">
             <div className="flex-1">
               <CardTitle className="mb-2 text-3xl font-bold">
                 {data.stats?.activeCount}
@@ -133,7 +133,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
               <CircleDashed className="size-4" />
             </span>
           </Card>
-          <Card className="flex-row items-start px-6 rounded-2xl">
+          <Card className="flex-row items-start rounded-2xl px-6">
             <div className="flex-1">
               <CardTitle className="mb-2 text-3xl font-bold">
                 {data.stats?.completedCount}
@@ -258,10 +258,10 @@ const PriceLevelForm = ({
         {(field) => (
           <div className="space-y-4">
             {field.state.value?.id ? (
-              <div className="flex items-center gap-2 w-full p-2 rounded-lg bg-secondary/20 border">
-                <div className="flex-1 flex flex-col items-start gap-0.5">
+              <div className="flex w-full items-center gap-2 rounded-lg border bg-secondary/20 p-2">
+                <div className="flex flex-1 flex-col items-start gap-0.5">
                   <span className="font-medium">{field.state.value.name}</span>
-                  <span className="text-xs text-muted-foreground font-medium">
+                  <span className="text-xs font-medium text-muted-foreground">
                     {field.state.value.appliesTo === "all"
                       ? "Applies to all items"
                       : "Per item adjustment"}
@@ -379,7 +379,7 @@ const TaxRulesForm = ({
                   {taxRules?.map((rule, i) => (
                     <div
                       key={rule.id}
-                      className="flex items-center gap-2 py-2 rounded-lg p-2 border bg-secondary/20"
+                      className="flex items-center gap-2 rounded-lg border bg-secondary/20 p-2 py-2"
                     >
                       <span className="flex-1 font-medium">{rule.name}</span>
 
@@ -501,7 +501,7 @@ const ProductAccessForm = ({
                   {products?.map((item, i) => (
                     <div
                       key={item.id}
-                      className="flex items-center gap-2 p-2 rounded-xl border bg-secondary/20"
+                      className="flex items-center gap-2 rounded-xl border bg-secondary/20 p-2"
                     >
                       <div className="flex flex-1 items-start gap-3">
                         <div className="shrink-0">
@@ -524,7 +524,7 @@ const ProductAccessForm = ({
                           </Badge>
                         </div>
                       </div>
-                      <div className="w-28 self-center text-right text-muted-foreground font-medium">
+                      <div className="w-28 self-center text-right font-medium text-muted-foreground">
                         {formatUSD(item.basePrice)}
                       </div>
                       <Button
@@ -542,8 +542,8 @@ const ProductAccessForm = ({
                   ))}
                 </div>
               ) : null}
-              <ProductSelector
-                selected={field.state.value}
+              <ProductSelectorAdmin
+                selected={field.state.value.map((item) => item.id)}
                 setSelectedChange={(value) => {
                   const index = field.state.value.findIndex(
                     (s) => s.id === value.id,
@@ -551,6 +551,7 @@ const ProductAccessForm = ({
                   if (index >= 0) {
                     field.removeValue(index);
                   } else {
+                    // @ts-expect-error
                     field.pushValue({ ...value, id: value.id });
                   }
                 }}
@@ -558,11 +559,11 @@ const ProductAccessForm = ({
                 <Button
                   variant="outline"
                   size="sm"
-                  className="border-dashed border-2"
+                  className="border-2 border-dashed"
                 >
                   <Plus /> Add products
                 </Button>
-              </ProductSelector>
+              </ProductSelectorAdmin>
             </div>
           );
         }}
@@ -604,7 +605,7 @@ const Members = ({ members }: { members: any[] }) => {
   return (
     <div className="space-y-1">
       {members?.map((member) => (
-        <div className="flex items-center gap-4 p-2 rounded-lg bg-secondary/20 border">
+        <div className="flex items-center gap-4 rounded-lg border bg-secondary/20 p-2">
           <div className="flex flex-1 items-center gap-3">
             <Avatar className="size-9 rounded-lg ring-2 ring-green-600/20 ring-offset-1 **:rounded-lg after:hidden">
               <AvatarImage src={member.image} />

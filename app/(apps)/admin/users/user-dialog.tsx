@@ -1,31 +1,8 @@
 "use client";
 
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import z from "zod";
 import React from "react";
 import { toast } from "sonner";
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Loader, LogIn, Plus, Trash2, UserLock } from "lucide-react";
-import { Field, FieldGroup } from "@/components/ui/field";
-
-import { useComboboxAnchor } from "@/components/ui/combobox";
-import { Role, UserWithMember } from "@/lib/types";
-import { useTeams } from "@/hooks/use-teams";
-import { useStore } from "@tanstack/react-form";
-import { useAppForm } from "@/hooks/form-context";
-import { signupWithOrganization } from "@/server/auth";
-import { useQueryClient } from "@tanstack/react-query";
-import { capitalizeWords } from "@/lib/utils";
-import { CustomersSelector } from "@/components/admin/customers-selector";
 import {
   AppDialog,
   AppDialogClose,
@@ -34,6 +11,16 @@ import {
   AppDialogTitle,
   AppDialogTrigger,
 } from "@/components/app-dialog";
+import { useState } from "react";
+import { capitalizeWords } from "@/lib/utils";
+import { Loader, UserLock } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useStore } from "@tanstack/react-form";
+import { useAppForm } from "@/hooks/form-context";
+import { Role, UserWithMember } from "@/lib/types";
+import { signupWithOrganization } from "@/server/auth";
+import { useQueryClient } from "@tanstack/react-query";
+import { Field, FieldGroup } from "@/components/ui/field";
 
 const schema = z
   .object({
@@ -245,7 +232,7 @@ export const UserDialog = ({
                 <field.PasswordField
                   label="Password"
                   placeholder="••••••••"
-                  className="**:data-[slot=input]:rounded-xl col-span-2 lg:col-span-2"
+                  className="col-span-2 **:data-[slot=input]:rounded-xl lg:col-span-2"
                 />
               )}
             />
@@ -255,7 +242,7 @@ export const UserDialog = ({
                 <field.PasswordField
                   label="Confirm Password"
                   placeholder="••••••••"
-                  className="**:data-[slot=input]:rounded-xl col-span-2 lg:col-span-2"
+                  className="col-span-2 **:data-[slot=input]:rounded-xl lg:col-span-2"
                 />
               )}
             />

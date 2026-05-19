@@ -9,7 +9,7 @@ import {
 import { fetcher } from "@/lib/helper/fetcher";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 
-export const useProducts = (query: string) => {
+export const useAdminProducts = (query: string) => {
   return useQuery({
     queryKey: ["products", query],
     queryFn: () => {

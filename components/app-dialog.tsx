@@ -103,7 +103,7 @@ const AppDialogContent = ({
   return (
     <AppDialogContent
       className={cn(
-        "data-[slot=drawer-content]:px-6 data-[slot=drawer-content]:pb-6 data-[vaul-drawer-direction=bottom]:max-h-[90vh] data-[vaul-drawer-direction=bottom]:rounded-b-none",
+        "flex flex-col data-[slot=drawer-content]:px-6 data-[slot=drawer-content]:pb-6 data-[vaul-drawer-direction=bottom]:max-h-[90vh] data-[vaul-drawer-direction=bottom]:rounded-b-none",
         className,
       )}
       {...props}
