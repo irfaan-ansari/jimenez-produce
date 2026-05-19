@@ -2,13 +2,14 @@ import React from "react";
 import { ProductGrid } from "./product-grid";
 import { formOpt } from "./order-form-options";
 import { withForm } from "@/hooks/form-context";
-import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
-import { useInfiniteProductsCustomer } from "@/hooks/use-product";
 import {
   EmptyComponent,
   LoadingSkeleton,
 } from "@/components/admin/placeholder-component";
 import { useOrderUIStore } from "@/lib/store/order-store";
+import { QueryState } from "@/components/admin/query-state";
+import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
+import { useInfiniteProductsCustomer } from "@/hooks/use-product";
 
 export const ItemList = withForm({
   ...formOpt,
@@ -61,17 +62,14 @@ export const ItemList = withForm({
 
     return (
       <div className="space-y-6">
-        <ProductsState
-          isError={isError}
+        <QueryState
           isPending={isPending}
           error={error}
-          hasProducts={mappedProduct?.length > 0}
-        />
-
-        {/* item grid */}
-        <ProductGrid items={mappedProduct} form={form} />
-
-        {/* render grid with sortable */}
+          isError={isError}
+          isEmpty={mappedProduct?.length === 0}
+        >
+          <ProductGrid items={mappedProduct} form={form} />
+        </QueryState>
         <div
           ref={loadMoreRef}
           className="col-span-full flex min-h-10 w-full justify-center"

@@ -20,10 +20,6 @@ import { Tooltip } from "@/components/tooltip";
 import { withForm } from "@/hooks/form-context";
 import { Button } from "@/components/ui/button";
 import { useConfirm } from "@/hooks/use-confirm";
-import {
-  EmptyComponent,
-  LoadingSkeleton,
-} from "@/components/admin/placeholder-component";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   Copy,
@@ -34,7 +30,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { Columns, useOrderGuideStore } from "@/lib/store/order-guide-store";
-import { useInfiniteOrderGuides, useOrderGuide } from "@/hooks/use-orders";
+import { useInfiniteOrderGuides } from "@/hooks/use-orders";
 import { useOrderUIStore } from "@/lib/store/order-store";
 
 export const GuideList = withForm({
@@ -42,50 +38,64 @@ export const GuideList = withForm({
   render: function Render({ form }) {
     const queryClient = useQueryClient();
     const { data, isPending, isError, error } = useInfiniteOrderGuides("");
-    const columns = useOrderGuideStore((s) => s.columns);
-    const setColumns = useOrderGuideStore((s) => s.setColumns);
-    const setColumnMeta = useOrderGuideStore((s) => s.setColumnMeta);
 
-    const mappedData = React.useMemo(() => {
+    const columns = useOrderGuideStore((s) => s.columns);
+    const columnMeta = useOrderGuideStore((s) => s.columnMeta);
+    const setColumns = useOrderGuideStore((s) => s.setColumns);
+
+    React.useEffect(() => {
       const flatData = data?.pages?.flatMap((page) => page.data) ?? [];
-      const cols = Object.fromEntries(
+
+      const columns = Object.fromEntries(
         flatData.map((item) => {
-          const stringId = `${item.id}-${item.name}`;
-          return [stringId, []];
+          const { items } = item;
+          return [
+            `${item.id}-${item.name}`,
+            items.map((i) => ({
+              productId: i.productId,
+              title: i.title,
+              price: i.finalPrice,
+              total: i.finalPrice,
+              quantity: i.quantity!,
+              image: i.image!,
+              identifier: i.identifier,
+              categories: i.categories!,
+              isTaxable: i.isTaxable!,
+              lastPurchased: null,
+            })),
+          ];
         }),
       );
 
-      const colMeta = Object.fromEntries(
+      const meta = Object.fromEntries(
         flatData.map((item) => {
-          const stringId = `${item.id}-${item.name}`;
           return [
-            stringId,
+            `${item.id}-${item.name}`,
             {
               id: item.id,
               name: item.name,
-              description: item.description,
+              description: item.description!,
               position: item.position,
-              itemCount: item.itemCount,
             },
           ];
         }),
       );
-      return { cols, colMeta };
+
+      setColumns({ columns, columnMeta: meta });
     }, [data]);
-
-    React.useEffect(() => {
-      if (!mappedData.cols) return;
-      const { cols, colMeta } = mappedData;
-
-      setColumns({ ...cols, ...columns });
-      setColumnMeta(colMeta);
-    }, [mappedData]);
 
     /**
      * Handles the reordering of columns (order guides)
      */
     const handleReorder = async (value: Columns) => {
-      setColumns(value);
+      const cols = Object.entries(value).map(([key, items]) => {
+        return {
+          id: key,
+          items: items,
+          meta: columnMeta[key],
+        };
+      });
+      setColumns(cols);
 
       const guides = Object.entries(value).map(([key, items]) => {
         const [guideId] = key.split("-");
@@ -96,14 +106,14 @@ export const GuideList = withForm({
         };
       });
 
-      const { success, error } = await updateOrderGuides(guides);
-      if (success) {
-        queryClient.invalidateQueries({
-          queryKey: ["customer-order-guides"],
-        });
-      } else {
-        toast.error(error?.message);
-      }
+      // const { success, error } = await updateOrderGuides(guides);
+      // if (success) {
+      //   queryClient.invalidateQueries({
+      //     queryKey: ["customer-order-guides"],
+      //   });
+      // } else {
+      //   toast.error(error?.message);
+      // }
     };
 
     return (
@@ -114,14 +124,14 @@ export const GuideList = withForm({
         orientation="vertical"
       >
         <KanbanBoard>
-          {Object.entries(columns).map(([colKey]) => (
+          {Object.entries(columns).map(([colKey, items]) => (
             <KanbanColumn
               key={colKey}
               value={colKey}
               className="rounded-xl border bg-background shadow-sm"
             >
               <ColumnHeader value={colKey} />
-              <GuideItems form={form} guideId={colKey} />
+              <ProductGrid items={items} form={form} draggable={true} />
             </KanbanColumn>
           ))}
         </KanbanBoard>
@@ -258,47 +268,3 @@ const ColumnHeader = ({ value }: { value: string }) => {
     </div>
   );
 };
-
-export const GuideItems = withForm({
-  ...formOpt,
-  props: {} as {
-    guideId: string;
-  },
-  render: function Render({ form, guideId }) {
-    const [id] = guideId.split("-");
-    const items = useOrderGuideStore((s) => s.columns[guideId]);
-    const setColumnItems = useOrderGuideStore((s) => s.setColumnItems);
-
-    const { data, isPending, isError, error } = useOrderGuide(id);
-
-    const mappedProduct = React.useMemo(() => {
-      return (
-        data?.data?.items.map((item) => ({
-          dndId: item.id,
-          productId: item.productId,
-          title: item.title,
-          image: item.image,
-          identifier: item.identifier,
-          categories: item.categories ?? [],
-          price: item.finalPrice,
-          total: item.finalPrice,
-          quantity: "0",
-          isTaxable: item.isTaxable ?? false,
-          lastPurchased: null,
-        })) ?? []
-      );
-    }, [data]);
-
-    React.useEffect(() => {
-      setColumnItems(guideId, mappedProduct);
-    }, [mappedProduct]);
-
-    if (isPending) return <LoadingSkeleton className="py-10" />;
-    if (isError) {
-      return (
-        <EmptyComponent variant="error" title={error?.message} description="" />
-      );
-    }
-    return <ProductGrid items={items} form={form} draggable={true} />;
-  },
-});

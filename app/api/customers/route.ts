@@ -1,7 +1,6 @@
 import { db } from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 import { getQueryObject } from "@/lib/helper/query";
-import { apiHandler } from "@/lib/helper/api-handler";
 import { team, teamMember, user } from "@/lib/db/auth-schema";
 import { and, countDistinct, eq, exists, ilike, or, SQL } from "drizzle-orm";
 import { getSession } from "@/server/auth";

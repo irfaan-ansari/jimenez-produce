@@ -4,7 +4,7 @@ import React from "react";
 import { toast } from "sonner";
 import { formatUSD } from "@/lib/utils";
 import { ItemList } from "./item-list";
-import { GuideList } from "./guide-list";
+import { GuideList } from "./guide-list-v2";
 import { OrderCart } from "./order-cart";
 import { type TaxRule } from "@/lib/types";
 import { useRouter } from "next/navigation";
@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { useConfirm } from "@/hooks/use-confirm";
 import { useAppForm } from "@/hooks/form-context";
 import { useSidebar } from "@/components/ui/sidebar";
-import { Loader, Menu, Plus, Star } from "lucide-react";
+import { ChevronLeft, Loader, Menu, Plus, Star } from "lucide-react";
 import { formOpt, getTotals } from "./order-form-options";
 import { OrderTab, useOrderUIStore } from "@/lib/store/order-store";
 import { OrderFormToolbar, ToolbarSearch } from "./order-from-toolbar";
@@ -89,47 +89,65 @@ export const OrderForm = ({ taxRules }: { taxRules: TaxRule[] }) => {
       className="flex w-full flex-col gap-6"
     >
       <div className="flex w-full flex-col items-start gap-4 **:data-[slot=input-group]:bg-background lg:flex-row lg:items-center">
-        <TabsList className="bg-background p-0 shadow-sm *:h-11 *:text-foreground group-data-horizontal/tabs:h-11 *:data-active:bg-primary *:data-active:text-primary-foreground *:data-active:hover:bg-primary/80 *:data-active:hover:text-primary-foreground">
-          <TabsTrigger value="all">
-            <Menu />
-            All Products
-          </TabsTrigger>
-          <TabsTrigger value="guides" disabled={selectionState.mode !== "idle"}>
-            <Star className="fill-current" />
-            Order Guides
-          </TabsTrigger>
-        </TabsList>
-        <div className="flex w-full items-center justify-between gap-4 lg:w-auto lg:flex-1 lg:justify-end">
-          <ToolbarSearch />
-          <Button
-            size="xl"
-            variant="secondary"
-            className="rounded-lg bg-yellow-500 hover:bg-yellow-500/90"
-            onClick={() => {
-              setSelectionState({
-                mode: "create",
-              });
-              setSelectedTab("all");
-            }}
-          >
-            <Plus />
-            New Guide
-          </Button>
-          <form.Field
-            name="lineItems"
-            children={(field) => (
-              <Button
-                size="xl"
-                className="rounded-lg [&>svg]:size-5!"
-                onClick={() => setShowCart(true)}
-                disabled={field.state.value.length === 0}
-              >
-                <ShoppingBag />
-                View cart ({field.state.value.length})
-              </Button>
-            )}
-          />
+        <div className="flex gap-2 justify-between w-full">
+          <div className="flex-[1_1_0] md:hidden">
+            <Button
+              size="icon-xl"
+              variant="outline"
+              className="shrink-0 rounded-xl"
+              onClick={() => router.back()}
+            >
+              <ChevronLeft />
+            </Button>
+          </div>
+          <TabsList className="bg-background flex-[1_1_auto] md:flex-none p-1 *:h-9 group-data-horizontal/tabs:h-11 border *:data-active:bg-secondary rounded-xl *:rounded-lg">
+            <TabsTrigger value="all">
+              <Menu className="hidden lg:inline" />
+              All Products
+            </TabsTrigger>
+            <TabsTrigger
+              value="guides"
+              disabled={selectionState.mode !== "idle"}
+            >
+              <Star className="fill-current hidden lg:inline" />
+              Order Guides
+            </TabsTrigger>
+          </TabsList>
+          <div className="flex gap-2 flex-[1_1_0] justify-end">
+            <ToolbarSearch className="hidden md:flex rounded-xl" />
+            <Button
+              size="xl"
+              variant="secondary"
+              className="rounded-xl w-11 md:w-auto bg-yellow-500 hover:bg-yellow-500/90"
+              onClick={() => {
+                setSelectionState({
+                  mode: "create",
+                });
+                setSelectedTab("all");
+              }}
+            >
+              <Plus />
+              <span className="hidden md:inline">New Guide</span>
+            </Button>
+            <form.Field
+              name="lineItems"
+              children={(field) => (
+                <Button
+                  size="xl"
+                  className="rounded-lg w-11 md:w-auto [&>svg]:size-5!"
+                  onClick={() => setShowCart(true)}
+                  disabled={field.state.value.length === 0}
+                >
+                  <ShoppingBag />
+                  <span className="hidden md:inline">
+                    View cart ({field.state.value.length})
+                  </span>
+                </Button>
+              )}
+            />
+          </div>
         </div>
+        <ToolbarSearch className="md:hidden rounded-xl max-w-full" />
       </div>
 
       {/* toolbar */}

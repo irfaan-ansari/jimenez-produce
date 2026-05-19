@@ -1,56 +1,47 @@
-import { NextResponse } from "next/server";
-import { getActiveUser, getSession } from "@/server/auth";
-import { hasPermission, Permission, Role } from "@/lib/auth/permissions";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
+import { getSession } from "@/server/auth";
+import { ERROR_MESSAGE } from "./error-message";
+import { statement } from "@/lib/auth/permissions";
 
-type Handler = (ctx: {
-  auth: Awaited<ReturnType<typeof getSession>>;
-  req: Request;
-}) => Promise<Response>;
+type Resource = keyof typeof statement;
 
-export function withPermission(permission: Permission, handler: Handler) {
-  return async (req: Request) => {
-    const auth = await getSession();
+type Action<TResource extends Resource> = (typeof statement)[TResource][number];
 
-    if (!auth) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-    }
+export type PermissionOptions<TResource extends Resource = Resource> = {
+  resource: TResource;
+  action: Action<TResource>;
+};
 
-    const { activeOrganizationId, userId } = auth.session;
+export async function withPermission<TResource extends Resource>({
+  resource,
+  action,
+}: PermissionOptions<TResource>) {
+  const session = await getSession();
 
-    const activeUser = await getActiveUser(userId!);
+  if (!session) {
+    throw new Error(ERROR_MESSAGE.UNAUTHORIZED);
+  }
 
-    if (!activeUser) {
-      return NextResponse.json({ message: "Forbidden" }, { status: 403 });
-    }
+  const { success, error } = await auth.api.hasPermission({
+    headers: await headers(),
+    body: {
+      permissions: {
+        [resource]: [action],
+      },
+    },
+  });
+  console.log({ success, error });
+  if (!success) {
+    throw new Error(ERROR_MESSAGE.FORBIDDEN);
+  }
 
-    if (!hasPermission(activeUser.role as Role, permission)) {
-      return NextResponse.json({ message: "Forbidden" }, { status: 403 });
-    }
-
-    return handler({ auth, req });
-  };
-}
-
-export function withTeamPermission(permission: Permission, handler: Handler) {
-  return async (req: Request) => {
-    const auth = await getSession();
-
-    if (!auth) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-    }
-
-    const { activeOrganizationId, userId } = auth.session;
-
-    const activeUser = await getActiveUser(userId!);
-
-    if (!activeUser) {
-      return NextResponse.json({ message: "Forbidden" }, { status: 403 });
-    }
-
-    if (!hasPermission(activeUser.role as Role, permission)) {
-      return NextResponse.json({ message: "Forbidden" }, { status: 403 });
-    }
-
-    return handler({ auth, req });
+  return {
+    ...session,
+    session: {
+      ...session.session,
+      activeTeamId: session.session.activeTeamId ?? "",
+      activeOrganizationId: session.session.activeOrganizationId ?? "",
+    },
   };
 }

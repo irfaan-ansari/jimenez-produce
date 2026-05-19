@@ -7,8 +7,18 @@ import { Pagination } from "@/lib/types";
 import { fetcher } from "@/lib/helper/fetcher";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 
+export interface OrderGuideItem
+  extends OrderGuideItemSelectType, Omit<ProductSelectType, "basePrice"> {
+  finalPrice: ProductSelectType["basePrice"];
+}
+
 export interface OrderGuide extends OrderGuideSelectType {
-  itemCount: number;
+  items: OrderGuideItem[];
+}
+
+export interface OrderGuidesResponse {
+  data: OrderGuide[];
+  pagination: Pagination;
 }
 
 export interface AdminOrderGuide extends OrderGuideSelectType {
@@ -16,28 +26,13 @@ export interface AdminOrderGuide extends OrderGuideSelectType {
   customerCount: number;
 }
 
-interface OrderGuidesResponse {
-  data: OrderGuide[];
-  pagination: Pagination;
-}
-
 interface AdminOrderGuidesResponse {
   data: AdminOrderGuide[];
   pagination: Pagination;
 }
 
-export interface OrderGuideItem
-  extends OrderGuideItemSelectType, Omit<ProductSelectType, "basePrice"> {
-  finalPrice: ProductSelectType["basePrice"];
-}
 export interface AdminOrderGuideItem
   extends OrderGuideItemSelectType, ProductSelectType {}
-
-interface OrderGuideResponse {
-  data: OrderGuide & {
-    items: OrderGuideItem[];
-  };
-}
 
 interface AdminOrderGuideResponse {
   data: OrderGuide & {
@@ -52,18 +47,7 @@ interface AdminOrderGuideResponse {
   };
 }
 
-export const useOrderGuides = (enabled = true) => {
-  return useQuery({
-    queryKey: ["customer-order-guides-normal"],
-    queryFn: () => {
-      return fetcher<OrderGuidesResponse>(`/api/customer/order-guides`);
-    },
-    staleTime: 1000 * 60 * 5,
-    enabled,
-  });
-};
-
-export const useInfiniteOrderGuides = (query: string) => {
+export const useInfiniteOrderGuides = (query?: string) => {
   return useInfiniteQuery({
     queryKey: ["customer-order-guides", query],
     initialPageParam: 1,
@@ -82,17 +66,6 @@ export const useInfiniteOrderGuides = (query: string) => {
       return page < totalPages ? Number(page) + 1 : undefined;
     },
     staleTime: 1000 * 60 * 5,
-  });
-};
-
-export const useOrderGuide = (id: number | string) => {
-  return useQuery({
-    queryKey: ["order-guide", id],
-    queryFn: () => {
-      return fetcher<OrderGuideResponse>(`/api/customer/order-guides/${id}`);
-    },
-    staleTime: 1000 * 60 * 5,
-    enabled: !!id,
   });
 };
 

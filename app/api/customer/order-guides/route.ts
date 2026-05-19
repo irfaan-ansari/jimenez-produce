@@ -1,120 +1,150 @@
-import {
-  eq,
-  and,
-  or,
-  desc,
-  count,
-  getTableColumns,
-  ilike,
-  isNotNull,
-  asc,
-} from "drizzle-orm";
 import { db } from "@/lib/db";
-import { getSession } from "@/server/auth";
+import {
+  and,
+  asc,
+  count,
+  DrizzleQueryError,
+  eq,
+  exists,
+  ilike,
+  or,
+} from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
-import { orderGuide, orderGuideTarget, orderGuideItem } from "@/lib/db/schema";
+import { resolvePrices } from "@/lib/helper/resolve-price";
+import { withPermission } from "@/lib/helper/with-permission";
+import { orderGuideTarget, orderGuideItem, orderGuide } from "@/lib/db/schema";
 
 export const GET = async (req: NextRequest) => {
   try {
-    const auth = await getSession();
-    if (!auth) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-    }
-    const { role, activeTeamId, activeOrganizationId } = auth.session;
-
-    if (role !== "customer")
-      return NextResponse.json(
-        { message: "You do not have permission to access this resource." },
-        { status: 403 },
-      );
-
-    if (!activeTeamId || !activeOrganizationId)
-      return NextResponse.json(
-        { message: "Required account context is missing." },
-        { status: 403 },
-      );
+    const auth = await withPermission({
+      resource: "orderGuide",
+      action: "read:team",
+    });
 
     const searchParams = req.nextUrl.searchParams;
     const query = Object.fromEntries(searchParams.entries());
-
-    const { page = 1, limit = 24, q } = query;
+    const { page = 1, q, limit = 24 } = query;
     const offset = (Number(page) - 1) * Number(limit);
 
-    const filters = and(
-      eq(orderGuide.organizationId, activeOrganizationId),
-      and(
-        or(eq(orderGuide.teamId, activeTeamId), isNotNull(orderGuideTarget.id)),
-        q
-          ? or(
-              ilike(orderGuide.name, `%${q}%`),
-              ilike(orderGuide.description, `%${q}%`),
-            )
-          : undefined,
+    const { activeTeamId, activeOrganizationId } = auth.session;
+
+    const [guides, [{ total }]] = await Promise.all([
+      db.query.orderGuide.findMany({
+        where: (og, { and, or, eq, exists, ilike }) =>
+          and(
+            eq(og.organizationId, activeOrganizationId),
+            or(
+              eq(og.teamId, activeTeamId),
+              exists(
+                db
+                  .select()
+                  .from(orderGuideTarget)
+                  .where(
+                    and(
+                      eq(orderGuideTarget.orderGuideId, og.id),
+                      eq(orderGuideTarget.teamId, activeTeamId),
+                    ),
+                  ),
+              ),
+            ),
+            q ? ilike(og.name, `%${q}%`) : undefined,
+          ),
+        with: {
+          orderGuideItems: {
+            with: {
+              product: true,
+            },
+            orderBy: asc(orderGuideItem.position),
+          },
+        },
+        limit: 24,
+        offset,
+      }),
+      db
+        .select({ total: count() })
+        .from(orderGuide)
+        .leftJoin(
+          orderGuideTarget,
+          eq(orderGuideTarget.orderGuideId, orderGuide.id),
+        )
+        .where(
+          and(
+            eq(orderGuide.organizationId, activeOrganizationId),
+            or(
+              eq(orderGuide.teamId, activeTeamId),
+              exists(
+                db
+                  .select()
+                  .from(orderGuideTarget)
+                  .where(
+                    and(
+                      eq(orderGuideTarget.orderGuideId, orderGuide.id),
+                      eq(orderGuideTarget.teamId, activeTeamId),
+                    ),
+                  ),
+              ),
+            ),
+            q ? ilike(orderGuide.name, `%${q}%`) : undefined,
+          ),
+        ),
+    ]);
+
+    const productIds = [
+      ...new Set(
+        guides.flatMap((g) => g.orderGuideItems.map((item) => item.productId)),
       ),
-    );
+    ];
 
-    //  subquery for item counts
-    const itemsCountSubquery = db
-      .select({
-        orderGuideId: orderGuideItem.orderGuideId,
-        itemCount: count(orderGuideItem.id).as("item_count"),
-      })
-      .from(orderGuideItem)
-      .groupBy(orderGuideItem.orderGuideId)
-      .as("items_count");
+    const prices = await resolvePrices({
+      teamId: activeTeamId,
+      productIds,
+    });
 
-    //   main query
-    const response = await db
-      .select({
-        ...getTableColumns(orderGuide),
-        itemCount: itemsCountSubquery.itemCount,
-      })
-      .from(orderGuide)
-      .leftJoin(
-        itemsCountSubquery,
-        eq(itemsCountSubquery.orderGuideId, orderGuide.id),
-      )
-      .leftJoin(
-        orderGuideTarget,
-        and(
-          eq(orderGuideTarget.orderGuideId, orderGuide.id),
-          eq(orderGuideTarget.teamId, activeTeamId),
-        ),
-      )
-      .where(filters)
-      .limit(Number(limit))
-      .offset(offset)
-      .orderBy(asc(orderGuide.position));
+    const pricingMap = new Map(prices.map((p) => [p.id, p]));
 
-    //   total
-    const [{ count: total }] = await db
-      .select({
-        count: count(orderGuide.id),
-      })
-      .from(orderGuide)
-      .leftJoin(
-        orderGuideTarget,
-        and(
-          eq(orderGuideTarget.orderGuideId, orderGuide.id),
-          eq(orderGuideTarget.teamId, activeTeamId),
-        ),
-      )
-      .where(filters);
+    const transformedGuides = guides.map((guideItem) => {
+      const { orderGuideItems, ...rest } = guideItem;
+      const items = orderGuideItems
+        .toSorted((a, b) => a.position - b.position)
+        .map((item) => {
+          const price = pricingMap.get(item.productId);
+          const {} = item;
+          return {
+            ...(item.product ?? {}),
+            id: item.id,
+            productId: item.productId,
+            position: item.position,
+            quantity: item.quantity,
+            finalPrice: price?.finalPrice ?? 0,
+          };
+        });
+
+      return {
+        ...rest,
+        items,
+      };
+    });
 
     return NextResponse.json(
       {
-        data: response,
+        data: transformedGuides,
         pagination: {
           page,
           limit,
-          total: total,
-          totalPages: Math.ceil(total / (limit as number)),
+          total,
+          totalPages: Math.ceil(total / Number(limit)),
         },
       },
       { status: 200 },
     );
-  } catch (error) {
+  } catch (error: any) {
     console.error(error);
-    return NextResponse.json({ message: "API error" }, { status: 500 });
+    if (error instanceof DrizzleQueryError) {
+      return NextResponse.json(
+        { message: "Internal server error" },
+        { status: 500 },
+      );
+    }
+    return NextResponse.json({ message: error?.message }, { status: 500 });
   }
 };
