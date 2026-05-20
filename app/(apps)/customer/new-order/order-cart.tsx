@@ -35,10 +35,10 @@ export const OrderCart = withForm({
         <form.Subscribe
           selector={({ values }) => ({
             lineItems: values.lineItems,
-            taxRules: values.taxRules,
+            taxRule: values.taxRule,
           })}
-          children={({ lineItems, taxRules }) => {
-            const totals = getTotals(lineItems, taxRules);
+          children={({ lineItems, taxRule }) => {
+            const totals = getTotals(lineItems, taxRule);
             return (
               <SheetContent className="gap-0">
                 <SheetHeader className="gap-0 border-b">

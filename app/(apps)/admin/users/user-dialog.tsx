@@ -98,7 +98,7 @@ export const UserDialog = ({
         setOpen(false);
         callback?.(createdUser);
         form.reset();
-        toast.success("User added successfully", { id: toastId });
+        toast.success("User account created.", { id: toastId });
       }
 
       queryClient.invalidateQueries({

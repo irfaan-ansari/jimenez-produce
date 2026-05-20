@@ -94,9 +94,14 @@ export const signUpUser = async (data: SignupProps) => {
  * get current user
  */
 export async function getActiveUser(userId: string) {
-  const memberUser = await db.query.member.findFirst({
-    where: eq(member.userId, userId),
-  });
+  const [user, memberUser] = await Promise.all([
+    db.query.user.findFirst({
+      where: (u, { eq }) => eq(u.id, userId),
+    }),
+    db.query.member.findFirst({
+      where: eq(member.userId, userId),
+    }),
+  ]);
 
   if (!memberUser) {
     return null;
@@ -106,7 +111,7 @@ export async function getActiveUser(userId: string) {
     where: eq(organization.id, memberUser.organizationId),
   });
 
-  return { ...memberUser, organization: activeOrganization };
+  return { user, memberUser, organization: activeOrganization };
 }
 
 /**
@@ -200,66 +205,6 @@ export const addUserToOrganization = handleAction(
     });
 
     return data;
-  },
-);
-
-/**
- * update tax rules to team
- * @param data { teamId, taxRuleIds }
- * @returns inserted and deleted count
- */
-export const updateTaxRulesToTeam = handleAction(
-  async (data: { teamId: string; taxRuleIds: number[] }) => {
-    const { teamId, taxRuleIds } = data;
-
-    //  Get existing
-    const existing = await db
-      .select({ taxRuleId: taxRuleItem.taxRuleId })
-      .from(taxRuleItem)
-      .where(eq(taxRuleItem.teamId, teamId));
-
-    const existingIds = existing.map((r) => r.taxRuleId);
-
-    // to insert
-    const toInsert = taxRuleIds.filter((id) => !existingIds.includes(id));
-
-    // to delete
-    const toDelete = existingIds.filter((id) => !taxRuleIds.includes(id));
-
-    const promises = [];
-    // Delete removed
-    if (toDelete.length) {
-      promises.push(
-        db
-          .delete(taxRuleItem)
-          .where(
-            and(
-              eq(taxRuleItem.teamId, teamId),
-              inArray(taxRuleItem.taxRuleId, toDelete),
-            ),
-          ),
-      );
-    }
-
-    // Insert new
-    if (toInsert.length) {
-      promises.push(
-        db.insert(taxRuleItem).values(
-          toInsert.map((taxRuleId) => ({
-            teamId,
-            taxRuleId,
-          })),
-        ),
-      );
-    }
-
-    await Promise.all(promises);
-
-    // return inserted and deleted count
-    return {
-      inserted: toInsert.length,
-      deleted: toDelete.length,
-    };
   },
 );
 

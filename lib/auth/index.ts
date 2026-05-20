@@ -1,14 +1,14 @@
 import { db } from "@/lib/db/index";
 import { sendEmail } from "../email";
-import { APIError, betterAuth } from "better-auth";
+import { waitUntil } from "@vercel/functions";
 import { nextCookies } from "better-auth/next-js";
-import { owner, ac, sales, manager, member, customer } from "./permissions";
+import { APIError, betterAuth } from "better-auth";
+import { twilioSendOTP, twilioVerifyOTP } from "../twilio";
 import { getActiveUser, getActiveTeam } from "@/server/auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { organization, phoneNumber } from "better-auth/plugins";
 import PasswordResetTemplate from "@/components/email/password-reset-email";
-import { twilioSendOTP, twilioVerifyOTP } from "../twilio";
-import { waitUntil } from "@vercel/functions";
+import { owner, ac, sales, manager, member, customer } from "./permissions";
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -122,6 +122,11 @@ export const auth = betterAuth({
               required: false,
               input: true,
             },
+            taxRuleId: {
+              type: "number",
+              required: false,
+              input: true,
+            },
           },
         },
       },
@@ -147,17 +152,32 @@ export const auth = betterAuth({
             getActiveTeam(session.userId),
           ]);
 
-          if (!activeUser?.organizationId) {
+          const { memberUser, user } = activeUser || {};
+
+          if (!memberUser?.organizationId) {
+            console.warn("No organization found for user", session.userId);
             throw new APIError("BAD_REQUEST", {
               message: "Access denied. Please contact your administrator.",
             });
           }
+
+          if (
+            (memberUser?.role === "customer" ||
+              user?.accountType === "customer") &&
+            !activeTeam?.id
+          ) {
+            console.warn("No team found for customer user", session.userId);
+            throw new APIError("BAD_REQUEST", {
+              message: "You dont have access to any account.",
+            });
+          }
+
           return {
             data: {
               ...session,
-              activeOrganizationId: activeUser?.organizationId,
+              activeOrganizationId: memberUser?.organizationId,
               activeTeamId: activeTeam?.id,
-              role: activeUser?.role,
+              role: memberUser?.role,
             },
           };
         },

@@ -2,24 +2,27 @@
 
 import React from "react";
 import { toast } from "sonner";
-import { useConfirm } from "@/hooks/use-confirm";
 import { Button } from "@/components/ui/button";
+import { useConfirm } from "@/hooks/use-confirm";
 import { ColumnDef } from "@tanstack/react-table";
 import { useTaxRules } from "@/hooks/use-product";
+import { deleteTaxRule } from "@/server/tax-rule";
+import { TaxRuleDialog } from "./tax-rule-dialog";
 import { TaxRuleSelectType } from "@/lib/db/schema";
 import { DataTable } from "@/components/admin/data-table";
 import { useRouterStuff } from "@/hooks/use-router-stuff";
 import { MoreVertical, SquarePen, Trash } from "lucide-react";
 import { PopoverXDrawer } from "@/components/popover-x-drawer";
-import { deleteTaxRule } from "@/server/tax-rule";
-import { TaxRuleDialog } from "./tax-rule-dialog";
 
 export const PageClient = () => {
   const { searchParams } = useRouterStuff();
 
-  const { data, error, isPending, isError } = useTaxRules(
-    searchParams.toString(),
-  );
+  const query = Object.fromEntries(searchParams.entries()) as Record<
+    string,
+    string
+  >;
+
+  const { data, error, isPending, isError } = useTaxRules(query);
 
   // data
   return (

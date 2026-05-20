@@ -11,19 +11,25 @@ import { useRouter } from "next/navigation";
 import { createOrder } from "@/server/order";
 import { ShoppingBag } from "@duo-icons/react";
 import { Button } from "@/components/ui/button";
+import { useStore } from "@tanstack/react-form";
 import { useConfirm } from "@/hooks/use-confirm";
 import { useAppForm } from "@/hooks/form-context";
 import { useSidebar } from "@/components/ui/sidebar";
-import { ChevronLeft, Loader, Menu, Plus, Star } from "lucide-react";
 import { formOpt, getTotals } from "./order-form-options";
 import { OrderTab, useOrderUIStore } from "@/lib/store/order-store";
+import { ChevronLeft, Loader, Menu, Plus, Star } from "lucide-react";
 import { OrderFormToolbar, ToolbarSearch } from "./order-from-toolbar";
 import { OrderGuideDialog } from "@/components/admin/order-guide-dialog";
+import { LoadingSkeleton } from "@/components/admin/placeholder-component";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-export const OrderForm = ({ taxRules }: { taxRules: TaxRule[] }) => {
+const STORAGE_KEY = "order-line-items";
+
+export const OrderForm = ({ taxRule }: { taxRule: TaxRule | null }) => {
   const router = useRouter();
   const confirm = useConfirm();
+
+  const [mounted, setMounted] = React.useState(false);
 
   const setShowCart = useOrderUIStore((s) => s.setShowCart);
 
@@ -41,7 +47,7 @@ export const OrderForm = ({ taxRules }: { taxRules: TaxRule[] }) => {
     ...formOpt,
     defaultValues: {
       ...formOpt.defaultValues,
-      taxRules: taxRules,
+      taxRule: taxRule as any,
     },
     onSubmit: async ({ value }) => {
       const toastId = toast.loading("Submitting your order...");
@@ -50,6 +56,7 @@ export const OrderForm = ({ taxRules }: { taxRules: TaxRule[] }) => {
       });
 
       if (success) {
+        localStorage.removeItem(STORAGE_KEY);
         toast.success("Order submitted successfully!", { id: toastId });
         confirm.success({
           title: "Order Confirmed!",
@@ -62,6 +69,8 @@ export const OrderForm = ({ taxRules }: { taxRules: TaxRule[] }) => {
       } else toast.error(error.message, { id: toastId });
     },
   });
+
+  const lineItems = useStore(form.store, (state) => state.values.lineItems);
 
   // create value from selection store
   const createGuideValue = React.useMemo(() => {
@@ -76,11 +85,33 @@ export const OrderForm = ({ taxRules }: { taxRules: TaxRule[] }) => {
     };
   }, [selectionState.items]);
 
+  // restore cart from local storage on mount
   React.useEffect(() => {
-    if (sidebarOpen) {
-      setSidebarOpen(false);
+    try {
+      if (sidebarOpen) {
+        setSidebarOpen(false);
+      }
+
+      const storedItems = localStorage.getItem(STORAGE_KEY);
+
+      if (!storedItems) return;
+
+      const parsed = JSON.parse(storedItems);
+
+      form.setFieldValue("lineItems", parsed);
+    } catch (error) {
+      console.error("Failed to restore cart", error);
+    } finally {
+      setMounted(true);
     }
   }, []);
+
+  // persist cart to local storage on change
+  React.useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(lineItems));
+  }, [lineItems]);
+
+  if (!mounted) return <LoadingSkeleton />;
 
   return (
     <Tabs
@@ -169,7 +200,7 @@ export const OrderForm = ({ taxRules }: { taxRules: TaxRule[] }) => {
       {/* sticky cart  */}
       <form.Subscribe
         selector={({ values, isSubmitting, canSubmit }) => {
-          const totals = getTotals(values.lineItems, values.taxRules);
+          const totals = getTotals(values.lineItems, values.taxRule);
           return {
             totals,
             isSubmitting,

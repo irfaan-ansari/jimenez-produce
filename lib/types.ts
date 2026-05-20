@@ -145,7 +145,7 @@ export type Team = typeof auth.$Infer.Team & {
 };
 
 export type TeamDetail = Team & {
-  taxRules: TaxRuleSelectType[];
+  taxRule: TaxRuleSelectType|null;
   products: ProductSelectType[];
   priceLevel: PriceLevelSelectType | null;
   orders: OrderType[];

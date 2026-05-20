@@ -4,7 +4,6 @@ import React from "react";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -16,50 +15,50 @@ import {
   FieldLabel,
   FieldTitle,
 } from "@/components/ui/field";
-import { toast } from "sonner";
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupButton,
   InputGroupInput,
 } from "@/components/ui/input-group";
+import { QueryState } from "./query-state";
 import { Plus, Search } from "lucide-react";
-import { useListTeamMembers, useUsers } from "@/hooks/use-teams";
-import { authClient } from "@/lib/auth/client";
+import { useUsers } from "@/hooks/use-teams";
 import { Button } from "@/components/ui/button";
 import { useDebounce } from "@/hooks/use-debounce";
 import { UserDialog } from "@/app/(apps)/admin/users/user-dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { LoadingSkeleton } from "@/components/admin/placeholder-component";
 
 export const UserSelector = ({
-  accountType = "customer",
-  teamId,
+  selected,
+  onAction,
   children,
 }: {
+  selected: string[];
   children: React.ReactNode;
-  teamId: string;
-  accountType?: string;
+  onAction: (userId: string) => void;
 }) => {
+  const [open, setOpen] = React.useState(false);
   const [search, setSearch] = React.useState("");
-  const auth = authClient.useSession();
   const [debounced, setDebounced] = React.useState("");
 
   const debounceFn = useDebounce((val) => {
     setDebounced(val);
   }, 500);
 
-  const { data: teamMembers } = useListTeamMembers(teamId);
-
-  const { data: users, isPending } = useUsers({
+  const {
+    data: users,
+    isPending,
+    isError,
+    error,
+  } = useUsers({
     q: debounced,
-    accountType,
+    accountType: "customer",
   });
 
   const options = React.useMemo(() => {
     return (
       users?.data?.map((t) => {
-        const isMember = teamMembers?.some((m) => m.userId === t.id);
         return {
           id: t.id,
           name: t.name,
@@ -67,38 +66,17 @@ export const UserSelector = ({
           email: t.email,
           image: t.image,
           accountType: t.accountType,
-          isMember,
         };
       }) ?? []
     );
-  }, [users, teamMembers]);
+  }, [users]);
 
-  const handleAssign = async (userId: string) => {
-    const { data } = auth;
-    if (!data || !data?.session?.activeOrganizationId || !teamId) {
-      toast.error("Please select organization");
-      return;
-    }
-    const toastId = toast.loading("Please wait...");
-    const { error } = await authClient.organization.addTeamMember({
-      teamId,
-      userId,
-    });
-    if (error) {
-      toast.error(error.message, { id: toastId });
-    } else {
-      toast.success("User assigned successfully", { id: toastId });
-    }
-  };
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="flex h-full max-h-[calc(100svh-10rem)] flex-col overflow-hidden rounded-2xl ring-ring/10 sm:max-w-xl">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold">Assign user</DialogTitle>
-          <DialogDescription>
-            Select the user to assign to this customer account.
-          </DialogDescription>
         </DialogHeader>
 
         {/* Search */}
@@ -119,7 +97,7 @@ export const UserSelector = ({
           <InputGroupAddon align="inline-end">
             <UserDialog
               data={{
-                accountType,
+                accountType: "customer",
                 member: { role: "customer", id: null as any },
               }}
             >
@@ -132,15 +110,15 @@ export const UserSelector = ({
 
         {/* List */}
         <div className="no-scrollbar flex-1 space-y-1 overflow-y-auto">
-          {isPending ? (
-            <LoadingSkeleton />
-          ) : options.length === 0 ? (
-            <p className="px-2 py-4 text-sm text-muted-foreground">
-              No result found
-            </p>
-          ) : (
+          <QueryState
+            isPending={isPending}
+            isError={isError}
+            error={error}
+            isEmpty={options.length === 0}
+          >
             <div className="space-y-1">
               {options.map((user) => {
+                const isMember = selected.includes(user.id);
                 return (
                   <FieldLabel
                     key={user.id}
@@ -164,18 +142,23 @@ export const UserSelector = ({
                       </FieldContent>
 
                       <Button
-                        size="sm"
-                        onClick={() => handleAssign(user.id)}
-                        disabled={user.isMember}
+                        size="xs"
+                        variant={isMember ? "outline" : "default"}
+                        onClick={() => {
+                          onAction(user.id);
+                          setOpen(false);
+                        }}
+                        disabled={isMember}
                       >
-                        {user.isMember ? "Assigned" : "Assign"}
+                        {!isMember&& <Plus className="size-3" />}
+                        {isMember ? "Assigned" : "Assign"}
                       </Button>
                     </Field>
                   </FieldLabel>
                 );
               })}
             </div>
-          )}
+          </QueryState>
         </div>
       </DialogContent>
     </Dialog>

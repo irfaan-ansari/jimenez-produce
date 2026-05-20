@@ -10,7 +10,7 @@ import { handleAction } from "@/lib/helper/error-handler";
  * get team tax rules
  * @returns data
  */
-export const getTeamTaxRules = handleAction(async () => {
+export const getTeamTaxRule = handleAction(async () => {
   const session = await getSession();
 
   if (!session) throw new Error("Authentication required.");
@@ -20,22 +20,16 @@ export const getTeamTaxRules = handleAction(async () => {
   if (!activeTeamId || !activeOrganizationId)
     throw new Error("No active organization or team found.");
 
-  const data = await db
-    .select({
-      id: taxRule.id,
-      name: taxRule.name,
-      rate: taxRule.rate,
-    })
-    .from(taxRule)
-    .innerJoin(taxRuleItem, eq(taxRuleItem.taxRuleId, taxRule.id))
-    .where(
-      and(
-        eq(taxRule.organizationId, activeOrganizationId),
-        eq(taxRuleItem.teamId, activeTeamId),
-      ),
-    );
+  const team = await db.query.team.findFirst({
+    where: (t, { eq }) => eq(t.id, activeTeamId),
+    with: {
+      taxRule: true,
+    },
+  });
 
-  return data;
+  if (!team?.taxRule) throw new Error("Tax rule not found.");
+
+  return { ...team?.taxRule };
 });
 
 /**

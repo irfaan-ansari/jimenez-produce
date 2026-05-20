@@ -1,15 +1,16 @@
 import { OrderForm } from "./order-form";
-import { getTeamTaxRules } from "@/server/tax-rule";
+import { getTeamTaxRule } from "@/server/tax-rule";
 
 export const metadata = {
   title: "New Order",
 };
+
 export const dynamic = "force-dynamic";
 
 const NewOrderPage = async () => {
-  const { data } = await getTeamTaxRules();
+  const { data } = await getTeamTaxRule();
 
-  return <OrderForm taxRules={data ?? []} />;
+  return <OrderForm taxRule={data} />;
 };
 
 export default NewOrderPage;

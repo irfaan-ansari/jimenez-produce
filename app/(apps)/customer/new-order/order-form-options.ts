@@ -12,7 +12,7 @@ export type OrderItem = {
   identifier: string;
   categories: string[];
   isTaxable: boolean;
-  lastPurchased: {
+  lastPurchased?: {
     id: number | null;
     quantity: string | null;
     createdAt: Date | string | null;
@@ -27,7 +27,7 @@ export const defaultValues = {
   lineItems: [] as OrderItem[],
   subtotal: "0",
   discount: "0",
-  taxRules: [] as TaxRule[],
+  taxRule: {} as TaxRule,
   tax: "0",
   total: "0",
   charges: { type: "Fuel Charge", amount: "15" },
@@ -51,7 +51,7 @@ export const formOpt = formOptions({
 
 export const getTotals = (
   items: typeof formOpt.defaultValues.lineItems = [],
-  taxRules: TaxRule[] = [],
+  taxRule?: TaxRule,
 ) => {
   const values = formOpt.defaultValues;
   const lineItems = items || values.lineItems;
@@ -75,10 +75,7 @@ export const getTotals = (
     }
   }
 
-  const tax = taxRules.reduce((acc, rule) => {
-    const rate = Number(rule.rate ?? 0);
-    return acc + (taxableSubtotal * rate) / 100;
-  }, 0);
+  const tax = (taxableSubtotal * Number(taxRule?.rate ?? 0)) / 100;
 
   const total = subtotal + Number(charges?.amount ?? 0) + Number(tax);
 

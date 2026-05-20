@@ -120,6 +120,7 @@ export const team = pgTable(
     email: text("email").notNull(),
     logo: text("logo"),
     priceLevelId: integer("price_level_id"),
+    taxRuleId: integer("tax_rule_id"),
   },
   (table) => [index("team_organizationId_idx").on(table.organizationId)],
 );

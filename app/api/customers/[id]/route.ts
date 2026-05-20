@@ -71,11 +71,7 @@ export const GET = async (
               adjustmentValue: true,
             },
           },
-          taxRuleItems: {
-            with: {
-              taxRule: true,
-            },
-          },
+          taxRule: true,
           products: {
             with: {
               product: {
@@ -142,15 +138,7 @@ export const GET = async (
           image: tm.user.image,
         };
       }),
-
-      taxRules: customer?.taxRuleItems?.map((tri) => {
-        return {
-          id: tri.taxRuleId,
-          name: tri.taxRule.name,
-          rate: tri.taxRule.rate,
-        };
-      }),
-
+      taxRule: customer?.taxRule,
       products: customer?.products?.map((p) => {
         return {
           id: p.productId,

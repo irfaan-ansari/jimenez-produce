@@ -2,13 +2,13 @@
 import { use } from "react";
 import Link from "next/link";
 import {
-  ChevronDown,
   ChevronLeft,
   CircleDashed,
   Loader,
   PackageCheck,
   Plus,
   Trash2,
+  User,
 } from "lucide-react";
 import {
   Card,
@@ -46,17 +46,20 @@ import {
   getAvatarFallback,
 } from "@/lib/utils";
 import { authClient } from "@/lib/auth/client";
+import { updateProductsToTeam } from "@/server/auth";
 import { CustomerActions } from "../customer-actions";
 import { ProductSelectorAdmin } from "@/components/admin/product-selector-admin";
 import { TaxRulesSelector } from "@/components/admin/tax-rules-selector";
 import { PriceLevelSelectType, ProductSelectType } from "@/lib/db/schema";
-import { updateProductsToTeam, updateTaxRulesToTeam } from "@/server/auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { PriceLevelSelector } from "@/components/admin/price-level-selector";
 import { UserSelector } from "@/components/admin/user-selector";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = use(params);
+
+  const queryClient = useQueryClient();
   const { data: result, isPending, isError, error } = useTeam(id);
 
   // loading
@@ -68,6 +71,49 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
   }
 
   const { data } = result;
+
+  /**
+   * assign user to team
+   * @param userId
+   */
+  const handleAssign = async (userId: string) => {
+    const toastId = toast.loading("Please wait...");
+
+    const { error } = await authClient.organization.addTeamMember({
+      teamId: id,
+      userId,
+    });
+
+    if (error) {
+      toast.error(error.message, { id: toastId });
+    } else {
+      toast.success("User assigned successfully", { id: toastId });
+      queryClient.invalidateQueries({
+        queryKey: ["team", id],
+      });
+    }
+  };
+
+  /**
+   * remove member from team
+   * @param memberId
+   */
+  const handleRemove = async (memberId: string) => {
+    const toastId = toast.loading("Please wait...");
+
+    const { error } = await authClient.organization.removeTeamMember({
+      teamId: id,
+      userId: memberId,
+    });
+    if (error) {
+      toast.error(error.message, { id: toastId });
+    } else {
+      toast.success("User removed successfully", { id: toastId });
+      queryClient.invalidateQueries({
+        queryKey: ["team", id],
+      });
+    }
+  };
 
   return (
     <div className="grid grid-cols-6 gap-8">
@@ -88,7 +134,10 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
             <h1 className="text-lg font-semibold">{data.name}</h1>
           </div>
           <div className="flex items-center gap-4">
-            <UserSelector teamId={data.id}>
+            <UserSelector
+              selected={data.members?.map((m) => m.id) || []}
+              onAction={handleAssign}
+            >
               <Button size="default">Assign user</Button>
             </UserSelector>
             <CustomerActions data={data} showView={false} />
@@ -186,7 +235,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
             <CardDescription>Manage tax rules of this account</CardDescription>
           </CardHeader>
           <CardContent>
-            <TaxRulesForm data={data.taxRules} teamId={data.id} />
+            <TaxRulesForm data={data.taxRule} teamId={data.id} />
           </CardContent>
         </Card>
 
@@ -197,7 +246,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
             <CardDescription>Manage members of this team</CardDescription>
           </CardHeader>
           <CardContent>
-            <Members members={data.members} />
+            <Members members={data.members} handleRemove={handleRemove} />
           </CardContent>
         </Card>
       </div>
@@ -335,27 +384,27 @@ const TaxRulesForm = ({
   data,
   teamId,
 }: {
-  data: TaxRule[];
+  data: TaxRule | null;
   teamId: string;
 }) => {
   const form = useForm({
     defaultValues: {
-      taxRules: data || ([] as any),
+      taxRule: data || ({} as any),
     },
     onSubmit: async ({ value }) => {
-      const { taxRules } = value;
-      const taxRuleIds = taxRules?.map((t) => t.id);
-
       const toastId = toast.loading("Please wait...");
-      const { success, error } = await updateTaxRulesToTeam({
+
+      const { error } = await authClient.organization.updateTeam({
         teamId,
-        taxRuleIds,
+        data: {
+          taxRuleId: value.taxRule?.id!,
+        },
       });
 
-      if (success) {
-        toast.success("Tax rules updated successfully", { id: toastId });
-      } else {
+      if (error) {
         toast.error(error?.message, { id: toastId });
+      } else {
+        toast.success("Tax rule addes successfully", { id: toastId });
       }
     },
   });
@@ -368,50 +417,23 @@ const TaxRulesForm = ({
       }}
     >
       <form.Field
-        name="taxRules"
-        mode="array"
+        name="taxRule"
         children={(field) => {
-          const taxRules = field.state.value;
+          const taxRule = field.state.value;
           return (
             <div className="space-y-4">
-              {taxRules.length > 0 ? (
-                <div className="space-y-1">
-                  {taxRules?.map((rule, i) => (
-                    <div
-                      key={rule.id}
-                      className="flex items-center gap-2 rounded-lg border bg-secondary/20 p-2 py-2"
-                    >
-                      <span className="flex-1 font-medium">{rule.name}</span>
-
-                      <span className="font-medium text-muted-foreground">
-                        {rule.rate}%
-                      </span>
-                      <Button
-                        size="icon-xs"
-                        type="button"
-                        variant="destructive"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          field.removeValue(i);
-                        }}
-                      >
-                        <Trash2 />
-                      </Button>
-                    </div>
-                  ))}
+              {taxRule?.id && (
+                <div className="flex items-center gap-2 rounded-lg border bg-secondary/20 p-2 py-2">
+                  <span className="font-medium flex-1">{taxRule.name}</span>
+                  <span className="font-medium text-muted-foreground">
+                    {taxRule.rate}%
+                  </span>
                 </div>
-              ) : null}
+              )}
               <TaxRulesSelector
-                selected={field.state.value}
+                selected={field.state.value.id}
                 setSelectedChange={(value) => {
-                  const index = field.state.value.findIndex(
-                    (s) => s.id === value.id,
-                  );
-                  if (index >= 0) {
-                    field.removeValue(index);
-                  } else {
-                    field.pushValue({ ...value, id: Number(value.id) });
-                  }
+                  field.handleChange({ ...value, id: Number(value.id) });
                 }}
               >
                 <Button
@@ -594,7 +616,13 @@ const ProductAccessForm = ({
 };
 
 // customer account members
-const Members = ({ members }: { members: any[] }) => {
+const Members = ({
+  members,
+  handleRemove,
+}: {
+  members: any[];
+  handleRemove: (memberId: string) => void;
+}) => {
   if (members?.length === 0) {
     return (
       <div className="flex items-center justify-center text-muted-foreground">
@@ -602,22 +630,39 @@ const Members = ({ members }: { members: any[] }) => {
       </div>
     );
   }
+
   return (
     <div className="space-y-1">
-      {members?.map((member) => (
-        <div className="flex items-center gap-4 rounded-lg border bg-secondary/20 p-2">
+      {members.map((member) => (
+        <div
+          key={member.id}
+          className="flex items-center gap-4 rounded-lg border bg-secondary/20 p-2"
+        >
           <div className="flex flex-1 items-center gap-3">
             <Avatar className="size-9 rounded-lg ring-2 ring-green-600/20 ring-offset-1 **:rounded-lg after:hidden">
               <AvatarImage src={member.image} />
-              <AvatarFallback>{getAvatarFallback(member.name)}</AvatarFallback>
+              <AvatarFallback>
+                <User className="size-4" />
+              </AvatarFallback>
             </Avatar>
 
-            <div className="space-y-0">
+            <div className="space-y-0 min-w-0 truncate flex-1">
               <h4 className="text-sm font-medium">{member.name}</h4>
-              <CopyButton value={member.phoneNumber!} />
+              <div className="flex gap-1 items-center">
+                <CopyButton value={member.phoneNumber!} />
+                <CopyButton value={member.email} />
+              </div>
             </div>
+            <Button
+              variant="destructive"
+              size="xs"
+              onClick={() => {
+                handleRemove(member.id);
+              }}
+            >
+              Remove
+            </Button>
           </div>
-          <CopyButton value={member.email} />
         </div>
       ))}
     </div>

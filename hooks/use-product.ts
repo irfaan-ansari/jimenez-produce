@@ -74,11 +74,12 @@ export const usePriceLevels = (query?: string) => {
   });
 };
 
-export const useTaxRules = (query?: string) => {
+export const useTaxRules = (query?: Record<string, string>) => {
+  const queryString = new URLSearchParams(query).toString();
   return useQuery({
     queryKey: ["tax-rules", query],
     queryFn: () => {
-      return fetcher<TaxRuleResponse>(`/api/tax-rules?${query}`);
+      return fetcher<TaxRuleResponse>(`/api/tax-rules?${queryString}`);
     },
     staleTime: 1000 * 60 * 5,
   });

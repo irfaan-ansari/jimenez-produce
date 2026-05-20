@@ -5,7 +5,6 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -33,6 +32,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { TaxRuleDialog } from "../../app/(apps)/admin/products/tax-rules/tax-rule-dialog";
 import { LoadingSkeleton } from "@/components/admin/placeholder-component";
 import { useDebounce } from "@/hooks/use-debounce";
+import { QueryState } from "./query-state";
 
 interface TaxRule {
   id: string | number;
@@ -45,17 +45,18 @@ export const TaxRulesSelector = ({
   setSelectedChange,
   children,
 }: {
-  selected: TaxRule[];
+  selected: number | undefined;
   setSelectedChange: (value: TaxRule) => void;
   children: React.ReactNode;
 }) => {
   const [search, setSearch] = React.useState("");
-  const [debounced, setDebounced] = React.useState("");
 
-  const { data: taxRules, isPending } = useTaxRules(debounced);
+  const [filters, setFilters] = React.useState({ q: "", page: "1" });
+
+  const { data: taxRules, isPending, isError, error } = useTaxRules(filters);
 
   const debounceFn = useDebounce((value: string) => {
-    setDebounced(value);
+    setFilters({ q: value, page: "1" });
   }, 500);
 
   const options = React.useMemo(() => {
@@ -72,14 +73,11 @@ export const TaxRulesSelector = ({
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
 
-      <DialogContent className="h-full max-h-[calc(100svh-10rem)] overflow-hidden rounded-2xl ring-ring/10 sm:max-w-xl">
+      <DialogContent className="h-full flex flex-col max-h-[calc(100svh-10rem)] overflow-hidden rounded-2xl ring-ring/10 sm:max-w-xl">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold">
             Select tax rules
           </DialogTitle>
-          <DialogDescription>
-            Select the tax rules that apply to this customer.
-          </DialogDescription>
         </DialogHeader>
 
         {/* Search */}
@@ -108,18 +106,13 @@ export const TaxRulesSelector = ({
 
         {/* List */}
         <div className="no-scrollbar flex-1 space-y-1 overflow-y-auto">
-          {isPending ? (
-            <LoadingSkeleton />
-          ) : options.length === 0 ? (
-            <p className="px-2 py-4 text-sm text-muted-foreground">
-              No tax rules found
-            </p>
-          ) : (
-            options.map((rule) => {
-              const checked =
-                selected.findIndex((s) => Number(s.id) === Number(rule.id)) >=
-                0;
-
+          <QueryState
+            isPending={isPending}
+            isError={isError}
+            isEmpty={options.length === 0}
+            error={error}
+          >
+            {options.map((rule) => {
               return (
                 <FieldLabel
                   key={rule.id}
@@ -134,14 +127,14 @@ export const TaxRulesSelector = ({
 
                     <Checkbox
                       id={rule.id}
-                      checked={checked}
+                      checked={Number(rule.id) === selected}
                       onCheckedChange={() => setSelectedChange(rule)}
                     />
                   </Field>
                 </FieldLabel>
               );
-            })
-          )}
+            })}
+          </QueryState>
         </div>
 
         {/* Footer */}

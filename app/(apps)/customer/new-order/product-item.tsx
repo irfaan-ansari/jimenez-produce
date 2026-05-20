@@ -27,6 +27,8 @@ export const ProductItem = ({
   onUpdateQty,
   draggable,
 }: ProductItemProps) => {
+
+  const sound = new Audio("/beep.mp3");
   const isSelectable = useOrderUIStore((s) => s.selectionState.mode !== "idle");
 
   const selected = useOrderUIStore(
@@ -57,6 +59,7 @@ export const ProductItem = ({
         selected && isSelectable ? "ring-2 ring-black/50" : "",
       )}
       onClick={() => {
+        sound.play();
         onUpdateQty(quantity + 1);
       }}
     >

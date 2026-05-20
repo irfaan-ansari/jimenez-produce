@@ -67,7 +67,10 @@ export const teamRelations = relations(team, ({ one, many }) => ({
     fields: [team.priceLevelId],
     references: [priceLevel.id],
   }),
-  taxRuleItems: many(taxRuleItem),
+  taxRule: one(taxRule, {
+    fields: [team.taxRuleId],
+    references: [taxRule.id],
+  }),
   products: many(teamProduct),
 }));
 
@@ -253,17 +256,5 @@ export const taxRuleRelations = relations(taxRule, ({ one, many }) => ({
   organization: one(organization, {
     fields: [taxRule.organizationId],
     references: [organization.id],
-  }),
-  taxRuleItem: many(taxRuleItem),
-}));
-
-export const taxRuleItemRelations = relations(taxRuleItem, ({ one }) => ({
-  taxRule: one(taxRule, {
-    fields: [taxRuleItem.taxRuleId],
-    references: [taxRule.id],
-  }),
-  team: one(team, {
-    fields: [taxRuleItem.teamId],
-    references: [team.id],
   }),
 }));
