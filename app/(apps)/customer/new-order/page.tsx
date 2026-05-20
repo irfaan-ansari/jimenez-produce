@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 const NewOrderPage = async () => {
   const { data } = await getTeamTaxRule();
 
-  return <OrderForm taxRule={data} />;
+  return <OrderForm taxRule={data!} />;
 };
 
 export default NewOrderPage;

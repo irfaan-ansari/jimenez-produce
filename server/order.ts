@@ -39,8 +39,8 @@ export const createOrder = handleAction(
 
     if (error) throw new Error("Failed to submit your order, please try again");
 
-    const taxName = taxRule.name;
-    const taxRate = Number(taxRule.rate ?? 0);
+    const taxName = taxRule?.name;
+    const taxRate = Number(taxRule?.rate ?? 0);
 
     //  totals
     const charges = { type: "Fuel Charge", amount: 15 };

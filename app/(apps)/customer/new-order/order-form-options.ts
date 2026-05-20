@@ -34,7 +34,7 @@ export const defaultValues = {
   po: "",
   notes: "",
   deliveryDate: new Date().toISOString().split("T")[0],
-  deliveryWindow: "",
+  deliveryWindow: "Anytime",
   deliveryInstruction: "",
 };
 

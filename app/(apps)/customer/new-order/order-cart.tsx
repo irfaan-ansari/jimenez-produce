@@ -52,10 +52,10 @@ export const OrderCart = withForm({
                 </SheetHeader>
                 <form.AppField name="lineItems" mode="array">
                   {(field) => (
-                    <div className="no-scrollbar flex-1 gap-2 space-y-2 overflow-y-auto p-4">
+                    <div className="flex-1 gap-2 p-4 space-y-2 overflow-y-auto no-scrollbar">
                       {field?.state?.value?.map((subField, i) => (
                         <div
-                          className="rounded-2xl border bg-muted/50 p-4"
+                          className="p-4 border rounded-2xl bg-muted/50"
                           key={i}
                         >
                           <div className="flex items-start justify-start gap-3">
@@ -66,8 +66,8 @@ export const OrderCart = withForm({
                               </AvatarFallback>
                             </Avatar>
 
-                            <div className="flex flex-1 flex-col justify-start gap-2">
-                              <h4 className="line-clamp-2 leading-tight font-semibold">
+                            <div className="flex flex-col justify-start flex-1 gap-2">
+                              <h4 className="font-semibold leading-tight line-clamp-2">
                                 {subField.title}
                               </h4>
 
@@ -89,7 +89,7 @@ export const OrderCart = withForm({
                                 )}
                               />
                             </div>
-                            <div className="flex flex-col items-end justify-between self-stretch">
+                            <div className="flex flex-col items-end self-stretch justify-between">
                               <span className="text-base font-semibold">
                                 {formatUSD(
                                   Number(subField.price) *
@@ -113,8 +113,8 @@ export const OrderCart = withForm({
                   )}
                 </form.AppField>
 
-                <Collapsible className="no-scrollbar overflow-auto border-t px-4 pt-4">
-                  <CollapsibleTrigger className="flex w-full gap-4 rounded-xl bg-secondary px-4 py-2">
+                <Collapsible className="px-4 pt-4 overflow-auto border-t no-scrollbar">
+                  <CollapsibleTrigger className="flex w-full gap-4 px-4 py-2 rounded-xl bg-secondary">
                     Notes & Preferences
                     <ChevronDown className="ml-auto size-4 group-data-[state=open]:rotate-180" />
                   </CollapsibleTrigger>
@@ -167,7 +167,7 @@ export const OrderCart = withForm({
                                 field.handleChange(e.target.value)
                               }
                               aria-invalid={isInvalid}
-                              className="min-h-24 resize-none rounded-2xl"
+                              className="resize-none min-h-24 rounded-2xl"
                               placeholder="Optional notes..."
                             />
 
@@ -195,7 +195,7 @@ export const OrderCart = withForm({
                       <span>Tax</span>
                       <span>{formatUSD(Number(totals.tax))}</span>
                     </div>
-                    <div className="mt-1 flex justify-between text-lg font-semibold">
+                    <div className="flex justify-between mt-1 text-lg font-semibold">
                       <span>Total</span>
                       <span>{formatUSD(Number(totals.total))}</span>
                     </div>

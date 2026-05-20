@@ -161,7 +161,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
               <span className="font-medium">{formatUSD(data.subtotal)}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span>Tax ({data?.taxName})</span>
+              <span>Tax {data?.taxName && (data.taxName)}</span>
               <span className="font-medium">{formatUSD(data.tax)}</span>
             </div>
             <div className="flex items-center justify-between">

@@ -143,8 +143,8 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
               Purchased Items ({data?.lineItemCount})
             </CardTitle>
           </CardHeader>
-          <CardContent className="divide-y px-0">
-            <div className="flex items-center justify-between gap-4 bg-muted px-6 py-4 font-medium text-muted-foreground uppercase">
+          <CardContent className="px-0 divide-y">
+            <div className="flex items-center justify-between gap-4 px-6 py-4 font-medium uppercase bg-muted text-muted-foreground">
               <div className="flex-1">Item</div>
               <div className="w-20 text-right">Price</div>
               <div className="w-20 text-right">Quantity</div>
@@ -153,19 +153,19 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
 
             {data.lineItems.map((line) => (
               <div className="flex items-center justify-between gap-4 px-6 py-2">
-                <div className="flex flex-1 items-center gap-3">
+                <div className="flex items-center flex-1 gap-3">
                   <Avatar className="size-9 rounded-lg ring-2 ring-green-600/20 ring-offset-1 **:rounded-lg after:hidden">
                     <AvatarImage src={line?.image!} />
                     <AvatarFallback>{line.title?.charAt(0)}</AvatarFallback>
                   </Avatar>
                   <div className="space-y-1">
-                    <h4 className="leading-tight font-medium whitespace-normal">
+                    <h4 className="font-medium leading-tight whitespace-normal">
                       {line.title}
                     </h4>
                     {line.identifier && (
                       <Badge
                         variant="secondary"
-                        className="rounded-xl border border-border"
+                        className="border rounded-xl border-border"
                       >
                         {line.identifier}
                       </Badge>
@@ -178,7 +178,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
                 <div className="w-20 text-right text-muted-foreground">
                   {line.quantity}
                 </div>
-                <div className="w-20 text-right font-semibold">
+                <div className="w-20 font-semibold text-right">
                   {formatUSD(line.total!)}
                 </div>
               </div>
@@ -225,11 +225,8 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
               <span>Subtotal</span> <span>{formatUSD(data.subtotal)}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span>Tax</span>
-              <span>
-                {/* {formatUSD(data.subtotal)} */}
-                TBD
-              </span>
+              <span>Tax {data?.taxName && data.taxName}</span>
+              <span className="font-medium">{formatUSD(data.tax)}</span>
             </div>
             <div className="flex items-center justify-between">
               <span>{data.charges?.type}</span>

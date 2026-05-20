@@ -27,9 +27,7 @@ export const getTeamTaxRule = handleAction(async () => {
     },
   });
 
-  if (!team?.taxRule) throw new Error("Tax rule not found.");
-
-  return { ...team?.taxRule };
+  return team?.taxRule;
 });
 
 /**
