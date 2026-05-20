@@ -3,7 +3,6 @@ import { ProductGrid } from "./product-grid";
 import { formOpt } from "./order-form-options";
 import { withForm } from "@/hooks/form-context";
 import {
-  EmptyComponent,
   LoadingSkeleton,
 } from "@/components/admin/placeholder-component";
 import { useOrderUIStore } from "@/lib/store/order-store";
@@ -80,41 +79,3 @@ export const ItemList = withForm({
     );
   },
 });
-
-export function ProductsState({
-  isError,
-  isPending,
-  error,
-  hasProducts,
-}: {
-  isError: boolean;
-  isPending: boolean;
-  error: Error | null;
-  hasProducts: boolean;
-}) {
-  if (isError) {
-    return (
-      <div className="rounded-2xl border bg-background py-20">
-        <EmptyComponent variant="error" title={error?.message} />
-      </div>
-    );
-  }
-
-  if (isPending) {
-    return (
-      <div className="rounded-2xl border bg-background py-20">
-        <LoadingSkeleton />
-      </div>
-    );
-  }
-
-  if (!hasProducts) {
-    return (
-      <div className="rounded-2xl border bg-background py-20">
-        <EmptyComponent variant="empty" />
-      </div>
-    );
-  }
-
-  return null;
-}

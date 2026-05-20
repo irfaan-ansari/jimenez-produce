@@ -26,6 +26,7 @@ import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
 import { OrderGuide, useInfiniteOrderGuides } from "@/hooks/use-orders";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { EmptyComponent, LoadingSkeleton } from "./placeholder-component";
+import { QueryState } from "./query-state";
 
 export const OrderGuideSelector = ({
   value,
@@ -118,48 +119,46 @@ export const OrderGuideSelector = ({
               }
             }}
           >
-            {guides.length > 0
-              ? guides?.map((guide) => {
-                  return (
-                    <FieldLabel
-                      key={guide.id}
-                      htmlFor={String(guide.id)}
-                      className="cursor-pointer rounded-xl! bg-secondary/20"
+            <QueryState
+              isPending={isPending}
+              isError={isError}
+              isEmpty={guides.length===0}
+              error={error}
+            >
+              {guides?.map((guide) => {
+                return (
+                  <FieldLabel
+                    key={guide.id}
+                    htmlFor={String(guide.id)}
+                    className="cursor-pointer rounded-xl! bg-secondary/20"
+                  >
+                    <Field
+                      orientation="horizontal"
+                      className=" has-data-checked:*:data-[slot=icon]:opacity-100"
                     >
-                      <Field
-                        orientation="horizontal"
-                        className=" has-data-checked:*:data-[slot=icon]:opacity-100"
-                      >
-                        <FieldContent>
-                          <FieldTitle>{guide.name}</FieldTitle>
-                          <FieldDescription className="text-xs font-medium text-primary">
-                            {guide.itemCount} items
-                          </FieldDescription>
-                        </FieldContent>
+                      <FieldContent>
+                        <FieldTitle>{guide.name}</FieldTitle>
+                        <FieldDescription className="text-xs font-medium text-primary">
+                          {guide.items.length} items
+                        </FieldDescription>
+                      </FieldContent>
 
-                        <RadioGroupItem
-                          className="sr-only"
-                          value={String(guide.id)}
-                          id={String(guide.id)}
-                        />
-                        <span
-                          data-slot="icon"
-                          className="inline-flex size-4 items-center justify-center self-start rounded-full bg-primary text-primary-foreground opacity-0"
-                        >
-                          <Check className="size-3" />
-                        </span>
-                      </Field>
-                    </FieldLabel>
-                  );
-                })
-              : !isPending &&
-                !isError && (
-                  <EmptyComponent
-                    variant="empty"
-                    title="No products found"
-                    description="Try adjusting your search"
-                  />
-                )}
+                      <RadioGroupItem
+                        className="sr-only"
+                        value={String(guide.id)}
+                        id={String(guide.id)}
+                      />
+                      <span
+                        data-slot="icon"
+                        className="inline-flex size-4 items-center justify-center self-start rounded-full bg-primary text-primary-foreground opacity-0"
+                      >
+                        <Check className="size-3" />
+                      </span>
+                    </Field>
+                  </FieldLabel>
+                );
+              })}
+            </QueryState>
           </RadioGroup>
 
           {/* infinite loading ref */}

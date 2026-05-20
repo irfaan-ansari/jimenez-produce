@@ -1,6 +1,11 @@
 import React from "react";
 import { toast } from "sonner";
 import {
+  createOrderGuide,
+  deleteOrderGuide,
+  updateOrderGuides,
+} from "@/server/order-guide";
+import {
   Kanban,
   KanbanBoard,
   KanbanColumn,
@@ -8,11 +13,10 @@ import {
   KanbanOverlay,
 } from "@/components/ui/kanban";
 import {
-  createOrderGuide,
-  deleteOrderGuide,
-  updateOrderGuides,
-} from "@/server/order-guide";
-import { ProductsState } from "./item-list";
+  ColumnMeta,
+  Columns,
+  useOrderGuideStore,
+} from "@/lib/store/order-guide-store";
 import { ProductGrid } from "./product-grid";
 import { Badge } from "@/components/ui/badge";
 import { formOpt } from "./order-form-options";
@@ -20,76 +24,80 @@ import { Tooltip } from "@/components/tooltip";
 import { withForm } from "@/hooks/form-context";
 import { Button } from "@/components/ui/button";
 import { useConfirm } from "@/hooks/use-confirm";
-import {
-  EmptyComponent,
-  LoadingSkeleton,
-} from "@/components/admin/placeholder-component";
 import { useQueryClient } from "@tanstack/react-query";
-import {
-  Copy,
-  GripVertical,
-  Loader,
-  PenSquare,
-  Plus,
-  Trash2,
-} from "lucide-react";
-import { Columns, useOrderGuideStore } from "@/lib/store/order-guide-store";
-import { useInfiniteOrderGuides, useOrderGuide } from "@/hooks/use-orders";
 import { useOrderUIStore } from "@/lib/store/order-store";
+import { useInfiniteOrderGuides } from "@/hooks/use-orders";
+import { QueryState } from "@/components/admin/query-state";
+import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
+import { LoadingSkeleton } from "@/components/admin/placeholder-component";
+import { Copy, GripVertical, Loader, PenSquare, Trash2 } from "lucide-react";
 
 export const GuideList = withForm({
   ...formOpt,
   render: function Render({ form }) {
+
+    
+
+    const {
+      data,
+      isPending,
+      isError,
+      error,
+      isFetchingNextPage,
+      hasNextPage,
+      fetchNextPage,
+    } = useInfiniteOrderGuides("");
     const queryClient = useQueryClient();
-    const { data, isPending, isError, error } = useInfiniteOrderGuides("");
+
     const columns = useOrderGuideStore((s) => s.columns);
     const setColumns = useOrderGuideStore((s) => s.setColumns);
-    const setColumnMeta = useOrderGuideStore((s) => s.setColumnMeta);
 
-    const mappedData = React.useMemo(() => {
-      const flatData = data?.pages?.flatMap((page) => page.data) ?? [];
-      const cols = Object.fromEntries(
-        flatData.map((item) => {
-          const stringId = `${item.id}-${item.name}`;
-          return [stringId, []];
-        }),
-      );
-
-      const colMeta = Object.fromEntries(
-        flatData.map((item) => {
-          const stringId = `${item.id}-${item.name}`;
-          return [
-            stringId,
-            {
-              id: item.id,
-              name: item.name,
-              description: item.description,
-              position: item.position,
-              itemCount: item.itemCount,
-            },
-          ];
-        }),
-      );
-      return { cols, colMeta };
-    }, [data]);
+    const loadMoreRef = useInfiniteScroll(() => {
+      if (hasNextPage && !isFetchingNextPage) {
+        fetchNextPage();
+      }
+    }, true);
 
     React.useEffect(() => {
-      if (!mappedData.cols) return;
-      const { cols, colMeta } = mappedData;
+      const flatData = data?.pages?.flatMap((page) => page.data) ?? [];
 
-      setColumns({ ...cols, ...columns });
-      setColumnMeta(colMeta);
-    }, [mappedData]);
+      const columns: Columns = {};
+      const meta: Record<string, ColumnMeta> = {};
 
-    /**
-     * Handles the reordering of columns (order guides)
-     */
+      for (const guide of flatData) {
+        const key = `${guide.id}-${guide.name}`;
+
+        columns[key] = guide.items.map((i) => {
+          const { finalPrice, categories, isTaxable, id } = i;
+          return {
+            ...i,
+            dndId: id,
+            price: finalPrice,
+            total: "0",
+            quantity: "0",
+            categories: categories ?? [],
+            lastPurchased: null,
+            isTaxable: isTaxable!,
+          };
+        });
+
+        meta[key] = {
+          id: guide.id,
+          name: guide.name,
+          description: guide.description ?? "",
+          position: guide.position,
+          itemCount: guide.items.length,
+        };
+      }
+
+      setColumns({ columns, columnMeta: meta });
+    }, [data]);
+
+    /** Handle reorder */
     const handleReorder = async (value: Columns) => {
-      setColumns(value);
-
+      setColumns({ columns: value });
       const guides = Object.entries(value).map(([key, items]) => {
         const [guideId] = key.split("-");
-
         return {
           id: Number(guideId),
           productIds: items.map((item) => Number(item.productId)),
@@ -114,16 +122,34 @@ export const GuideList = withForm({
         orientation="vertical"
       >
         <KanbanBoard>
-          {Object.entries(columns).map(([colKey]) => (
-            <KanbanColumn
-              key={colKey}
-              value={colKey}
-              className="rounded-xl border bg-background shadow-sm"
-            >
-              <ColumnHeader value={colKey} />
-              <GuideItems form={form} guideId={colKey} />
-            </KanbanColumn>
-          ))}
+          <QueryState
+            isPending={isPending}
+            isError={isError}
+            error={error}
+            isEmpty={Object.entries(columns).length === 0}
+          >
+            {Object.entries(columns).map(([colKey, items]) => (
+              <KanbanColumn
+                key={colKey}
+                value={colKey}
+                className="rounded-xl border bg-background shadow-sm"
+              >
+                <ColumnHeader value={colKey} />
+                <ProductGrid
+                  items={items}
+                  key={colKey}
+                  form={form}
+                  draggable={true}
+                />
+              </KanbanColumn>
+            ))}
+          </QueryState>
+          <div
+            ref={loadMoreRef}
+            className="col-span-full flex min-h-10 w-full justify-center"
+          >
+            {isFetchingNextPage && <LoadingSkeleton />}
+          </div>
         </KanbanBoard>
         <KanbanOverlay className="rounded-xl border-2 border-dashed bg-muted/10 " />
       </Kanban>
@@ -157,7 +183,7 @@ const ColumnHeader = ({ value }: { value: string }) => {
           categories: item.categories,
           price: item.price,
         },
-      ]),
+      ])
     );
 
     setSelectionState({
@@ -258,47 +284,3 @@ const ColumnHeader = ({ value }: { value: string }) => {
     </div>
   );
 };
-
-export const GuideItems = withForm({
-  ...formOpt,
-  props: {} as {
-    guideId: string;
-  },
-  render: function Render({ form, guideId }) {
-    const [id] = guideId.split("-");
-    const items = useOrderGuideStore((s) => s.columns[guideId]);
-    const setColumnItems = useOrderGuideStore((s) => s.setColumnItems);
-
-    const { data, isPending, isError, error } = useOrderGuide(id);
-
-    const mappedProduct = React.useMemo(() => {
-      return (
-        data?.data?.items.map((item) => ({
-          dndId: item.id,
-          productId: item.productId,
-          title: item.title,
-          image: item.image,
-          identifier: item.identifier,
-          categories: item.categories ?? [],
-          price: item.finalPrice,
-          total: item.finalPrice,
-          quantity: "0",
-          isTaxable: item.isTaxable ?? false,
-          lastPurchased: null,
-        })) ?? []
-      );
-    }, [data]);
-
-    React.useEffect(() => {
-      setColumnItems(guideId, mappedProduct);
-    }, [mappedProduct]);
-
-    if (isPending) return <LoadingSkeleton className="py-10" />;
-    if (isError) {
-      return (
-        <EmptyComponent variant="error" title={error?.message} description="" />
-      );
-    }
-    return <ProductGrid items={items} form={form} draggable={true} />;
-  },
-});

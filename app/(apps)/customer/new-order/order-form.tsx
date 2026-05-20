@@ -4,7 +4,7 @@ import React from "react";
 import { toast } from "sonner";
 import { formatUSD } from "@/lib/utils";
 import { ItemList } from "./item-list";
-import { GuideList } from "./guide-list-v2";
+import { GuideList } from "./guide-list";
 import { OrderCart } from "./order-cart";
 import { type TaxRule } from "@/lib/types";
 import { useRouter } from "next/navigation";

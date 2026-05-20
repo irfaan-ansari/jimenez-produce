@@ -3,11 +3,12 @@ import { OrderItem } from "@/app/(apps)/customer/new-order/order-form-options";
 
 export type Columns = Record<string, OrderItem[]>;
 
-type ColumnMeta = {
+export type ColumnMeta = {
   id: number;
   name: string;
   description: string | null;
   position: number;
+  itemCount:number
 };
 
 type OrderGuideStore = {

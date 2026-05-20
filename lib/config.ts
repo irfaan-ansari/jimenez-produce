@@ -277,12 +277,6 @@ export const SIDEBAR_MENU_CUSTOMER = [
     ],
   },
   {
-    label: "Order Guides",
-    icon: FolderUpload,
-    href: "/customer/order-guides",
-    items: [],
-  },
-  {
     label: "Catalog",
     icon: CoinStack,
     href: "/customer/products",
