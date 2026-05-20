@@ -30,21 +30,21 @@ export const createOrder = handleAction(
 
     const { lineItems, ...rest } = data;
 
-    if (lineItems.length <= 0) throw new Error("Add atleast one item");
+    // if (lineItems.length <= 0) throw new Error("Add atleast one item");
 
     const { activeTeamId, activeOrganizationId, userId } = auth.session;
 
     // TOTO get price levels
     const { data: taxRules, error } = await getTeamTaxRules();
 
-    if (error) throw new Error("Failed to submit your order, please try again");
+    // if (error) throw new Error("Failed to submit your order, please try again");
 
-    const totalTaxRate = taxRules.reduce(
+    const totalTaxRate = taxRules?.reduce(
       (acc, rule) => acc + Number(rule.rate || 0),
       0,
-    );
+    )??0;
 
-    const taxName = taxRules.map((r) => r.name).join(", ");
+    const taxName = taxRules?.map((r) => r.name).join(", ");
     const taxRate = String(totalTaxRate);
 
     //  totals

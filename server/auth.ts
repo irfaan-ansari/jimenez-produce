@@ -75,7 +75,7 @@ export const verifyOtp = handleAction(
  * @param data
  * @returns
  */
-const signUpUser = async (data: SignupProps) => {
+export const signUpUser = async (data: SignupProps) => {
   const { name, email, phoneNumber, password, accountType = "admin" } = data;
 
   return await auth.api.signUpEmail({

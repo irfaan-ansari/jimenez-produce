@@ -35,9 +35,6 @@ import { Copy, GripVertical, Loader, PenSquare, Trash2 } from "lucide-react";
 export const GuideList = withForm({
   ...formOpt,
   render: function Render({ form }) {
-
-    
-
     const {
       data,
       isPending,
