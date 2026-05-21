@@ -33,8 +33,8 @@ export const PopoverXDrawer = ({
     return (
       <Drawer open={open} onOpenChange={setOpen}>
         <DrawerTrigger asChild>{trigger}</DrawerTrigger>
-        <DrawerContent className={cn("p-2 pt-0", className)}>
-          <DrawerTitle className={!title ? "sr-only" : ""}>
+        <DrawerContent className={cn("px-4 pb-6 pt-0 justify-start", className)}>
+          <DrawerTitle className='hidden'>
             {title ?? "Dropdown menu"}
           </DrawerTitle>
 
@@ -49,16 +49,16 @@ export const PopoverXDrawer = ({
       <PopoverTrigger asChild>{trigger}</PopoverTrigger>
       <PopoverContent
         className={cn(
-          "max-w-40 rounded-2xl p-2 **:data-[slot=button]:justify-start **:data-[slot=button]:rounded-xl data-[slot=popover-content]:max-w-52",
+          "max-w-40 rounded-2xl flex flex-col p-2 gap-0 **:data-[slot=button]:justify-start **:data-[slot=button]:rounded-xl data-[slot=popover-content]:max-w-52",
           className,
         )}
         align="end"
       >
-        <PopoverTitle className={!title ? "sr-only" : ""}>
+        <PopoverTitle className='hidden'>
           {title ?? "Popover"}
         </PopoverTitle>
 
-        <div className="flex flex-col justify-start gap-0.5">{children}</div>
+        {children}
       </PopoverContent>
     </Popover>
   );

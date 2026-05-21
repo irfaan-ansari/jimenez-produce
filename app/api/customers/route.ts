@@ -1,10 +1,10 @@
 import { db } from "@/lib/db";
-import { NextRequest, NextResponse } from "next/server";
+import { getSession } from "@/server/auth";
 import { getQueryObject } from "@/lib/helper/query";
+import { NextRequest, NextResponse } from "next/server";
+import { ERROR_MESSAGE } from "@/lib/helper/error-message";
 import { team, teamMember, user } from "@/lib/db/auth-schema";
 import { and, countDistinct, eq, exists, ilike, or, SQL } from "drizzle-orm";
-import { getSession } from "@/server/auth";
-import { ERROR_MESSAGE } from "@/lib/helper/error-message";
 
 export const GET = async (req: NextRequest) => {
   try {
@@ -76,7 +76,7 @@ export const GET = async (req: NextRequest) => {
       },
       offset,
       limit,
-      orderBy: (team, { asc }) => [asc(team.createdAt)],
+      orderBy: (team, { desc }) => [desc(team.createdAt)],
     });
 
     const [{ total }] = await db
@@ -123,5 +123,5 @@ export const GET = async (req: NextRequest) => {
       },
       { status: 200 },
     );
-  } catch (error) {}
+  } catch (error) { }
 };

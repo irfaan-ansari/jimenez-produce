@@ -165,7 +165,7 @@ export const OrderForm = ({ taxRule }: { taxRule: TaxRule | null }) => {
               children={(field) => (
                 <Button
                   size="xl"
-                  className="rounded-lg w-11 md:w-auto [&>svg]:size-5!"
+                  className="rounded-xl w-11 md:w-auto [&>svg]:size-5!"
                   onClick={() => setShowCart(true)}
                   disabled={field.state.value.length === 0}
                 >
@@ -212,7 +212,7 @@ export const OrderForm = ({ taxRule }: { taxRule: TaxRule | null }) => {
           if (totals.count <= 0 || selectionState.mode !== "idle") return null;
 
           return (
-            <div className="sticky bottom-6 z-3 mx-auto w-full max-w-xl">
+            <div className="sticky bottom-6 mt-auto z-3 mx-auto w-full max-w-xl">
               <div className="flex h-16 items-center gap-4 rounded-2xl bg-secondary px-6 py-4 shadow-lg ring-2 ring-primary/50 ring-offset-2 backdrop-blur-2xl">
                 <div className="flex flex-col">
                   <span className="text-xs uppercase">
@@ -285,8 +285,8 @@ export const OrderForm = ({ taxRule }: { taxRule: TaxRule | null }) => {
               ...createGuideValue,
               ...(selectionState.mode === "update"
                 ? {
-                    id: selectionState.guideId!,
-                  }
+                  id: selectionState.guideId!,
+                }
                 : {}),
             }}
           >

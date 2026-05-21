@@ -88,23 +88,16 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
         </Card> */}
 
         {/* purchased items */}
-        <Card className="gap-0 rounded-2xl">
-          <CardHeader className="border-b">
+        <Card className="rounded-2xl">
+          <CardHeader>
             <CardTitle className="text-lg font-semibold">
               Purchased Items ({data?.lineItemCount})
             </CardTitle>
           </CardHeader>
-          <CardContent className="divide-y px-0">
-            <div className="flex items-center justify-between gap-4 px-6 py-4 font-medium text-muted-foreground uppercase">
-              <div className="flex-1">Item</div>
-              <div className="w-16 text-right">Price</div>
-              <div className="w-16 text-right">Quantity</div>
-              <div className="w-16 text-right">Total</div>
-            </div>
-
+          <CardContent className="divide-y">
             {data.lineItems.map((line) => (
               <div
-                className="flex items-center justify-between gap-4 px-6 py-2"
+                className="flex items-center justify-between gap-4 first:border-t pt-2 not-last:pb-2"
                 key={line.id}
               >
                 <div className="flex flex-1 items-center gap-3">
@@ -175,23 +168,22 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
           <div className="flex items-center justify-between text-xl font-semibold">
             <span>Total</span> <span>{formatUSD(data.total)}</span>
           </div>
-          <Button className="w-full rounded-xl " size="xl" asChild>
-            <a href={`/api/orders/${data.id}/invoice`} target="_blank">
-              <Download />
-              Download Invoice
-            </a>
-          </Button>
-
-          <Button
-            className="w-full rounded-xl bg-sidebar-accent hover:bg-sidebar-accent/80"
-            size="xl"
-            asChild
-          >
-            <Link href={`/customer/new-order?id=${data.id}`}>
-              <Copy />
-              Reorder
-            </Link>
-          </Button>
+          <div className="space-y-3">
+            <Button className="w-full rounded-xl " size="xl" asChild>
+              <a href={`/api/orders/${data.id}/invoice`} target="_blank">
+                <Download />
+                Download Invoice
+              </a>
+            </Button>
+            <Button
+              className="w-full rounded-xl bg-sidebar-accent hover:bg-sidebar-accent/80"
+              size="xl" asChild>
+              <Link href={`/customer/new-order?id=${data.id}`}>
+                <Copy />
+                Reorder
+              </Link>
+            </Button>
+          </div>
 
           <Separator className="my-6" />
 
@@ -240,9 +232,8 @@ const StepItem = ({
 }) => (
   <div className="flex flex-col items-center self-center">
     <span
-      className={`size-10 mb-2 rounded-lg inline-flex items-center justify-center ${
-        active ? "bg-primary text-primary-foreground" : "bg-secondary"
-      }`}
+      className={`size-10 mb-2 rounded-lg inline-flex items-center justify-center ${active ? "bg-primary text-primary-foreground" : "bg-secondary"
+        }`}
     >
       <Icon className="size-4" />
     </span>

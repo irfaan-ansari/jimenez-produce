@@ -2,13 +2,13 @@
 import { use } from "react";
 import Link from "next/link";
 import {
+  Plus,
+  User,
+  Trash2,
+  Loader,
   ChevronLeft,
   CircleDashed,
-  Loader,
   PackageCheck,
-  Plus,
-  Trash2,
-  User,
 } from "lucide-react";
 import {
   Card,
@@ -34,27 +34,28 @@ import { useTeam } from "@/hooks/use-teams";
 import { Badge } from "@/components/ui/badge";
 import { useForm } from "@tanstack/react-form";
 import { Button } from "@/components/ui/button";
-import {
-  EmptyComponent,
-  LoadingSkeleton,
-} from "@/components/admin/placeholder-component";
-import { CopyButton } from "@/components/copy-button";
-import { STATUS_MAP } from "@/lib/constants/status-map";
+
 import {
   formatPriceLevelAdjustment,
   formatUSD,
   getAvatarFallback,
 } from "@/lib/utils";
 import { authClient } from "@/lib/auth/client";
+import {
+  EmptyComponent,
+  LoadingSkeleton,
+} from "@/components/admin/placeholder-component";
 import { updateProductsToTeam } from "@/server/auth";
 import { CustomerActions } from "../customer-actions";
-import { ProductSelectorAdmin } from "@/components/admin/product-selector-admin";
+import { CopyButton } from "@/components/copy-button";
+import { useQueryClient } from "@tanstack/react-query";
+import { STATUS_MAP } from "@/lib/constants/status-map";
+import { UserSelector } from "@/components/admin/user-selector";
 import { TaxRulesSelector } from "@/components/admin/tax-rules-selector";
 import { PriceLevelSelectType, ProductSelectType } from "@/lib/db/schema";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { PriceLevelSelector } from "@/components/admin/price-level-selector";
-import { UserSelector } from "@/components/admin/user-selector";
-import { useQueryClient } from "@tanstack/react-query";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ProductSelectorAdmin } from "@/components/admin/product-selector-admin";
 
 export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = use(params);
@@ -250,7 +251,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
           </CardContent>
         </Card>
       </div>
-      <Card className="col-span-2 rounded-2xl bg-card">
+      <Card className="col-span-6 lg:col-span-2 rounded-2xl bg-card">
         <CardHeader>
           <CardTitle className="font-semibold">Recent Orders</CardTitle>
         </CardHeader>
@@ -318,11 +319,10 @@ const PriceLevelForm = ({
                 </div>
                 {field.state.value.appliesTo === "all" && (
                   <span
-                    className={`text-xs font-semibold px-2 py-1 rounded-md ${
-                      Number(field.state.value.adjustmentValue ?? 0) > 0
-                        ? "bg-green-100 text-green-700"
-                        : "bg-red-100 text-red-700"
-                    }
+                    className={`text-xs font-semibold px-2 py-1 rounded-md ${Number(field.state.value.adjustmentValue ?? 0) > 0
+                      ? "bg-green-100 text-green-700"
+                      : "bg-red-100 text-red-700"
+                      }
                   `}
                   >
                     {formatPriceLevelAdjustment(

@@ -2,25 +2,18 @@
 
 import z from "zod";
 import { toast } from "sonner";
-import {
-  Dialog,
-  DialogTitle,
-  DialogHeader,
-  DialogTrigger,
-  DialogContent,
-  DialogDescription,
-  DialogClose,
-} from "@/components/ui/dialog";
+
 import { Team } from "@/lib/types";
-import { Loader, User, UserPlus } from "lucide-react";
 import React, { useState } from "react";
+import { Loader, User, } from "lucide-react";
+import { authClient } from "@/lib/auth/client";
+import { getInitialsAvatar } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useAppForm } from "@/hooks/form-context";
 import { useQueryClient } from "@tanstack/react-query";
 import { phoneSchema } from "@/lib/form-schema/common";
 import { Field, FieldGroup } from "@/components/ui/field";
-import { authClient } from "@/lib/auth/client";
-import { getInitialsAvatar } from "@/lib/utils";
+import { AppDialog, AppDialogClose, AppDialogContent, AppDialogHeader, AppDialogTitle, AppDialogTrigger } from "@/components/app-dialog";
 
 const schema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -94,26 +87,26 @@ export const CustomerDialog = ({
   });
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="overflow-visible rounded-2xl px-0 ring-ring/10 sm:max-w-xl">
+    <AppDialog open={open} onOpenChange={setOpen}>
+      <AppDialogTrigger asChild>{children}</AppDialogTrigger>
+      <AppDialogContent className="overflow-visible rounded-2xl ring-ring/10 sm:max-w-xl">
         <form
           onSubmit={(e) => {
             e.preventDefault();
             form.handleSubmit();
           }}
-          className="flex max-h-[min(700px,90svh)] flex-col justify-start gap-6"
+          className="flex flex-col gap-6"
         >
-          <DialogHeader className="flex-row items-center gap-3 px-6">
+          <AppDialogHeader className="flex-row items-center gap-3">
             <span className="inline-flex size-9 items-center justify-center rounded-lg border bg-secondary *:size-4">
               <User />
             </span>
-            <DialogTitle className="text-xl font-bold">
+            <AppDialogTitle className="text-xl font-bold">
               {isEdit ? "Edit Customer" : "Create Customer"}
-            </DialogTitle>
-          </DialogHeader>
+            </AppDialogTitle>
+          </AppDialogHeader>
 
-          <div className="no-scrollbar flex-1 overflow-auto px-6">
+          <div className="no-scrollbar flex-1 overflow-auto">
             <FieldGroup className="grid">
               <form.AppField
                 name="name"
@@ -142,8 +135,8 @@ export const CustomerDialog = ({
               />
             </FieldGroup>
           </div>
-          <Field className="flex flex-col-reverse gap-4 px-6 sm:flex-row sm:justify-end sm:[&>button]:w-32">
-            <DialogClose asChild>
+          <Field className="flex flex-col-reverse sm:flex-row sm:justify-end sm:[&>button]:w-32">
+            <AppDialogClose asChild>
               <Button
                 variant="outline"
                 size="xl"
@@ -152,7 +145,7 @@ export const CustomerDialog = ({
               >
                 Cancel
               </Button>
-            </DialogClose>
+            </AppDialogClose>
             <form.Subscribe
               selector={({ isSubmitting, canSubmit }) => ({
                 isSubmitting,
@@ -171,7 +164,7 @@ export const CustomerDialog = ({
             />
           </Field>
         </form>
-      </DialogContent>
-    </Dialog>
+      </AppDialogContent>
+    </AppDialog>
   );
 };

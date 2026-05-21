@@ -46,22 +46,13 @@ export const useTeam = (id: string) => {
 };
 
 // list users
-export const useUsers = ({
-  q,
-  accountType,
-}: {
-  q?: string;
-  accountType?: string;
-}) => {
-  const params = new URLSearchParams();
+export const useUsers = (query?: Record<string, string>) => {
 
-  if (q) params.set("q", q);
-  if (accountType) params.set("accountType", accountType);
-
+  const params = new URLSearchParams(query);
   return useQuery({
-    queryKey: ["users", q, accountType],
+    queryKey: ["users", query],
     queryFn: async () => {
-      return fetcher<{ data: UserWithMember[] }>(
+      return fetcher<{ data: UserWithMember[], pagination: Pagination }>(
         `/api/users?${params.toString()}`,
       );
     },

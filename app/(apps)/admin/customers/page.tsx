@@ -11,21 +11,19 @@ export const metadata = {
 const CustomersPage = async () => {
   return (
     <div className="flex h-full flex-col gap-5">
-      <div className="flex items-center gap-4 *:flex-1">
-        <div className="space-y-1">
-          <h1 className="text-2xl font-bold">Manage customers</h1>
+      <div className="flex flex-wrap md:flex-nowrap items-center gap-4 ">
+        <div className="space-y-1 flex-1">
+          <h1 className="text-2xl font-bold">Customers</h1>
           <p className="text-sm text-muted-foreground">
-            Overview of customers accounts and their associated team members.
+            Manage customer accounts
           </p>
         </div>
-        <div className="flex items-center justify-end gap-4">
-          <SearchBar />
-          <CustomerDialog>
-            <Button size="xl" className="rounded-xl">
-              <Plus /> Add New
-            </Button>
-          </CustomerDialog>
-        </div>
+        <CustomerDialog>
+          <Button size="xl" className="rounded-xl md:order-3 flex-[0_0_1]">
+            <Plus /> Add New
+          </Button>
+        </CustomerDialog>
+        <SearchBar className="basis-full max-w-full md:max-w-xs" />
       </div>
 
       <PageClient />
