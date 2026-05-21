@@ -17,21 +17,21 @@ const OPTIONS = [
 
 const OrdersPage = async () => {
   return (
-    <div className="flex h-full flex-col gap-5">
-      <div className="flex items-center justify-between gap-4 *:flex-1">
-        <div className="space-y-1">
+    <div className="flex flex-col h-full gap-5">
+      <div className="flex w-full flex-wrap items-start gap-4 **:data-[slot=input-group]:bg-background lg:flex-row lg:items-center">
+        <div className="flex-1 space-y-1">
           <h1 className="text-2xl font-bold">Manage orders</h1>
           <p className="text-sm text-muted-foreground">
             View, track, and manage all orders in one place.
           </p>
         </div>
-        <div className="flex items-center justify-end gap-4">
-          <SearchBar />
-          <Button size="xl" className="rounded-xl">
-            <Plus /> Draft Order
-          </Button>
-        </div>
+        <Button size="xl" className="rounded-xl">
+          <Plus /> Draft Order
+        </Button>
+
+        <SearchBar className="basis-full" />
       </div>
+
       <FilterTab tabs={OPTIONS} path="/api/orders/count" />
       {/* content */}
       <PageClient />

@@ -1,39 +1,27 @@
 "use client";
 
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { format } from "date-fns";
 import { UserAction } from "./user-actions";
+import { useUsers } from "@/hooks/use-teams";
+import { UserWithMember } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
 import { roleMap } from "@/lib/constants/user";
 import { getInitialsAvatar } from "@/lib/utils";
-import { CopyButton } from "@/components/copy-button";
-import { useRouterStuff } from "@/hooks/use-router-stuff";
-
-import { useUsers } from "@/hooks/use-teams";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ColumnDef } from "@tanstack/react-table";
-import { UserWithMember } from "@/lib/types";
+import { CopyButton } from "@/components/copy-button";
 import { DataTable } from "@/components/admin/data-table";
+import { useRouterStuff } from "@/hooks/use-router-stuff";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export const PageClient = () => {
   const { searchParamsObj } = useRouterStuff();
 
-  const { data, isPending, isError, error } = useUsers({
-    q: searchParamsObj?.q,
-    accountType: "admin",
-  });
+  const { data, isPending, isError, error } = useUsers({ ...searchParamsObj });
 
   return (
     <DataTable
       columns={columns}
-      data={{ data: data?.data!, pagination: undefined }}
+      data={data}
       isPending={isPending}
       isError={isError}
       error={error}

@@ -90,9 +90,10 @@ export const columns: ColumnDef<Team>[] = [
       const members = row.original.members ?? [];
       const visible = members.slice(0, 3);
       const remaining = members.length - members.length;
+      console.log("remaining", members);
 
       return (
-        <AvatarGroup className="grayscale">
+        <AvatarGroup >
           {visible.map((member) => (
             <Tooltip key={member.id} content={member.name}>
               <Avatar>

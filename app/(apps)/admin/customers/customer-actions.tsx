@@ -10,7 +10,8 @@ import { useConfirm } from "@/hooks/use-confirm";
 import { CustomerDialog } from "./customer-dialog";
 import { useQueryClient } from "@tanstack/react-query";
 import { PopoverXDrawer } from "@/components/popover-x-drawer";
-import { Eye, MoreVertical, SquarePen, Trash2, User } from "lucide-react";
+import { UserSelector } from "@/components/admin/user-selector";
+import { Eye, MoreVertical, PlusCircle, SquarePen, Trash2, } from "lucide-react";
 
 export const CustomerActions = ({
   showView,
@@ -46,32 +47,7 @@ export const CustomerActions = ({
     });
   };
 
-  // const handleAssignUser = async (user: any) => {
-  //   const userId = user.id;
-  //   if (!userId) return;
-  //   const toastId = toast.loading("Please wait...");
 
-  //   const exist = data.members?.some((m) => m.id === userId);
-
-  //   if (exist) {
-  //     toast.error("User already assigned", { id: toastId });
-  //     return;
-  //   }
-  //   const { error } = await authClient.organization.addTeamMember({
-  //     teamId: data.id,
-  //     userId: userId,
-  //   });
-
-  //   if (error) {
-  //     toast.error(error?.message, { id: toastId });
-  //   } else {
-  //     setOpen(false);
-
-  //     toast.success("User added successfully", { id: toastId });
-  //   }
-
-  //   queryClient.invalidateQueries({ queryKey: ["teams"] });
-  // };
 
   return (
     <PopoverXDrawer
@@ -87,7 +63,7 @@ export const CustomerActions = ({
         <Button
           type="button"
           variant="ghost"
-          className="flex items-center gap-2"
+          className="justify-start"
           asChild
         >
           <Link href={`/admin/customers/${id}`}>
@@ -98,18 +74,26 @@ export const CustomerActions = ({
       )}
 
       <CustomerDialog data={data}>
-        <Button variant="ghost" className="justify-start">
+        <Button variant="ghost" className="rounded-xl justify-start">
           <SquarePen /> Edit
         </Button>
       </CustomerDialog>
-
+      <UserSelector
+        selected={data.members?.map((m) => m.id) || []}
+        onAction={(value) => console.log("test", value)}
+      >
+        <Button variant="ghost" disabled={true} className="justify-start">
+          <PlusCircle />
+          Assign user</Button>
+      </UserSelector>
       <Button
-        variant="ghost"
-        className="hover:bg-destructive/10 hover:text-destructive"
+        variant="destructive"
+        className="rounded-xl justify-start bg-transparent"
         onClick={onDelete}
       >
         <Trash2 /> Delete
       </Button>
+
     </PopoverXDrawer>
   );
 };

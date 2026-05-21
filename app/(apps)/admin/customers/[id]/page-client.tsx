@@ -2,13 +2,13 @@
 import { use } from "react";
 import Link from "next/link";
 import {
+  Plus,
+  User,
+  Trash2,
+  Loader,
   ChevronLeft,
   CircleDashed,
-  Loader,
   PackageCheck,
-  Plus,
-  Trash2,
-  User,
 } from "lucide-react";
 import {
   Card,
@@ -34,23 +34,23 @@ import { useTeam } from "@/hooks/use-teams";
 import { Badge } from "@/components/ui/badge";
 import { useForm } from "@tanstack/react-form";
 import { Button } from "@/components/ui/button";
+import { authClient } from "@/lib/auth/client";
 import {
   EmptyComponent,
   LoadingSkeleton,
 } from "@/components/admin/placeholder-component";
-import { CopyButton } from "@/components/copy-button";
-import { STATUS_MAP } from "@/lib/constants/status-map";
-import { authClient } from "@/lib/auth/client";
 import { updateProductsToTeam } from "@/server/auth";
 import { CustomerActions } from "../customer-actions";
+import { CopyButton } from "@/components/copy-button";
+import { useQueryClient } from "@tanstack/react-query";
+import { STATUS_MAP } from "@/lib/constants/status-map";
+import { UserSelector } from "@/components/admin/user-selector";
 import { formatPriceLevelAdjustment, formatUSD } from "@/lib/utils";
-import { ProductSelectorAdmin } from "@/components/admin/product-selector-admin";
 import { TaxRulesSelector } from "@/components/admin/tax-rules-selector";
 import { PriceLevelSelectType, ProductSelectType } from "@/lib/db/schema";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { PriceLevelSelector } from "@/components/admin/price-level-selector";
-import { UserSelector } from "@/components/admin/user-selector";
-import { useQueryClient } from "@tanstack/react-query";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ProductSelectorAdmin } from "@/components/admin/product-selector-admin";
 
 export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = use(params);
@@ -152,7 +152,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
             <div>
               <CardTitle className="font-semibold">{data.name}</CardTitle>
               <CardDescription>{data.managerName}</CardDescription>
-              <div className="mt-3 flex flex-col gap-1 lg:flex-row lg:gap-2">
+              <div className="flex flex-col gap-1 mt-3 lg:flex-row lg:gap-2">
                 <CopyButton value={data.phone} />
                 <CopyButton value={data.email} />
               </div>
@@ -162,7 +162,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
 
         {/* stats cards */}
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <Card className="flex-row items-start rounded-2xl px-6">
+          <Card className="flex-row items-start px-6 rounded-2xl">
             <div className="flex-1">
               <CardTitle className="mb-2 text-3xl font-bold">
                 {data.stats?.activeCount}
@@ -174,11 +174,11 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
                 Active Orders
               </span>
             </div>
-            <span className="inline-flex size-10 items-center justify-center rounded-lg bg-amber-100 p-0 text-foreground">
+            <span className="inline-flex items-center justify-center p-0 rounded-lg size-10 bg-amber-100 text-foreground">
               <CircleDashed className="size-4" />
             </span>
           </Card>
-          <Card className="flex-row items-start rounded-2xl px-6">
+          <Card className="flex-row items-start px-6 rounded-2xl">
             <div className="flex-1">
               <CardTitle className="mb-2 text-3xl font-bold">
                 {data.stats?.completedCount}
@@ -190,7 +190,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
                 Completed Orders
               </span>
             </div>
-            <span className="inline-flex size-10 items-center justify-center rounded-lg bg-green-100 p-0 text-foreground">
+            <span className="inline-flex items-center justify-center p-0 bg-green-100 rounded-lg size-10 text-foreground">
               <PackageCheck className="size-4" />
             </span>
           </Card>
@@ -246,7 +246,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
           </CardContent>
         </Card>
       </div>
-      <Card className="col-span-2 rounded-2xl bg-card">
+      <Card className="col-span-6 lg:col-span-2 rounded-2xl bg-card">
         <CardHeader>
           <CardTitle className="font-semibold">Recent Orders</CardTitle>
         </CardHeader>
@@ -303,7 +303,7 @@ const PriceLevelForm = ({
         {(field) => (
           <div className="space-y-4">
             {field.state.value?.id ? (
-              <div className="flex w-full items-center gap-2 rounded-lg border bg-secondary/20 p-2">
+              <div className="flex items-center w-full gap-2 p-2 border rounded-lg bg-secondary/20">
                 <div className="flex flex-1 flex-col items-start gap-0.5">
                   <span className="font-medium">{field.state.value.name}</span>
                   <span className="text-xs font-medium text-muted-foreground">
@@ -419,8 +419,8 @@ const TaxRulesForm = ({
           return (
             <div className="space-y-4">
               {taxRule?.id && (
-                <div className="flex items-center gap-2 rounded-lg border bg-secondary/20 p-2 py-2">
-                  <span className="font-medium flex-1">{taxRule.name}</span>
+                <div className="flex items-center gap-2 p-2 py-2 border rounded-lg bg-secondary/20">
+                  <span className="flex-1 font-medium">{taxRule.name}</span>
                   <span className="font-medium text-muted-foreground">
                     {taxRule.rate}%
                   </span>
@@ -444,7 +444,7 @@ const TaxRulesForm = ({
           );
         }}
       />
-      <div className="mt-2 flex justify-end">
+      <div className="flex justify-end mt-2">
         <form.Subscribe
           selector={({ isSubmitting, isDirty, canSubmit }) => ({
             isSubmitting,
@@ -519,9 +519,9 @@ const ProductAccessForm = ({
                   {products?.map((item, i) => (
                     <div
                       key={item.id}
-                      className="flex items-center gap-2 rounded-xl border bg-secondary/20 p-2"
+                      className="flex items-center gap-2 p-2 border rounded-xl bg-secondary/20"
                     >
-                      <div className="flex flex-1 items-start gap-3">
+                      <div className="flex items-start flex-1 gap-3">
                         <div className="shrink-0">
                           <Avatar className="size-9 rounded-lg ring-2 ring-green-600/40 ring-offset-1 **:rounded-lg after:hidden">
                             <AvatarImage src={item?.image as string} />
@@ -530,19 +530,19 @@ const ProductAccessForm = ({
                             </AvatarFallback>
                           </Avatar>
                         </div>
-                        <div className="min-w-0 flex-1">
-                          <h4 className="leading-tight font-medium whitespace-normal">
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-medium leading-tight whitespace-normal">
                             {item.title}
                           </h4>
                           <Badge
                             variant="secondary"
-                            className="rounded-xl border border-border uppercase"
+                            className="uppercase border rounded-xl border-border"
                           >
                             {item.identifier}
                           </Badge>
                         </div>
                       </div>
-                      <div className="w-28 self-center text-right font-medium text-muted-foreground">
+                      <div className="self-center font-medium text-right w-28 text-muted-foreground">
                         {formatUSD(item.basePrice)}
                       </div>
                       <Button
@@ -586,7 +586,7 @@ const ProductAccessForm = ({
           );
         }}
       />
-      <div className="mt-2 flex justify-end">
+      <div className="flex justify-end mt-2">
         <form.Subscribe
           selector={({ isSubmitting, canSubmit, isDirty }) => ({
             isSubmitting,
@@ -632,9 +632,9 @@ const Members = ({
       {members.map((member) => (
         <div
           key={member.id}
-          className="flex items-center gap-4 rounded-lg border bg-secondary/20 p-2"
+          className="flex items-center gap-4 p-2 border rounded-lg bg-secondary/20"
         >
-          <div className="flex flex-1 items-center gap-3">
+          <div className="flex items-center flex-1 gap-3">
             <Avatar className="size-9 rounded-lg ring-2 ring-green-600/20 ring-offset-1 **:rounded-lg after:hidden">
               <AvatarImage src={member.image} />
               <AvatarFallback>
@@ -642,9 +642,9 @@ const Members = ({
               </AvatarFallback>
             </Avatar>
 
-            <div className="space-y-0 min-w-0 truncate flex-1">
+            <div className="flex-1 min-w-0 space-y-0 truncate">
               <h4 className="text-sm font-medium">{member.name}</h4>
-              <div className="flex gap-1 items-center">
+              <div className="flex items-center gap-1">
                 <CopyButton value={member.phoneNumber!} />
                 <CopyButton value={member.email} />
               </div>
@@ -700,7 +700,7 @@ const TimelineRow = ({ order }: { order: any }) => {
           <span>{order?.charges?.type}</span>
           <span>{formatUSD(order?.charges?.amount)}</span>
         </div>
-        <div className="mt-2 flex justify-between text-base font-semibold text-foreground">
+        <div className="flex justify-between mt-2 text-base font-semibold text-foreground">
           <span>Total</span>
           <span>{formatUSD(order.total)}</span>
         </div>

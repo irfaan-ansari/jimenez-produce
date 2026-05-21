@@ -20,20 +20,25 @@ const OPTIONS = [
 const OrdersPage = async () => {
   return (
     <div className="flex flex-col h-full gap-6">
-      <div className="flex w-full flex-wrap items-start gap-4 **:data-[slot=input-group]:bg-background lg:flex-row lg:items-center">
+      <div className="flex flex-wrap items-center gap-4 md:flex-nowrap ">
         <div className="flex-1 space-y-1">
           <h1 className="text-2xl font-bold">Track your orders</h1>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm line-clamp-1 text-muted-foreground">
             Clear delivery windows and live order status in one place.
           </p>
         </div>
-        <Button size="xl" className="rounded-xl" asChild>
+        <Button
+          size="xl"
+          className="rounded-xl md:order-3 flex-[0_0_1]"
+          asChild
+        >
           <Link href="/customer/new-order">
             <Plus /> New Order
           </Link>
         </Button>
-        <SearchBar className="basis-full" />
+        <SearchBar className="max-w-full basis-full md:max-w-xs" />
       </div>
+
       <FilterTab tabs={OPTIONS} path="/api/customer/orders/count" />
       {/* content */}
       <PageClient />

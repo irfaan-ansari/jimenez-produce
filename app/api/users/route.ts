@@ -1,10 +1,11 @@
 import { db } from "@/lib/db";
 import { getSession } from "@/server/auth";
-import { eq, max, asc, and, ne, ilike, or, isNotNull } from "drizzle-orm";
-import { NextRequest, NextResponse } from "next/server";
-import { member, session, user } from "@/lib/db/auth-schema";
 import { getQueryObject } from "@/lib/helper/query";
+import { NextRequest, NextResponse } from "next/server";
 import { ERROR_MESSAGE } from "@/lib/helper/error-message";
+import { member, session, user } from "@/lib/db/auth-schema";
+import { eq, max, asc, and, ilike, or, isNotNull, count } from "drizzle-orm";
+
 
 export async function GET(req: NextRequest) {
   try {
@@ -24,20 +25,20 @@ export async function GET(req: NextRequest) {
         { status: 403 },
       );
     }
+
     const {
       q,
       page = 1,
       limit = 24,
-      offset = 0,
       accountType,
     } = getQueryObject(req.nextUrl.searchParams);
+
+    const offset = ((Number(page) - 1) * Number(limit))
 
     const conditions = [];
 
     if (accountType === "customer") {
       conditions.push(eq(user.accountType, "customer"), isNotNull(member.id));
-    } else {
-      conditions.push(ne(user.accountType, "customer"));
     }
 
     if (q) {
@@ -89,13 +90,31 @@ export async function GET(req: NextRequest) {
       )
       .leftJoin(lastSession, eq(user.id, lastSession.userId))
       .where(and(...conditions))
+      .limit(Number(limit))
+      .offset(offset)
       .orderBy(asc(lastSession.lastLogin));
 
-    return NextResponse.json({ data: users }, { status: 200 });
+    const [{ total }] = await db.select({ total: count() }).from(user).leftJoin(
+      member,
+      and(
+        eq(member.userId, user.id),
+        eq(member.organizationId, activeOrganizationId),
+      ),
+    ).where(and(...conditions))
+
+    return NextResponse.json({
+      data: users, pagination: {
+        page,
+        limit,
+        total: total,
+        totalPages: Math.ceil(total / (Number(limit))),
+      },
+    }, { status: 200 });
+
   } catch (error) {
-    console.error("Error fetching users:", error);
+    console.error("API Error:", error);
     return NextResponse.json(
-      { message: "Failed to fetch product." },
+      { message: "Internal server error." },
       { status: 500 },
     );
   }

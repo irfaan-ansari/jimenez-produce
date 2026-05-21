@@ -66,21 +66,21 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
         </div>
 
         {/* progress */}
-        {/* <Card className="gap-0 rounded-2xl py-0 relative">
+        {/* <Card className="relative gap-0 py-0 rounded-2xl">
           <LiveTracking />
 
-          <CardContent className="absolute inset-x-3 h-20 bottom-3 rounded-lg p-3 bg-background/70 backdrop-blur-lg z-2 ring-2 ring-border shadow-sm ring-offset-2">
-            <div className="flex justify-between items-start">
+          <CardContent className="absolute h-20 p-3 rounded-lg shadow-sm inset-x-3 bottom-3 bg-background/70 backdrop-blur-lg z-2 ring-2 ring-border ring-offset-2">
+            <div className="flex items-start justify-between">
               <div className="flex-1">
                 <p className="font-medium">Order #24647</p>
-                <div className="flex gap-2 items-center">
+                <div className="flex items-center gap-2">
                   <span className="font-medium text-muted-foreground">
                     Estimated delivery in
                   </span>
                   <span className="text-2xl font-bold">30 mins</span>
                 </div>
               </div>
-              <Badge className="h-7 bg-green-100 border border-green-300 text-green-600 px-4">
+              <Badge className="px-4 text-green-600 bg-green-100 border border-green-300 h-7">
                 Arriving
               </Badge>
             </div>
@@ -88,38 +88,31 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
         </Card> */}
 
         {/* purchased items */}
-        <Card className="gap-0 rounded-2xl">
-          <CardHeader className="border-b">
+        <Card className="rounded-2xl">
+          <CardHeader>
             <CardTitle className="text-lg font-semibold">
               Purchased Items ({data?.lineItemCount})
             </CardTitle>
           </CardHeader>
-          <CardContent className="divide-y px-0">
-            <div className="flex items-center justify-between gap-4 px-6 py-4 font-medium text-muted-foreground uppercase">
-              <div className="flex-1">Item</div>
-              <div className="w-16 text-right">Price</div>
-              <div className="w-16 text-right">Quantity</div>
-              <div className="w-16 text-right">Total</div>
-            </div>
-
+          <CardContent className="divide-y">
             {data.lineItems.map((line) => (
               <div
-                className="flex items-center justify-between gap-4 px-6 py-2"
+                className="flex items-center justify-between gap-4 pt-2 first:border-t not-last:pb-2"
                 key={line.id}
               >
-                <div className="flex flex-1 items-center gap-3">
+                <div className="flex items-center flex-1 gap-3">
                   <Avatar className="size-9 rounded-lg ring-2 ring-green-600/20 ring-offset-1 **:rounded-lg after:hidden">
                     <AvatarImage src={line?.image!} />
                     <AvatarFallback>{line.title?.charAt(0)}</AvatarFallback>
                   </Avatar>
                   <div className="space-y-1">
-                    <h4 className="leading-tight font-medium whitespace-normal">
+                    <h4 className="font-medium leading-tight whitespace-normal">
                       {line.title}
                     </h4>
                     {line.identifier && (
                       <Badge
                         variant="secondary"
-                        className="rounded-xl border border-border"
+                        className="border rounded-xl border-border"
                       >
                         {line.identifier}
                       </Badge>
@@ -132,7 +125,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
                 <div className="w-16 text-right text-muted-foreground">
                   {line.quantity}
                 </div>
-                <div className="w-16 text-right font-semibold">
+                <div className="w-16 font-semibold text-right">
                   {formatUSD(line.total!)}
                 </div>
               </div>
@@ -161,7 +154,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
               <span className="font-medium">{formatUSD(data.subtotal)}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span>Tax {data?.taxName && (data.taxName)}</span>
+              <span>Tax {data?.taxName && `(${data.taxName})`}</span>
               <span className="font-medium">{formatUSD(data.tax)}</span>
             </div>
             <div className="flex items-center justify-between">
@@ -171,27 +164,26 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
               </span>
             </div>
           </div>
-          <Separator className="my-4" />
+
           <div className="flex items-center justify-between text-xl font-semibold">
             <span>Total</span> <span>{formatUSD(data.total)}</span>
           </div>
-          <Button className="w-full rounded-xl " size="xl" asChild>
-            <a href={`/api/orders/${data.id}/invoice`} target="_blank">
-              <Download />
-              Download Invoice
-            </a>
-          </Button>
-
-          <Button
-            className="w-full rounded-xl bg-sidebar-accent hover:bg-sidebar-accent/80"
-            size="xl"
-            asChild
-          >
-            <Link href={`/customer/new-order?id=${data.id}`}>
-              <Copy />
-              Reorder
-            </Link>
-          </Button>
+          <div className="space-y-3">
+            <Button className="w-full rounded-xl " size="xl" asChild>
+              <a href={`/api/orders/${data.id}/invoice`} target="_blank">
+                <Download />
+                Download Invoice
+              </a>
+            </Button>
+            <Button
+              className="w-full rounded-xl bg-sidebar-accent hover:bg-sidebar-accent/80"
+              size="xl" asChild>
+              <Link href={`/customer/new-order?id=${data.id}`}>
+                <Copy />
+                Reorder
+              </Link>
+            </Button>
+          </div>
 
           <Separator className="my-6" />
 
@@ -240,9 +232,8 @@ const StepItem = ({
 }) => (
   <div className="flex flex-col items-center self-center">
     <span
-      className={`size-10 mb-2 rounded-lg inline-flex items-center justify-center ${
-        active ? "bg-primary text-primary-foreground" : "bg-secondary"
-      }`}
+      className={`size-10 mb-2 rounded-lg inline-flex items-center justify-center ${active ? "bg-primary text-primary-foreground" : "bg-secondary"
+        }`}
     >
       <Icon className="size-4" />
     </span>

@@ -29,8 +29,8 @@ export const UserAction = ({ data }: { data: UserWithMember }) => {
     }
   };
 
-  const handleEditRole = () => {};
-  const handleDelete = () => {};
+  const handleEditRole = () => { };
+  const handleDelete = () => { };
 
   return (
     <PopoverXDrawer
@@ -53,11 +53,11 @@ export const UserAction = ({ data }: { data: UserWithMember }) => {
         </Button>
       )}
       <UserDialog data={data}>
-        <Button variant="ghost" className="justify-start rounded-lg!">
+        <Button variant="ghost" disabled className="justify-start rounded-lg!">
           <SquarePen /> Edit
         </Button>
       </UserDialog>
-      <Button variant="destructive" className="rounded-lg!">
+      <Button variant="destructive" className="rounded-lg! bg-transparent">
         <Trash2 /> Delete
       </Button>
     </PopoverXDrawer>

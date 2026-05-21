@@ -117,74 +117,55 @@ export const OrderForm = ({ taxRule }: { taxRule: TaxRule | null }) => {
     <Tabs
       value={selectedTab}
       onValueChange={(value) => setSelectedTab(value as OrderTab)}
-      className="flex w-full flex-col gap-6"
+      className="flex flex-col w-full gap-6"
     >
-      <div className="flex w-full flex-col items-start gap-4 **:data-[slot=input-group]:bg-background lg:flex-row lg:items-center">
-        <div className="flex gap-2 justify-between w-full">
-          <div className="flex-[1_1_0] md:hidden">
-            <Button
-              size="icon-xl"
-              variant="outline"
-              className="shrink-0 rounded-xl"
-              onClick={() => router.back()}
-            >
-              <ChevronLeft />
-            </Button>
-          </div>
-          <TabsList className="bg-background flex-[1_1_auto] md:flex-none p-1 *:h-9 group-data-horizontal/tabs:h-11 border *:data-active:bg-secondary rounded-xl *:rounded-lg">
-            <TabsTrigger value="all">
-              <Menu className="hidden lg:inline" />
-              All Products
-            </TabsTrigger>
-            <TabsTrigger
-              value="guides"
-              disabled={selectionState.mode !== "idle"}
-            >
-              <Star className="fill-current hidden lg:inline" />
-              Order Guides
-            </TabsTrigger>
-          </TabsList>
-          <div className="flex gap-2 flex-[1_1_0] justify-end">
-            <ToolbarSearch className="hidden md:flex rounded-xl" />
+      <div className="flex flex-wrap justify-start w-full gap-x-2 gap-y-4 md:flex-nowrap">
+        <TabsList className="bg-background p-1 *:h-9 group-data-horizontal/tabs:h-11 border *:data-active:bg-secondary rounded-xl *:rounded-lg">
+          <TabsTrigger value="all">
+            <Menu />
+            All Products
+          </TabsTrigger>
+          <TabsTrigger value="guides" disabled={selectionState.mode !== "idle"}>
+            <Star className="fill-current" />
+            Order Guides
+          </TabsTrigger>
+        </TabsList>
+        <ToolbarSearch className="order-4 max-w-full md:ml-auto md:max-w-xs md:order-2 basis-full" />
+        <Button
+          size="xl"
+          variant="secondary"
+          className="ml-auto bg-yellow-500 w-11 sm:w-auto md:ml-0 rounded-xl md:order-3 hover:bg-yellow-500/90"
+          onClick={() => {
+            setSelectionState({
+              mode: "create",
+            });
+            setSelectedTab("all");
+          }}
+        >
+          <Plus />
+          <span className="hidden sm:inline">Create guide</span>
+        </Button>
+        <form.Field
+          name="lineItems"
+          children={(field) => (
             <Button
               size="xl"
-              variant="secondary"
-              className="rounded-xl w-11 md:w-auto bg-yellow-500 hover:bg-yellow-500/90"
-              onClick={() => {
-                setSelectionState({
-                  mode: "create",
-                });
-                setSelectedTab("all");
-              }}
+              className="rounded-xl [&>svg]:size-5! md:order-4 w-11 sm:w-auto"
+              onClick={() => setShowCart(true)}
+              disabled={field.state.value.length === 0}
             >
-              <Plus />
-              <span className="hidden md:inline">New Guide</span>
+              <ShoppingBag />
+              <span className="hidden sm:inline">View cart ({field.state.value.length})</span>
             </Button>
-            <form.Field
-              name="lineItems"
-              children={(field) => (
-                <Button
-                  size="xl"
-                  className="rounded-lg w-11 md:w-auto [&>svg]:size-5!"
-                  onClick={() => setShowCart(true)}
-                  disabled={field.state.value.length === 0}
-                >
-                  <ShoppingBag />
-                  <span className="hidden md:inline">
-                    View cart ({field.state.value.length})
-                  </span>
-                </Button>
-              )}
-            />
-          </div>
-        </div>
-        <ToolbarSearch className="md:hidden rounded-xl max-w-full" />
+          )}
+        />
+        
       </div>
 
       {/* toolbar */}
 
       <div className="flex flex-col gap-3">
-        <div className="flex w-full items-center gap-4">
+        <div className="flex items-center w-full gap-4">
           <OrderFormToolbar />
         </div>
 
@@ -212,8 +193,8 @@ export const OrderForm = ({ taxRule }: { taxRule: TaxRule | null }) => {
           if (totals.count <= 0 || selectionState.mode !== "idle") return null;
 
           return (
-            <div className="sticky bottom-6 z-3 mx-auto w-full max-w-xl">
-              <div className="flex h-16 items-center gap-4 rounded-2xl bg-secondary px-6 py-4 shadow-lg ring-2 ring-primary/50 ring-offset-2 backdrop-blur-2xl">
+            <div className="sticky w-full max-w-xl mx-auto mt-auto bottom-6 z-3">
+              <div className="flex items-center h-16 gap-4 px-6 py-4 shadow-lg rounded-2xl bg-secondary ring-2 ring-primary/50 ring-offset-2 backdrop-blur-2xl">
                 <div className="flex flex-col">
                   <span className="text-xs uppercase">
                     {totals.count} items in cart
@@ -257,8 +238,8 @@ export const OrderForm = ({ taxRule }: { taxRule: TaxRule | null }) => {
         data-active={selectionState.mode !== "idle"}
         className="sticky bottom-6 z-3 mx-auto hidden w-full max-w-xl data-[active=true]:block"
       >
-        <div className="flex h-16 items-center gap-4 rounded-2xl bg-secondary px-6 py-4 shadow-lg ring-2 ring-primary/50 ring-offset-2 backdrop-blur-2xl">
-          <div className="flex flex-1 flex-col">
+        <div className="flex items-center h-16 gap-4 px-6 py-4 shadow-lg rounded-2xl bg-secondary ring-2 ring-primary/50 ring-offset-2 backdrop-blur-2xl">
+          <div className="flex flex-col flex-1">
             <span className="text-xs uppercase">selected</span>
 
             <span className="text-base font-semibold">

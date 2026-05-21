@@ -2,12 +2,12 @@
 import React from "react";
 
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+  AppDialog,
+  AppDialogContent,
+  AppDialogHeader,
+  AppDialogTitle,
+  AppDialogTrigger,
+} from "../app-dialog";
 import {
   Field,
   FieldContent,
@@ -26,8 +26,9 @@ import { Plus, Search } from "lucide-react";
 import { useUsers } from "@/hooks/use-teams";
 import { Button } from "@/components/ui/button";
 import { useDebounce } from "@/hooks/use-debounce";
-import { UserDialog } from "@/app/(apps)/admin/users/user-dialog";
+
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { UserDialog } from "@/app/(apps)/admin/users/user-dialog";
 
 export const UserSelector = ({
   selected,
@@ -72,95 +73,97 @@ export const UserSelector = ({
   }, [users]);
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="flex h-full max-h-[calc(100svh-10rem)] flex-col overflow-hidden rounded-2xl ring-ring/10 sm:max-w-xl">
-        <DialogHeader>
-          <DialogTitle className="text-xl font-bold">Assign user</DialogTitle>
-        </DialogHeader>
+    <AppDialog open={open} onOpenChange={setOpen}>
+      <AppDialogTrigger asChild>{children}</AppDialogTrigger>
+      <AppDialogContent className="flex h-full max-h-[calc(100svh-10rem)] flex-col overflow-hidden rounded-2xl ring-ring/10 sm:max-w-xl">
+        <div className="flex flex-col gap-6 w-full items-start *:w-full overflow-auto">
+          <AppDialogHeader>
+            <AppDialogTitle className="text-xl font-bold text-left">Assign user</AppDialogTitle>
+          </AppDialogHeader>
 
-        {/* Search */}
-        <InputGroup className="rounded-xl">
-          <InputGroupAddon>
-            <Search />
-          </InputGroupAddon>
+          {/* Search */}
+          <InputGroup className="rounded-xl">
+            <InputGroupAddon>
+              <Search />
+            </InputGroupAddon>
 
-          <InputGroupInput
-            placeholder="Search..."
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              debounceFn(e.target.value);
-            }}
-          />
-
-          <InputGroupAddon align="inline-end">
-            <UserDialog
-              data={{
-                accountType: "customer",
-                member: { role: "customer", id: null as any },
+            <InputGroupInput
+              placeholder="Search..."
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                debounceFn(e.target.value);
               }}
+            />
+
+            <InputGroupAddon align="inline-end">
+              <UserDialog
+                data={{
+                  accountType: "customer",
+                  member: { role: "customer", id: null as any },
+                }}
+              >
+                <InputGroupButton size="icon-sm">
+                  <Plus />
+                </InputGroupButton>
+              </UserDialog>
+            </InputGroupAddon>
+          </InputGroup>
+
+          {/* List */}
+          <div className="no-scrollbar flex-1 space-y-1 overflow-y-auto">
+            <QueryState
+              isPending={isPending}
+              isError={isError}
+              error={error}
+              isEmpty={options.length === 0}
             >
-              <InputGroupButton size="icon-sm">
-                <Plus />
-              </InputGroupButton>
-            </UserDialog>
-          </InputGroupAddon>
-        </InputGroup>
+              <div className="space-y-1">
+                {options.map((user) => {
+                  const isMember = selected.includes(user.id);
+                  return (
+                    <FieldLabel
+                      key={user.id}
+                      htmlFor={user.id}
+                      className="rounded-xl!"
+                    >
+                      <Field orientation="horizontal" className="rounded-xl">
+                        <Avatar className="size-9 rounded-lg ring-2 ring-green-600/20 ring-offset-1 **:rounded-lg after:hidden">
+                          <AvatarImage
+                            src={user.image ?? undefined}
+                            alt="profile image"
+                          />
+                          <AvatarFallback className="rounded-xl bg-primary/40 text-xs font-semibold text-primary">
+                            {user.name?.[0]?.toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
 
-        {/* List */}
-        <div className="no-scrollbar flex-1 space-y-1 overflow-y-auto">
-          <QueryState
-            isPending={isPending}
-            isError={isError}
-            error={error}
-            isEmpty={options.length === 0}
-          >
-            <div className="space-y-1">
-              {options.map((user) => {
-                const isMember = selected.includes(user.id);
-                return (
-                  <FieldLabel
-                    key={user.id}
-                    htmlFor={user.id}
-                    className="rounded-xl!"
-                  >
-                    <Field orientation="horizontal" className="rounded-xl">
-                      <Avatar className="size-9 rounded-lg ring-2 ring-green-600/20 ring-offset-1 **:rounded-lg after:hidden">
-                        <AvatarImage
-                          src={user.image ?? undefined}
-                          alt="profile image"
-                        />
-                        <AvatarFallback className="rounded-xl bg-primary/40 text-xs font-semibold text-primary">
-                          {user.name?.[0]?.toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
+                        <FieldContent className="gap-0">
+                          <FieldTitle>{user.name}</FieldTitle>
+                          <FieldDescription>{user.email}</FieldDescription>
+                        </FieldContent>
 
-                      <FieldContent className="gap-0">
-                        <FieldTitle>{user.name}</FieldTitle>
-                        <FieldDescription>{user.email}</FieldDescription>
-                      </FieldContent>
-
-                      <Button
-                        size="xs"
-                        variant={isMember ? "outline" : "default"}
-                        onClick={() => {
-                          onAction(user.id);
-                          setOpen(false);
-                        }}
-                        disabled={isMember}
-                      >
-                        {!isMember&& <Plus className="size-3" />}
-                        {isMember ? "Assigned" : "Assign"}
-                      </Button>
-                    </Field>
-                  </FieldLabel>
-                );
-              })}
-            </div>
-          </QueryState>
+                        <Button
+                          size="xs"
+                          variant={isMember ? "outline" : "default"}
+                          onClick={() => {
+                            onAction(user.id);
+                            setOpen(false);
+                          }}
+                          disabled={isMember}
+                        >
+                          {!isMember && <Plus className="size-3" />}
+                          {isMember ? "Assigned" : "Assign"}
+                        </Button>
+                      </Field>
+                    </FieldLabel>
+                  );
+                })}
+              </div>
+            </QueryState>
+          </div>
         </div>
-      </DialogContent>
-    </Dialog>
+      </AppDialogContent>
+    </AppDialog>
   );
 };
