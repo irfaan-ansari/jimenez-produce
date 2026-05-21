@@ -40,14 +40,10 @@ import {
 } from "@/components/admin/placeholder-component";
 import { CopyButton } from "@/components/copy-button";
 import { STATUS_MAP } from "@/lib/constants/status-map";
-import {
-  formatPriceLevelAdjustment,
-  formatUSD,
-  getAvatarFallback,
-} from "@/lib/utils";
 import { authClient } from "@/lib/auth/client";
 import { updateProductsToTeam } from "@/server/auth";
 import { CustomerActions } from "../customer-actions";
+import { formatPriceLevelAdjustment, formatUSD } from "@/lib/utils";
 import { ProductSelectorAdmin } from "@/components/admin/product-selector-admin";
 import { TaxRulesSelector } from "@/components/admin/tax-rules-selector";
 import { PriceLevelSelectType, ProductSelectType } from "@/lib/db/schema";
@@ -150,7 +146,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
             <Avatar className="size-16 shrink-0 ring-2 ring-primary/40 ring-offset-2 ring-offset-background lg:size-20">
               <AvatarImage src={data.logo} />
               <AvatarFallback>
-                {getAvatarFallback(data?.name || "")}
+                <User className="size-4" />
               </AvatarFallback>
             </Avatar>
             <div>
@@ -530,7 +526,7 @@ const ProductAccessForm = ({
                           <Avatar className="size-9 rounded-lg ring-2 ring-green-600/40 ring-offset-1 **:rounded-lg after:hidden">
                             <AvatarImage src={item?.image as string} />
                             <AvatarFallback>
-                              {getAvatarFallback((item.title as string)?.[0])}
+                              <User className="size-4" />
                             </AvatarFallback>
                           </Avatar>
                         </div>

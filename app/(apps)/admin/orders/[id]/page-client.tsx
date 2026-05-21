@@ -7,7 +7,6 @@ import {
   ChevronLeft,
   CircleCheck,
   ClipboardCheck,
-  SquarePen,
   Receipt,
   Package,
 } from "lucide-react";
@@ -123,12 +122,6 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
 
         {/* progress */}
         <Card className="rounded-2xl">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-4 text-lg font-semibold">
-              <MapPinned className="size-5 shrink-0" />
-              Order Progress
-            </CardTitle>
-          </CardHeader>
           <CardContent className="flex justify-between gap-4 text-base">
             {STEPS.map((step, i) => (
               <StepItem key={i} {...step} />
@@ -137,22 +130,17 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
         </Card>
 
         {/* purchased items */}
-        <Card className="gap-0 rounded-2xl">
-          <CardHeader className="border-b">
+        <Card className="rounded-2xl">
+          <CardHeader>
             <CardTitle className="text-lg font-semibold">
-              Purchased Items ({data?.lineItemCount})
+              Items ({data?.lineItemCount})
             </CardTitle>
           </CardHeader>
-          <CardContent className="px-0 divide-y">
-            <div className="flex items-center justify-between gap-4 px-6 py-4 font-medium uppercase bg-muted text-muted-foreground">
-              <div className="flex-1">Item</div>
-              <div className="w-20 text-right">Price</div>
-              <div className="w-20 text-right">Quantity</div>
-              <div className="w-20 text-right">Total</div>
-            </div>
+          <CardContent className="divide-y">
+           
 
             {data.lineItems.map((line) => (
-              <div className="flex items-center justify-between gap-4 px-6 py-2">
+              <div className="flex items-center justify-between gap-4 p-2">
                 <div className="flex items-center flex-1 gap-3">
                   <Avatar className="size-9 rounded-lg ring-2 ring-green-600/20 ring-offset-1 **:rounded-lg after:hidden">
                     <AvatarImage src={line?.image!} />
@@ -209,26 +197,26 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
       </div>
 
       {/* order summary */}
-      <Card className="col-span-2 rounded-2xl bg-secondary">
+      <Card className="col-span-6 lg:col-span-2 rounded-2xl">
         <CardHeader>
           <CardTitle className="text-xl font-semibold">Order Summary</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-6 text-base">
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
+        <CardContent className="space-y-6">
+          <div className="space-y-2 text-sm">
+            <div className="flex items-center justify-between text-muted-foreground">
               <span>Line Items</span> <span>{data.lineItemCount}</span>
             </div>
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between text-muted-foreground">
               <span>Quantity</span> <span>{data.lineItemQuantity}</span>
             </div>
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between text-muted-foreground">
               <span>Subtotal</span> <span>{formatUSD(data.subtotal)}</span>
             </div>
-            <div className="flex items-center justify-between">
-              <span>Tax {data?.taxName && data.taxName}</span>
+            <div className="flex items-center justify-between text-muted-foreground">
+              <span>Tax {data?.taxName && `(${data.taxName})`}</span>
               <span className="font-medium">{formatUSD(data.tax)}</span>
             </div>
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between text-muted-foreground">
               <span>{data.charges?.type}</span>
               <span>{formatUSD(data.charges?.amount ?? 0)}</span>
             </div>
@@ -237,10 +225,10 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
             </div>
           </div>
 
-          <div className="grid gap-4">
+          <div className="grid gap-3">
             {data.status !== "completed" && (
               <Button
-                className="w-full rounded-xl"
+                className="w-full rounded-xl bg-sidebar-accent hover:bg-sidebar-accent/80"
                 size="xl"
                 onClick={handleComplete}
               >
@@ -250,9 +238,8 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
             )}
 
             <Button
-              className="w-full rounded-xl border-primary/40 bg-primary/20 hover:bg-primary/40"
+              className="w-full rounded-xl"
               size="xl"
-              variant="outline"
               asChild
             >
               <a href={`/api/orders/${data.id}/packing-slip`} target="_blank">
@@ -262,7 +249,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
             </Button>
             <Button
               className="w-full rounded-xl"
-              variant="outline"
+              variant="secondary"
               size="xl"
               asChild
             >
@@ -291,16 +278,16 @@ const StepItem = ({
 }) => (
   <div className="flex flex-col items-center self-center">
     <span
-      className={`size-10 mb-2 rounded-xl inline-flex items-center justify-center ${
-        active ? "bg-primary text-primary-foreground" : "bg-secondary"
+      className={`size-9 mb-2 rounded-lg inline-flex items-center justify-center ${
+        active ? "bg-primary text-primary-foreground" : "bg-slate-200"
       }`}
     >
       <Icon className="size-4" />
     </span>
 
-    <span className="text-base uppercase">{label}</span>
+    <span className="text-sm font-medium uppercase">{label}</span>
 
-    <span className="text-sm text-muted-foreground">
+    <span className="text-xs text-muted-foreground">
       {format(date!, "MMMM dd, hh:mm a")}
     </span>
   </div>

@@ -1,29 +1,11 @@
+import { addDays } from "date-fns";
 import { twMerge } from "tailwind-merge";
 import { upload } from "@vercel/blob/client";
 import { clsx, type ClassValue } from "clsx";
+import { LineItemSelectType } from "./db/schema";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
-}
-
-export function getAvatarFallback(value?: string | null): string {
-  if (!value) return "??";
-
-  const trimmed = value.trim();
-  if (!trimmed) return "??";
-
-  // If email, take part before @
-  const namePart = trimmed.includes("@") ? trimmed.split("@")[0] : trimmed;
-
-  const parts = namePart.split(" ").filter(Boolean);
-
-  // Take first letter of first + second word (if exists)
-  const first = parts[0]?.[0] ?? "";
-  const second = parts[1]?.[0] ?? "";
-
-  const initials = (first + second).toUpperCase();
-
-  return initials || "??";
 }
 
 export function getFileType(url: string): "image" | "unknown" {
@@ -74,9 +56,6 @@ export const formatUSD = (value: string | number) =>
     style: "currency",
     currency: "USD",
   }).format(parseFloat(value as string));
-
-import { addDays } from "date-fns";
-import { LineItemSelectType } from "./db/schema";
 
 export const getNextDayDate = (dayName: string) => {
   const daysMap: Record<string, number> = {

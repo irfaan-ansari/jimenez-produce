@@ -6,35 +6,23 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "../ui/collapsible";
-import Image from "next/image";
 import {
   Sidebar,
   SidebarMenu,
   SidebarGroup,
-  SidebarHeader,
   SidebarContent,
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarMenuSub,
   SidebarMenuSubItem,
   SidebarMenuSubButton,
-  SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { Button } from "../ui/button";
 import { Session } from "@/lib/types";
-import { Check, ChevronRight, ChevronsUpDown } from "lucide-react";
-import { getAvatarFallback, getInitialsAvatar } from "@/lib/utils";
+import { ChevronRight } from "lucide-react";
+import { TeamSwitcher } from "./team-switcher";
+import { SIDEBAR_MENU_CUSTOMER } from "@/lib/config";
 import { useRouterStuff } from "@/hooks/use-router-stuff";
-import { SIDEBAR_MENU_CUSTOMER, SITE_CONFIG } from "@/lib/config";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { SidebarProfile } from "./sidebar-profile";
-import { PopoverXDrawer } from "../popover-x-drawer";
-import { Skeleton } from "../ui/skeleton";
-import { useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
-import { authClient } from "@/lib/auth/client";
-import { useTeams } from "@/hooks/use-teams";
 
 export function AppSidebar({ session }: { session: Session }) {
   const { pathname, getQueryString } = useRouterStuff();
@@ -52,7 +40,7 @@ export function AppSidebar({ session }: { session: Session }) {
   return (
     <Sidebar collapsible="icon" variant="floating">
       {/* <SidebarLogo /> */}
-      <SidebarTeam session={session} />
+      <TeamSwitcher session={session} />
       <SidebarContent>
         <SidebarGroup>
           <SidebarMenu>
@@ -154,130 +142,6 @@ export function AppSidebar({ session }: { session: Session }) {
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
-
-      {/* footer/profile */}
-      <SidebarProfile session={session} />
     </Sidebar>
   );
 }
-
-const SidebarTeam = ({ session: auth }: { session: Session }) => {
-  const { session } = auth;
-
-  const queryClient = useQueryClient();
-  const [open, setOpen] = useState(false);
-  const { data, isPending } = useTeams();
-
-  const activeTeam = data?.data?.find(
-    (team) => team.id === session.activeTeamId,
-  );
-
-  const handleChange = async (teamId: string) => {
-    setOpen(false);
-
-    const toastId = toast.loading("Please wait...");
-    const { error } = await authClient.organization.setActiveTeam({
-      teamId,
-    });
-    if (error) {
-      toast.error(error.message, { id: toastId });
-    } else {
-      toast.success("Account changed successfully.", {
-        id: toastId,
-      });
-    }
-
-    queryClient.invalidateQueries();
-  };
-
-  return (
-    <SidebarHeader>
-      <SidebarMenu>
-        <SidebarMenuItem className="rounded-xl group-data-[state=expanded]:absolute group-data-[state=expanded]:top-4 group-data-[state=expanded]:-right-4 group-data-[state=expanded]:z-1 group-data-[state=expanded]:bg-muted">
-          <SidebarTrigger />
-        </SidebarMenuItem>
-
-        <SidebarMenuItem>
-          <PopoverXDrawer
-            open={open}
-            setOpen={setOpen}
-            className="w-60 px-0 *:gap-0 data-[slot=popover-content]:max-w-56"
-            trigger={
-              <SidebarMenuButton
-                size="lg"
-                className="hover:bg-muted! hover:text-sidebar-foreground! data-open:bg-muted! data-open:hover:bg-muted data-open:hover:text-sidebar-foreground data-active:hover:bg-muted"
-              >
-                <Avatar className="size-9 rounded-lg ring-2 ring-green-600/20 ring-offset-1 **:rounded-lg after:hidden">
-                  <AvatarImage
-                    src={activeTeam?.logo ?? SITE_CONFIG.logo}
-                    alt="Logo"
-                    asChild
-                  >
-                    <img
-                      src={activeTeam?.logo ?? SITE_CONFIG.logo}
-                      alt="Logo"
-                      width={40}
-                      height={40}
-                    />
-                  </AvatarImage>
-                  <AvatarFallback className="rounded-xl bg-primary/40 text-xs font-semibold text-primary">
-                    {getAvatarFallback(activeTeam?.name ?? "")}
-                  </AvatarFallback>
-                </Avatar>
-
-                <div className="grid min-w-0 flex-1">
-                  {activeTeam?.name ? (
-                    <span className="truncate text-base leading-tight font-bold">
-                      {activeTeam?.name}
-                    </span>
-                  ) : (
-                    <Skeleton className="h-4 w-3/4 rounded-lg bg-sidebar-accent/10" />
-                  )}
-
-                  {activeTeam?.managerName ? (
-                    <span className="truncate text-sm leading-tight text-muted-foreground">
-                      {activeTeam?.managerName}
-                    </span>
-                  ) : (
-                    <Skeleton className="h-3 w-3/4 mt-1.5 rounded-lg bg-sidebar-accent/10" />
-                  )}
-                </div>
-                <ChevronsUpDown className="ml-auto size-4" />
-              </SidebarMenuButton>
-            }
-          >
-            <div className="flex flex-col gap-0.5 px-2">
-              <span className="px-2 text-xs font-medium text-muted-foreground">
-                Accounts
-              </span>
-              {isPending ? (
-                <Skeleton className="h-9 w-full" />
-              ) : (
-                data?.data?.map((team) => (
-                  <Button
-                    key={team.id}
-                    variant={team.id === activeTeam?.id ? "secondary" : "ghost"}
-                    onClick={() => handleChange(team.id)}
-                    className="rounded-lg!"
-                  >
-                    <Avatar className="size-6 rounded-md **:rounded-md">
-                      <AvatarImage src={team.logo!} alt={team.name} />
-                      <AvatarFallback>
-                        {getInitialsAvatar(team.name)}
-                      </AvatarFallback>
-                    </Avatar>
-                    {team.name}
-
-                    <Check
-                      className={`ml-auto ${team.id === activeTeam?.id ? "opacity-100" : "opacity-0"}`}
-                    />
-                  </Button>
-                ))
-              )}
-            </div>
-          </PopoverXDrawer>
-        </SidebarMenuItem>
-      </SidebarMenu>
-    </SidebarHeader>
-  );
-};

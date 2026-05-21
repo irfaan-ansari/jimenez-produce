@@ -16,14 +16,14 @@ import {
   SortableItem,
   SortableItemHandle,
 } from "@/components/reui/sortable";
+import { formatUSD } from "@/lib/utils";
 import { File } from "@duo-icons/react";
-import { Loader, Search } from "lucide-react";
+import { ImageOff, Loader, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { GripVerticalIcon } from "lucide-react";
 import { useAppForm } from "@/hooks/form-context";
 import { useQueryClient } from "@tanstack/react-query";
 import { Field, FieldGroup } from "@/components/ui/field";
-import { formatUSD, getAvatarFallback } from "@/lib/utils";
 import { ProductSelectorCustomer } from "./product-selector-customer";
 import { createOrderGuide, updateOrderGuide } from "@/server/order-guide";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -210,9 +210,7 @@ export const OrderGuideDialog = ({
                                         src={item?.image as string}
                                       />
                                       <AvatarFallback>
-                                        {getAvatarFallback(
-                                          (item.title as string)?.[0],
-                                        )}
+                                        <ImageOff className="size-4" />
                                       </AvatarFallback>
                                     </Avatar>
                                   </div>

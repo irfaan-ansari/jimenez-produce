@@ -14,7 +14,6 @@ import { Session } from "@/lib/types";
 import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth/client";
-import { getAvatarFallback } from "@/lib/utils";
 import { PopoverXDrawer } from "../popover-x-drawer";
 import { useQueryClient } from "@tanstack/react-query";
 import { ChevronsUpDown, Lock, LogOut, User } from "lucide-react";
@@ -65,7 +64,7 @@ export const SidebarProfile = ({ session }: { session: Session }) => {
                     />
                   </AvatarImage>
                   <AvatarFallback className="bg-foreground text-xs font-semibold text-primary-foreground">
-                    {getAvatarFallback(user.name)}
+                    <User className="size-4" />
                   </AvatarFallback>
                 </Avatar>
                 <div className="grid min-w-0 flex-1">
@@ -92,7 +91,7 @@ export const SidebarProfile = ({ session }: { session: Session }) => {
                   />
                 </AvatarImage>
                 <AvatarFallback className="bg-foreground text-xs font-semibold text-primary-foreground">
-                  {getAvatarFallback(user.name)}
+                  <User className="size-4" />
                 </AvatarFallback>
               </Avatar>
               <div className="grid min-w-0 flex-1 text-left text-sm leading-tight">

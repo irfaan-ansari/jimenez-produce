@@ -28,7 +28,7 @@ export const ProductItem = ({
   draggable,
 }: ProductItemProps) => {
 
-  const sound = new Audio("/beep.mp3");
+  const sound = new Audio("/click.mp3");
   const isSelectable = useOrderUIStore((s) => s.selectionState.mode !== "idle");
 
   const selected = useOrderUIStore(
@@ -86,7 +86,7 @@ export const ProductItem = ({
           <span className="absolute top-0 left-0 z-0 size-20  mask-[linear-gradient(145deg,#000_20%,transparent_60%)] backdrop-blur-3xl [-webkit-mask-image:linear-gradient(140deg,#000_20%,transparent_60%)]" />
           <Checkbox
             id={String(product.productId)}
-            className="bg-background p-2 data-checked:bg-sidebar-accent"
+            className="p-2 bg-background data-checked:bg-sidebar-accent"
             checked={selected}
             onCheckedChange={handleCheckedChange}
           />
@@ -100,13 +100,13 @@ export const ProductItem = ({
       />
 
       <div className="flex min-w-0 flex-1 flex-col items-start gap-4 group-data-[layout=grid]/card:w-full group-data-[layout=grid]/card:flex-col group-data-[layout=grid]/card:justify-between group-data-[layout=grid]/card:p-3 @2xl:flex-row">
-        <div className="flex w-full min-w-0 flex-col gap-1">
+        <div className="flex flex-col w-full min-w-0 gap-1">
           <h4 className="text-sm leading-tight font-medium group-data-[layout=grid]/card:order-2">
             {product.title}
           </h4>
 
           <div className="flex w-full flex-col items-start gap-2 @2xl:flex-row @2xl:items-center">
-            <div className="no-scrollbar flex min-w-0 flex-nowrap items-center gap-1 overflow-auto">
+            <div className="flex items-center min-w-0 gap-1 overflow-auto no-scrollbar flex-nowrap">
               {product.categories?.map((cat, i) => (
                 <span
                   key={cat + i}

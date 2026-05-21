@@ -6,6 +6,7 @@ import { SITE_CONFIG } from "@/lib/config";
 import { Container } from "@/components/container";
 import { AppSidebar } from "@/components/admin/customer-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import AppHeader from "@/components/admin/app-header";
 
 export const metadata = {
   metadataBase: new URL(SITE_CONFIG.url),
@@ -25,6 +26,7 @@ const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
   if (!session?.activeOrganizationId || !user) redirect("/signin");
   // customer user - redirect to customer dashboard
   if (user.accountType !== "customer") redirect("/admin/overview");
+
   return (
     <SidebarProvider
       className="bg-slate-50"
@@ -36,7 +38,8 @@ const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
     >
       <AppSidebar session={{ session, user }} />
       <SidebarInset className="min-w-0 bg-slate-50">
-        <Container className="mx-0 h-full max-w-full p-4 md:p-8">
+        <AppHeader session={{ session, user }} type="customer" />
+        <Container className="h-full max-w-full p-4 mx-0 md:p-8">
           {children}
         </Container>
       </SidebarInset>

@@ -6,44 +6,31 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "../ui/collapsible";
-import Image from "next/image";
+
 import {
   Sidebar,
   SidebarMenu,
   SidebarGroup,
-  SidebarHeader,
   SidebarContent,
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarMenuSub,
   SidebarMenuSubItem,
   SidebarMenuSubButton,
-  SidebarTrigger,
   SidebarGroupLabel,
 } from "@/components/ui/sidebar";
-import { useState } from "react";
-import { toast } from "sonner";
-import { Button } from "../ui/button";
 import { Session } from "@/lib/types";
-import { Skeleton } from "../ui/skeleton";
-import { Separator } from "../ui/separator";
-import { authClient } from "@/lib/auth/client";
-import { getAvatarFallback } from "@/lib/utils";
-import { SidebarProfile } from "./sidebar-profile";
-import { PopoverXDrawer } from "../popover-x-drawer";
-import { WarehouseDialog } from "./warehouse-dialog";
-import { useQueryClient } from "@tanstack/react-query";
+import { ChevronRight } from "lucide-react";
 import { useRouterStuff } from "@/hooks/use-router-stuff";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { Check, ChevronRight, ChevronsUpDown, Plus } from "lucide-react";
-import { APPLICATION_GROUP, SIDEBAR_MENU, SITE_CONFIG } from "@/lib/config";
+import { APPLICATION_GROUP, SIDEBAR_MENU } from "@/lib/config";
+import { OrganizationSwitcher } from "./organization-switcher";
 
 const ROLES = ["admin", "owner"];
 
 export function AppSidebar({ session }: { session: Session }) {
   return (
     <Sidebar collapsible="icon" variant="floating">
-      <SidebarOrganization />
+      <OrganizationSwitcher session={session} />
       <SidebarContent>
         <SidebarGroup>
           <MenuGroup menu={SIDEBAR_MENU} />
@@ -55,9 +42,6 @@ export function AppSidebar({ session }: { session: Session }) {
           </SidebarGroup>
         )}
       </SidebarContent>
-
-      {/* footer/ */}
-      <SidebarProfile session={session} />
     </Sidebar>
   );
 }
@@ -149,119 +133,5 @@ const MenuGroup = ({ menu }: { menu: typeof SIDEBAR_MENU }) => {
         );
       })}
     </SidebarMenu>
-  );
-};
-const SidebarOrganization = () => {
-  const [open, setOpen] = useState(false);
-
-  const queryClient = useQueryClient();
-  const { data, isPending } = authClient.useListOrganizations();
-
-  const { data: activeOrganization } = authClient.useActiveOrganization();
-
-  const handleChange = async (organizationId: string) => {
-    setOpen(false);
-
-    const toastId = toast.loading("Switching warehouse...");
-
-    const { error } = await authClient.organization.setActive({
-      organizationId,
-    });
-
-    if (error) {
-      toast.error(error.message, { id: toastId });
-      return;
-    }
-
-    toast.success("Warehouse changed successfully.", {
-      id: toastId,
-    });
-
-    queryClient.invalidateQueries();
-  };
-
-  return (
-    <SidebarHeader>
-      <SidebarMenu>
-        <SidebarMenuItem className="rounded-xl group-data-[state=expanded]:absolute group-data-[state=expanded]:top-4 group-data-[state=expanded]:-right-4 group-data-[state=expanded]:z-1 group-data-[state=expanded]:bg-muted">
-          <SidebarTrigger />
-        </SidebarMenuItem>
-
-        <SidebarMenuItem>
-          <PopoverXDrawer
-            open={open}
-            setOpen={setOpen}
-            className="w-60 rounded-xl px-0 *:gap-0 data-[slot=popover-content]:max-w-56"
-            trigger={
-              <SidebarMenuButton
-                size="lg"
-                className="hover:bg-muted! hover:text-sidebar-foreground! data-open:bg-muted! data-open:hover:bg-muted data-open:hover:text-sidebar-foreground data-active:hover:bg-muted"
-              >
-                <Avatar className="size-9 rounded-lg ring-2 ring-green-600/20 ring-offset-1 **:rounded-lg after:hidden">
-                  <AvatarImage src={SITE_CONFIG.logo} alt="Logo" asChild>
-                    <Image
-                      src={SITE_CONFIG.logo}
-                      alt="Logo"
-                      width={100}
-                      height={100}
-                    />
-                  </AvatarImage>
-                  <AvatarFallback className="rounded-xl bg-primary/40 text-xs font-semibold text-primary">
-                    {getAvatarFallback(SITE_CONFIG.name)}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="grid min-w-0 flex-1">
-                  <span className="truncate text-sm leading-tight font-semibold">
-                    {SITE_CONFIG.name}
-                  </span>
-                  <span className="truncate text-sm leading-tight text-muted-foreground">
-                    {activeOrganization?.name}
-                  </span>
-                </div>
-                <ChevronsUpDown className="ml-auto size-4" />
-              </SidebarMenuButton>
-            }
-          >
-            <div className="flex flex-col gap-0.5 px-2">
-              {isPending ? (
-                <Skeleton className="h-9 w-full" />
-              ) : (
-                data?.map((org) => (
-                  <Button
-                    key={org.id}
-                    variant={
-                      org.id === activeOrganization?.id ? "secondary" : "ghost"
-                    }
-                    onClick={() => handleChange(org.id)}
-                    className="rounded-lg!"
-                  >
-                    <Avatar className="size-6 rounded-md **:rounded-md">
-                      <AvatarImage src={org.logo!} alt={org.name} />
-                      <AvatarFallback>{org.name[0]}</AvatarFallback>
-                    </Avatar>
-                    {org.name}
-
-                    <Check
-                      className={`ml-auto ${org.id === activeOrganization?.id ? "opacity-100" : "opacity-0"}`}
-                    />
-                  </Button>
-                ))
-              )}
-            </div>
-            <Separator className="my-1" />
-            <div className="px-2">
-              <WarehouseDialog>
-                <Button variant="ghost" className="w-full justify-start">
-                  <span className="rounded-md border p-1">
-                    <Plus />
-                  </span>
-                  Add New
-                </Button>
-              </WarehouseDialog>
-            </div>
-          </PopoverXDrawer>
-        </SidebarMenuItem>
-      </SidebarMenu>
-    </SidebarHeader>
   );
 };

@@ -2,38 +2,24 @@
 
 import z from "zod";
 import {
-  ArrowLeft,
-  ArrowRight,
-  Check,
-  ChevronDown,
   DollarSign,
-  Filter,
   ImageOff,
-  ListFilter,
   Loader,
   Percent,
-  Plus,
   Search,
   Trash2,
-  X,
 } from "lucide-react";
 import {
   Field,
-  FieldContent,
   FieldDescription,
   FieldError,
   FieldGroup,
   FieldLabel,
-  FieldLegend,
-  FieldSet,
-  FieldTitle,
 } from "@/components/ui/field";
 import { toast } from "sonner";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -41,23 +27,16 @@ import {
 import {
   InputGroup,
   InputGroupAddon,
-  InputGroupButton,
   InputGroupInput,
 } from "@/components/ui/input-group";
 import React, { useState } from "react";
 import { PriceLevelType } from "@/lib/types";
-import { Badge } from "@/components/ui/badge";
-import { Tooltip } from "@/components/tooltip";
 import { Button } from "@/components/ui/button";
 import { useStore } from "@tanstack/react-form";
 import { useQueryClient } from "@tanstack/react-query";
-import { formatUSD, getAvatarFallback } from "@/lib/utils";
 import { useAppForm, withForm } from "@/hooks/form-context";
-import { PopoverXDrawer } from "@/components/popover-x-drawer";
-import { useCategories, useInfiniteProducts } from "@/hooks/use-product";
 import { createPriceLevel, updatePriceLevel } from "@/server/price-level";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Input } from "@/components/ui/input";
 import { ProductSelectorAdmin } from "@/components/admin/product-selector-admin";
 
 const numberString = z

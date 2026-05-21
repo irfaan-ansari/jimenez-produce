@@ -29,7 +29,7 @@ import { useDebounce } from "@/hooks/use-debounce";
 import { useInfiniteProducts } from "@/hooks/use-product";
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { formatUSD, getAvatarFallback, getInitialsAvatar } from "@/lib/utils";
+import { formatUSD, getInitialsAvatar } from "@/lib/utils";
 import { LoadingSkeleton } from "./placeholder-component";
 
 interface ProductSelectorAdminType {
