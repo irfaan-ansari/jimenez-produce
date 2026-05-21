@@ -2,42 +2,42 @@
 
 import z from "zod";
 import {
-  Field,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field";
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupInput,
+} from "../ui/input-group";
 import { toast } from "sonner";
 import { Loader } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import { formatPhone } from "@/lib/utils";
+import { QueryState } from "./query-state";
+import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth/client";
 import { Button } from "@/components/ui/button";
 import { useAppForm } from "@/hooks/form-context";
+import { FieldGroup } from "@/components/ui/field";
 
 const schema = z.object({
   id: z.string(),
   name: z.string().min(1, "Enter name"),
-  phoneNumber: z.string().min(1, "Enter name"),
-  email: z.string(),
 });
 
 export const ProfileForm = () => {
-  const { data } = authClient.useSession();
-
+  const { data, isPending, error } = authClient.useSession();
+  const router = useRouter();
   const form = useAppForm({
     defaultValues: {
       id: data?.user?.id || "",
       name: data?.user?.name || "",
-      phoneNumber: data?.user?.phoneNumber || "",
-      email: data?.user?.email || "",
     },
     validators: {
       onSubmit: schema,
     },
     onSubmit: async ({ value }) => {
-      const { name, phoneNumber } = value;
+      const { name } = value;
       const toastId = toast.loading("Please wait...");
-      const { error } = await authClient.updateUser({ name, phoneNumber });
+      const { error } = await authClient.updateUser({ name });
+
       if (error) {
         toast.error(error.message, { id: toastId });
       } else {
@@ -47,83 +47,79 @@ export const ProfileForm = () => {
   });
 
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        form.handleSubmit();
-      }}
+    <QueryState
+      isPending={isPending}
+      error={error}
+      isError={!!error}
+      isEmpty={!data?.user}
     >
-      <FieldGroup>
-        <form.AppField
-          name="name"
-          children={(field) => (
-            <field.TextField
-              label="Name"
-              className="**:data-[slot=input]:rounded-xl"
-            />
-          )}
-        />
-        <form.AppField
-          name="phoneNumber"
-          children={(field) => (
-            <field.PhoneField
-              label="Phone Number"
-              className="**:data-[slot=input]:rounded-xl"
-              // @ts-expect-error
-              disabled={true}
-            />
-          )}
-        />
-        <form.Field
-          name="email"
-          children={(field) => {
-            const isInvalid =
-              field.state.meta.isTouched && !field.state.meta.isValid;
-            return (
-              <Field data-invalid={isInvalid}>
-                <FieldLabel htmlFor={field.name}>Email</FieldLabel>
-                <Input
-                  id={field.name}
-                  name={field.name}
-                  value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                  aria-invalid={isInvalid}
-                  disabled={true}
-                  className="rounded-xl"
-                />
-
-                {isInvalid && <FieldError errors={field.state.meta.errors} />}
-              </Field>
-            );
-          }}
-        />
-        <div className="flex *:w-full sm:*:w-32 items-center justify-end">
-          <form.Subscribe
-            selector={({ isSubmitting, canSubmit, isDirty }) => ({
-              isSubmitting,
-              canSubmit,
-              isDirty,
-            })}
-            children={({ isSubmitting, canSubmit, isDirty }) => {
-              return (
-                <Button
-                  type="submit"
-                  className="w-28"
-                  size="lg"
-                  disabled={isSubmitting || !isDirty || !canSubmit}
-                >
-                  {isSubmitting ? (
-                    <Loader className="animate-spin" />
-                  ) : (
-                    "Update"
-                  )}
-                </Button>
-              );
-            }}
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          form.handleSubmit();
+        }}
+      >
+        <FieldGroup>
+          <form.AppField
+            name="name"
+            children={(field) => (
+              <field.TextField
+                label="Name"
+                className="**:data-[slot=input]:rounded-xl"
+              />
+            )}
           />
-        </div>
-      </FieldGroup>
-    </form>
+
+          <InputGroup className="rounded-xl">
+            <InputGroupInput
+              disabled
+              value={
+                formatPhone(data?.user?.phoneNumber ?? "") || "Add phone number"
+              }
+            />
+
+            <InputGroupAddon align="inline-end">
+              <InputGroupButton variant="secondary">Change</InputGroupButton>
+            </InputGroupAddon>
+          </InputGroup>
+
+          <InputGroup className="rounded-xl">
+            <InputGroupInput
+              disabled
+              value={data?.user?.email || "Add email address"}
+            />
+
+            <InputGroupAddon align="inline-end">
+              <InputGroupButton variant="secondary">Change</InputGroupButton>
+            </InputGroupAddon>
+          </InputGroup>
+          <div className="flex *:w-full sm:*:w-32 items-center justify-end">
+            <form.Subscribe
+              selector={({ isSubmitting, canSubmit, isDirty }) => ({
+                isSubmitting,
+                canSubmit,
+                isDirty,
+              })}
+              children={({ isSubmitting, canSubmit, isDirty }) => {
+                return (
+                  <Button
+                    type="submit"
+                    className="w-28"
+                    size="lg"
+                    disabled={isSubmitting || !isDirty || !canSubmit}
+                  >
+                    {isSubmitting ? (
+                      <Loader className="animate-spin" />
+                    ) : (
+                      "Update"
+                    )}
+                  </Button>
+                );
+              }}
+            />
+          </div>
+        </FieldGroup>
+      </form>
+    </QueryState>
   );
 };

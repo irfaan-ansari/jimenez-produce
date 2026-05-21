@@ -15,9 +15,9 @@ import { useStore } from "@tanstack/react-form";
 import { useConfirm } from "@/hooks/use-confirm";
 import { useAppForm } from "@/hooks/form-context";
 import { useSidebar } from "@/components/ui/sidebar";
+import { List, Loader, Plus, Star } from "lucide-react";
 import { formOpt, getTotals } from "./order-form-options";
 import { OrderTab, useOrderUIStore } from "@/lib/store/order-store";
-import { ChevronLeft, Loader, Menu, Plus, Star } from "lucide-react";
 import { OrderFormToolbar, ToolbarSearch } from "./order-from-toolbar";
 import { OrderGuideDialog } from "@/components/admin/order-guide-dialog";
 import { LoadingSkeleton } from "@/components/admin/placeholder-component";
@@ -122,7 +122,7 @@ export const OrderForm = ({ taxRule }: { taxRule: TaxRule | null }) => {
       <div className="flex flex-wrap justify-start w-full gap-x-2 gap-y-4 md:flex-nowrap">
         <TabsList className="bg-background p-1 *:h-9 group-data-horizontal/tabs:h-11 border *:data-active:bg-secondary rounded-xl *:rounded-lg">
           <TabsTrigger value="all">
-            <Menu />
+            <List />
             All Products
           </TabsTrigger>
           <TabsTrigger value="guides" disabled={selectionState.mode !== "idle"}>
@@ -155,11 +155,12 @@ export const OrderForm = ({ taxRule }: { taxRule: TaxRule | null }) => {
               disabled={field.state.value.length === 0}
             >
               <ShoppingBag />
-              <span className="hidden sm:inline">View cart ({field.state.value.length})</span>
+              <span className="hidden sm:inline">
+                View cart ({field.state.value.length})
+              </span>
             </Button>
           )}
         />
-        
       </div>
 
       {/* toolbar */}

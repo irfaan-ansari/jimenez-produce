@@ -93,7 +93,7 @@ export const sales = ac.newRole({
 });
 
 export const customer = ac.newRole({
-  team: ["update:team"],
+  team: ["update:team","update"],
   order: ["read:team", "update:team"],
   invoice: ["read:team"],
   product: ["read"],

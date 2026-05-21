@@ -79,7 +79,7 @@ export const OrganizationSwitcher = ({
   return (
     <SidebarHeader className={className}>
       <SidebarMenu>
-        <SidebarMenuItem className="rounded-xlgroup-data-[state=expanded]:absolute group-data-[state=expanded]:top-4 group-data-[state=expanded]:-right-4 group-data-[state=expanded]:z-1 group-data-[state=expanded]:bg-muted">
+        <SidebarMenuItem className="rounded-xl group-data-[state=expanded]:absolute group-data-[state=expanded]:top-4 group-data-[state=expanded]:-right-4 group-data-[state=expanded]:z-1 group-data-[state=expanded]:bg-muted">
           <SidebarTrigger className="hidden md:inline-flex" />
         </SidebarMenuItem>
 
@@ -87,7 +87,7 @@ export const OrganizationSwitcher = ({
           <PopoverXDrawer
             open={open}
             setOpen={setOpen}
-            className="w-full px-0 *:gap-0 data-[slot=popover-content]:max-w-56"
+            className="w-full px-0 *:gap-0 data-[slot=popover-content]:max-w-56 data-[slot=popover-content]:w-56"
             trigger={
               <SidebarMenuButton
                 size="lg"

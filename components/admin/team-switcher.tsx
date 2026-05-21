@@ -78,7 +78,7 @@ export const TeamSwitcher = ({ session: auth, className }: { session: Session; c
           <PopoverXDrawer
             open={open}
             setOpen={setOpen}
-            className="w-full px-0 *:gap-0 data-[slot=popover-content]:max-w-56"
+            className="w-full px-0 *:gap-0 data-[slot=popover-content]:max-w-56 data-[slot=popover-content]:w-56"
             trigger={
               <SidebarMenuButton
                 size="lg"
@@ -89,7 +89,7 @@ export const TeamSwitcher = ({ session: auth, className }: { session: Session; c
                     src={activeTeam?.logo ?? SITE_CONFIG.logo}
                     alt="Logo"
                   />
-                  <AvatarFallback className="text-xs font-semibold rounded-xl bg-primary/40 text-primary">
+                  <AvatarFallback className="rounded-xly">
                     <Store className="size-4" />
                   </AvatarFallback>
                 </Avatar>
@@ -122,7 +122,7 @@ export const TeamSwitcher = ({ session: auth, className }: { session: Session; c
                 className="w-full gap-2 hover:bg-transparent"
                 asChild
               >
-                <Link href={`/admin/settings?tab=profile`}>
+                <Link href={`/customer/settings?tab=profile`}>
                   <Avatar className="size-9 rounded-lg ring-2 ring-primary/40 ring-offset-1 **:rounded-lg after:hidden">
                     <AvatarImage src={user?.image || ""} alt={user?.name} />
                     <AvatarFallback className="text-xs font-semibold bg-foreground text-primary-foreground">

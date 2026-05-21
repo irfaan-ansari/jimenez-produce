@@ -1,11 +1,12 @@
 "use client";
+import z from "zod";
+import { toast } from "sonner";
 import { Loader } from "lucide-react";
+import { QueryState } from "./query-state";
+import { authClient } from "@/lib/auth/client";
 import { Button } from "@/components/ui/button";
 import { useAppForm } from "@/hooks/form-context";
 import { FieldGroup } from "@/components/ui/field";
-import z from "zod";
-import { toast } from "sonner";
-import { authClient } from "@/lib/auth/client";
 import { useCustomerProfile } from "@/hooks/use-teams";
 
 const schema = z.object({
@@ -16,7 +17,7 @@ const schema = z.object({
 });
 
 export const AccountForm = () => {
-  const { data } = useCustomerProfile();
+  const { data, isPending, isError, error } = useCustomerProfile();
 
   const form = useAppForm({
     validators: {
@@ -37,13 +38,13 @@ export const AccountForm = () => {
       const toastId = toast.loading("Please wait...");
 
       const { error } = await authClient.organization.updateTeam({
-        teamId: teamId,
+        teamId,
         data: {
           ...value,
         },
       });
       if (error) {
-        toast.error(error.message, { id: toastId });
+        toast.error("Failed to update account", { id: toastId });
       } else {
         toast.success("Team updated successfully", { id: toastId });
       }
@@ -51,70 +52,80 @@ export const AccountForm = () => {
   });
 
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        form.handleSubmit();
-      }}
+    <QueryState
+      isPending={isPending}
+      isError={isError}
+      error={error}
+      isEmpty={!data?.data}
     >
-      <FieldGroup>
-        <form.AppField
-          name="name"
-          children={(field) => (
-            <field.TextField
-              label="Company Name"
-              placeholder="Enter Company Name"
-            />
-          )}
-        />
-        <form.AppField
-          name="managerName"
-          children={(field) => (
-            <field.TextField
-              label="Manager Name"
-              placeholder="Enter Manager Name"
-            />
-          )}
-        />
-        <form.AppField
-          name="phone"
-          children={(field) => (
-            <field.PhoneField label="Phone Number" placeholder="123-123-1234" />
-          )}
-        />
-        <form.AppField
-          name="email"
-          children={(field) => (
-            <field.TextField label="Email" placeholder="name@email.com" />
-          )}
-        />
-
-        <div className="flex *:w-full sm:*:w-32 items-center justify-end">
-          <form.Subscribe
-            selector={({ isSubmitting, canSubmit, isDirty }) => ({
-              isSubmitting,
-              canSubmit,
-              isDirty,
-            })}
-            children={({ isSubmitting, canSubmit, isDirty }) => {
-              return (
-                <Button
-                  type="submit"
-                  className="w-28"
-                  size="lg"
-                  disabled={isSubmitting || !isDirty || !canSubmit}
-                >
-                  {isSubmitting ? (
-                    <Loader className="animate-spin" />
-                  ) : (
-                    "Update"
-                  )}
-                </Button>
-              );
-            }}
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          form.handleSubmit();
+        }}
+      >
+        <FieldGroup>
+          <form.AppField
+            name="name"
+            children={(field) => (
+              <field.TextField
+                label="Company Name"
+                placeholder="Enter Company Name"
+              />
+            )}
           />
-        </div>
-      </FieldGroup>
-    </form>
+          <form.AppField
+            name="managerName"
+            children={(field) => (
+              <field.TextField
+                label="Manager Name"
+                placeholder="Enter Manager Name"
+              />
+            )}
+          />
+          <form.AppField
+            name="phone"
+            children={(field) => (
+              <field.PhoneField
+                label="Phone Number"
+                placeholder="123-123-1234"
+              />
+            )}
+          />
+          <form.AppField
+            name="email"
+            children={(field) => (
+              <field.TextField label="Email" placeholder="name@email.com" />
+            )}
+          />
+
+          <div className="flex *:w-full sm:*:w-32 items-center justify-end">
+            <form.Subscribe
+              selector={({ isSubmitting, canSubmit, isDirty }) => ({
+                isSubmitting,
+                canSubmit,
+                isDirty,
+              })}
+              children={({ isSubmitting, canSubmit, isDirty }) => {
+                return (
+                  <Button
+                    type="submit"
+                    className="w-28"
+                    size="lg"
+                    disabled={isSubmitting || !isDirty || !canSubmit}
+                  >
+                    {isSubmitting ? (
+                      <Loader className="animate-spin" />
+                    ) : (
+                      "Update"
+                    )}
+                  </Button>
+                );
+              }}
+            />
+          </div>
+        </FieldGroup>
+      </form>
+    </QueryState>
   );
 };
