@@ -2,14 +2,6 @@
 import React from "react";
 
 import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import {
   Field,
   FieldContent,
   FieldDescription,
@@ -26,7 +18,16 @@ import { useTeams } from "@/hooks/use-teams";
 import { Button } from "@/components/ui/button";
 import { useDebounce } from "@/hooks/use-debounce";
 import { Checkbox } from "@/components/ui/checkbox";
-import { LoadingSkeleton } from "@/components/admin/placeholder-component";
+
+import {
+  AppDialog,
+  AppDialogClose,
+  AppDialogContent,
+  AppDialogHeader,
+  AppDialogTitle,
+  AppDialogTrigger,
+} from "../app-dialog";
+import { QueryState } from "./query-state";
 
 interface Customer {
   id: string;
@@ -45,14 +46,12 @@ export const CustomersSelector = ({
   children: React.ReactNode;
 }) => {
   const [search, setSearch] = React.useState("");
-
   const [debounced, setDebounced] = React.useState("");
+  const { data: teams, isPending, isError, error } = useTeams({ q: debounced });
 
   const debounceFn = useDebounce((val) => {
     setDebounced(val);
   }, 500);
-
-  const { data: teams, isPending } = useTeams(debounced);
 
   const options = React.useMemo(() => {
     return (
@@ -66,76 +65,80 @@ export const CustomersSelector = ({
   }, [teams]);
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>{children}</DialogTrigger>
+    <AppDialog>
+      <AppDialogTrigger asChild>{children}</AppDialogTrigger>
 
-      <DialogContent className="h-full max-h-[min(700px,90svh)] flex flex-col overflow-hidden rounded-2xl ring-ring/10 sm:max-w-xl">
-        <DialogHeader>
-          <DialogTitle className="text-xl font-bold">
-            Select accounts
-          </DialogTitle>
-        </DialogHeader>
+      <AppDialogContent className="rounded-2xl ring-ring/10 sm:max-w-2xl">
+        <div className="max-h-[min(700px,90svh)] flex  flex-col overflow-hidden gap-6">
+          <AppDialogHeader>
+            <AppDialogTitle className="text-xl font-bold">
+              Select accounts
+            </AppDialogTitle>
+          </AppDialogHeader>
 
-        {/* Search */}
-        <InputGroup className="rounded-xl">
-          <InputGroupAddon>
-            <Search />
-          </InputGroupAddon>
+          {/* Search */}
+          <InputGroup className="rounded-xl shrink-0">
+            <InputGroupAddon>
+              <Search />
+            </InputGroupAddon>
 
-          <InputGroupInput
-            placeholder="Search..."
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              debounceFn(e.target.value);
-            }}
-          />
-        </InputGroup>
+            <InputGroupInput
+              placeholder="Search..."
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                debounceFn(e.target.value);
+              }}
+            />
+          </InputGroup>
 
-        {/* List */}
-        <div className="no-scrollbar flex-1 space-y-1 overflow-y-auto">
-          {isPending ? (
-            <LoadingSkeleton />
-          ) : options.length === 0 ? (
-            <p className="text-sm text-center text-muted-foreground">
-              No result
-            </p>
-          ) : (
-            options.map((team) => {
-              const checked = selected.findIndex((s) => s.id === team.id) >= 0;
+          {/* List */}
+          <div className="no-scrollbar flex-1 space-y-1 overflow-y-auto">
+            <QueryState
+              isPending={isPending}
+              isEmpty={!options.length}
+              isError={isError}
+              error={error}
+            >
+              {options.map((team) => {
+                const checked =
+                  selected.findIndex((s) => s.id === team.id) >= 0;
 
-              return (
-                <FieldLabel
-                  key={team.id}
-                  htmlFor={team.id}
-                  className="cursor-pointer rounded-lg"
-                >
-                  <Field orientation="horizontal">
-                    <Checkbox
-                      id={team.id}
-                      checked={checked}
-                      onCheckedChange={() => setSelectedChange(team)}
-                    />
-                    <FieldContent>
-                      <FieldTitle>{team.name}</FieldTitle>
-                      <FieldDescription className="flex gap-3 flex-nowrap text-xs">
-                        {team.email} • {team.phone}
-                      </FieldDescription>
-                    </FieldContent>
-                  </Field>
-                </FieldLabel>
-              );
-            })
-          )}
+                return (
+                  <FieldLabel
+                    key={team.id}
+                    htmlFor={team.id}
+                    className="cursor-pointer rounded-lg"
+                  >
+                    <Field orientation="horizontal">
+                      <Checkbox
+                        id={team.id}
+                        checked={checked}
+                        onCheckedChange={() => setSelectedChange(team)}
+                      />
+                      <FieldContent>
+                        <FieldTitle>{team.name}</FieldTitle>
+                        <FieldDescription className="flex gap-3 flex-nowrap text-xs">
+                          {team.email} • {team.phone}
+                        </FieldDescription>
+                      </FieldContent>
+                    </Field>
+                  </FieldLabel>
+                );
+              })}
+            </QueryState>
+          </div>
+
+          {/* Footer */}
+          <Field className="flex flex-col-reverse gap-4 sm:flex-row sm:justify-end sm:[&>button]:w-32">
+            <AppDialogClose asChild>
+              <Button size="lg" className="rounded-xl">
+                Add
+              </Button>
+            </AppDialogClose>
+          </Field>
         </div>
-
-        {/* Footer */}
-        <Field className="flex flex-col-reverse gap-4 sm:flex-row sm:justify-end sm:[&>button]:w-32">
-          <DialogClose asChild>
-            <Button size="lg">Add</Button>
-          </DialogClose>
-        </Field>
-      </DialogContent>
-    </Dialog>
+      </AppDialogContent>
+    </AppDialog>
   );
 };

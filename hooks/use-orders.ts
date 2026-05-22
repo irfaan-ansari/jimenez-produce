@@ -2,6 +2,7 @@ import {
   ProductSelectType,
   OrderGuideSelectType,
   OrderGuideItemSelectType,
+  TeamSelectType,
 } from "@/lib/db/schema";
 import { Pagination } from "@/lib/types";
 import { fetcher } from "@/lib/helper/fetcher";
@@ -22,8 +23,8 @@ export interface OrderGuidesResponse {
 }
 
 export interface AdminOrderGuide extends OrderGuideSelectType {
-  itemCount: number;
-  customerCount: number;
+  items: ProductSelectType[];
+  teams: TeamSelectType[];
 }
 
 interface AdminOrderGuidesResponse {
@@ -33,19 +34,6 @@ interface AdminOrderGuidesResponse {
 
 export interface AdminOrderGuideItem
   extends OrderGuideItemSelectType, ProductSelectType {}
-
-interface AdminOrderGuideResponse {
-  data: OrderGuide & {
-    items: OrderGuideItem[];
-    teams: {
-      teamId: string;
-      name: string;
-      phone: string;
-      email: string;
-      managerName: string;
-    }[];
-  };
-}
 
 export const useInfiniteOrderGuides = (query?: string) => {
   return useInfiniteQuery({
@@ -69,21 +57,12 @@ export const useInfiniteOrderGuides = (query?: string) => {
   });
 };
 
-export const useAdminOrderGuides = (query?: string) => {
+export const useAdminOrderGuides = (query?: Record<string, string>) => {
+  const url = new URLSearchParams(query).toString();
   return useQuery({
     queryKey: ["admin-order-guides", query],
     queryFn: () => {
-      return fetcher<AdminOrderGuidesResponse>(`/api/order-guides?${query}`);
-    },
-    staleTime: 1000 * 60 * 5,
-  });
-};
-
-export const useAdminOrderGuide = (id: string | number) => {
-  return useQuery({
-    queryKey: ["admin-order-guide", id],
-    queryFn: () => {
-      return fetcher<AdminOrderGuideResponse>(`/api/order-guides/${id}`);
+      return fetcher<AdminOrderGuidesResponse>(`/api/order-guides?${url}`);
     },
     staleTime: 1000 * 60 * 5,
   });

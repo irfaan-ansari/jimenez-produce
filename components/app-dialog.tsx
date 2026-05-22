@@ -134,7 +134,7 @@ const AppDialogHeader = ({ className, children, ...props }: AppDialogProps) => {
 
   return (
     <AppDialogHeader
-      className={cn("data-[slot=drawer-header]:p-0", className)}
+      className={cn("data-[slot=drawer-header]:p-0 text-left!", className)}
       {...props}
     >
       {children}

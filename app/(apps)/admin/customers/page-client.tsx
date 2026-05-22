@@ -19,8 +19,8 @@ import { getInitialsAvatar } from "@/lib/utils";
 import { Tooltip } from "@/components/tooltip";
 
 export const PageClient = () => {
-  const { searchParams } = useRouterStuff();
-  const { data, isPending, error, isError } = useTeams(searchParams.toString());
+  const { searchParamsObj } = useRouterStuff();
+  const { data, isPending, error, isError } = useTeams(searchParamsObj);
 
   // data
   return (
@@ -93,7 +93,7 @@ export const columns: ColumnDef<Team>[] = [
       console.log("remaining", members);
 
       return (
-        <AvatarGroup >
+        <AvatarGroup>
           {visible.map((member) => (
             <Tooltip key={member.id} content={member.name}>
               <Avatar>

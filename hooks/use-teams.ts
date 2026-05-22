@@ -27,12 +27,13 @@ export const useListTeamMembers = (teamId: string) => {
 };
 
 // list teams
-export const useTeams = (q?: string) => {
+export const useTeams = (query?: Record<string, string>) => {
+  const url = new URLSearchParams(query);
   return useQuery({
-    queryKey: ["teams", q],
+    queryKey: ["teams", query],
     queryFn: () =>
       fetcher<{ data: Team[]; pagination: Pagination }>(
-        `/api/customers${q ? "?" + q : ""}`,
+        `/api/customers${url.toString() ? `?${url.toString()}` : ""}`,
       ),
   });
 };
@@ -47,12 +48,11 @@ export const useTeam = (id: string) => {
 
 // list users
 export const useUsers = (query?: Record<string, string>) => {
-
   const params = new URLSearchParams(query);
   return useQuery({
     queryKey: ["users", query],
     queryFn: async () => {
-      return fetcher<{ data: UserWithMember[], pagination: Pagination }>(
+      return fetcher<{ data: UserWithMember[]; pagination: Pagination }>(
         `/api/users?${params.toString()}`,
       );
     },

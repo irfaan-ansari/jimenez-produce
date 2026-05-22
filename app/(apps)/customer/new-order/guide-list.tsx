@@ -47,6 +47,7 @@ export const GuideList = withForm({
     const queryClient = useQueryClient();
 
     const columns = useOrderGuideStore((s) => s.columns);
+    const columnMeta = useOrderGuideStore((s) => s.columnMeta);
     const setColumns = useOrderGuideStore((s) => s.setColumns);
 
     const loadMoreRef = useInfiniteScroll(() => {
@@ -84,6 +85,7 @@ export const GuideList = withForm({
           description: guide.description ?? "",
           position: guide.position,
           itemCount: guide.items.length,
+          isOwner: !!guide.teamId,
         };
       }
 
@@ -125,30 +127,33 @@ export const GuideList = withForm({
             error={error}
             isEmpty={Object.entries(columns).length === 0}
           >
-            {Object.entries(columns).map(([colKey, items]) => (
-              <KanbanColumn
-                key={colKey}
-                value={colKey}
-                className="rounded-xl border bg-background shadow-sm"
-              >
-                <ColumnHeader value={colKey} />
-                <ProductGrid
-                  items={items}
+            {Object.entries(columns).map(([colKey, items]) => {
+              const meta = columnMeta[colKey];
+              return (
+                <KanbanColumn
                   key={colKey}
-                  form={form}
-                  draggable={true}
-                />
-              </KanbanColumn>
-            ))}
+                  value={colKey}
+                  className={`border shadow-sm rounded-xl bg-background ${!meta.isOwner ? "border-2 border-yellow-500" : ""}`}
+                >
+                  <ColumnHeader value={colKey} />
+                  <ProductGrid
+                    items={items}
+                    key={colKey}
+                    form={form}
+                    draggable={meta.isOwner}
+                  />
+                </KanbanColumn>
+              );
+            })}
           </QueryState>
           <div
             ref={loadMoreRef}
-            className="col-span-full flex min-h-10 w-full justify-center"
+            className="flex justify-center w-full col-span-full min-h-10"
           >
             {isFetchingNextPage && <LoadingSkeleton />}
           </div>
         </KanbanBoard>
-        <KanbanOverlay className="rounded-xl border-2 border-dashed bg-muted/10 " />
+        <KanbanOverlay className="border-2 border-dashed rounded-xl bg-muted/10 " />
       </Kanban>
     );
   },
@@ -180,7 +185,7 @@ const ColumnHeader = ({ value }: { value: string }) => {
           categories: item.categories,
           price: item.price,
         },
-      ])
+      ]),
     );
 
     setSelectionState({
@@ -232,30 +237,37 @@ const ColumnHeader = ({ value }: { value: string }) => {
   };
 
   return (
-    <div className="flex items-center justify-between gap-2 rounded-lg bg-secondary px-2 py-2">
+    <div className="flex items-center justify-between gap-2 px-2 py-2 rounded-lg bg-secondary">
       <KanbanColumnHandle asChild>
         <Button variant="ghost" size="icon-sm" className="opacity-100">
-          <GripVertical className="h-4 w-4" />
+          <GripVertical className="w-4 h-4" />
         </Button>
       </KanbanColumnHandle>
 
-      <div className="flex flex-1 items-center gap-2">
+      <div className="flex items-center flex-1 gap-2">
         <span className="font-medium">{meta?.name}</span>
-        <Badge variant="warning" className="pointer-events-none rounded-sm">
-          {meta?.itemCount}
+        <Badge variant="info" className="rounded-sm pointer-events-none">
+          {meta?.itemCount + " Items"}
         </Badge>
       </div>
       <div className="flex items-center gap-1 self-center [&>svg]:size-4">
-        <Tooltip content="Add / Remove item(s)">
-          <Button
-            size="icon-sm"
-            variant="ghost"
-            disabled={disabled}
-            onClick={handleAddItem}
-          >
-            <PenSquare />
-          </Button>
-        </Tooltip>
+        {!meta.isOwner && (
+          <Badge variant="warning" className="rounded-sm pointer-events-none">
+            Assigned
+          </Badge>
+        )}
+        {meta.isOwner && (
+          <Tooltip content="Add / Remove item(s)">
+            <Button
+              size="icon-sm"
+              variant="ghost"
+              disabled={disabled}
+              onClick={handleAddItem}
+            >
+              <PenSquare />
+            </Button>
+          </Tooltip>
+        )}
         <Tooltip content="Duplicate">
           <Button
             size="icon-sm"
@@ -266,17 +278,19 @@ const ColumnHeader = ({ value }: { value: string }) => {
             {cloning ? <Loader className="animate-spin" /> : <Copy />}
           </Button>
         </Tooltip>
-        <Tooltip content="Delete">
-          <Button
-            size="icon-sm"
-            variant="ghost"
-            className="text-destructive"
-            onClick={hanldeDelete}
-            disabled={disabled}
-          >
-            <Trash2 />
-          </Button>
-        </Tooltip>
+        {meta.isOwner && (
+          <Tooltip content="Delete">
+            <Button
+              size="icon-sm"
+              variant="ghost"
+              className="text-destructive"
+              onClick={hanldeDelete}
+              disabled={disabled}
+            >
+              <Trash2 />
+            </Button>
+          </Tooltip>
+        )}
       </div>
     </div>
   );

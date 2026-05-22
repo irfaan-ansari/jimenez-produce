@@ -8,7 +8,8 @@ export type ColumnMeta = {
   name: string;
   description: string | null;
   position: number;
-  itemCount:number
+  itemCount: number;
+  isOwner: boolean;
 };
 
 type OrderGuideStore = {

@@ -27,7 +27,6 @@ export const ProductItem = ({
   onUpdateQty,
   draggable,
 }: ProductItemProps) => {
-
   const sound = new Audio("/click.mp3");
   const isSelectable = useOrderUIStore((s) => s.selectionState.mode !== "idle");
 

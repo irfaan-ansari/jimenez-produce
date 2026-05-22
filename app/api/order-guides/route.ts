@@ -9,6 +9,7 @@ import {
   isNotNull,
   asc,
   isNull,
+  SQL,
 } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { getSession } from "@/server/auth";
@@ -40,29 +41,33 @@ export const GET = async (req: NextRequest) => {
     const { page = 1, limit = 24, q } = query;
     const offset = (Number(page) - 1) * Number(limit);
 
-    const filters = and(
+    const filters = [
       eq(orderGuide.organizationId, activeOrganizationId),
       isNull(orderGuide.teamId),
+    ];
 
-      q
-        ? or(
-            ilike(orderGuide.name, `%${q}%`),
-            ilike(orderGuide.description, `%${q}%`),
-          )
-        : undefined,
-    );
+    if (q) {
+      filters.push(
+        or(
+          ilike(orderGuide.name, `%${q}%`),
+          ilike(orderGuide.description, `%${q}%`),
+        ) as SQL<unknown>,
+      );
+    }
 
     //   main query
     const result = await db.query.orderGuide.findMany({
-      where: filters,
+      where: and(...filters),
       with: {
         orderGuideItems: {
-          columns: {
-            id: true,
+          with: {
+            product: true,
           },
         },
         orderGuideTargets: {
-          columns: { id: true },
+          with: {
+            team: true,
+          },
         },
       },
       limit: Number(limit),
@@ -76,16 +81,17 @@ export const GET = async (req: NextRequest) => {
         count: count(orderGuide.id),
       })
       .from(orderGuide)
-      .where(filters);
+      .where(and(...filters));
 
     const transform = result.map((item) => {
       const { orderGuideItems, orderGuideTargets, ...rest } = item;
       return {
         ...rest,
-        itemCount: orderGuideItems.length,
-        customerCount: orderGuideTargets.length,
+        items: orderGuideItems.map((i) => i.product),
+        teams: orderGuideTargets.map((t) => t.team),
       };
     });
+
     return NextResponse.json(
       {
         data: transform,
