@@ -105,6 +105,7 @@ export const createOrder = handleAction(
         ),
       ]),
     );
+
     // create order
     const [orderRes] = await db
       .insert(order)
@@ -125,16 +126,19 @@ export const createOrder = handleAction(
       .returning();
 
     // create order line items
+    const lineItemsWithOrderId = lineItems.map((item) => {
+      const { createdAt, updatedAt, ...rest } = item;
+      return {
+        ...rest,
+        orderId: orderRes.id,
+        organizationId: activeOrganizationId,
+        teamId: activeTeamId,
+      };
+    });
+
     const [lineItemsres] = await db
       .insert(lineItem)
-      .values(
-        lineItems.map((item) => ({
-          ...item,
-          orderId: orderRes.id,
-          organizationId: activeOrganizationId,
-          teamId: activeTeamId,
-        })),
-      )
+      .values(lineItemsWithOrderId)
       .returning();
 
     return { ...orderRes, lineItems: lineItemsres };

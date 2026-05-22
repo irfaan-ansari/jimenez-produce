@@ -69,7 +69,7 @@ export const CustomersSelector = ({
       <AppDialogTrigger asChild>{children}</AppDialogTrigger>
 
       <AppDialogContent className="rounded-2xl ring-ring/10 sm:max-w-2xl">
-        <div className="max-h-[min(700px,90svh)] flex  flex-col overflow-hidden gap-6">
+        <div className="max-h-[min(700px,90svh)] flex  flex-col overflow-hidden gap-4 md:gap-6">
           <AppDialogHeader>
             <AppDialogTitle className="text-xl font-bold">
               Select accounts
@@ -93,7 +93,7 @@ export const CustomersSelector = ({
           </InputGroup>
 
           {/* List */}
-          <div className="no-scrollbar flex-1 space-y-1 overflow-y-auto">
+          <div className="flex-1 space-y-1 overflow-y-auto no-scrollbar">
             <QueryState
               isPending={isPending}
               isEmpty={!options.length}
@@ -108,7 +108,7 @@ export const CustomersSelector = ({
                   <FieldLabel
                     key={team.id}
                     htmlFor={team.id}
-                    className="cursor-pointer rounded-lg"
+                    className="rounded-lg cursor-pointer"
                   >
                     <Field orientation="horizontal">
                       <Checkbox
@@ -118,7 +118,7 @@ export const CustomersSelector = ({
                       />
                       <FieldContent>
                         <FieldTitle>{team.name}</FieldTitle>
-                        <FieldDescription className="flex gap-3 flex-nowrap text-xs">
+                        <FieldDescription className="flex gap-3 text-xs flex-nowrap">
                           {team.email} • {team.phone}
                         </FieldDescription>
                       </FieldContent>

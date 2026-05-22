@@ -9,6 +9,7 @@ import {
   ChevronLeft,
   CircleDashed,
   PackageCheck,
+  ChevronsUpDown,
 } from "lucide-react";
 import {
   Card,
@@ -302,7 +303,7 @@ const PriceLevelForm = ({
       <form.Field name="priceLevel">
         {(field) => (
           <div className="space-y-4">
-            {field.state.value?.id ? (
+            {field.state.value?.id && (
               <div className="flex items-center w-full gap-2 p-2 border rounded-lg bg-secondary/20">
                 <div className="flex flex-1 flex-col items-start gap-0.5">
                   <span className="font-medium">{field.state.value.name}</span>
@@ -328,10 +329,6 @@ const PriceLevelForm = ({
                   </span>
                 )}
               </div>
-            ) : (
-              <div className="text-muted-foreground">
-                Click to select price level
-              </div>
             )}
             <PriceLevelSelector
               value={field.state.value!}
@@ -339,12 +336,9 @@ const PriceLevelForm = ({
                 field.handleChange({ ...value, id: Number(value.id) } as any);
               }}
             >
-              <Button
-                variant="outline"
-                size="sm"
-                className="border-2 border-dashed"
-              >
-                <Plus /> Select price level
+              <Button variant="outline" size="lg" className="w-full rounded-xl">
+                <Plus /> Select price level...
+                <ChevronsUpDown className="ml-auto" />
               </Button>
             </PriceLevelSelector>
           </div>
@@ -434,10 +428,11 @@ const TaxRulesForm = ({
               >
                 <Button
                   variant="outline"
-                  size="sm"
-                  className="border-2 border-dashed"
+                  size="lg"
+                  className="w-full rounded-xl"
                 >
-                  <Plus /> Add tax rules
+                  <Plus /> Select tax rule...
+                  <ChevronsUpDown className="ml-auto" />
                 </Button>
               </TaxRulesSelector>
             </div>
@@ -576,10 +571,11 @@ const ProductAccessForm = ({
               >
                 <Button
                   variant="outline"
-                  size="sm"
-                  className="border-2 border-dashed"
+                  size="lg"
+                  className="w-full rounded-xl"
                 >
-                  <Plus /> Add products
+                  <Plus /> Select products...
+                  <ChevronsUpDown className="ml-auto" />
                 </Button>
               </ProductSelectorAdmin>
             </div>

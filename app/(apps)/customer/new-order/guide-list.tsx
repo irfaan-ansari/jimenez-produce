@@ -66,16 +66,26 @@ export const GuideList = withForm({
         const key = `${guide.id}-${guide.name}`;
 
         columns[key] = guide.items.map((i) => {
-          const { finalPrice, categories, isTaxable, id } = i;
+          const {
+            finalPrice,
+            categories,
+            isTaxable,
+            id,
+            title,
+            image,
+            identifier,
+          } = i;
           return {
-            ...i,
             dndId: id,
-            price: finalPrice,
-            total: "0",
-            quantity: "0",
+            productId: id,
+            title,
+            image,
+            identifier,
             categories: categories ?? [],
-            lastPurchased: null,
-            isTaxable: isTaxable!,
+            price: finalPrice,
+            total: finalPrice,
+            quantity: "0",
+            isTaxable: isTaxable ?? false,
           };
         });
 

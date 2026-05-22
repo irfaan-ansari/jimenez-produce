@@ -6,6 +6,7 @@ import {
   ImageOff,
   Loader,
   Percent,
+  Plus,
   Search,
   Trash2,
 } from "lucide-react";
@@ -38,6 +39,13 @@ import { useAppForm, withForm } from "@/hooks/form-context";
 import { createPriceLevel, updatePriceLevel } from "@/server/price-level";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ProductSelectorAdmin } from "@/components/admin/product-selector-admin";
+import {
+  AppDialog,
+  AppDialogContent,
+  AppDialogHeader,
+  AppDialogTitle,
+  AppDialogTrigger,
+} from "@/components/app-dialog";
 
 const numberString = z
   .string()
@@ -177,20 +185,22 @@ export const PriceLevelDialog = ({
   );
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="rounded-2xl px-0 ring-ring/10 sm:max-w-2xl">
+    <AppDialog open={open} onOpenChange={setOpen}>
+      <AppDialogTrigger asChild>{children}</AppDialogTrigger>
+      <AppDialogContent className="rounded-2xl ring-ring/10 sm:max-w-2xl">
         <form
           onSubmit={(e) => {
             e.preventDefault();
             form.handleSubmit();
           }}
-          className="flex h-[min(700px,80svh)] flex-col"
+          className="max-h-[min(700px,90svh)] flex  flex-col overflow-hidden gap-4 md:gap-6"
         >
-          <DialogHeader className="mb-4 px-6">
-            <DialogTitle className="text-xl font-bold">Price level</DialogTitle>
-          </DialogHeader>
-          <div className="no-scrollbar flex-1 overflow-auto">
+          <AppDialogHeader>
+            <AppDialogTitle className="text-xl font-bold">
+              Price level
+            </AppDialogTitle>
+          </AppDialogHeader>
+          <div className="flex-1 overflow-auto no-scrollbar">
             <FieldGroup className="grid grid-cols-1 px-6 lg:grid-cols-2">
               <form.AppField
                 name="name"
@@ -328,8 +338,8 @@ export const PriceLevelDialog = ({
             />
           </Field>
         </form>
-      </DialogContent>
-    </Dialog>
+      </AppDialogContent>
+    </AppDialog>
   );
 };
 
@@ -340,7 +350,7 @@ const ItemList = withForm({
   defaultValues,
   render: function Render({ form }) {
     return (
-      <div className="mt-6 flex flex-col space-y-4 px-6">
+      <div className="flex flex-col space-y-4">
         <form.Field
           name="items"
           mode="array"
@@ -377,7 +387,7 @@ const ItemList = withForm({
                 variant="outline"
                 className="justify-start rounded-xl text-muted-foreground"
               >
-                <Search /> Browse products...
+                <Plus /> Select products...
               </Button>
             </ProductSelectorAdmin>
           )}
@@ -395,8 +405,8 @@ const ItemList = withForm({
                       className="flex gap-3 not-first:pt-2 not-last:pb-2"
                       key={item.productId}
                     >
-                      <div className="flex flex-1 items-start gap-3">
-                        <div className="shrink-0 pt-1">
+                      <div className="flex items-start flex-1 gap-3">
+                        <div className="pt-1 shrink-0">
                           <Avatar className="size-9 rounded-lg ring-2 ring-ring ring-offset-1 **:rounded-lg after:hidden">
                             <AvatarImage src={item?.image as string} />
                             <AvatarFallback>
@@ -404,8 +414,8 @@ const ItemList = withForm({
                             </AvatarFallback>
                           </Avatar>
                         </div>
-                        <div className="min-w-0 flex-1 space-y-1">
-                          <h4 className="leading-tight font-medium whitespace-normal">
+                        <div className="flex-1 min-w-0 space-y-1">
+                          <h4 className="font-medium leading-tight whitespace-normal">
                             {item.title}
                           </h4>
                           <span className="text-xs font-medium text-muted-foreground">
@@ -414,7 +424,7 @@ const ItemList = withForm({
                         </div>
                       </div>
 
-                      <div className="w-20 self-center text-right">
+                      <div className="self-center w-20 text-right">
                         <form.Field
                           name={`items[${i}].price`}
                           children={(field) => (
@@ -424,7 +434,7 @@ const ItemList = withForm({
                                 name={field.name}
                                 value={field.state.value}
                                 onBlur={field.handleBlur}
-                                className="h-9 text-right"
+                                className="text-right h-9"
                                 placeholder={item.basePrice ?? "0"}
                                 onChange={(e) => {
                                   field.handleChange(e.target.value);
@@ -434,7 +444,7 @@ const ItemList = withForm({
                           )}
                         />
                       </div>
-                      <div className="w-10 self-center text-right">
+                      <div className="self-center w-10 text-right">
                         <Button
                           size="icon-xs"
                           variant="destructive"

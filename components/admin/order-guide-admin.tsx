@@ -119,7 +119,7 @@ export const OrderGuideAdmin = ({
     <AppDialog open={open} onOpenChange={onOpenChange}>
       <AppDialogTrigger asChild>{children}</AppDialogTrigger>
       <AppDialogContent className="overflow-hidden sm:max-w-2xl">
-        <div className="max-h-[min(700px,90svh)] flex  flex-col overflow-hidden gap-6">
+        <div className="max-h-[min(700px,90svh)] flex  flex-col overflow-hidden gap-4 md:gap-6">
           <AppDialogHeader>
             <AppDialogTitle className="text-xl font-semibold">
               Order Guide
