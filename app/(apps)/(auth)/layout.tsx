@@ -17,21 +17,21 @@ const AuthLayout = async ({ children }: { children: React.ReactNode }) => {
 
   return (
     <div className="flex overflow-hidden bg-linear-to-br from-lime-950 to-primary">
-      <div className="relative hidden flex-1 flex-col  px-6 pt-40 md:flex lg:px-16">
-        <span className="absolute right-20 bottom-20 size-72 rounded-full border-2 opacity-50"></span>
-        <span className="absolute right-44 bottom-44 size-40 rounded-full border-2 opacity-20"></span>
-        <div className="flex h-full max-w-xl flex-col items-start gap-6 text-white">
-          <div className="mb-10 rounded-full bg-background p-2">
+      <div className="relative flex-col flex-1 hidden px-6 pt-40 md:flex lg:px-16">
+        <span className="absolute border-2 rounded-full opacity-50 right-20 bottom-20 size-72"></span>
+        <span className="absolute border-2 rounded-full right-44 bottom-44 size-40 opacity-20"></span>
+        <div className="flex flex-col items-start h-full max-w-xl gap-6 text-white">
+          <div className="p-2 mb-10 rounded-full bg-background">
             <Image
               width={100}
               height={100}
               alt="Logo"
               src={SITE_CONFIG.logo}
-              className="aspect-square w-full max-w-24 object-contain"
+              className="object-contain w-full aspect-square max-w-24"
             />
           </div>
           <div className="space-y-4">
-            <h2 className="font-heading text-5xl leading-snug font-extrabold uppercase">
+            <h2 className="text-5xl font-extrabold leading-snug uppercase font-heading">
               Fresh ordering made simple
             </h2>
             <p className="text-xl font-medium">
@@ -41,7 +41,7 @@ const AuthLayout = async ({ children }: { children: React.ReactNode }) => {
           </div>
         </div>
       </div>
-      <div className="h-svh overflow-auto rounded-l-2xl bg-secondary flex-1 lg:max-w-xl">
+      <div className="flex-1 overflow-auto h-svh rounded-2xl lg:rounded-l-2xl lg:rounded-r-0 bg-secondary lg:max-w-xl">
         {children}
       </div>
     </div>
