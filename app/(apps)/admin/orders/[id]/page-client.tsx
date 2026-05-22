@@ -3,7 +3,6 @@
 import {
   Home,
   CheckCircle,
-  MapPinned,
   ChevronLeft,
   CircleCheck,
   ClipboardCheck,
@@ -106,7 +105,9 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
                 <ChevronLeft /> Back
               </Link>
             </Button>
-            <h1 className="text-lg font-semibold">Order #{data.id}</h1>
+            <h1 className="text-lg font-semibold line-clamp-1">
+              Order #{data.id}
+            </h1>
           </div>
           <div className="flex items-center gap-4">
             <Badge
@@ -122,7 +123,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
 
         {/* progress */}
         <Card className="rounded-2xl">
-          <CardContent className="flex justify-between gap-4 text-base">
+          <CardContent className="flex flex-col md:flex-row justify-between items-start gap-4 text-base">
             {STEPS.map((step, i) => (
               <StepItem key={i} {...step} />
             ))}
@@ -137,8 +138,6 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
             </CardTitle>
           </CardHeader>
           <CardContent className="divide-y">
-           
-
             {data.lineItems.map((line) => (
               <div className="flex items-center justify-between gap-4 p-2">
                 <div className="flex items-center flex-1 gap-3">
@@ -237,11 +236,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
               </Button>
             )}
 
-            <Button
-              className="w-full rounded-xl"
-              size="xl"
-              asChild
-            >
+            <Button className="w-full rounded-xl" size="xl" asChild>
               <a href={`/api/orders/${data.id}/packing-slip`} target="_blank">
                 <Package />
                 Download Packing Slip
@@ -276,19 +271,19 @@ const StepItem = ({
   date: string | Date | null;
   active: boolean;
 }) => (
-  <div className="flex flex-col items-center self-center">
+  <div className="flex md:flex-col items-start md:items-center gap-3 self-start">
     <span
-      className={`size-9 mb-2 rounded-lg inline-flex items-center justify-center ${
+      className={`size-9 rounded-lg inline-flex items-center justify-center ${
         active ? "bg-primary text-primary-foreground" : "bg-slate-200"
       }`}
     >
       <Icon className="size-4" />
     </span>
-
-    <span className="text-sm font-medium uppercase">{label}</span>
-
-    <span className="text-xs text-muted-foreground">
-      {format(date!, "MMMM dd, hh:mm a")}
-    </span>
+    <div className="flex flex-col md:items-center">
+      <span className="text-sm font-medium uppercase">{label}</span>
+      <span className="text-xs text-muted-foreground">
+        {format(date!, "MMMM dd, hh:mm a")}
+      </span>
+    </div>
   </div>
 );

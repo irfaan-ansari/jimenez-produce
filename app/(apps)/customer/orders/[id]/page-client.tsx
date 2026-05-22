@@ -97,14 +97,15 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
           <CardContent className="divide-y">
             {data.lineItems.map((line) => (
               <div
-                className="flex items-center justify-between gap-4 pt-2 first:border-t not-last:pb-2"
+                className="flex items-start gap-3 pt-2 first:border-t not-last:pb-2"
                 key={line.id}
               >
-                <div className="flex items-center flex-1 gap-3">
-                  <Avatar className="size-9 rounded-lg ring-2 ring-green-600/20 ring-offset-1 **:rounded-lg after:hidden">
-                    <AvatarImage src={line?.image!} />
-                    <AvatarFallback>{line.title?.charAt(0)}</AvatarFallback>
-                  </Avatar>
+                <Avatar className="size-9 rounded-lg ring-2 ring-green-600/20 ring-offset-1 **:rounded-lg after:hidden">
+                  <AvatarImage src={line?.image!} />
+                  <AvatarFallback>{line.title?.charAt(0)}</AvatarFallback>
+                </Avatar>
+
+                <div className="flex flex-col gap-3">
                   <div className="space-y-1">
                     <h4 className="font-medium leading-tight whitespace-normal">
                       {line.title}
@@ -118,15 +119,18 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
                       </Badge>
                     )}
                   </div>
-                </div>
-                <div className="w-16 text-right text-muted-foreground">
-                  {formatUSD(line.price!)}
-                </div>
-                <div className="w-16 text-right text-muted-foreground">
-                  {line.quantity}
-                </div>
-                <div className="w-16 font-semibold text-right">
-                  {formatUSD(line.total!)}
+
+                  <div className="flex gap-2">
+                    <div className="w-16 text-right text-muted-foreground">
+                      {formatUSD(line.price!)}
+                    </div>
+                    <div className="w-16 text-right text-muted-foreground">
+                      {line.quantity}
+                    </div>
+                    <div className="w-16 font-semibold text-right">
+                      {formatUSD(line.total!)}
+                    </div>
+                  </div>
                 </div>
               </div>
             ))}
@@ -177,7 +181,9 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
             </Button>
             <Button
               className="w-full rounded-xl bg-sidebar-accent hover:bg-sidebar-accent/80"
-              size="xl" asChild>
+              size="xl"
+              asChild
+            >
               <Link href={`/customer/new-order?id=${data.id}`}>
                 <Copy />
                 Reorder
@@ -232,8 +238,9 @@ const StepItem = ({
 }) => (
   <div className="flex flex-col items-center self-center">
     <span
-      className={`size-10 mb-2 rounded-lg inline-flex items-center justify-center ${active ? "bg-primary text-primary-foreground" : "bg-secondary"
-        }`}
+      className={`size-10 mb-2 rounded-lg inline-flex items-center justify-center ${
+        active ? "bg-primary text-primary-foreground" : "bg-secondary"
+      }`}
     >
       <Icon className="size-4" />
     </span>

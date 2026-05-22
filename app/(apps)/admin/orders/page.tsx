@@ -18,18 +18,18 @@ const OPTIONS = [
 const OrdersPage = async () => {
   return (
     <div className="flex flex-col h-full gap-5">
-      <div className="flex w-full flex-wrap items-start gap-4 **:data-[slot=input-group]:bg-background lg:flex-row lg:items-center">
+      <div className="flex w-full flex-wrap md:flex-nowrap items-start gap-x-2 gap-y-4">
         <div className="flex-1 space-y-1">
-          <h1 className="text-2xl font-bold">Manage orders</h1>
+          <h1 className="text-xl font-bold">Manage orders</h1>
           <p className="text-sm text-muted-foreground">
             View, track, and manage all orders in one place.
           </p>
         </div>
-        <Button size="xl" className="rounded-xl">
+        <Button size="xl" className="rounded-xl md:order-3">
           <Plus /> Draft Order
         </Button>
 
-        <SearchBar className="basis-full" />
+        <SearchBar className="basis-full max-w-full md:basis-xs md:order-2" />
       </div>
 
       <FilterTab tabs={OPTIONS} path="/api/orders/count" />

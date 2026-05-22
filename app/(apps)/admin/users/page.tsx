@@ -11,16 +11,15 @@ export const metadata = {
 const TeamPage = async () => {
   return (
     <div className="flex h-full flex-col gap-5">
-      <div className="flex items-center gap-4 *:flex-1">
-        <h1 className="text-2xl font-semibold">Users</h1>
-        <div className="flex items-center justify-end gap-4">
-          <SearchBar />
-          <UserDialog data={{ accountType: "admin" }}>
-            <Button size="xl" className="rounded-xl">
-              <Plus /> Add New
-            </Button>
-          </UserDialog>
-        </div>
+      <div className="flex flex-wrap md:flex-nowrap items-center gap-y-4 gap-x-2">
+        <h1 className="text-xl font-bold flex-1">Users</h1>
+
+        <UserDialog data={{ accountType: "admin" }}>
+          <Button size="xl" className="rounded-xl md:order-3">
+            <Plus /> Add New
+          </Button>
+        </UserDialog>
+        <SearchBar className="basis-full max-w-full md:max-w-xs" />
       </div>
       <PageClient />
     </div>

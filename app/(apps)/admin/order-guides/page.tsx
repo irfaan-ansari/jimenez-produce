@@ -8,25 +8,20 @@ import { OrderGuideAdmin } from "@/components/order-guide-admin";
 const OrderGuidesPage = () => {
   return (
     <div className="flex h-full flex-col gap-6">
-      <div className="flex w-full items-center gap-4 **:data-[slot=input-group]:bg-background">
+      <div className="flex flex-wrap md:flex-nowrap items-center gap-y-4 gap-x-2">
         <div className="flex-1 space-y-1">
-          <h1 className="text-2xl font-bold">Order guides</h1>
-          <p className="text-sm text-muted-foreground">
+          <h1 className="text-xl font-bold">Order guides</h1>
+          <p className="text-sm text-muted-foreground line-clamp-1">
             Create and nmanage order guides for your customers.
           </p>
         </div>
-        <SearchBar />
 
-        <Button size="xl" className="rounded-xl" asChild>
-          <Link href="/admin/order-guides/new">
-            <Plus /> New Guide
-          </Link>
-        </Button>
         <OrderGuideAdmin>
-          <Button size="xl" className="rounded-xl">
+          <Button size="xl" className="min-w-28 rounded-xl md:order-3">
             <Plus /> New Guide
           </Button>
         </OrderGuideAdmin>
+        <SearchBar className="basis-full max-w-full md:max-w-xs" />
       </div>
 
       {/* content */}

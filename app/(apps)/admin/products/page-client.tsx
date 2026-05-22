@@ -1,8 +1,7 @@
 "use client";
 
 import React from "react";
-
-import { SquarePen } from "lucide-react";
+import { ImageOff, SquarePen } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -72,7 +71,7 @@ export const PageClient = () => {
                 </Badge>
               </div>
 
-              <div className="relative aspect-[1.6/1] overflow-hidden rounded-xl bg-secondary">
+              <div className="relative inline-flex items-center justify-center aspect-[1.6/1] overflow-hidden rounded-t-xl bg-secondary">
                 {product.image ? (
                   <img
                     width={100}
@@ -80,20 +79,13 @@ export const PageClient = () => {
                     src={product.image!}
                     alt={product.title}
                     loading={i <= 10 ? "eager" : "lazy"}
-                    className="relative z-1 aspect-[1.6/1] h-auto w-full rounded-lg object-contain transition ease-out"
+                    className="absolute inset-0 size-full object-cover transition ease-out"
                   />
                 ) : (
-                  <img
-                    width={100}
-                    height={100}
-                    src={defaultImage}
-                    alt={product.title}
-                    loading={i <= 10 ? "eager" : "lazy"}
-                    className="relative z-1 w-full rounded-lg object-cover transition ease-out"
-                  />
+                  <ImageOff className="size-6 opacity-40" />
                 )}
               </div>
-              <CardContent className="flex flex-1 flex-col space-y-2">
+              <CardContent className="flex flex-1 flex-col space-y-2 -translate-y-6">
                 <div className="flex items-center gap-2">
                   {/* tax status */}
                   {product.isTaxable && (
@@ -102,22 +94,16 @@ export const PageClient = () => {
                   {/* item code */}
                   <Badge className="h-5 rounded-sm">{product.identifier}</Badge>
                 </div>
-                <div className="flex flex-wrap gap-1">
-                  {product.categories?.map((cat) => (
-                    <span
-                      key={cat}
-                      className="text-xs leading-tight font-medium text-muted-foreground uppercase not-last:border-r-2 not-last:pr-2"
-                    >
-                      {cat}
-                    </span>
-                  ))}
+
+                <div className="text-xs font-medium uppercase text-muted-foreground">
+                  {product.categories?.join(" 〡 ")}
                 </div>
                 <CardTitle className="mt-auto font-semibold">
                   {product.title}
                 </CardTitle>
 
                 <span className="text-base font-semibold text-primary">
-                  {formatUSD(product.basePrice)}:
+                  {formatUSD(product.basePrice)}
                 </span>
               </CardContent>
             </Card>

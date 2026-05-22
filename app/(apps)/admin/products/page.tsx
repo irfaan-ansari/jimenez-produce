@@ -20,28 +20,26 @@ const OPTIONS = [
 const CatalogPage = async () => {
   return (
     <div className="flex h-full flex-col gap-5">
-      <div className="justify-betwee flex w-full items-center gap-4">
+      <div className="flex flex-wrap md:flex-nowrap w-full items-center gap-y-4 gap-x-2">
         <div className="flex flex-1 flex-col">
-          <h1 className="text-2xl font-semibold">Products</h1>
-          <p className="text-muted-foreground text-sm">
+          <h1 className="text-xl font-bold">Products</h1>
+          <p className="text-muted-foreground text-sm line-clamp-1">
             Manage your products, prices, and inventory.
           </p>
         </div>
 
-        <div className="flex flex-1 items-center justify-end gap-4">
-          <SearchBar />
-          <ImportDialog>
-            <Button variant="outline" size="xl" className="rounded-xl">
-              <Upload /> Import
-            </Button>
-          </ImportDialog>
-          <ProductDialog>
-            <Button size="xl" className="rounded-xl">
-              <Plus />
-              Add New
-            </Button>
-          </ProductDialog>
-        </div>
+        <ImportDialog>
+          <Button variant="outline" size="xl" className="rounded-xl md:order-3">
+            <Upload /> Import
+          </Button>
+        </ImportDialog>
+        <ProductDialog>
+          <Button size="xl" className="rounded-xl md:order-4">
+            <Plus />
+            Add New
+          </Button>
+        </ProductDialog>
+        <SearchBar className="basis-full md:basis-xs md:order-2 max-w-full" />
       </div>
 
       <FilterTab tabs={OPTIONS} path="/api/products/count" />

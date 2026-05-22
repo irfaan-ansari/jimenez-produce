@@ -81,6 +81,7 @@ export const OrderActions = ({
           <MoreVertical className="size-5" />
         </Button>
       }
+      className="*:data-[slot=button]:justify-start"
     >
       {showView && (
         <Button
