@@ -2,13 +2,13 @@ import React from "react";
 import { ProductGrid } from "./product-grid";
 import { formOpt } from "./order-form-options";
 import { withForm } from "@/hooks/form-context";
-import {
-  LoadingSkeleton,
-} from "@/components/admin/placeholder-component";
+import { LoadingSkeleton } from "@/components/admin/placeholder-component";
 import { useOrderUIStore } from "@/lib/store/order-store";
 import { QueryState } from "@/components/admin/query-state";
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
 import { useInfiniteProductsCustomer } from "@/hooks/use-product";
+import { Button } from "@/components/ui/button";
+import { Loader } from "lucide-react";
 
 export const ItemList = withForm({
   ...formOpt,
@@ -73,7 +73,24 @@ export const ItemList = withForm({
           ref={loadMoreRef}
           className="col-span-full flex min-h-10 w-full justify-center"
         >
-          {isFetchingNextPage && <LoadingSkeleton />}
+          {hasNextPage && (
+            <Button
+              size="lg"
+              type="button"
+              onClick={() => fetchNextPage()}
+              className="rounded-lg w-32"
+              disabled={isFetchingNextPage}
+            >
+              {isFetchingNextPage ? (
+                <>
+                  <Loader className="animate-spin" />
+                  Loading...
+                </>
+              ) : (
+                "Load more"
+              )}
+            </Button>
+          )}
         </div>
       </div>
     );

@@ -54,7 +54,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
                 <ChevronLeft /> Back
               </Link>
             </Button>
-            <h1 className="text-lg font-semibold">Order #{data.id}</h1>
+            <h1 className="font-semibold line-clamp-1">Order #{data.id}</h1>
           </div>
           <Badge
             variant="outline"
@@ -90,14 +90,12 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
         {/* purchased items */}
         <Card className="rounded-2xl">
           <CardHeader>
-            <CardTitle className="text-lg font-semibold">
-              Purchased Items ({data?.lineItemCount})
-            </CardTitle>
+            <CardTitle className="text-lg font-bold">Order items</CardTitle>
           </CardHeader>
           <CardContent className="divide-y">
             {data.lineItems.map((line) => (
               <div
-                className="flex items-start gap-3 pt-2 first:border-t not-last:pb-2"
+                className="flex items-start gap-3 not-first:pt-2 not-last:pb-2"
                 key={line.id}
               >
                 <Avatar className="size-9 rounded-lg ring-2 ring-green-600/20 ring-offset-1 **:rounded-lg after:hidden">
@@ -105,30 +103,26 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
                   <AvatarFallback>{line.title?.charAt(0)}</AvatarFallback>
                 </Avatar>
 
-                <div className="flex flex-col gap-3">
-                  <div className="space-y-1">
-                    <h4 className="font-medium leading-tight whitespace-normal">
-                      {line.title}
-                    </h4>
+                <div className="space-y-1.5 flex-1">
+                  <h4 className="font-medium leading-tight whitespace-normal">
+                    {line.title}
+                  </h4>
+                  <div className="flex justify-between">
                     {line.identifier && (
                       <Badge
                         variant="secondary"
-                        className="border rounded-xl border-border"
+                        className="border rounded-sm! font-medium border-border"
                       >
                         {line.identifier}
                       </Badge>
                     )}
-                  </div>
-
-                  <div className="flex gap-2">
-                    <div className="w-16 text-right text-muted-foreground">
-                      {formatUSD(line.price!)}
-                    </div>
-                    <div className="w-16 text-right text-muted-foreground">
-                      {line.quantity}
-                    </div>
-                    <div className="w-16 font-semibold text-right">
-                      {formatUSD(line.total!)}
+                    <div className="flex gap-2 md:gap-8">
+                      <span className="text-muted-foreground font-medium">
+                        {line.quantity} x {formatUSD(line.price!)}
+                      </span>
+                      <span className="font-medium">
+                        {formatUSD(line.total!)}
+                      </span>
                     </div>
                   </div>
                 </div>
