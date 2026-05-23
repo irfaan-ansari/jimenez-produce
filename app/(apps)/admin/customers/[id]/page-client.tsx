@@ -331,7 +331,7 @@ const PriceLevelForm = ({
               </div>
             )}
             <PriceLevelSelector
-              value={field.state.value!}
+              selected={field.state.value?.id!}
               onValueChange={(value) => {
                 field.handleChange({ ...value, id: Number(value.id) } as any);
               }}

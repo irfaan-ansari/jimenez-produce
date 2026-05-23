@@ -40,33 +40,27 @@ interface PriceLevel {
 }
 
 export const PriceLevelSelector = ({
-  value,
+  selected,
   onValueChange,
   children,
 }: {
-  value?: PriceLevel;
+  selected: number;
   onValueChange: (value: PriceLevel) => void;
   children: React.ReactNode;
 }) => {
   const [search, setSearch] = React.useState("");
-
   const [debounced, setDebounced] = React.useState("");
 
   const debounceFn = useDebounce((val) => {
     setDebounced(val);
   }, 500);
 
-  const [selected, setSelected] = React.useState<PriceLevel | undefined>(value);
-
-  const query = new URLSearchParams();
-  if (debounced) query.set("q", debounced);
-
   const {
     data: priceLevels,
     isPending,
     isError,
     error,
-  } = usePriceLevels(query.toString());
+  } = usePriceLevels({ q: debounced });
 
   const options = React.useMemo(() => {
     return (
@@ -78,7 +72,7 @@ export const PriceLevelSelector = ({
         appliesTo: t.appliesTo,
       })) ?? []
     );
-  }, [priceLevels, value]);
+  }, [priceLevels]);
 
   return (
     <Dialog>
@@ -117,12 +111,13 @@ export const PriceLevelSelector = ({
             >
               <RadioGroup
                 className="gap-1"
-                value={String(selected?.id)}
-                onValueChange={(value) => {
+                value={String(selected)}
+                onValueChange={(newVal) => {
                   const index = options.findIndex(
-                    (pl) => String(pl.id) === String(value),
+                    (op) => Number(op.id) === Number(newVal),
                   );
-                  setSelected(options[index]);
+
+                  onValueChange(options[index]);
                 }}
               >
                 {options.map((priceLevel) => {
@@ -136,6 +131,10 @@ export const PriceLevelSelector = ({
                         orientation="horizontal"
                         className="rounded-xl has-data-checked:*:data-[slot=icon]:opacity-100"
                       >
+                        <RadioGroupItem
+                          value={String(priceLevel.id)}
+                          id={String(priceLevel.id)}
+                        />
                         <FieldContent>
                           <FieldTitle>{priceLevel.name}</FieldTitle>
                           <FieldDescription className="text-xs font-medium">
@@ -159,17 +158,6 @@ export const PriceLevelSelector = ({
                             )}
                           </span>
                         )}
-                        <RadioGroupItem
-                          className="sr-only"
-                          value={String(priceLevel.id)}
-                          id={String(priceLevel.id)}
-                        />
-                        <span
-                          data-slot="icon"
-                          className="inline-flex items-center self-start justify-center rounded-full opacity-0 size-4 bg-primary text-primary-foreground"
-                        >
-                          <Check className="size-3" />
-                        </span>
                       </Field>
                     </FieldLabel>
                   );
@@ -180,7 +168,7 @@ export const PriceLevelSelector = ({
 
           {/* Footer */}
           <Field className="flex flex-col-reverse gap-4 sm:flex-row sm:justify-end sm:[&>button]:w-32">
-            <DialogClose asChild onClick={() => onValueChange(selected!)}>
+            <DialogClose asChild>
               <Button size="lg">Done</Button>
             </DialogClose>
           </Field>

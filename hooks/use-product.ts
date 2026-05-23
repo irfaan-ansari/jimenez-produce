@@ -64,11 +64,12 @@ export const useTopProducts = (query?: string) => {
   });
 };
 
-export const usePriceLevels = (query?: string) => {
+export const usePriceLevels = (query?: Record<string, string>) => {
+  const url = new URLSearchParams(query);
   return useQuery({
     queryKey: ["price-level", query],
     queryFn: () => {
-      return fetcher<PriceLevelResponse>(`/api/price-level`);
+      return fetcher<PriceLevelResponse>(`/api/price-level?${url.toString()}`);
     },
     staleTime: 1000 * 60 * 5,
   });
