@@ -41,7 +41,7 @@ const AuthLayout = async ({ children }: { children: React.ReactNode }) => {
           </div>
         </div>
       </div>
-      <div className="flex-1 overflow-auto h-svh rounded-2xl lg:rounded-l-2xl lg:rounded-r-0 bg-secondary lg:max-w-xl">
+      <div className="flex-1 overflow-auto h-svh lg:rounded-l-2xl bg-secondary lg:max-w-xl">
         {children}
       </div>
     </div>

@@ -20,11 +20,9 @@ import { deletePriceLevel } from "@/server/price-level";
 import { useQueryClient } from "@tanstack/react-query";
 
 export const PageClient = () => {
-  const { searchParams } = useRouterStuff();
+  const { searchParamsObj } = useRouterStuff();
 
-  const { data, error, isPending, isError } = usePriceLevels(
-    searchParams.toString(),
-  );
+  const { data, error, isPending, isError } = usePriceLevels(searchParamsObj);
 
   // data
   return (

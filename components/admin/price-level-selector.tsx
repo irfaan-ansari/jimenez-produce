@@ -5,7 +5,6 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -22,14 +21,13 @@ import {
   InputGroupAddon,
   InputGroupInput,
 } from "@/components/ui/input-group";
-import { Check, Search } from "lucide-react";
+import { Search } from "lucide-react";
+import { QueryState } from "./query-state";
 import { Button } from "@/components/ui/button";
-import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
-import { LoadingSkeleton } from "@/components/admin/placeholder-component";
 import { useDebounce } from "@/hooks/use-debounce";
 import { usePriceLevels } from "@/hooks/use-product";
 import { formatPriceLevelAdjustment } from "@/lib/utils";
-import { QueryState } from "./query-state";
+import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 
 interface PriceLevel {
   id: number;
