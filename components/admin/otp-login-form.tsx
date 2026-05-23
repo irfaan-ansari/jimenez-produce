@@ -232,7 +232,7 @@ export function OTPLoginForm({
                 field.state.meta.isTouched && !field.state.meta.isValid;
               return (
                 <Field>
-                  <FieldLabel htmlFor={field.name}>OTP</FieldLabel>
+                  <FieldLabel htmlFor={field.name}>Enter Code</FieldLabel>
                   <InputOTP
                     id={field.name}
                     name={field.name}
@@ -258,7 +258,7 @@ export function OTPLoginForm({
             }}
           />
           <div className="flex items-center justify-start text-sm">
-            <span className="text-muted-foreground"> Didn't receive OTP?</span>
+            <span className="text-muted-foreground"> Didn't receive Code?</span>
             <Button
               variant="link"
               size="sm"
@@ -311,9 +311,9 @@ export function OTPLoginForm({
               {isSubmitting ? (
                 <Loader className="animate-spin" />
               ) : step === "send" ? (
-                "Generate OTP"
+                "Send Code"
               ) : (
-                "Verify OTP"
+                "Verify Code"
               )}
             </Button>
           )}
