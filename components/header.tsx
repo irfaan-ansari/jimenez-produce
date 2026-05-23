@@ -45,7 +45,7 @@ export const Header = () => {
           </nav>
           <div className="flex-[1_1_0] justify-end hidden lg:flex gap-4">
             <Button asChild size="xl" variant="outline">
-              <a href="https://order.jimenezproduce.com" target="_blank">
+              <a href="/otp-login" target="_blank">
                 Place Order
               </a>
             </Button>

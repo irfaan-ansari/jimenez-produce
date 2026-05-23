@@ -20,7 +20,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { DELIVERY_TIME } from "@/lib/constants/customer";
 import { formOpt, getTotals } from "./order-form-options";
 import { useOrderUIStore } from "@/lib/store/order-store";
-import { ChevronDown, ImageOff, Loader } from "lucide-react";
+import { ChevronDown, ImageOff, Loader, Trash2 } from "lucide-react";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
@@ -40,7 +40,7 @@ export const OrderCart = withForm({
           children={({ lineItems, taxRule }) => {
             const totals = getTotals(lineItems, taxRule);
             return (
-              <SheetContent className="gap-0">
+              <SheetContent className="gap-0 data-[side=right]:sm:max-w-lg">
                 <SheetHeader className="gap-0 border-b">
                   <SheetTitle className="text-lg font-semibold">
                     Your cart
@@ -52,12 +52,9 @@ export const OrderCart = withForm({
                 </SheetHeader>
                 <form.AppField name="lineItems" mode="array">
                   {(field) => (
-                    <div className="flex-1 gap-2 p-4 space-y-2 overflow-y-auto no-scrollbar">
+                    <div className="flex-1 gap-2 p-4 space-y-1 overflow-y-auto no-scrollbar">
                       {field?.state?.value?.map((subField, i) => (
-                        <div
-                          className="p-4 border rounded-2xl bg-muted/50"
-                          key={i}
-                        >
+                        <div className="border p-3 rounded-xl" key={i}>
                           <div className="flex items-start justify-start gap-3">
                             <Avatar className="size-8 shrink-0 rounded-lg ring-2 ring-green-600/20 ring-offset-1 **:rounded-lg after:hidden">
                               <AvatarImage src={subField?.image!} />
@@ -67,10 +64,9 @@ export const OrderCart = withForm({
                             </Avatar>
 
                             <div className="flex flex-col justify-start flex-1 gap-2">
-                              <h4 className="font-semibold leading-tight line-clamp-2">
+                              <h4 className="font-medium leading-tight line-clamp-2">
                                 {subField.title}
                               </h4>
-
                               <form.Field
                                 name={`lineItems[${i}].quantity`}
                                 children={(subField) => (
@@ -90,20 +86,20 @@ export const OrderCart = withForm({
                               />
                             </div>
                             <div className="flex flex-col items-end self-stretch justify-between">
-                              <span className="text-base font-semibold">
+                              <span className="font-medium">
                                 {formatUSD(
                                   Number(subField.price) *
                                     Number(subField.quantity),
                                 )}
                               </span>
                               <Button
-                                size="sm"
+                                size="icon-xs"
                                 type="button"
                                 variant="destructive"
                                 className="h-6 text-xs"
                                 onClick={() => field.removeValue(i)}
                               >
-                                Remove
+                                <Trash2 />
                               </Button>
                             </div>
                           </div>

@@ -15,7 +15,7 @@ import {
   teamMember,
   user,
 } from "@/lib/db/auth-schema";
-import { taxRuleItem, teamProduct } from "@/lib/db/schema";
+import { teamProduct } from "@/lib/db/schema";
 
 type SignupProps = {
   name: string;

@@ -1,25 +1,8 @@
-import {
-  eq,
-  and,
-  or,
-  desc,
-  count,
-  getTableColumns,
-  ilike,
-  isNotNull,
-  asc,
-  isNull,
-  SQL,
-} from "drizzle-orm";
 import { db } from "@/lib/db";
 import { getSession } from "@/server/auth";
+import { orderGuide } from "@/lib/db/schema";
 import { NextRequest, NextResponse } from "next/server";
-import {
-  orderGuide,
-  orderGuideTarget,
-  orderGuideItem,
-  order,
-} from "@/lib/db/schema";
+import { eq, and, or, count, ilike, asc, isNull, SQL } from "drizzle-orm";
 
 export const GET = async (req: NextRequest) => {
   try {

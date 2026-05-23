@@ -69,14 +69,14 @@ export const ProductGrid = withForm({
         data-layout={layout}
       >
         <div className={`grid ${currentLayout.className}`}>
-          {items.map((product) => {
-            const qty = lineItemMap.get(product.productId)?.qty ?? 0;
+          {items.map((item) => {
+            const qty = lineItemMap.get(item.productId)?.qty ?? 0;
 
             const content = (
               <ProductItem
-                product={product}
+                product={item}
                 quantity={qty}
-                onUpdateQty={(newQty) => updateQty(product, newQty)}
+                onUpdateQty={(newQty) => updateQty(item, newQty)}
                 selectable={selectable}
                 draggable={draggable}
               />
@@ -84,14 +84,12 @@ export const ProductGrid = withForm({
 
             if (!draggable) {
               return (
-                <React.Fragment key={product.productId}>
-                  {content}
-                </React.Fragment>
+                <React.Fragment key={item.productId}>{content}</React.Fragment>
               );
             }
 
             return (
-              <KanbanItem key={product.dndId} value={String(product.dndId)}>
+              <KanbanItem key={item.productId} value={String(item.productId)}>
                 {content}
               </KanbanItem>
             );

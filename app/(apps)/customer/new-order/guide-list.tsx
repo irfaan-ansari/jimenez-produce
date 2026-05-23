@@ -44,7 +44,6 @@ export const GuideList = withForm({
       hasNextPage,
       fetchNextPage,
     } = useInfiniteOrderGuides("");
-    const queryClient = useQueryClient();
 
     const columns = useOrderGuideStore((s) => s.columns);
     const columnMeta = useOrderGuideStore((s) => s.columnMeta);
@@ -56,38 +55,26 @@ export const GuideList = withForm({
       }
     }, true);
 
-    React.useEffect(() => {
-      const flatData = data?.pages?.flatMap((page) => page.data) ?? [];
-
+    const parsedColumns = React.useMemo(() => {
       const columns: Columns = {};
       const meta: Record<string, ColumnMeta> = {};
+
+      const flatData = data?.pages?.flatMap((page) => page.data) ?? [];
 
       for (const guide of flatData) {
         const key = `${guide.id}-${guide.name}`;
 
-        columns[key] = guide.items.map((i) => {
-          const {
-            finalPrice,
-            categories,
-            isTaxable,
-            id,
-            title,
-            image,
-            identifier,
-          } = i;
-          return {
-            dndId: id,
-            productId: id,
-            title,
-            image,
-            identifier,
-            categories: categories ?? [],
-            price: finalPrice,
-            total: finalPrice,
-            quantity: "0",
-            isTaxable: isTaxable ?? false,
-          };
-        });
+        columns[key] = guide.items.map((i) => ({
+          productId: i.id,
+          title: i.title,
+          image: i.image,
+          identifier: i.identifier,
+          categories: i.categories ?? [],
+          price: i.finalPrice,
+          total: i.finalPrice,
+          quantity: "0",
+          isTaxable: i.isTaxable ?? false,
+        }));
 
         meta[key] = {
           id: guide.id,
@@ -99,12 +86,20 @@ export const GuideList = withForm({
         };
       }
 
-      setColumns({ columns, columnMeta: meta });
+      return { columns, meta };
     }, [data]);
+
+    React.useEffect(() => {
+      setColumns({
+        columns: parsedColumns.columns,
+        columnMeta: parsedColumns.meta,
+      });
+    }, [parsedColumns, setColumns]);
 
     /** Handle reorder */
     const handleReorder = async (value: Columns) => {
       setColumns({ columns: value });
+
       const guides = Object.entries(value).map(([key, items]) => {
         const [guideId] = key.split("-");
         return {
@@ -114,19 +109,13 @@ export const GuideList = withForm({
       });
 
       const { success, error } = await updateOrderGuides(guides);
-      if (success) {
-        queryClient.invalidateQueries({
-          queryKey: ["customer-order-guides"],
-        });
-      } else {
-        toast.error(error?.message);
-      }
+      if (!success) toast.error(error?.message);
     };
 
     return (
       <Kanban
         value={columns}
-        getItemValue={(item) => String(item.dndId ?? item?.productId)}
+        getItemValue={(item) => String(item?.productId)}
         onValueChange={handleReorder}
         orientation="vertical"
       >
@@ -179,13 +168,10 @@ const ColumnHeader = ({ value }: { value: string }) => {
   const columnItems = useOrderGuideStore((s) => s.columns[value]);
 
   const setSelectedTab = useOrderUIStore((s) => s.setSelectedTab);
-
   const setSelectionState = useOrderUIStore((s) => s.setSelectionState);
 
-  const handleAddItem = () => {
-    setSelectedTab("all");
-
-    const items = Object.fromEntries(
+  const items = React.useMemo(() => {
+    return Object.fromEntries(
       columnItems.map((item) => [
         String(item.productId),
         {
@@ -197,6 +183,13 @@ const ColumnHeader = ({ value }: { value: string }) => {
         },
       ]),
     );
+  }, [columnItems]);
+
+  /**
+   * Handle add item
+   */
+  const handleAddItem = () => {
+    setSelectedTab("all");
 
     setSelectionState({
       mode: "update",
@@ -207,6 +200,9 @@ const ColumnHeader = ({ value }: { value: string }) => {
     });
   };
 
+  /**
+   * Handle duplicate
+   */
   const duplicate = async () => {
     setCloning(true);
     setDisabled(true);
@@ -227,6 +223,9 @@ const ColumnHeader = ({ value }: { value: string }) => {
     setDisabled(false);
   };
 
+  /**
+   * Hanlde delete
+   */
   const hanldeDelete = async () => {
     const [id] = value.split("-");
     confirm.delete({

@@ -108,11 +108,9 @@ export const GET = async (req: NextRequest) => {
         .toSorted((a, b) => a.position - b.position)
         .map((item) => {
           const price = pricingMap.get(item.productId);
-          const {} = item;
+          const { basePrice, ...restItem } = item.product;
           return {
-            ...(item.product ?? {}),
-            id: item.id,
-            productId: item.productId,
+            ...restItem,
             position: item.position,
             quantity: item.quantity,
             finalPrice: price?.finalPrice ?? 0,
