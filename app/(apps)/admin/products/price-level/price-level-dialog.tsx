@@ -349,7 +349,7 @@ const ItemList = withForm({
   defaultValues,
   render: function Render({ form }) {
     return (
-      <div className="flex flex-col space-y-4">
+      <div className="flex flex-col space-y-4 lg:col-span-2">
         <form.Field
           name="items"
           mode="array"
