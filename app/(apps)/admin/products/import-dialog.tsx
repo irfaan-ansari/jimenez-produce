@@ -29,8 +29,8 @@ import { Button } from "@/components/ui/button";
 import { useStore } from "@tanstack/react-form";
 import { importProducts } from "@/server/product";
 import { useAppForm } from "@/hooks/form-context";
-import { Download, Loader, Trash2, Upload } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
+import { Download, Loader, Trash2, Upload } from "lucide-react";
 
 const IMPORT_FIELDS = [
   {
@@ -73,6 +73,7 @@ const processFile = async (file: File | undefined) => {
     const json: string[][] = XLSX.utils.sheet_to_json(sheet, {
       header: 1,
       raw: false,
+      defval: "",
     });
 
     const headerIndex = json.findIndex((row) =>
@@ -85,13 +86,13 @@ const processFile = async (file: File | undefined) => {
       return;
     }
 
-    const headers = (json[headerIndex] || []).map((header) =>
-      String(header).trim(),
+    const headers = (json[headerIndex] || []).map(
+      (header, index) => String(header).trim() || `column_${index}`,
     );
 
     const rows = json
       .slice(headerIndex + 1)
-      .filter((row) => row.some((cell) => cell !== undefined && cell !== ""));
+      .filter((row) => row.some((cell) => cell !== undefined));
 
     const autoMapping: Partial<Mapping> = {};
 
@@ -217,7 +218,7 @@ export const ImportDialog = ({ children }: { children: React.ReactNode }) => {
           }}
           className="flex h-[min(700px,90svh)] gap-6 flex-col"
         >
-          <DialogHeader className="flex gap-3 items-start flex-row">
+          <DialogHeader className="flex flex-row items-start gap-3">
             <span className="inline-flex size-9 items-center justify-center rounded-lg border bg-secondary *:size-5">
               $
             </span>
@@ -238,7 +239,7 @@ export const ImportDialog = ({ children }: { children: React.ReactNode }) => {
                     htmlFor={field.name}
                     className="h-28 flex-col hover:*:data-[slot=field-legend]:underline pt-6 justify-center rounded-xl border-2 border-dashed bg-secondary/40 transition"
                   >
-                    <span className="size-9 bg-background shadow-sm rounded-lg inline-flex items-center justify-center">
+                    <span className="inline-flex items-center justify-center rounded-lg shadow-sm size-9 bg-background">
                       <Upload className="size-5 text-muted-foreground" />
                     </span>
                     <FieldLegend className="text-muted-foreground text-sm! ">
@@ -271,7 +272,7 @@ export const ImportDialog = ({ children }: { children: React.ReactNode }) => {
                       Remove file
                     </Button>
                   ) : (
-                    <div className="flex items-center gap-2 justify-start">
+                    <div className="flex items-center justify-start gap-2">
                       Need a sample?
                       <Button variant="link" size="xs" asChild>
                         <a href="/api/products/export" target="_blank">
@@ -279,7 +280,7 @@ export const ImportDialog = ({ children }: { children: React.ReactNode }) => {
                           Download
                         </a>
                       </Button>
-                      <span className="h-4 border-r-2 w-1"></span>
+                      <span className="w-1 h-4 border-r-2"></span>
                       <Button variant="link" size="xs" asChild>
                         <a href="/api/products/export" target="_blank">
                           <Download className="size-4" />
@@ -321,20 +322,20 @@ export const ImportDialog = ({ children }: { children: React.ReactNode }) => {
                   </div>
                 ))}
               </div>
-              <div className="no-scrollbar flex-1 overflow-auto divide-y">
+              <div className="flex-1 overflow-auto divide-y no-scrollbar">
                 {rows.map((row, i) => {
                   const rowObject = Object.fromEntries(
                     headers.map((header, index) => [header, row[index]]),
                   );
 
                   return (
-                    <div key={i} className="grid py-2 grid-cols-2 gap-6">
+                    <div key={i} className="grid grid-cols-2 gap-6 py-2">
                       {IMPORT_FIELDS.map((field) => {
                         const mappedColumn = mapping[field.key];
                         return (
                           <div
                             key={field.key}
-                            className="align-top whitespace-normal"
+                            className="whitespace-normal align-top"
                           >
                             {mappedColumn ? rowObject[mappedColumn] : "-"}
                           </div>
@@ -343,7 +344,7 @@ export const ImportDialog = ({ children }: { children: React.ReactNode }) => {
                     </div>
                   );
                 })}
-                <div className="bg-secondary rounded-xl p-4 text-muted-foreground text-sm">
+                <div className="p-4 text-sm bg-secondary rounded-xl text-muted-foreground">
                   {rows.length - 1} items
                 </div>
               </div>

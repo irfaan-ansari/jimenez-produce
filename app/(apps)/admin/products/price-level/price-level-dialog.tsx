@@ -201,7 +201,7 @@ export const PriceLevelDialog = ({
             </AppDialogTitle>
           </AppDialogHeader>
           <div className="flex-1 overflow-auto no-scrollbar">
-            <FieldGroup className="grid grid-cols-1 px-6 lg:grid-cols-2">
+            <FieldGroup className="grid grid-cols-1 lg:grid-cols-2">
               <form.AppField
                 name="name"
                 children={(field) => (
@@ -303,11 +303,10 @@ export const PriceLevelDialog = ({
                   );
                 }}
               />
+              {/* per item  */}
+              {/* @ts-ignore */}
+              {appliesTo === "per_item" && <ItemList form={form} />}
             </FieldGroup>
-
-            {/* per item  */}
-            {/* @ts-ignore */}
-            {appliesTo === "per_item" && <ItemList form={form} />}
           </div>
           <Field className="flex flex-col-reverse gap-4 px-6 pt-4 sm:flex-row sm:justify-end  sm:[&>*]:w-32">
             <Button
