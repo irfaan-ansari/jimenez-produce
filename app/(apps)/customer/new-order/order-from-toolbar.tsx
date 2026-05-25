@@ -71,7 +71,7 @@ export const ToolbarSearch = ({ className }: { className?: string }) => {
 
   return (
     <InputGroup
-      className={cn("h-11 max-w-2xs rounded-lg bg-background ", className)}
+      className={cn("h-11 max-w-2xs rounded-xl bg-background ", className)}
     >
       <InputGroupAddon>
         <Search />
@@ -84,8 +84,17 @@ export const ToolbarSearch = ({ className }: { className?: string }) => {
         }}
         placeholder="Search..."
       />
-      <InputGroupAddon align="inline-end">
-        <InputGroupButton>
+      <InputGroupAddon
+        align="inline-end"
+        aria-hidden={!filter.q}
+        className="opacity-100 aria-hidden:opacity-0"
+      >
+        <InputGroupButton
+          onClick={() => {
+            setSearch("");
+            setFilter({ q: "" });
+          }}
+        >
           <X />
         </InputGroupButton>
       </InputGroupAddon>

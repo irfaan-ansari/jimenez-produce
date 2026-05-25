@@ -66,6 +66,7 @@ export const ItemList = withForm({
           error={error}
           isError={isError}
           isEmpty={mappedProduct?.length === 0}
+          className="py-20"
         >
           <ProductGrid items={mappedProduct} form={form} />
         </QueryState>

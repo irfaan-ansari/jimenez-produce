@@ -1,9 +1,10 @@
-import { Plus } from "lucide-react";
+import { Import, Plus } from "lucide-react";
 import { PageClient } from "./page-client";
 import { Button } from "@/components/ui/button";
 import { FilterTab } from "@/components/admin/filter-tabs";
 import { SearchBar } from "@/components/admin/search-filters";
 import { PriceLevelDialog } from "@/app/(apps)/admin/products/price-level/price-level-dialog";
+import { ImportDialog } from "./import-dialog";
 
 export const metadata = {
   title: "Price Level",
@@ -25,7 +26,15 @@ const PriceLevelPage = async () => {
             Manage price level settings.
           </p>
         </div>
-
+        <ImportDialog>
+          <Button
+            size="xl"
+            variant="outline"
+            className="min-w-28 rounded-xl md:order-3"
+          >
+            <Import /> Import
+          </Button>
+        </ImportDialog>
         <PriceLevelDialog>
           <Button size="xl" className="min-w-28 rounded-xl md:order-3">
             <Plus /> Add New

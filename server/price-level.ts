@@ -8,7 +8,7 @@ import {
 } from "@/lib/db/schema";
 import { db } from "@/lib/db";
 import { getSession } from "./auth";
-import { eq, inArray, sql } from "drizzle-orm";
+import { and, eq, inArray, sql } from "drizzle-orm";
 import { handleAction } from "@/lib/helper/error-handler";
 
 type PriceLevelItemInput = Omit<PriceLevelItemInsertType, "priceLevelId">;
@@ -162,3 +162,112 @@ export const deletePriceLevel = handleAction(async (id: number) => {
 
   return { data: deletedPriceLevel };
 });
+
+/**
+ * bulk update/insert price level
+ * @param values
+ */
+export const bulkUpdate = handleAction(
+  async (values: Record<string, Record<string, string>[]>) => {
+    const session = await getSession();
+
+    if (!session?.session.activeOrganizationId) {
+      throw new Error("Authentication required.");
+    }
+
+    const organizationId = session.session.activeOrganizationId;
+
+    await Promise.all(
+      Object.entries(values).map(async ([key, items]) => {
+        // get the price level by name
+        const priceLevel = await db.query.priceLevel.findFirst({
+          where: (pl, { eq, and }) =>
+            and(eq(pl.organizationId, organizationId), eq(pl.name, key)),
+        });
+
+        if (!priceLevel || !items.length) {
+          return;
+        }
+
+        // get the products
+        const products = await db.query.product.findMany({
+          where: (p, { and, eq, inArray }) =>
+            and(
+              eq(p.organizationId, organizationId),
+              inArray(
+                p.identifier,
+                items.map((i) => i.identifier),
+              ),
+            ),
+        });
+
+        if (!products.length) {
+          return;
+        }
+
+        const productMap = new Map(products.map((p) => [p.identifier, p]));
+
+        const toUpsert = [];
+        const toDelete: number[] = [];
+
+        for (const item of items) {
+          const product = productMap.get(item.identifier);
+
+          if (!product) continue;
+
+          const csvPrice = Number(item.price);
+
+          if (!item.price || Number.isNaN(csvPrice)) {
+            toDelete.push(product.id);
+            continue;
+          }
+
+          if (Number(product.basePrice) === csvPrice) continue;
+
+          toUpsert.push({
+            priceLevelId: priceLevel.id,
+            productId: product.id,
+            price: String(csvPrice.toFixed(2)),
+          });
+        }
+
+        const promises = [];
+
+        // delete
+        if (toDelete.length)
+          promises.push(
+            db
+              .delete(priceLevelItem)
+              .where(
+                and(
+                  eq(priceLevelItem.priceLevelId, priceLevel.id),
+                  inArray(priceLevelItem.productId, toDelete),
+                ),
+              ),
+          );
+
+        // insert or update
+        if (toUpsert.length) {
+          db.insert(priceLevelItem)
+            .values(toUpsert)
+            .onConflictDoUpdate({
+              target: [priceLevelItem.priceLevelId, priceLevelItem.productId],
+              set: {
+                price: sql`excluded.price`,
+              },
+            });
+        }
+
+        await Promise.all(promises);
+
+        return {
+          level: key,
+          upserted: toUpsert.length,
+          deleted: toDelete.length,
+        };
+      }),
+    );
+
+    return true;
+  },
+);

@@ -117,7 +117,7 @@ export const OrderForm = ({ taxRule }: { taxRule: TaxRule | null }) => {
     <Tabs
       value={selectedTab}
       onValueChange={(value) => setSelectedTab(value as OrderTab)}
-      className="flex flex-col w-full gap-6"
+      className="flex flex-col w-full gap-6 h-full"
     >
       <div className="flex flex-wrap justify-start w-full gap-x-2 gap-y-4 md:flex-nowrap">
         <TabsList className="bg-background p-1 *:h-9 group-data-horizontal/tabs:h-11 border *:data-active:bg-secondary rounded-xl *:rounded-lg">
@@ -164,8 +164,7 @@ export const OrderForm = ({ taxRule }: { taxRule: TaxRule | null }) => {
       </div>
 
       {/* toolbar */}
-
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-3 h-full">
         <div className="flex items-center w-full gap-4">
           <OrderFormToolbar />
         </div>

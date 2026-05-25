@@ -4,8 +4,9 @@ type QueryStateProps = {
   isPending: boolean;
   isError: boolean;
   error?: Error | null;
-  isEmpty: boolean;
+  isEmpty?: boolean;
   children: React.ReactNode;
+  className?: string;
 };
 
 export function QueryState({
@@ -13,10 +14,11 @@ export function QueryState({
   isError,
   isEmpty,
   error,
+  className,
   children,
 }: QueryStateProps) {
   if (isPending) {
-    return <LoadingSkeleton />;
+    return <LoadingSkeleton className={className} />;
   }
 
   if (isError) {
