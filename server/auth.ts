@@ -267,3 +267,28 @@ export const updateProductsToTeam = handleAction(
     };
   },
 );
+
+/**
+ * delete user
+ * @param userId
+ * @returns deleted user
+ */
+export const deleteUser = handleAction(async (userId: string) => {
+  const session = await getSession();
+
+  if (!session || !session.session.activeOrganizationId) {
+    throw new Error("Authentication required");
+  }
+
+  const userExist = await db.query.user.findFirst({
+    where: (u, { eq }) => eq(u.id, userId),
+  });
+
+  if (!userExist) {
+    throw new Error("User not found");
+  }
+
+  const deleted = await db.delete(user).where(eq(user.id, userId)).returning();
+
+  return deleted;
+});

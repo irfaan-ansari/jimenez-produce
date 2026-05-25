@@ -24,7 +24,13 @@ export const ProductItemQty = ({
       <InputGroupInput
         value={value}
         className="px-0 text-center text-xs"
-        onChange={(e) => onChange?.(Number(e.target.value))}
+        onChange={(e) => {
+          const val = e.target.value;
+
+          if (/^\d*$/.test(val)) {
+            onChange?.(val === "" ? 0 : parseInt(val, 10));
+          }
+        }}
       />
 
       <InputGroupAddon align="inline-start">

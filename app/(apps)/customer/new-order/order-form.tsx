@@ -51,6 +51,7 @@ export const OrderForm = ({ taxRule }: { taxRule: TaxRule | null }) => {
     },
     onSubmit: async ({ value }) => {
       const toastId = toast.loading("Submitting your order...");
+
       const { success, error, data } = await createOrder({
         ...value,
       });
