@@ -28,10 +28,13 @@ import { STATUS_MAP } from "@/lib/constants/status-map";
 import { OrderActions } from "@/components/admin/order-actions";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useRouter } from "next/navigation";
 
 export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = use(params);
+  const router = useRouter();
   const confirm = useConfirm();
+
   const queryClient = useQueryClient();
 
   const { data: result, isPending, error, isError } = useOrder(Number(id));
@@ -97,13 +100,11 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
           <div className="flex items-center gap-4">
             <Button
               size="sm"
-              asChild
               variant="outline"
               className="shrink-0 rounded-xl"
+              onClick={() => router.back()}
             >
-              <Link href="/customer/orders">
-                <ChevronLeft /> Back
-              </Link>
+              <ChevronLeft /> Back
             </Button>
             <h1 className="text-lg font-semibold line-clamp-1">
               Order #{data.id}
