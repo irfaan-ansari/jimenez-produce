@@ -105,15 +105,8 @@ export const ProductItem = ({
           </h4>
 
           <div className="flex w-full flex-col items-start gap-2 @2xl:flex-row @2xl:items-center">
-            <div className="flex items-center min-w-0 gap-1 overflow-auto no-scrollbar flex-nowrap">
-              {product.categories?.map((cat, i) => (
-                <span
-                  key={cat + i}
-                  className="inline-block text-xs leading-[1.1] font-medium whitespace-nowrap text-muted-foreground uppercase not-last:border-r-2 not-last:pr-1"
-                >
-                  {cat}
-                </span>
-              ))}
+            <div className="min-w-0 overflow-auto text-muted-foreground uppercase text-xs font-medium">
+              {product.categories?.join(" • ")}
             </div>
 
             <LastPurchase

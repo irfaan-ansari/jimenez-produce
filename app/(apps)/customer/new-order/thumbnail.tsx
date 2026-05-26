@@ -3,12 +3,14 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
-import { ImageOff } from "lucide-react";
+import { format } from "date-fns/format";
+import { cn, formatUSD } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { ImageOff, Info } from "lucide-react";
+import { Tooltip } from "@/components/tooltip";
 import { OrderItem } from "./order-form-options";
 import { ProductItemQty } from "./product-item-qty";
-import { cn, formatUSD } from "@/lib/utils";
-import { format } from "date-fns/format";
+import { getNextDeliveryLabel } from "@/lib/delivery-rule";
 
 export const Thumbnail = ({
   qty,
@@ -46,7 +48,7 @@ export const Thumbnail = ({
           className="flex w-80 flex-col overflow-hidden rounded-xl p-0 text-base"
           align="center"
         >
-          <div className="aspect-video rounded-t-xl bg-secondary">
+          <div className="aspect-video relative rounded-t-xl bg-secondary">
             {product.image && (
               <img
                 src={product.image}
@@ -56,32 +58,19 @@ export const Thumbnail = ({
                 className="aspect-video object-contain mix-blend-multiply"
               />
             )}
+            <LastPurchase
+              product={product}
+              className="absolute left-2 bottom-2"
+            />
           </div>
 
-          <div className="space-y-3 p-4">
+          <div className="space-y-2 p-4">
+            <div className="min-w-0 overflow-auto text-muted-foreground uppercase text-xs font-medium">
+              {product.categories?.join(" • ")}
+            </div>
             <h4 className="text-base leading-tight font-medium">
               {product.title}
             </h4>
-
-            <div className="flex w-full items-center gap-2">
-              <div className="no-scrollbar flex min-w-0 flex-nowrap items-center gap-1 overflow-auto">
-                {product.categories?.map((cat, i) => (
-                  <Badge
-                    key={cat + i}
-                    variant="secondary"
-                    className="h-5 shrink-0 rounded-xl px-1.5"
-                  >
-                    {cat}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-
-            <LastPurchase
-              product={product}
-              className="group-data-[layout=grid]/card:hidden"
-            />
-
             <div className="flex w-full items-center justify-between gap-2 group-data-[layout=list]/card:hidden">
               <Price price={product.price} className="w-auto self-start" />
               <ProductItemQty value={qty} onChange={onChange} />
@@ -100,7 +89,32 @@ export const LastPurchase = ({
   product: OrderItem;
   className?: string;
 }) => {
+  const delivery = getNextDeliveryLabel(product.identifier);
+
+  if (delivery) {
+    return (
+      <Tooltip
+        content={
+          <div>
+            Delivery {delivery.dayName} •{" "}
+            {format(new Date(delivery.date!), "MM/dd")}
+          </div>
+        }
+      >
+        <Badge
+          className={cn(
+            "h-4 shrink-0 rounded-sm whitespace-nowrap uppercase",
+            className,
+          )}
+        >
+          Special Item <Info />
+        </Badge>
+      </Tooltip>
+    );
+  }
+
   if (!product.lastPurchased?.id) return;
+
   return (
     <Badge
       className={cn(
