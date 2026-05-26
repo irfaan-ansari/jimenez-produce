@@ -111,7 +111,7 @@ export const CategoryFilter = () => {
 
   const toggle = (cat: string) => {
     setFilter({
-      cat: filter.cat === cat ? undefined : cat,
+      cat: filter.cat === cat ? "" : cat,
       page: "1",
     });
   };

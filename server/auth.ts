@@ -139,15 +139,15 @@ export const getActiveTeam = async (userId: string) => {
  * signup user and add to organization
  * this is being used on add user page
  */
+
 export const signupWithOrganization = handleAction(
   async ({
     name,
     email,
-    password,
     phoneNumber,
     role,
     accountType,
-  }: SignupProps & { role?: Role }) => {
+  }: Omit<SignupProps, "password"> & { role?: Role }) => {
     const session = await getSession();
 
     if (!session) {
@@ -157,7 +157,7 @@ export const signupWithOrganization = handleAction(
     if (!session.session.activeOrganizationId) {
       throw new Error("No active organization found");
     }
-
+    const password = crypto.randomUUID().slice(0, 16);
     const { user: createdUser } = await signUpUser({
       name,
       email,
