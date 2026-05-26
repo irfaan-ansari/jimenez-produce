@@ -17,6 +17,14 @@ import {
   DialogTrigger,
 } from "../ui/dialog";
 import z from "zod";
+import {
+  X,
+  Check,
+  Loader,
+  Trash2,
+  ImageUp,
+  AlertCircleIcon,
+} from "lucide-react";
 import { toast } from "sonner";
 import Image from "next/image";
 import { useState } from "react";
@@ -25,26 +33,18 @@ import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import React, { useRef } from "react";
 import { Textarea } from "../ui/textarea";
+import { Checkbox } from "../ui/checkbox";
+import { deleteBlob } from "@/server/blob";
 import { upload } from "@vercel/blob/client";
 import { capitalizeWords } from "@/lib/utils";
+import { useConfirm } from "@/hooks/use-confirm";
 import { useAppForm } from "@/hooks/form-context";
 import { AnyFieldApi } from "@tanstack/react-form";
 import { useCategories } from "@/hooks/use-product";
 import { type AdminProductType } from "@/lib/types";
 import { useQueryClient } from "@tanstack/react-query";
-import {
-  AlertCircleIcon,
-  Check,
-  ImageUp,
-  Loader,
-  Trash2,
-  X,
-} from "lucide-react";
 import { createProduct, deleteProduct, updateProduct } from "@/server/product";
-import { Checkbox } from "../ui/checkbox";
 import { Alert, AlertAction, AlertDescription, AlertTitle } from "../ui/alert";
-import { useConfirm } from "@/hooks/use-confirm";
-import { deleteBlob } from "@/server/blob";
 
 const schema = z.object({
   identifier: z.string(),
@@ -68,8 +68,9 @@ export const ProductDialog = ({
   children: React.ReactNode;
 }) => {
   const confirm = useConfirm();
-  const [open, setOpen] = useState(false);
   const queryClient = useQueryClient();
+  const [open, setOpen] = useState(false);
+  const [file, setFile] = useState<File | undefined>(undefined);
 
   const form = useAppForm({
     defaultValues: {
@@ -92,14 +93,33 @@ export const ProductDialog = ({
     onSubmit: async ({ value }) => {
       const { ...rest } = value;
       const status = rest.status.toLowerCase();
+      const toastId = toast.loading("Please wait...");
 
+      if (file && file instanceof File) {
+        toast.loading("Uploading image...", { id: toastId });
+        const blob = await upload(`products/${file.name}`, file, {
+          access: "public",
+          handleUploadUrl: "/api/upload",
+        });
+
+        if (blob.url) {
+          toast.success("Image uploaded.", { id: toastId });
+          rest.image = blob.url;
+        } else {
+          toast.error("Failed to upload the image.", {
+            id: toastId,
+          });
+        }
+      }
+
+      toast.loading("Saving product...", { id: toastId });
       if (product && product.id) {
         const { success, error } = await updateProduct(product.id, {
           ...rest,
           status,
         });
         if (success) {
-          toast.success("Product updated successfully.");
+          toast.success("Product saved successfully.", { id: toastId });
           setOpen(false);
           form.reset();
         } else {
@@ -108,13 +128,14 @@ export const ProductDialog = ({
       } else {
         const { success, error } = await createProduct({ ...rest, status });
         if (success) {
-          toast.success("Product added successfully.");
+          toast.success("Product saved successfully.", { id: toastId });
           setOpen(false);
           form.reset();
         } else {
-          toast.error(error.message);
+          toast.error(error.message, { id: toastId });
         }
       }
+
       queryClient.invalidateQueries({ queryKey: ["products"] });
     },
   });
@@ -133,24 +154,12 @@ export const ProductDialog = ({
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) {
-      toast.error("Please upload a valid image.");
+      toast.error("Upload a valid image.");
       return;
     }
-    const toastId = toast.loading("Please wait...");
-
+    setFile(file);
     const url = URL.createObjectURL(file);
     form.setFieldValue("image", url);
-
-    const blob = await upload(`products/${file.name}`, file, {
-      access: "public",
-      handleUploadUrl: "/api/upload",
-    });
-    if (blob.url) {
-      toast.success("Image uploaded successfully.", { id: toastId });
-      form.setFieldValue("image", blob.url);
-    } else {
-      toast.error("Failed to upload the upload the image.", { id: toastId });
-    }
   };
 
   /**
