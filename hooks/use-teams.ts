@@ -67,3 +67,14 @@ export const useCustomerProfile = () => {
     staleTime: 1000 * 60 * 5,
   });
 };
+
+export const useUserTeams = () => {
+  return useQuery({
+    queryKey: ["user-teams"],
+    queryFn: async () => {
+      const { data, error } = await authClient.organization.listUserTeams();
+      if (error) throw error;
+      return data;
+    },
+  });
+};

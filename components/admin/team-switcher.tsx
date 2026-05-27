@@ -17,23 +17,30 @@ import { SITE_CONFIG } from "@/lib/config";
 import { Skeleton } from "../ui/skeleton";
 import { Separator } from "../ui/separator";
 import { useRouter } from "next/navigation";
-import { useTeams } from "@/hooks/use-teams";
+import { useTeams, useUserTeams } from "@/hooks/use-teams";
 import { authClient } from "@/lib/auth/client";
 import { PopoverXDrawer } from "../popover-x-drawer";
 import { useQueryClient } from "@tanstack/react-query";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Check, ChevronsUpDown, LogOut, Store, User } from "lucide-react";
+import { getInitialsAvatar } from "@/lib/utils";
 
-export const TeamSwitcher = ({ session: auth, className }: { session: Session; className?: string }) => {
+export const TeamSwitcher = ({
+  session: auth,
+  className,
+}: {
+  session: Session;
+  className?: string;
+}) => {
   const { session, user } = auth;
   const router = useRouter();
   const queryClient = useQueryClient();
-  const [open, setOpen] = useState(false);
-  const { data, isPending } = useTeams();
+  // const { data, isPending } = useTeams();
+  const { data, isPending } = useUserTeams();
 
-  const activeTeam = data?.data?.find(
-    (team) => team.id === session.activeTeamId,
-  );
+  const [open, setOpen] = useState(false);
+
+  const activeTeam = data?.find((team) => team.id === session.activeTeamId);
 
   const handleChange = async (teamId: string) => {
     setOpen(false);
@@ -51,6 +58,7 @@ export const TeamSwitcher = ({ session: auth, className }: { session: Session; c
     }
 
     queryClient.invalidateQueries();
+    router.refresh();
   };
 
   const handleLogout = async () => {
@@ -86,7 +94,7 @@ export const TeamSwitcher = ({ session: auth, className }: { session: Session; c
               >
                 <Avatar className="size-9 rounded-lg ring-2 ring-green-600/20 ring-offset-1 **:rounded-lg after:hidden">
                   <AvatarImage
-                    src={activeTeam?.logo ?? SITE_CONFIG.logo}
+                    src={getInitialsAvatar(activeTeam?.name)}
                     alt="Logo"
                   />
                   <AvatarFallback className="rounded-xly">
@@ -103,13 +111,9 @@ export const TeamSwitcher = ({ session: auth, className }: { session: Session; c
                     <Skeleton className="w-3/4 h-4 rounded-lg bg-sidebar-accent/10" />
                   )}
 
-                  {activeTeam?.managerName ? (
-                    <span className="text-xs leading-tight truncate text-muted-foreground">
-                      {activeTeam?.managerName}
-                    </span>
-                  ) : (
-                    <Skeleton className="h-3 w-3/4 mt-1.5 rounded-lg bg-sidebar-accent/10" />
-                  )}
+                  <span className="text-xs leading-tight truncate text-muted-foreground">
+                    {user?.name}
+                  </span>
                 </div>
                 <ChevronsUpDown className="ml-auto size-4" />
               </SidebarMenuButton>
@@ -148,7 +152,7 @@ export const TeamSwitcher = ({ session: auth, className }: { session: Session; c
               {isPending ? (
                 <Skeleton className="w-full h-9" />
               ) : (
-                data?.data?.map((team) => (
+                data?.map((team) => (
                   <Button
                     key={team.id}
                     variant={team.id === activeTeam?.id ? "secondary" : "ghost"}
@@ -156,7 +160,10 @@ export const TeamSwitcher = ({ session: auth, className }: { session: Session; c
                     className="rounded-lg! px-1.5"
                   >
                     <Avatar className="size-6 rounded-md **:rounded-md">
-                      <AvatarImage src={team.logo!} alt={team.name} />
+                      <AvatarImage
+                        src={getInitialsAvatar(team.name)}
+                        alt={team.name}
+                      />
                       <AvatarFallback>
                         <Store className="size-4" />
                       </AvatarFallback>
