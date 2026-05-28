@@ -48,7 +48,7 @@ const PublicLayout = ({
   children: React.ReactNode;
 }>) => {
   return (
-    <div className="flex flex-col min-h-screen relative">
+    <div className="relative flex flex-col min-h-screen">
       {/* gradient */}
       {/* <div
         className="absolute inset-0 z-[-1]"

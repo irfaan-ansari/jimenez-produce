@@ -8,7 +8,7 @@ import {
 } from "@/lib/types";
 import { fetcher } from "@/lib/helper/fetcher";
 import { useQuery } from "@tanstack/react-query";
-import { authClient } from "@/lib/auth/client";
+import { authClient } from "@/services/auth";
 
 export const useListTeamMembers = (teamId: string) => {
   return useQuery({

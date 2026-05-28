@@ -1,7 +1,7 @@
 import { db } from "@/lib/db";
 import { count, eq } from "drizzle-orm";
 import { product } from "@/lib/db/schema";
-import { getSession } from "@/server/auth";
+import { getSession } from "@/services/auth";
 import { NextRequest, NextResponse } from "next/server";
 
 export const GET = async (req: NextRequest) => {

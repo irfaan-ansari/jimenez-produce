@@ -1,8 +1,8 @@
-import { auth } from "@/lib/auth";
+import { auth } from "@/services/auth";
 import { headers } from "next/headers";
-import { getSession } from "@/server/auth";
+import { getSession } from "@/services/auth";
 import { ERROR_MESSAGE } from "./error-message";
-import { statement } from "@/lib/auth/permissions";
+import { statement } from "@/services/auth/permissions";
 
 type Resource = keyof typeof statement;
 

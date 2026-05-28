@@ -1,0 +1,706 @@
+"use client";
+import { use } from "react";
+import Link from "next/link";
+import {
+  Plus,
+  User,
+  Trash2,
+  Loader,
+  ChevronLeft,
+  CircleDashed,
+  PackageCheck,
+  ChevronsUpDown,
+} from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Timeline,
+  TimelineItem,
+  TimelineDate,
+  TimelineTitle,
+  TimelineHeader,
+  TimelineContent,
+  TimelineSeparator,
+  TimelineIndicator,
+} from "@/components/reui/timeline";
+import { toast } from "sonner";
+import { TaxRule } from "@/lib/types";
+import { format } from "date-fns/format";
+import { useTeam } from "@/hooks/use-teams";
+import { Badge } from "@/components/ui/badge";
+import { useForm } from "@tanstack/react-form";
+import { Button } from "@/components/ui/button";
+import { authClient } from "@/services/auth";
+import {
+  EmptyComponent,
+  LoadingSkeleton,
+} from "@/components/admin/placeholder-component";
+import { updateProductsToTeam } from "@/server/auth";
+import { CustomerActions } from "@/features/admin/components/customer-actions";
+import { CopyButton } from "@/components/copy-button";
+import { useQueryClient } from "@tanstack/react-query";
+import { STATUS_MAP } from "@/lib/constants/status-map";
+import { UserSelector } from "@/components/admin/user-selector";
+import { formatPriceLevelAdjustment, formatUSD } from "@/lib/utils";
+import { TaxRulesSelector } from "@/components/admin/tax-rules-selector";
+import { PriceLevelSelectType, ProductSelectType } from "@/lib/db/schema";
+import { PriceLevelSelector } from "@/components/admin/price-level-selector";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ProductSelector } from "@/components/admin/product-selector";
+
+export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
+  const { id } = use(params);
+
+  const queryClient = useQueryClient();
+  const { data: result, isPending, isError, error } = useTeam(id);
+
+  // loading
+  if (isPending) return <LoadingSkeleton />;
+
+  // error
+  if (isError) {
+    return <EmptyComponent variant="error" title={error.message} />;
+  }
+
+  const { data } = result;
+
+  /**
+   * assign user to team
+   * @param userId
+   */
+  const handleAssign = async (userId: string) => {
+    const toastId = toast.loading("Please wait...");
+
+    const { error } = await authClient.organization.addTeamMember({
+      teamId: id,
+      userId,
+    });
+
+    if (error) {
+      toast.error(error.message, { id: toastId });
+    } else {
+      toast.success("User assigned successfully", { id: toastId });
+      queryClient.invalidateQueries({
+        queryKey: ["team", id],
+      });
+    }
+  };
+
+  /**
+   * remove member from team
+   * @param memberId
+   */
+  const handleRemove = async (memberId: string) => {
+    const toastId = toast.loading("Please wait...");
+
+    const { error } = await authClient.organization.removeTeamMember({
+      teamId: id,
+      userId: memberId,
+    });
+    if (error) {
+      toast.error(error.message, { id: toastId });
+    } else {
+      toast.success("User removed successfully", { id: toastId });
+      queryClient.invalidateQueries({
+        queryKey: ["team", id],
+      });
+    }
+  };
+
+  return (
+    <div className="grid grid-cols-6 gap-8">
+      <div className="col-span-6 space-y-6 lg:col-span-4">
+        {/* page header */}
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <Button
+              size="sm"
+              asChild
+              variant="outline"
+              className="shrink-0 rounded-xl"
+            >
+              <Link href="/admin/customers/">
+                <ChevronLeft /> Back
+              </Link>
+            </Button>
+            <h1 className="text-lg font-semibold">{data.name}</h1>
+          </div>
+          <div className="flex items-center gap-4">
+            <UserSelector
+              selected={data.members?.map((m) => m.id) || []}
+              onAction={handleAssign}
+            >
+              <Button size="default">Assign user</Button>
+            </UserSelector>
+            <CustomerActions data={data} showView={false} />
+          </div>
+        </div>
+
+        {/* account info */}
+        <Card className="rounded-2xl">
+          <CardContent className="flex items-center gap-6">
+            <Avatar className="size-16 shrink-0 ring-2 ring-primary/40 ring-offset-2 ring-offset-background lg:size-20">
+              <AvatarImage src={data.logo} />
+              <AvatarFallback>
+                <User className="size-4" />
+              </AvatarFallback>
+            </Avatar>
+            <div>
+              <CardTitle className="font-semibold">{data.name}</CardTitle>
+              <CardDescription>{data.managerName}</CardDescription>
+              <div className="flex flex-col gap-1 mt-3 lg:flex-row lg:gap-2">
+                <CopyButton value={data.phone} />
+                <CopyButton value={data.email} />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* stats cards */}
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <Card className="flex-row items-start px-6 rounded-2xl">
+            <div className="flex-1">
+              <CardTitle className="mb-2 text-3xl font-bold">
+                {data.stats?.activeCount}
+              </CardTitle>
+              <CardDescription className="mb-6 text-base font-semibold">
+                {formatUSD(data.stats?.activeValue!)}
+              </CardDescription>
+              <span className="text-sm font-medium text-muted-foreground">
+                Active Orders
+              </span>
+            </div>
+            <span className="inline-flex items-center justify-center p-0 rounded-lg size-10 bg-amber-100 text-foreground">
+              <CircleDashed className="size-4" />
+            </span>
+          </Card>
+          <Card className="flex-row items-start px-6 rounded-2xl">
+            <div className="flex-1">
+              <CardTitle className="mb-2 text-3xl font-bold">
+                {data.stats?.completedCount}
+              </CardTitle>
+              <CardDescription className="mb-6 text-base font-semibold">
+                {formatUSD(data.stats?.completedValue!)}
+              </CardDescription>
+              <span className="text-sm font-medium text-muted-foreground">
+                Completed Orders
+              </span>
+            </div>
+            <span className="inline-flex items-center justify-center p-0 bg-green-100 rounded-lg size-10 text-foreground">
+              <PackageCheck className="size-4" />
+            </span>
+          </Card>
+        </div>
+
+        {/* Price level */}
+        <Card className="rounded-2xl">
+          <CardHeader>
+            <CardTitle className="font-semibold">Price level</CardTitle>
+            <CardDescription>
+              Manage price level of this account
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <PriceLevelForm data={data.priceLevel} teamId={data.id} />
+          </CardContent>
+        </Card>
+
+        {/* Product access */}
+        <Card className="rounded-2xl">
+          <CardHeader>
+            <CardTitle className="font-semibold">
+              Proprietary products
+            </CardTitle>
+            <CardDescription>
+              Manage proprietary products for this account
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ProductAccessForm data={data.products} teamId={data.id} />
+          </CardContent>
+        </Card>
+
+        {/* Tax rules */}
+        <Card className="rounded-2xl">
+          <CardHeader>
+            <CardTitle className="font-semibold">Tax rules</CardTitle>
+            <CardDescription>Manage tax rules of this account</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <TaxRulesForm data={data.taxRule} teamId={data.id} />
+          </CardContent>
+        </Card>
+
+        {/* members */}
+        <Card className="rounded-2xl">
+          <CardHeader>
+            <CardTitle className="font-semibold">Members</CardTitle>
+            <CardDescription>Manage members of this team</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Members members={data.members} handleRemove={handleRemove} />
+          </CardContent>
+        </Card>
+      </div>
+      <Card className="col-span-6 lg:col-span-2 rounded-2xl bg-card">
+        <CardHeader>
+          <CardTitle className="font-semibold">Recent Orders</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6 text-base">
+          <Timeline defaultValue={1} className="w-full">
+            {data?.orders?.map((order: any) => (
+              <TimelineRow key={order?.id} order={order} />
+            ))}
+          </Timeline>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
+// price level of customer account
+const PriceLevelForm = ({
+  data,
+  teamId,
+}: {
+  data: PriceLevelSelectType | null;
+  teamId: string;
+}) => {
+  const form = useForm({
+    defaultValues: {
+      priceLevel: data,
+    },
+    onSubmit: async ({ value }) => {
+      const toastId = toast.loading("Please wait...");
+      const { error } = await authClient.organization.updateTeam({
+        teamId,
+        data: {
+          priceLevelId: value.priceLevel?.id!,
+        },
+      });
+
+      if (error) {
+        toast.error(error.message, { id: toastId });
+      } else {
+        toast.success("Price level updated successfully", { id: toastId });
+      }
+    },
+  });
+
+  return (
+    <form
+      className="flex flex-col gap-6"
+      onSubmit={(e) => {
+        e.preventDefault();
+        form.handleSubmit();
+      }}
+    >
+      <form.Field name="priceLevel">
+        {(field) => (
+          <div className="space-y-4">
+            {field.state.value?.id && (
+              <div className="flex items-center w-full gap-2 p-2 border rounded-lg bg-secondary/20">
+                <div className="flex flex-1 flex-col items-start gap-0.5">
+                  <span className="font-medium">{field.state.value.name}</span>
+                  <span className="text-xs font-medium text-muted-foreground">
+                    {field.state.value.appliesTo === "all"
+                      ? "Applies to all items"
+                      : "Per item adjustment"}
+                  </span>
+                </div>
+                {field.state.value.appliesTo === "all" && (
+                  <span
+                    className={`text-xs font-semibold px-2 py-1 rounded-md ${
+                      Number(field.state.value.adjustmentValue ?? 0) > 0
+                        ? "bg-green-100 text-green-700"
+                        : "bg-red-100 text-red-700"
+                    }
+                  `}
+                  >
+                    {formatPriceLevelAdjustment(
+                      field.state.value.adjustmentType,
+                      field.state.value.adjustmentValue || 0,
+                    )}
+                  </span>
+                )}
+              </div>
+            )}
+            <PriceLevelSelector
+              selected={field.state.value?.id!}
+              onValueChange={(value) => {
+                field.handleChange({ ...value, id: Number(value.id) } as any);
+              }}
+            >
+              <Button variant="outline" size="lg" className="w-full rounded-xl">
+                <Plus /> Select price level...
+                <ChevronsUpDown className="ml-auto" />
+              </Button>
+            </PriceLevelSelector>
+          </div>
+        )}
+      </form.Field>
+      <div className="flex justify-end">
+        <form.Subscribe
+          selector={({ isSubmitting, isDirty, canSubmit }) => ({
+            isSubmitting,
+            canSubmit,
+            isDirty,
+          })}
+          children={({ isSubmitting, isDirty, canSubmit }) => {
+            return (
+              <Button
+                type="submit"
+                className="w-28"
+                size="lg"
+                disabled={isSubmitting || !isDirty || !canSubmit}
+              >
+                {isSubmitting ? <Loader className="animate-spin" /> : "Save"}
+              </Button>
+            );
+          }}
+        />
+      </div>
+    </form>
+  );
+};
+
+// tax rules applied to customer account
+const TaxRulesForm = ({
+  data,
+  teamId,
+}: {
+  data: TaxRule | null;
+  teamId: string;
+}) => {
+  const form = useForm({
+    defaultValues: {
+      taxRule: data || ({} as any),
+    },
+    onSubmit: async ({ value }) => {
+      const toastId = toast.loading("Please wait...");
+
+      const { error } = await authClient.organization.updateTeam({
+        teamId,
+        data: {
+          taxRuleId: value.taxRule?.id!,
+        },
+      });
+
+      if (error) {
+        toast.error(error?.message, { id: toastId });
+      } else {
+        toast.success("Tax rule addes successfully", { id: toastId });
+      }
+    },
+  });
+
+  return (
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        form.handleSubmit();
+      }}
+    >
+      <form.Field
+        name="taxRule"
+        children={(field) => {
+          const taxRule = field.state.value;
+          return (
+            <div className="space-y-4">
+              {taxRule?.id && (
+                <div className="flex items-center gap-2 p-2 py-2 border rounded-lg bg-secondary/20">
+                  <span className="flex-1 font-medium">{taxRule.name}</span>
+                  <span className="font-medium text-muted-foreground">
+                    {taxRule.rate}%
+                  </span>
+                </div>
+              )}
+              <TaxRulesSelector
+                selected={field.state.value.id}
+                setSelectedChange={(value) => {
+                  field.handleChange({ ...value, id: Number(value.id) });
+                }}
+              >
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="w-full rounded-xl"
+                >
+                  <Plus /> Select tax rule...
+                  <ChevronsUpDown className="ml-auto" />
+                </Button>
+              </TaxRulesSelector>
+            </div>
+          );
+        }}
+      />
+      <div className="flex justify-end mt-2">
+        <form.Subscribe
+          selector={({ isSubmitting, isDirty, canSubmit }) => ({
+            isSubmitting,
+            canSubmit,
+            isDirty,
+          })}
+          children={({ isSubmitting, isDirty, canSubmit }) => {
+            return (
+              <Button
+                type="submit"
+                className="w-28"
+                size="lg"
+                disabled={isSubmitting || !isDirty || !canSubmit}
+              >
+                {isSubmitting ? <Loader className="animate-spin" /> : "Save"}
+              </Button>
+            );
+          }}
+        />
+      </div>
+    </form>
+  );
+};
+
+// propritory products that customer can access
+const ProductAccessForm = ({
+  data,
+  teamId,
+}: {
+  data: ProductSelectType[];
+  teamId: string;
+}) => {
+  const form = useForm({
+    defaultValues: {
+      products: data as ProductSelectType[],
+    },
+    onSubmit: async ({ value }) => {
+      const toastId = toast.loading("Please wait...");
+
+      const { products } = value;
+      const productIds = products.map((p) => Number(p.id));
+
+      const { success, error } = await updateProductsToTeam({
+        teamId,
+        productIds,
+      });
+      if (success) {
+        toast.success("Products updated successfully", { id: toastId });
+      } else {
+        toast.error(error?.message, { id: toastId });
+      }
+    },
+  });
+
+  return (
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        form.handleSubmit();
+      }}
+    >
+      <form.Field
+        name="products"
+        mode="array"
+        children={(field) => {
+          const products = field.state.value;
+
+          return (
+            <div className="space-y-4">
+              {products.length > 0 ? (
+                <div className="space-y-1">
+                  {products?.map((item, i) => (
+                    <div
+                      key={item.id}
+                      className="flex items-center gap-2 p-2 border rounded-xl bg-secondary/20"
+                    >
+                      <div className="flex items-start flex-1 gap-3">
+                        <div className="shrink-0">
+                          <Avatar className="size-9 rounded-lg ring-2 ring-green-600/40 ring-offset-1 **:rounded-lg after:hidden">
+                            <AvatarImage src={item?.image as string} />
+                            <AvatarFallback>
+                              <User className="size-4" />
+                            </AvatarFallback>
+                          </Avatar>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-medium leading-tight whitespace-normal">
+                            {item.title}
+                          </h4>
+                          <Badge
+                            variant="secondary"
+                            className="uppercase border rounded-xl border-border"
+                          >
+                            {item.identifier}
+                          </Badge>
+                        </div>
+                      </div>
+                      <div className="self-center font-medium text-right w-28 text-muted-foreground">
+                        {formatUSD(item.basePrice)}
+                      </div>
+                      <Button
+                        size="icon-xs"
+                        type="button"
+                        variant="destructive"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          field.removeValue(i);
+                        }}
+                      >
+                        <Trash2 />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              ) : null}
+              <ProductSelector
+                selected={field.state.value.map((item) => item.id)}
+                setSelectedChange={(value) => {
+                  const index = field.state.value.findIndex(
+                    (s) => s.id === value.id,
+                  );
+                  if (index >= 0) {
+                    field.removeValue(index);
+                  } else {
+                    // @ts-expect-error
+                    field.pushValue({ ...value, id: value.id });
+                  }
+                }}
+              >
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="w-full rounded-xl"
+                >
+                  <Plus /> Select products...
+                  <ChevronsUpDown className="ml-auto" />
+                </Button>
+              </ProductSelector>
+            </div>
+          );
+        }}
+      />
+      <div className="flex justify-end mt-2">
+        <form.Subscribe
+          selector={({ isSubmitting, canSubmit, isDirty }) => ({
+            isSubmitting,
+            canSubmit,
+            isDirty,
+          })}
+          children={({ isSubmitting, canSubmit, isDirty }) => {
+            return (
+              <Button
+                type="submit"
+                className="w-28"
+                size="lg"
+                disabled={isSubmitting || !isDirty || !canSubmit}
+              >
+                {isSubmitting ? <Loader className="animate-spin" /> : "Save"}
+              </Button>
+            );
+          }}
+        />
+      </div>
+    </form>
+  );
+};
+
+// customer account members
+const Members = ({
+  members,
+  handleRemove,
+}: {
+  members: any[];
+  handleRemove: (memberId: string) => void;
+}) => {
+  if (members?.length === 0) {
+    return (
+      <div className="flex items-center justify-center text-muted-foreground">
+        No members found
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-1">
+      {members.map((member) => (
+        <div
+          key={member.id}
+          className="flex items-center gap-4 p-2 border rounded-lg bg-secondary/20"
+        >
+          <div className="flex items-center flex-1 gap-3">
+            <Avatar className="size-9 rounded-lg ring-2 ring-green-600/20 ring-offset-1 **:rounded-lg after:hidden">
+              <AvatarImage src={member.image} />
+              <AvatarFallback>
+                <User className="size-4" />
+              </AvatarFallback>
+            </Avatar>
+
+            <div className="flex-1 min-w-0 space-y-0 truncate">
+              <h4 className="text-sm font-medium">{member.name}</h4>
+              <div className="flex items-center gap-1">
+                <CopyButton value={member.phoneNumber!} />
+                <CopyButton value={member.email} />
+              </div>
+            </div>
+            <Button
+              variant="destructive"
+              size="xs"
+              onClick={() => {
+                handleRemove(member.id);
+              }}
+            >
+              Remove
+            </Button>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+// order history timeline
+const TimelineRow = ({ order }: { order: any }) => {
+  const { status } = order;
+  const map = STATUS_MAP[status as keyof typeof STATUS_MAP];
+  return (
+    <TimelineItem key={order.id} step={1}>
+      <TimelineHeader className="flex items-start gap-2">
+        <div className="flex-1">
+          <TimelineDate>{format(order.createdAt, "MMM dd")}</TimelineDate>
+          <TimelineTitle>#{order.id}</TimelineTitle>
+        </div>
+        <Badge
+          variant="outline"
+          style={{ "--color": map.color } as React.CSSProperties}
+          className="h-7 gap-1.5 rounded-xl border-(--color)/10 bg-(--color)/10 pr-2.5 pl-1.5 text-sm [&>svg]:size-3.5!"
+        >
+          <map.icon className="text-(--color)" />
+          {map.label}
+        </Badge>
+      </TimelineHeader>
+      <TimelineIndicator />
+      <TimelineSeparator />
+      <TimelineContent className="space-y-0.5 rounded-xl bg-secondary p-4">
+        <div className="flex justify-between">
+          <span>Subtotal</span>
+          <span>{formatUSD(order.subtotal)}</span>
+        </div>
+        <div className="flex justify-between">
+          <span>Tax</span>
+          <span>{formatUSD(order.tax)}</span>
+        </div>
+        <div className="flex justify-between">
+          <span>{order?.charges?.type}</span>
+          <span>{formatUSD(order?.charges?.amount)}</span>
+        </div>
+        <div className="flex justify-between mt-2 text-base font-semibold text-foreground">
+          <span>Total</span>
+          <span>{formatUSD(order.total)}</span>
+        </div>
+      </TimelineContent>
+    </TimelineItem>
+  );
+};

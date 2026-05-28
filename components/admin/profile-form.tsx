@@ -12,7 +12,7 @@ import { Loader } from "lucide-react";
 import { formatPhone } from "@/lib/utils";
 import { QueryState } from "./query-state";
 import { useRouter } from "next/navigation";
-import { authClient } from "@/lib/auth/client";
+import { authClient } from "@/services/auth";
 import { Button } from "@/components/ui/button";
 import { useAppForm } from "@/hooks/form-context";
 import { FieldGroup } from "@/components/ui/field";

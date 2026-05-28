@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { count } from "drizzle-orm";
-import { getSession } from "@/server/auth";
+import { getSession } from "@/services/auth";
 import { NextResponse } from "next/server";
 import { priceLevel } from "@/lib/db/schema";
 

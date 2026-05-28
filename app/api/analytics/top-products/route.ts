@@ -2,7 +2,7 @@ import { db } from "@/lib/db";
 import { sql, eq, and } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { lineItem } from "@/lib/db/schema";
-import { getSession } from "@/server/auth";
+import { getSession } from "@/services/auth";
 
 export async function GET() {
   try {

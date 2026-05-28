@@ -1,0 +1,248 @@
+"use client";
+
+import { Copy, Home, Download, ChevronLeft } from "lucide-react";
+import Link from "next/link";
+import { format } from "date-fns";
+import React, { use } from "react";
+import { formatUSD } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { useOrder } from "@/features/order/data/orders";
+import {
+  EmptyComponent,
+  LoadingSkeleton,
+} from "@/components/admin/placeholder-component";
+import { STATUS_MAP } from "@/lib/constants/status-map";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+
+import { Badge } from "@/components/ui/badge";
+
+type StatusIndex = keyof typeof STATUS_MAP;
+
+export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
+  const { id } = use(params);
+  const { data: result, isPending, error, isError } = useOrder(Number(id));
+
+  // loading
+  if (isPending) return <LoadingSkeleton />;
+
+  // error
+  if (isError) {
+    return <EmptyComponent variant="error" title={error.message} />;
+  }
+
+  const { data } = result;
+
+  const status = STATUS_MAP[data?.status as StatusIndex];
+
+  return (
+    <div
+      className="grid grid-cols-6 gap-8"
+      style={{ "--color": status.color } as React.CSSProperties}
+    >
+      <div className="col-span-6 space-y-6 lg:col-span-4">
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <Button
+              size="sm"
+              asChild
+              variant="outline"
+              className="shrink-0 rounded-xl"
+            >
+              <Link href="/customer/orders">
+                <ChevronLeft /> Back
+              </Link>
+            </Button>
+            <h1 className="font-semibold line-clamp-1">Order #{data.id}</h1>
+          </div>
+          <Badge
+            variant="outline"
+            className="h-7 gap-1.5 rounded-xl border-(--color)/10 bg-(--color)/10 pr-2.5 pl-1.5 text-sm [&>svg]:size-3.5!"
+          >
+            <status.icon className="text-(--color)" />
+            {status.label}
+          </Badge>
+        </div>
+
+        {/* progress */}
+        {/* <Card className="relative gap-0 py-0 rounded-2xl">
+          <LiveTracking />
+
+          <CardContent className="absolute h-20 p-3 rounded-lg shadow-sm inset-x-3 bottom-3 bg-background/70 backdrop-blur-lg z-2 ring-2 ring-border ring-offset-2">
+            <div className="flex items-start justify-between">
+              <div className="flex-1">
+                <p className="font-medium">Order #24647</p>
+                <div className="flex items-center gap-2">
+                  <span className="font-medium text-muted-foreground">
+                    Estimated delivery in
+                  </span>
+                  <span className="text-2xl font-bold">30 mins</span>
+                </div>
+              </div>
+              <Badge className="px-4 text-green-600 bg-green-100 border border-green-300 h-7">
+                Arriving
+              </Badge>
+            </div>
+          </CardContent>
+        </Card> */}
+
+        {/* purchased items */}
+        <Card className="rounded-2xl">
+          <CardHeader>
+            <CardTitle className="text-lg font-bold">Order items</CardTitle>
+          </CardHeader>
+          <CardContent className="divide-y">
+            {data.lineItems.map((line) => (
+              <div
+                className="flex items-start gap-3 not-first:pt-2 not-last:pb-2"
+                key={line.id}
+              >
+                <Avatar className="size-9 rounded-lg ring-2 ring-green-600/20 ring-offset-1 **:rounded-lg after:hidden">
+                  <AvatarImage src={line?.image!} />
+                  <AvatarFallback>{line.title?.charAt(0)}</AvatarFallback>
+                </Avatar>
+
+                <div className="space-y-1.5 flex-1">
+                  <h4 className="font-medium leading-tight whitespace-normal">
+                    {line.title}
+                  </h4>
+                  <div className="flex justify-between">
+                    {line.identifier && (
+                      <Badge
+                        variant="secondary"
+                        className="border rounded-sm! font-medium border-border"
+                      >
+                        {line.identifier}
+                      </Badge>
+                    )}
+                    <div className="flex gap-2 md:gap-8">
+                      <span className="font-medium text-muted-foreground">
+                        {line.quantity} x {formatUSD(line.price!)}
+                      </span>
+                      <span className="font-medium">
+                        {formatUSD(line.total!)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* order summary */}
+      <Card className="col-span-6 lg:col-span-2 rounded-2xl">
+        <CardHeader>
+          <CardTitle className="text-xl font-semibold">Order Summary</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6 text-base">
+          <div className="space-y-1.5 text-sm text-muted-foreground">
+            <div className="flex items-center justify-between">
+              <span>Item Count</span>{" "}
+              <span className="font-medium">{data.lineItemCount}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span>Quantity</span>{" "}
+              <span className="font-medium">{data.lineItemQuantity}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span>Subtotal</span>{" "}
+              <span className="font-medium">{formatUSD(data.subtotal)}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span>Tax {data?.taxName && `(${data.taxName})`}</span>
+              <span className="font-medium">{formatUSD(data.tax)}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span>{data.charges?.type}</span>
+              <span className="font-medium">
+                {formatUSD(data.charges?.amount ?? 0)}
+              </span>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between text-xl font-semibold">
+            <span>Total</span> <span>{formatUSD(data.total)}</span>
+          </div>
+          <div className="space-y-3">
+            <Button className="w-full rounded-xl " size="xl" asChild>
+              <a href={`/api/orders/${data.id}/invoice`} target="_blank">
+                <Download />
+                Download Invoice
+              </a>
+            </Button>
+            <Button
+              className="w-full rounded-xl bg-sidebar-accent hover:bg-sidebar-accent/80"
+              size="xl"
+              asChild
+            >
+              <Link href={`/customer/new-order?id=${data.id}`}>
+                <Copy />
+                Reorder
+              </Link>
+            </Button>
+          </div>
+
+          <Separator className="my-6" />
+
+          <div className="text-sm">
+            <h4 className="mb-2 text-sm font-medium text-muted-foreground">
+              Delivery By
+            </h4>
+            <div>{data.deliveryWindow}</div>
+            <div>{format(data.createdAt!, "MMMM dd • hh:mm a")}</div>
+          </div>
+          <div className="text-sm">
+            <h4 className="mb-2 text-sm font-medium text-muted-foreground">
+              Instructions
+            </h4>
+            <div className="whitespace-pre-line">
+              {data.deliveryInstruction}
+            </div>
+          </div>
+        </CardContent>
+
+        {data.notes && (
+          <>
+            <CardHeader>
+              <CardTitle className="text-xl font-semibold">Notes</CardTitle>
+            </CardHeader>
+            <CardContent className="whitespace-pre-line">
+              {data.notes}
+            </CardContent>
+          </>
+        )}
+      </Card>
+    </div>
+  );
+};
+
+const StepItem = ({
+  icon: Icon,
+  label,
+  date,
+  active,
+}: {
+  icon: any;
+  label: string;
+  date: string | Date | null;
+  active: boolean;
+}) => (
+  <div className="flex flex-col items-center self-center">
+    <span
+      className={`size-10 mb-2 rounded-lg inline-flex items-center justify-center ${
+        active ? "bg-primary text-primary-foreground" : "bg-secondary"
+      }`}
+    >
+      <Icon className="size-4" />
+    </span>
+
+    <span className="text-base uppercase">{label}</span>
+
+    <span className="text-sm text-muted-foreground">
+      {format(date!, "MMMM dd, hh:mm a")}
+    </span>
+  </div>
+);

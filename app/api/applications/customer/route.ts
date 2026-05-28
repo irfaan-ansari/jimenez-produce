@@ -1,7 +1,7 @@
 import { db } from "@/lib/db";
 import { customer } from "@/lib/db/schema";
 import { ERROR_MESSAGE } from "@/lib/helper/error-message";
-import { getSession } from "@/server/auth";
+import { getSession } from "@/services/auth";
 import { eq, or, and, ilike, desc, ne } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 

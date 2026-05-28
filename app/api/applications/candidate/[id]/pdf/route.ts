@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { eq } from "drizzle-orm";
-import { getSession } from "@/server/auth";
+import { getSession } from "@/services/auth";
 import { jobApplications } from "@/lib/db/schema";
 import { renderToStream } from "@react-pdf/renderer";
 import { NextRequest, NextResponse } from "next/server";

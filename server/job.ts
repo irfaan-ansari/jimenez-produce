@@ -9,7 +9,7 @@ import {
 import { db } from "@/lib/db";
 import { eq } from "drizzle-orm";
 import { put } from "@vercel/blob";
-import { getSession } from "./auth";
+import { getSession } from "@/services/auth";
 import { headers } from "next/headers";
 import { randomBytes } from "node:crypto";
 import { capitalizeWords } from "@/lib/utils";
@@ -18,7 +18,7 @@ import { JobApplicationStatus } from "@/lib/types";
 import { renderToBuffer } from "@react-pdf/renderer";
 import JobInvitation from "@/components/email/job-invite";
 import { handleAction } from "@/lib/helper/error-handler";
-import { sendEmail, sendJobStatusEmail } from "@/lib/email";
+import { sendEmail, sendJobStatusEmail } from "@/services/email";
 import { JobAgreementPDF } from "@/components/pdf/job-agreement";
 import InternalAgreementNotification from "@/components/email/job-agreement-submit";
 

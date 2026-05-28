@@ -1,7 +1,7 @@
 import { db } from "@/lib/db";
 import { eq } from "drizzle-orm";
 import { order } from "@/lib/db/schema";
-import { getSession } from "@/server/auth";
+import { getSession } from "@/services/auth";
 import { renderToStream } from "@react-pdf/renderer";
 import { NextRequest, NextResponse } from "next/server";
 import { OrderInvoice } from "@/components/pdf/order-invoice";

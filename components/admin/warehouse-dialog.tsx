@@ -12,7 +12,7 @@ import z from "zod";
 import { toast } from "sonner";
 import React, { useState } from "react";
 
-import { authClient } from "@/lib/auth/client";
+import { authClient } from "@/services/auth";
 import { useAppForm } from "@/hooks/form-context";
 import { Field, FieldGroup } from "../ui/field";
 import { Button } from "../ui/button";
@@ -106,7 +106,7 @@ export const WarehouseDialog = ({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="overflow-hidden rounded-2xl px-0 ring-ring/10 sm:max-w-xl">
+      <DialogContent className="px-0 overflow-hidden rounded-2xl ring-ring/10 sm:max-w-xl">
         <DialogHeader className="px-6">
           <DialogTitle className="text-xl font-bold">
             {isEdit ? "Edit Warehouse" : "Create Warehouse"}

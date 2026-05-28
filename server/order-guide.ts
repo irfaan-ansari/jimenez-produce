@@ -1,4 +1,5 @@
 "use server";
+
 import {
   orderGuide,
   OrderGuideInsertType,
@@ -6,7 +7,7 @@ import {
   orderGuideTarget,
 } from "@/lib/db/schema";
 import { db } from "@/lib/db";
-import { getSession } from "./auth";
+import { getSession } from "@/services/auth";
 import { and, eq, inArray, sql } from "drizzle-orm";
 import { handleAction } from "@/lib/helper/error-handler";
 import { ERROR_MESSAGE } from "@/lib/helper/error-message";

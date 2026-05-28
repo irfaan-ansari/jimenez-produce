@@ -1,0 +1,92 @@
+"use client";
+
+import Link from "next/link";
+import { toast } from "sonner";
+import { useState } from "react";
+import { Team } from "@/lib/types";
+import { authClient } from "@/services/auth";
+import { Button } from "@/components/ui/button";
+import { useConfirm } from "@/hooks/use-confirm";
+import { CustomerDialog } from "./customer-dialog";
+import { useQueryClient } from "@tanstack/react-query";
+import { PopoverXDrawer } from "@/components/popover-x-drawer";
+import { UserSelector } from "@/components/admin/user-selector";
+import { Eye, MoreVertical, PlusCircle, SquarePen, Trash2 } from "lucide-react";
+
+export const CustomerActions = ({
+  showView,
+  data,
+}: {
+  data: Team;
+  showView?: boolean;
+}) => {
+  const { id } = data;
+  const confirm = useConfirm();
+  const queryClient = useQueryClient();
+  const [open, setOpen] = useState(false);
+
+  const onDelete = async () => {
+    await confirm.delete({
+      title: "Delete account",
+      description: "Are you sure you want to delete this customer account?",
+      actionLabel: "Yes, Delete",
+      action: async () => {
+        const toastId = toast.loading("Deleting customer...");
+        const { error } = await authClient.organization.removeTeam({
+          teamId: id,
+        });
+
+        if (error) {
+          toast.error(error.message, { id: toastId });
+        } else {
+          setOpen(false);
+          queryClient.invalidateQueries({ queryKey: ["teams"] });
+          toast.success("Customer deleted successfully", { id: toastId });
+        }
+      },
+    });
+  };
+
+  return (
+    <PopoverXDrawer
+      open={open}
+      setOpen={setOpen}
+      trigger={
+        <Button size="icon" variant="outline" className="rounded-lg">
+          <MoreVertical className="size-5" />
+        </Button>
+      }
+    >
+      {showView && (
+        <Button type="button" variant="ghost" className="justify-start" asChild>
+          <Link href={`/admin/customers/${id}`}>
+            <Eye />
+            View
+          </Link>
+        </Button>
+      )}
+
+      <CustomerDialog data={data}>
+        <Button variant="ghost" className="justify-start rounded-xl">
+          <SquarePen /> Edit
+        </Button>
+      </CustomerDialog>
+      <UserSelector
+        selected={data.members?.map((m) => m.id) || []}
+        onAction={(value) => console.log("test", value)}
+      >
+        <Button variant="ghost" disabled={true} className="justify-start">
+          <PlusCircle />
+          Assign user
+        </Button>
+      </UserSelector>
+      <Button
+        variant="destructive"
+        className="justify-start bg-transparent rounded-xl"
+        onClick={onDelete}
+      >
+        <Trash2 /> Delete
+      </Button>
+    </PopoverXDrawer>
+  );
+};

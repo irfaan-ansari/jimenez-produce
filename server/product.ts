@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { getSession } from "./auth";
+import { getSession } from "@/services/auth";
 import { cookies } from "next/headers";
 import { handleAction } from "@/lib/helper/error-handler";
 import { product, ProductInsertType } from "@/lib/db/schema";

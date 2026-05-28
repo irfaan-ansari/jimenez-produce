@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { taxRule } from "@/lib/db/schema";
-import { getSession } from "@/server/auth";
+import { getSession } from "@/services/auth";
 import { getQueryObject } from "@/lib/helper/query";
 import { eq, ilike, and, or, SQL } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";

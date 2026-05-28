@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { product } from "@/lib/db/schema";
-import { getSession } from "@/server/auth";
+import { getSession } from "@/services/auth";
 import { NextRequest, NextResponse } from "next/server";
 import { eq, or, and, ilike, arrayContains } from "drizzle-orm";
 

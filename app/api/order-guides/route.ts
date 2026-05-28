@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { getSession } from "@/server/auth";
+import { getSession } from "@/services/auth";
 import { orderGuide } from "@/lib/db/schema";
 import { NextRequest, NextResponse } from "next/server";
 import { eq, and, or, count, ilike, asc, isNull, SQL } from "drizzle-orm";

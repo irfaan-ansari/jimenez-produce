@@ -17,7 +17,7 @@ import { Skeleton } from "../ui/skeleton";
 import { SITE_CONFIG } from "@/lib/config";
 import { useRouter } from "next/navigation";
 import { Separator } from "../ui/separator";
-import { authClient } from "@/lib/auth/client";
+import { authClient } from "@/services/auth";
 import { PopoverXDrawer } from "../popover-x-drawer";
 import { WarehouseDialog } from "./warehouse-dialog";
 import { useQueryClient } from "@tanstack/react-query";

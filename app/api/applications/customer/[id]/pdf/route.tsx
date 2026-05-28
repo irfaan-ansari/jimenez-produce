@@ -4,7 +4,7 @@ import { customer } from "@/lib/db/schema";
 import { renderToStream } from "@react-pdf/renderer";
 import { NextRequest, NextResponse } from "next/server";
 import { CustomerPDF } from "@/components/pdf/customer";
-import { getSession } from "@/server/auth";
+import { getSession } from "@/services/auth";
 import { ERROR_MESSAGE } from "@/lib/helper/error-message";
 
 export async function GET(

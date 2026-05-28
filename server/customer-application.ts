@@ -7,7 +7,7 @@ import {
   type CustomerInsertType,
 } from "@/lib/db/schema";
 import { db } from "@/lib/db";
-import { getSession } from "./auth";
+import { getSession } from "@/services/auth";
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { and, eq, ne, or } from "drizzle-orm";
@@ -15,7 +15,7 @@ import { waitUntil } from "@vercel/functions";
 import { handleAction } from "@/lib/helper/error-handler";
 import CustomerInvite from "@/components/email/customer-invite";
 import { capitalizeWords, getInitialsAvatar } from "@/lib/utils";
-import { sendApplicationStatusEmails, sendEmail } from "@/lib/email";
+import { sendApplicationStatusEmails, sendEmail } from "@/services/email";
 import CatalogRequestNew from "@/components/email/catalog-request-new";
 import CatalogRequestUpdate from "@/components/email/catalog-request-update";
 

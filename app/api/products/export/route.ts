@@ -2,7 +2,7 @@ import * as XLSX from "xlsx";
 import { db } from "@/lib/db";
 import { eq } from "drizzle-orm";
 import { product } from "@/lib/db/schema";
-import { getSession } from "@/server/auth";
+import { getSession } from "@/services/auth";
 import { NextResponse } from "next/server";
 
 export async function GET() {

@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Field, FieldGroup } from "@/components/ui/field";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { authClient } from "@/lib/auth/client";
+import { authClient } from "@/services/auth";
 import { useStore } from "@tanstack/react-form";
 import { Button } from "@/components/ui/button";
 import { useAppForm } from "@/hooks/form-context";
@@ -71,9 +71,9 @@ export function ResetPasswordForm({
         e.preventDefault();
         form.handleSubmit();
       }}
-      className="flex flex-1 flex-col items-start justify-center gap-4 px-6 py-20 lg:max-w-xl lg:px-16"
+      className="flex flex-col items-start justify-center flex-1 gap-4 px-6 py-20 lg:max-w-xl lg:px-16"
     >
-      <h2 className="font-heading text-3xl font-bold">Create Password</h2>
+      <h2 className="text-3xl font-bold font-heading">Create Password</h2>
       <p className="mb-10 text-muted-foreground">
         Enter your new password below. Make sure it’s strong and secure.
       </p>

@@ -1,4 +1,4 @@
-import { auth } from "./auth";
+import { auth } from "@/services/auth";
 import { inviteStatusMap } from "./constants/customer";
 import { jobApplicationStatusMap } from "./constants/job";
 import { STATUS_MAP } from "./constants/status-map";
@@ -145,7 +145,7 @@ export type Team = typeof auth.$Infer.Team & {
 };
 
 export type TeamDetail = Team & {
-  taxRule: TaxRuleSelectType|null;
+  taxRule: TaxRuleSelectType | null;
   products: ProductSelectType[];
   priceLevel: PriceLevelSelectType | null;
   orders: OrderType[];

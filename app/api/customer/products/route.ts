@@ -17,7 +17,7 @@ import {
   orderGuideTarget,
 } from "@/lib/db/schema";
 import { db } from "@/lib/db";
-import { getSession } from "@/server/auth";
+import { getSession } from "@/services/auth";
 import { getQueryObject } from "@/lib/helper/query";
 import { NextRequest, NextResponse } from "next/server";
 import { resolvePrices } from "@/lib/helper/resolve-price";
