@@ -1,4 +1,4 @@
-const DELIVERY_DAYS = [3, 5, 6];
+import { addDays, format, isBefore, set } from "date-fns";
 
 const ITEMS = [
   "8BP061",
@@ -20,6 +20,7 @@ const ITEMS = [
   "8BB010",
   "8BB01",
 ];
+const ITEM_SET = new Set(ITEMS.map((code) => code.toLowerCase()));
 
 const DAY_NAMES = [
   "Sunday",
@@ -31,37 +32,42 @@ const DAY_NAMES = [
   "Saturday",
 ];
 
-export function getNextDeliveryLabel(itemCode: string) {
-  const isMatched = ITEMS.some(
-    (code) => code.toLowerCase() === itemCode.toLowerCase(),
-  );
+const DELIVERY_OFFSETS: Record<number, number> = {
+  0: 3, // Sunday -> This Wednesday (+3 days)
+  2: 8, // Tuesday -> Next Wednesday (+8 days)
+  3: 7, // Wednesday -> Next Wednesday (+7 days)
+  4: 6, // Thursday -> Next Wednesday (+6 days)
+  5: 5, // Friday -> Next Wednesday (+5 days)
+  6: 4, // Saturday -> This Wednesday (+4 days)
+};
 
-  if (!isMatched) {
+export function getNextDeliveryLabel(itemCode: string, mockDate?: Date) {
+  if (!ITEM_SET.has(itemCode.toLowerCase())) {
     return null;
   }
 
-  const today = new Date();
-  const currentDay = today.getDay();
+  const now = mockDate || new Date();
+  const currentDay = now.getDay();
+  let daysToAdd = 0;
 
-  for (let i = 0; i < 14; i++) {
-    const day = (currentDay + i) % 7;
+  if (currentDay === 1) {
+    const mondayCutoff = set(now, {
+      hours: 11,
+      minutes: 0,
+      seconds: 0,
+      milliseconds: 0,
+    });
 
-    if (DELIVERY_DAYS.includes(day)) {
-      const nextDate = new Date(today);
-
-      nextDate.setDate(today.getDate() + i);
-
-      return {
-        dayName: DAY_NAMES[day],
-        date: nextDate,
-        formattedDate: nextDate.toLocaleDateString("en-US", {
-          weekday: "short",
-          month: "short",
-          day: "numeric",
-        }),
-      };
-    }
+    daysToAdd = isBefore(now, mondayCutoff) ? 2 : 9;
+  } else {
+    daysToAdd = DELIVERY_OFFSETS[currentDay];
   }
 
-  return null;
+  const deliveryDate = addDays(now, daysToAdd);
+
+  return {
+    dayName: DAY_NAMES[deliveryDate.getDay()],
+    date: deliveryDate,
+    formattedDate: format(deliveryDate, "EEE, MMM d"),
+  };
 }
