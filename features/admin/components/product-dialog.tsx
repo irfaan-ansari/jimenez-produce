@@ -7,7 +7,7 @@ import {
   FieldGroup,
   FieldLabel,
   FieldLegend,
-} from "../ui/field";
+} from "@/components/ui/field";
 import {
   Dialog,
   DialogContent,
@@ -15,7 +15,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "../ui/dialog";
+} from "@/components/ui/dialog";
 import z from "zod";
 import {
   X,
@@ -28,12 +28,12 @@ import {
 import { toast } from "sonner";
 import Image from "next/image";
 import { useState } from "react";
-import { Input } from "../ui/input";
-import { Badge } from "../ui/badge";
-import { Button } from "../ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import React, { useRef } from "react";
-import { Textarea } from "../ui/textarea";
-import { Checkbox } from "../ui/checkbox";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import { deleteBlob } from "@/server/blob";
 import { upload } from "@vercel/blob/client";
 import { capitalizeWords } from "@/lib/utils";
@@ -44,7 +44,12 @@ import { useCategories } from "@/hooks/use-product";
 import { type AdminProductType } from "@/lib/types";
 import { useQueryClient } from "@tanstack/react-query";
 import { createProduct, deleteProduct, updateProduct } from "@/server/product";
-import { Alert, AlertAction, AlertDescription, AlertTitle } from "../ui/alert";
+import {
+  Alert,
+  AlertAction,
+  AlertDescription,
+  AlertTitle,
+} from "@/components/ui/alert";
 
 const schema = z.object({
   identifier: z.string(),

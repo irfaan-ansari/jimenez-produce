@@ -14,10 +14,11 @@ import { DataTable } from "@/components/admin/data-table";
 import { useRouterStuff } from "@/hooks/use-router-stuff";
 import { MoreVertical, SquarePen, Trash } from "lucide-react";
 import { PopoverXDrawer } from "@/components/popover-x-drawer";
-import { PriceLevelDialog } from "@/app/(apps)/admin/products/price-level/price-level-dialog";
+
 import { useConfirm } from "@/hooks/use-confirm";
 import { deletePriceLevel } from "@/server/price-level";
 import { useQueryClient } from "@tanstack/react-query";
+import { PriceLevelDialog } from "@/features/admin/components/price-level-dialog";
 
 export const PageClient = () => {
   const { searchParamsObj } = useRouterStuff();

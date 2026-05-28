@@ -2,7 +2,7 @@ import { Plus } from "lucide-react";
 import { PageClient } from "./page-client";
 import { Button } from "@/components/ui/button";
 import { SearchBar } from "@/components/admin/search-filters";
-import { WarehouseDialog } from "@/components/admin/warehouse-dialog";
+import { WarehouseDialog } from "@/features/admin/components/warehouse-dialog";
 
 export const metadata = {
   title: "Warehouses",

@@ -29,10 +29,9 @@ import { Plus, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTaxRules } from "@/hooks/use-product";
 import { Checkbox } from "@/components/ui/checkbox";
-import { TaxRuleDialog } from "../../app/(apps)/admin/products/tax-rules/tax-rule-dialog";
-import { LoadingSkeleton } from "@/components/admin/placeholder-component";
+import { TaxRuleDialog } from "./tax-rule-dialog";
 import { useDebounce } from "@/hooks/use-debounce";
-import { QueryState } from "./query-state";
+import { QueryState } from "@/components/admin/query-state";
 
 interface TaxRule {
   id: string | number;

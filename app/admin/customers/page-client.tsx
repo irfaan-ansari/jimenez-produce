@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Team } from "@/lib/types";
 import { useTeams } from "@/hooks/use-teams";
 import { ColumnDef } from "@tanstack/react-table";
-import { CustomerActions } from "../../../features/admin/components/customer-actions";
+import { CustomerActions } from "@/features/admin/components/customer-actions";
 import { CopyButton } from "@/components/copy-button";
 import { DataTable } from "@/components/admin/data-table";
 import { useRouterStuff } from "@/hooks/use-router-stuff";

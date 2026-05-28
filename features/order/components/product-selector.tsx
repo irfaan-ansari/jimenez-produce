@@ -20,7 +20,7 @@ import {
   InputGroupAddon,
   InputGroupInput,
 } from "@/components/ui/input-group";
-import { QueryState } from "../../../components/admin/query-state";
+import { QueryState } from "@/components/admin/query-state";
 import { CoinStack } from "@duo-icons/react";
 import { Button } from "@/components/ui/button";
 import { ImageOff, Search } from "lucide-react";

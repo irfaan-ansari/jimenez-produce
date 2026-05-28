@@ -12,7 +12,7 @@ import { format } from "date-fns";
 import { SquarePen } from "lucide-react";
 import { authClient } from "@/services/auth";
 import { Button } from "@/components/ui/button";
-import { WarehouseDialog } from "@/components/admin/warehouse-dialog";
+import { WarehouseDialog } from "@/features/admin/components/warehouse-dialog";
 import { EmptyComponent } from "@/components/admin/placeholder-component";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 

@@ -1,9 +1,8 @@
-import Link from "next/link";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PageClient } from "./page-client";
 import { SearchBar } from "@/components/admin/search-filters";
-import { OrderGuideAdmin } from "@/components/admin/order-guide-dialog";
+import { OrderGuideDialog } from "@/features/admin/components/order-guide-dialog";
 
 const OrderGuidesPage = () => {
   return (
@@ -16,11 +15,11 @@ const OrderGuidesPage = () => {
           </p>
         </div>
 
-        <OrderGuideAdmin>
+        <OrderGuideDialog>
           <Button size="xl" className="min-w-28 rounded-xl md:order-3">
             <Plus /> New Guide
           </Button>
-        </OrderGuideAdmin>
+        </OrderGuideDialog>
         <SearchBar className="max-w-full basis-full md:max-w-xs" />
       </div>
 

@@ -7,15 +7,15 @@ import {
   DialogContent,
   DialogDescription,
   DialogClose,
-} from "../ui/dialog";
+} from "@/components/ui/dialog";
 import z from "zod";
 import { toast } from "sonner";
 import React, { useState } from "react";
 
 import { authClient } from "@/services/auth";
 import { useAppForm } from "@/hooks/form-context";
-import { Field, FieldGroup } from "../ui/field";
-import { Button } from "../ui/button";
+import { Field, FieldGroup } from "@/components/ui/field";
+import { Button } from "@/components/ui/button";
 import { Loader } from "lucide-react";
 import { getInitialsAvatar } from "@/lib/utils";
 import { phoneSchema } from "@/lib/form-schema/common";

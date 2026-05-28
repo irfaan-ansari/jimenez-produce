@@ -45,13 +45,13 @@ import { CustomerActions } from "@/features/admin/components/customer-actions";
 import { CopyButton } from "@/components/copy-button";
 import { useQueryClient } from "@tanstack/react-query";
 import { STATUS_MAP } from "@/lib/constants/status-map";
-import { UserSelector } from "@/components/admin/user-selector";
+import { UserSelector } from "@/features/admin/components/user-selector";
 import { formatPriceLevelAdjustment, formatUSD } from "@/lib/utils";
-import { TaxRulesSelector } from "@/components/admin/tax-rules-selector";
+import { TaxRulesSelector } from "@/features/admin/components/tax-rules-selector";
 import { PriceLevelSelectType, ProductSelectType } from "@/lib/db/schema";
-import { PriceLevelSelector } from "@/components/admin/price-level-selector";
+import { PriceLevelSelector } from "@/features/admin/components/price-level-selector";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ProductSelector } from "@/components/admin/product-selector";
+import { ProductSelector } from "@/features/admin/components/product-selector";
 
 export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = use(params);

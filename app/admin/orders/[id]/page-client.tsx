@@ -25,7 +25,7 @@ import {
 } from "@/components/admin/placeholder-component";
 import { useQueryClient } from "@tanstack/react-query";
 import { STATUS_MAP } from "@/lib/constants/status-map";
-import { OrderActions } from "@/components/admin/order-actions";
+import { OrderActions } from "@/features/admin/components/order-actions";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useRouter } from "next/navigation";

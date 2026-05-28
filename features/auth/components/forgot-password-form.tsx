@@ -15,7 +15,7 @@ import {
   AlertAction,
   AlertDescription,
   AlertTitle,
-} from "../../../components/ui/alert";
+} from "@/components/ui/alert";
 
 const schema = z.object({
   username: z.union(

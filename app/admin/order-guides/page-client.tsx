@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "@/components/admin/data-table";
 import { ImageOff, SquarePen, Trash2, User } from "lucide-react";
-import { OrderGuideAdmin } from "@/components/admin/order-guide-dialog";
+import { OrderGuideDialog } from "@/features/admin/components/order-guide-dialog";
 import { AdminOrderGuide, useAdminOrderGuides } from "@/hooks/use-orders";
 import {
   HoverCard,
@@ -212,11 +212,11 @@ export const columns: ColumnDef<AdminOrderGuide>[] = [
       };
       return (
         <div className="flex items-center justify-end gap-2">
-          <OrderGuideAdmin initialData={initialData}>
+          <OrderGuideDialog initialData={initialData}>
             <Button type="button" variant="outline" size="icon-sm">
               <SquarePen />
             </Button>
-          </OrderGuideAdmin>
+          </OrderGuideDialog>
           <Button
             type="button"
             variant="destructive"

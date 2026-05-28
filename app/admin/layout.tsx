@@ -4,7 +4,7 @@ import { getSession } from "@/services/auth";
 import { redirect } from "next/navigation";
 import { SITE_CONFIG } from "@/lib/config";
 import { Container } from "@/components/container";
-import { AppSidebar } from "@/components/admin/app-sidebar";
+import { AppSidebar } from "@/features/admin/components/app-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import AppHeader from "@/components/admin/app-header";
 

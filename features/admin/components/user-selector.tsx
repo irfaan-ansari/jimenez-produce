@@ -7,7 +7,7 @@ import {
   AppDialogHeader,
   AppDialogTitle,
   AppDialogTrigger,
-} from "../app-dialog";
+} from "@/components/app-dialog";
 import {
   Field,
   FieldContent,
@@ -21,14 +21,14 @@ import {
   InputGroupButton,
   InputGroupInput,
 } from "@/components/ui/input-group";
-import { QueryState } from "./query-state";
+import { QueryState } from "@/components/admin/query-state";
 import { Plus, Search } from "lucide-react";
 import { useUsers } from "@/hooks/use-teams";
 import { Button } from "@/components/ui/button";
 import { useDebounce } from "@/hooks/use-debounce";
 
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { UserDialog } from "@/app/(apps)/admin/users/user-dialog";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { UserDialog } from "./user-dialog";
 
 export const UserSelector = ({
   selected,
@@ -78,7 +78,9 @@ export const UserSelector = ({
       <AppDialogContent className="flex h-full max-h-[calc(100svh-10rem)] flex-col overflow-hidden rounded-2xl ring-ring/10 sm:max-w-xl">
         <div className="flex flex-col gap-6 w-full items-start *:w-full overflow-auto">
           <AppDialogHeader>
-            <AppDialogTitle className="text-xl font-bold text-left">Assign user</AppDialogTitle>
+            <AppDialogTitle className="text-xl font-bold text-left">
+              Assign user
+            </AppDialogTitle>
           </AppDialogHeader>
 
           {/* Search */}

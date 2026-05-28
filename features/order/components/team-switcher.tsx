@@ -13,19 +13,15 @@ import {
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { Session } from "@/lib/types";
-import { SITE_CONFIG } from "@/lib/config";
+
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
 import { useRouter } from "next/navigation";
-import { useTeams, useUserTeams } from "@/hooks/use-teams";
+import { useUserTeams } from "@/hooks/use-teams";
 import { authClient } from "@/services/auth";
 import { PopoverXDrawer } from "@/components/popover-x-drawer";
 import { useQueryClient } from "@tanstack/react-query";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "../../../components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Check, ChevronsUpDown, LogOut, Store, User } from "lucide-react";
 import { getInitialsAvatar } from "@/lib/utils";
 

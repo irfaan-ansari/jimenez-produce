@@ -26,8 +26,8 @@ import {
   AppDialogHeader,
   AppDialogTitle,
   AppDialogTrigger,
-} from "../app-dialog";
-import { QueryState } from "./query-state";
+} from "@/components/app-dialog";
+import { QueryState } from "@/components/admin/query-state";
 
 interface Customer {
   id: string;

@@ -12,7 +12,7 @@ import { CopyButton } from "@/components/copy-button";
 import { STATUS_MAP } from "@/lib/constants/status-map";
 import { useRouterStuff } from "@/hooks/use-router-stuff";
 import { DataTable } from "@/components/admin/data-table";
-import { OrderActions } from "@/components/admin/order-actions";
+import { OrderActions } from "@/features/admin/components/order-actions";
 import { useOrders } from "@/features/admin/data/order";
 
 export const PageClient = () => {

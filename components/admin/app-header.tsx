@@ -1,9 +1,9 @@
 "use client";
 import { Session } from "@/lib/types";
 import { Button } from "../ui/button";
-import { TeamSwitcher } from "../../features/order/components/team-switcher";
+import { TeamSwitcher } from "@/features/order/components/team-switcher";
 import { useSidebar } from "../ui/sidebar";
-import { OrganizationSwitcher } from "./organization-switcher";
+import { OrganizationSwitcher } from "@/features/admin/components/organization-switcher";
 
 const AppHeader = ({
   session,

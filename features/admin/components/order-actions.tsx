@@ -12,10 +12,10 @@ import {
 import Link from "next/link";
 import { toast } from "sonner";
 import { useState } from "react";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 import { OrderType } from "@/lib/types";
 import { useConfirm } from "@/hooks/use-confirm";
-import { PopoverXDrawer } from "../popover-x-drawer";
+import { PopoverXDrawer } from "@/components/popover-x-drawer";
 import { useQueryClient } from "@tanstack/react-query";
 import { deleteOrder, updateOrder } from "@/server/order";
 import { OrderScheduleDialog } from "./order-schedule-dialog";

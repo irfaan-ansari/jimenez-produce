@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { deleteProduct } from "@/server/product";
-import { ProductDialog } from "@/components/admin/product-dialog";
+import { ProductDialog } from "@/features/admin/components/product-dialog";
 import { useConfirm } from "@/hooks/use-confirm";
 import { type AdminProductType } from "@/lib/types";
 import { PopoverXDrawer } from "@/components/popover-x-drawer";

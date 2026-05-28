@@ -1,4 +1,5 @@
 "use client";
+
 import React from "react";
 import {
   AppDialog,
@@ -7,7 +8,7 @@ import {
   AppDialogHeader,
   AppDialogTitle,
   AppDialogTrigger,
-} from "../app-dialog";
+} from "@/components/app-dialog";
 import {
   Field,
   FieldContent,
@@ -19,18 +20,18 @@ import {
   InputGroupAddon,
   InputGroupInput,
 } from "@/components/ui/input-group";
-import { Badge } from "../ui/badge";
-import { Button } from "../ui/button";
-import { Checkbox } from "../ui/checkbox";
-import { QueryState } from "./query-state";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { QueryState } from "@/components/admin/query-state";
 import { CoinStack } from "@duo-icons/react";
 import { ImageOff, Search } from "lucide-react";
 import { useDebounce } from "@/hooks/use-debounce";
-import { LoadingSkeleton } from "./placeholder-component";
 import { useInfiniteProducts } from "@/hooks/use-product";
 import { formatUSD, getInitialsAvatar } from "@/lib/utils";
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { LoadingSkeleton } from "@/components/admin/placeholder-component";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface ProductSelectorType {
   id: number;

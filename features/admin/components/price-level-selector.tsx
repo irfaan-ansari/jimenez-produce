@@ -22,12 +22,12 @@ import {
   InputGroupInput,
 } from "@/components/ui/input-group";
 import { Search } from "lucide-react";
-import { QueryState } from "./query-state";
+import { QueryState } from "@/components/admin/query-state";
 import { Button } from "@/components/ui/button";
 import { useDebounce } from "@/hooks/use-debounce";
 import { usePriceLevels } from "@/hooks/use-product";
 import { formatPriceLevelAdjustment } from "@/lib/utils";
-import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 interface PriceLevel {
   id: number;

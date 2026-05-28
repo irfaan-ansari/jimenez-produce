@@ -14,7 +14,7 @@ import { useAdminProducts } from "@/hooks/use-product";
 import { useRouterStuff } from "@/hooks/use-router-stuff";
 import { formatUSD, getInitialsAvatar } from "@/lib/utils";
 import { Pagination } from "@/components/admin/pagination";
-import { ProductDialog } from "@/components/admin/product-dialog";
+import { ProductDialog } from "@/features/admin/components/product-dialog";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 
 export const PageClient = () => {

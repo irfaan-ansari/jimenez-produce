@@ -7,7 +7,7 @@ import { useConfirm } from "@/hooks/use-confirm";
 import { ColumnDef } from "@tanstack/react-table";
 import { useTaxRules } from "@/hooks/use-product";
 import { deleteTaxRule } from "@/server/tax-rule";
-import { TaxRuleDialog } from "../../../../features/admin/components/tax-rule-dialog";
+import { TaxRuleDialog } from "@/features/admin/components/tax-rule-dialog";
 import { TaxRuleSelectType } from "@/lib/db/schema";
 import { DataTable } from "@/components/admin/data-table";
 import { useRouterStuff } from "@/hooks/use-router-stuff";

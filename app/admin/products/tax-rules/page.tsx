@@ -1,6 +1,6 @@
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { TaxRuleDialog } from "../../../../features/admin/components/tax-rule-dialog";
+import { TaxRuleDialog } from "@/features/admin/components/tax-rule-dialog";
 import { SearchBar } from "@/components/admin/search-filters";
 import { PageClient } from "./page-client";
 

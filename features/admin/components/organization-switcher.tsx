@@ -11,17 +11,17 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { useState } from "react";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 import { Session } from "@/lib/types";
-import { Skeleton } from "../ui/skeleton";
+import { Skeleton } from "@/components/ui/skeleton";
 import { SITE_CONFIG } from "@/lib/config";
 import { useRouter } from "next/navigation";
-import { Separator } from "../ui/separator";
+import { Separator } from "@/components/ui/separator";
 import { authClient } from "@/services/auth";
-import { PopoverXDrawer } from "../popover-x-drawer";
+import { PopoverXDrawer } from "@/components/popover-x-drawer";
 import { WarehouseDialog } from "./warehouse-dialog";
 import { useQueryClient } from "@tanstack/react-query";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Check, ChevronsUpDown, LogOut, Plus, Store, User } from "lucide-react";
 
 export const OrganizationSwitcher = ({

@@ -7,13 +7,13 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "../ui/dialog";
+} from "@/components/ui/dialog";
 import React from "react";
 import { toast } from "sonner";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 import { Loader } from "lucide-react";
 import { updateOrder } from "@/server/order";
-import { Field, FieldGroup } from "../ui/field";
+import { Field, FieldGroup } from "@/components/ui/field";
 import { useAppForm } from "@/hooks/form-context";
 import { DELIVERY_TIME } from "@/lib/constants/customer";
 import { useQueryClient } from "@tanstack/react-query";

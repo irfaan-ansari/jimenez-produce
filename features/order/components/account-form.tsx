@@ -2,7 +2,8 @@
 import z from "zod";
 import { toast } from "sonner";
 import { Loader } from "lucide-react";
-import { QueryState } from "./query-state";
+
+import { QueryState } from "@/components/admin/query-state";
 import { authClient } from "@/services/auth";
 import { Button } from "@/components/ui/button";
 import { useAppForm } from "@/hooks/form-context";

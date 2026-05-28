@@ -4,7 +4,7 @@ import { ImportDialog } from "@/features/admin/components/import-dialog";
 import { Button } from "@/components/ui/button";
 import { FilterTab } from "@/components/admin/filter-tabs";
 import { SearchBar } from "@/components/admin/search-filters";
-import { ProductDialog } from "@/components/admin/product-dialog";
+import { ProductDialog } from "@/features/admin/components/product-dialog";
 
 export const metadata = {
   title: "Products",

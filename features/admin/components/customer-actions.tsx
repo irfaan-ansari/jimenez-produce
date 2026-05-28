@@ -10,7 +10,7 @@ import { useConfirm } from "@/hooks/use-confirm";
 import { CustomerDialog } from "./customer-dialog";
 import { useQueryClient } from "@tanstack/react-query";
 import { PopoverXDrawer } from "@/components/popover-x-drawer";
-import { UserSelector } from "@/components/admin/user-selector";
+import { UserSelector } from "@/features/admin/components/user-selector";
 import { Eye, MoreVertical, PlusCircle, SquarePen, Trash2 } from "lucide-react";
 
 export const CustomerActions = ({

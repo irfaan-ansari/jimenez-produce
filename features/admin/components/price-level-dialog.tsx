@@ -31,7 +31,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useAppForm, withForm } from "@/hooks/form-context";
 import { createPriceLevel, updatePriceLevel } from "@/server/price-level";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ProductSelector } from "@/components/admin/product-selector";
+import { ProductSelector } from "@/features/admin/components/product-selector";
 import {
   AppDialog,
   AppDialogContent,

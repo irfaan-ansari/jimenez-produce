@@ -14,20 +14,24 @@ import {
   AppDialogHeader,
   AppDialogTitle,
   AppDialogTrigger,
-} from "../app-dialog";
+} from "@/components/app-dialog";
 import z from "zod";
 import { toast } from "sonner";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 import { formatUSD } from "@/lib/utils";
 import React, { useState } from "react";
 import { useAppForm } from "@/hooks/form-context";
 import { useQueryClient } from "@tanstack/react-query";
 import { CustomersSelector } from "./customers-selector";
-import { Field, FieldError, FieldGroup } from "../ui/field";
+import { Field, FieldError, FieldGroup } from "@/components/ui/field";
 import { ProductSelector } from "./product-selector";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { createOrderGuide, updateOrderGuide } from "@/server/order-guide";
-import { Sortable, SortableItem, SortableItemHandle } from "../reui/sortable";
+import {
+  Sortable,
+  SortableItem,
+  SortableItemHandle,
+} from "@/components/reui/sortable";
 
 const schema = z.object({
   name: z.string().min(1, "Name is required"),
