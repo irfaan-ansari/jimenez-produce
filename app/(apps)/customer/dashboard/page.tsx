@@ -5,6 +5,7 @@ import { TopProducts } from "./top-products";
 import { RecentOrders } from "./recent-orders";
 import { Button } from "@/components/ui/button";
 import { OrderTrendChart } from "./order-trend-chart";
+import { PromotionBanner } from "./promotion-banner";
 
 export const metadata = {
   title: "Dashboard",
@@ -27,6 +28,7 @@ const DashboardPage = async () => {
       </div>
       {/* content */}
       <div className="grid grid-cols-6 gap-8">
+        {/* <PromotionBanner /> */}
         <OrderStats />
 
         <OrderTrendChart />

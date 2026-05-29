@@ -118,6 +118,30 @@ export function AppSidebar({ session }: { session: Session }) {
             })}
           </SidebarMenu>
         </SidebarGroup>
+        {/* <SidebarGroup className="group-data-[state=collapsed]:hidden">
+          <SidebarMenu className="mb-4">
+            <SidebarMenuItem className="rounded-xl border overflow-hidden bg-linear-to-br relative from-lime-100 via-emerald-50 to-white ">
+              <img src="/cup/paso.jpg" />
+
+              <div className="p-4">
+                <div className="mb-1 font-semibold dark:text-background">
+                  Exclusive Signature Cup
+                </div>
+                <p className="mb-4 text-sm text-muted-foreground">
+                  Designed to bring the perfect fiesta vibe to every order.
+                  <br />
+                </p>
+                <Button
+                  asChild
+                  variant="secondary"
+                  className="w-full rounded-xl bg-sidebar-accent! text-sidebar-accent-foreground"
+                >
+                  <Link href="/customer/new-order">Start New Order</Link>
+                </Button>
+              </div>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarGroup> */}
         <SidebarGroup className="group-data-[state=collapsed]:hidden">
           <SidebarMenu className="mb-4">
             <SidebarMenuItem className="rounded-xl bg-linear-to-br relative from-lime-100 via-emerald-50 to-white p-4">
