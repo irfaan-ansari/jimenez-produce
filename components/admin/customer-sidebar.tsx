@@ -102,7 +102,7 @@ export function AppSidebar({ session }: { session: Session }) {
                           >
                             <SidebarMenuSubButton
                               asChild
-                              className="rounded-xl px-3  hover:bg-muted hover:text-sidebar-foreground data-active:bg-muted data-active:text-sidebar-foreground"
+                              className="px-3 rounded-xl hover:bg-muted hover:text-sidebar-foreground data-active:bg-muted data-active:text-sidebar-foreground"
                               isActive={isSubItemActive(subItem.href)}
                             >
                               <Link href={subItem.href}>
@@ -134,24 +134,27 @@ const PromotionCard = () => {
 
   if (data?.data.length > 0) {
     return data?.data?.map((p) => (
-      <SidebarGroup className="group-data-[state=collapsed]:hidden mt-6">
+      <SidebarGroup
+        className="group-data-[state=collapsed]:hidden mt-6"
+        key={p.id}
+      >
         <SidebarMenu className="mb-4">
           <SidebarMenuItem
             style={{
               background:
                 "radial-gradient(ellipse 80% 60% at 50% 0%, rgba(34, 197, 94, 0.25), transparent 70%), #000000",
             }}
-            className="rounded-xl border relative"
+            className="relative border rounded-xl"
           >
             {p.media && (
-              <div className="aspect-video relative">
+              <div className="relative aspect-video">
                 <img
                   src={p.media}
-                  className="absolute inset-0 scale-160 -rotate-10 -translate-y-4"
+                  className="absolute inset-0 -translate-y-4 scale-160 -rotate-10"
                 />
               </div>
             )}
-            <div className="p-4 relative z-1">
+            <div className="relative p-4 z-1">
               <div className="mb-1 font-semibold text-primary-foreground">
                 {p.title}
               </div>
@@ -168,7 +171,7 @@ const PromotionCard = () => {
   return (
     <SidebarGroup className="group-data-[state=collapsed]:hidden">
       <SidebarMenu className="mb-4">
-        <SidebarMenuItem className="rounded-xl bg-linear-to-br relative from-lime-100 via-emerald-50 to-white p-4">
+        <SidebarMenuItem className="relative p-4 rounded-xl bg-linear-to-br from-lime-100 via-emerald-50 to-white">
           <div className="mb-1 font-semibold dark:text-background">
             Reorder smarter
           </div>

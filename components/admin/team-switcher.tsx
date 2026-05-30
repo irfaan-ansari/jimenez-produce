@@ -35,6 +35,7 @@ export const TeamSwitcher = ({
   const { session, user } = auth;
   const router = useRouter();
   const queryClient = useQueryClient();
+
   // const { data, isPending } = useTeams();
   const { data, isPending } = useUserTeams();
 
@@ -42,13 +43,29 @@ export const TeamSwitcher = ({
 
   const activeTeam = data?.find((team) => team.id === session.activeTeamId);
 
-  const handleChange = async (teamId: string) => {
+  const handleSwitchAccount = async ({
+    id: teamId,
+    organizationId,
+  }: {
+    id: string;
+    organizationId: string;
+  }) => {
     setOpen(false);
 
     const toastId = toast.loading("Please wait...");
-    const { error } = await authClient.organization.setActiveTeam({
-      teamId,
-    });
+
+    const [{ error: teamError }, { error: organizationError }] =
+      await Promise.all([
+        authClient.organization.setActiveTeam({
+          teamId,
+        }),
+        authClient.organization.setActive({
+          organizationId,
+        }),
+      ]);
+
+    const error = teamError || organizationError;
+
     if (error) {
       toast.error(error.message, { id: toastId });
     } else {
@@ -156,7 +173,7 @@ export const TeamSwitcher = ({
                   <Button
                     key={team.id}
                     variant={team.id === activeTeam?.id ? "secondary" : "ghost"}
-                    onClick={() => handleChange(team.id)}
+                    onClick={() => handleSwitchAccount(team)}
                     className="rounded-lg! px-1.5"
                   >
                     <Avatar className="size-6 rounded-md **:rounded-md">

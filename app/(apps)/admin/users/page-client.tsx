@@ -38,15 +38,15 @@ export const columns: ColumnDef<UserWithMember>[] = [
 
       return (
         <div
-          className="group flex items-center gap-3"
+          className="flex items-center gap-3 group"
           data-active={isCurrentUser}
         >
           <Avatar className="relative size-9 rounded-lg ring-2 ring-green-600/20 ring-offset-1 **:rounded-lg after:hidden">
             <AvatarImage src={image ?? undefined} alt="profile image" />
-            <AvatarFallback className="rounded-xl bg-foreground text-xs font-semibold text-background">
+            <AvatarFallback className="text-xs font-semibold rounded-xl bg-foreground text-background">
               {getInitialsAvatar(name)}
             </AvatarFallback>
-            <span className="absolute -right-1 -bottom-1 size-3 border-2 bg-green-500 opacity-0 group-data-active:opacity-100"></span>
+            <span className="absolute bg-green-500 border-2 opacity-0 -right-1 -bottom-1 size-3 group-data-active:opacity-100"></span>
           </Avatar>
 
           <span className="font-medium">{name}</span>
@@ -61,7 +61,7 @@ export const columns: ColumnDef<UserWithMember>[] = [
       const role = row.original.member?.role;
       if (!role)
         return (
-          <span className="inline-block h-7 w-20 rounded-md bg-secondary" />
+          <span className="inline-block w-20 rounded-md h-7 bg-secondary" />
         );
 
       const {

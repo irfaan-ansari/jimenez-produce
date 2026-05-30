@@ -8,9 +8,9 @@ export const PromotionBanner = () => {
   if (isPending || isError) return null;
 
   return data.data.map((p) => (
-    <div className="col-span-6">
+    <div className="col-span-6" key={p.id}>
       <div
-        className="flex h-36 relative items-center rounded-2xl border-2"
+        className="relative flex items-center border-2 h-36 rounded-2xl"
         style={{
           background:
             "radial-gradient(ellipse 80% 60% at 50% 0%, rgba(34, 197, 94, 0.25), transparent 70%), #000000",
@@ -20,11 +20,11 @@ export const PromotionBanner = () => {
           <div className="aspect-[0.8/1] lg:aspect-video relative shrink-0 h-full">
             <img
               src={p.media}
-              className="w-full h-auto lg:h-full lg:scale-140 lg:-translate-2 absolute -rotate-5 scale-200 translate-y-8 drop-shadow-xs drop-shadow-sidebar-accent"
+              className="absolute w-full h-auto translate-y-8 lg:h-full lg:scale-140 lg:-translate-2 -rotate-5 scale-200 drop-shadow-xs drop-shadow-sidebar-accent"
             />
           </div>
         )}
-        <div className="p-4 relative z-1">
+        <div className="relative p-4 z-1">
           <div className="mb-1 text-xl font-bold text-primary-foreground">
             {p.title}
           </div>
