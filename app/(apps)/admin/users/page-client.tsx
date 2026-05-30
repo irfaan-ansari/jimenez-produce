@@ -79,7 +79,7 @@ export const columns: ColumnDef<UserWithMember>[] = [
             } as React.CSSProperties
           }
         >
-          <Icon />
+          <Icon className="size-3.5" />
           {label}
         </Badge>
       );

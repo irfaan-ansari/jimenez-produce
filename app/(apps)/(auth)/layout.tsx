@@ -8,7 +8,7 @@ const AuthLayout = async ({ children }: { children: React.ReactNode }) => {
   const session = await getSession();
 
   if (session) {
-    if (session.user.accountType === "customer") {
+    if (session.session.role === "customer") {
       redirect("/customer/dashboard");
     } else {
       redirect("/admin/overview");

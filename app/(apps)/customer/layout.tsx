@@ -25,7 +25,7 @@ const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
   // unauthorised redirect to signin
   if (!session?.activeOrganizationId || !user) redirect("/signin");
   // customer user - redirect to customer dashboard
-  if (user.accountType !== "customer") redirect("/admin/overview");
+  if (session.role !== "customer") redirect("/admin/overview");
 
   return (
     <SidebarProvider

@@ -6,6 +6,9 @@ import {
   User,
   Users,
   Lock,
+  UserLock,
+  BadgeDollarSign,
+  Handshake,
 } from "lucide-react";
 
 export const roleMap = {
@@ -14,30 +17,25 @@ export const roleMap = {
     icon: Crown,
     color: "#F59E0B",
   },
-  admin: {
-    label: "Admin",
-    icon: ShieldCheck,
-    color: "#7C3AED",
-  },
   manager: {
     label: "Manager",
-    icon: Briefcase,
+    icon: ShieldCheck,
     color: "#2563EB",
   },
   member: {
     label: "Member",
-    icon: Users,
+    icon: User,
     color: "#059669",
   },
-  user: {
-    label: "User",
-    icon: User,
-    color: "#6B7280",
+  sales: {
+    label: "Sales",
+    icon: BadgeDollarSign,
+    color: "#7C3AED",
   },
   customer: {
     label: "Customer",
-    icon: Star,
-    color: "#EC4899",
+    icon: Handshake,
+    color: "#4b5563",
   },
   none: {
     label: "None",

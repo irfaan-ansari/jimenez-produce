@@ -12,7 +12,7 @@ export const GET = async (req: NextRequest) => {
     if (!session) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
-    const { accountType } = session.user;
+
     const { activeOrganizationId, activeTeamId } = session.session;
 
     if (!activeOrganizationId || !activeTeamId) {

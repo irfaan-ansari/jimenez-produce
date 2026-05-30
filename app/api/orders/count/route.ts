@@ -11,7 +11,7 @@ export const GET = async (req: NextRequest) => {
     if (!session) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
-    const { accountType } = session.user;
+    const { role } = session.session;
     const { activeOrganizationId, activeTeamId } = session.session;
 
     const result = await db
@@ -23,9 +23,7 @@ export const GET = async (req: NextRequest) => {
       .where(
         and(
           eq(order.organizationId, activeOrganizationId!),
-          accountType === "customer"
-            ? eq(order.teamId, activeTeamId!)
-            : undefined,
+          role === "customer" ? eq(order.teamId, activeTeamId!) : undefined,
         ),
       )
       .groupBy(order.status);

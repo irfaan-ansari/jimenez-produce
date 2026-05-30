@@ -74,7 +74,7 @@ export const submitAgreement = handleAction(async (token: string) => {
 
   waitUntil(
     sendEmail({
-      to: ["info@jimenezproduce.com"],
+      to: ["info@jimenezproduce.net"],
       subject: "New Employment Agreement Submitted",
       template: InternalAgreementNotification,
       variables: {

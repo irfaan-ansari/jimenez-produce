@@ -16,6 +16,7 @@ import {
   SidebarMenuSub,
   SidebarMenuSubItem,
   SidebarMenuSubButton,
+  SidebarFooter,
 } from "@/components/ui/sidebar";
 import { Button } from "../ui/button";
 import { Session } from "@/lib/types";
@@ -119,10 +120,8 @@ export function AppSidebar({ session }: { session: Session }) {
             })}
           </SidebarMenu>
         </SidebarGroup>
-
-        {/* promotion card */}
-        <PromotionCard />
       </SidebarContent>
+      <PromotionCard />
     </Sidebar>
   );
 }
@@ -133,39 +132,43 @@ const PromotionCard = () => {
   if (isPending || isError) return null;
 
   if (data?.data.length > 0) {
-    return data?.data?.map((p) => (
-      <SidebarGroup
-        className="group-data-[state=collapsed]:hidden mt-6"
-        key={p.id}
-      >
-        <SidebarMenu className="mb-4">
-          <SidebarMenuItem
-            style={{
-              background:
-                "radial-gradient(ellipse 80% 60% at 50% 0%, rgba(34, 197, 94, 0.25), transparent 70%), #000000",
-            }}
-            className="relative border rounded-xl"
+    return (
+      <SidebarFooter>
+        {data?.data?.map((p) => (
+          <SidebarGroup
+            className="group-data-[state=collapsed]:hidden mt-6"
+            key={p.id}
           >
-            {p.media && (
-              <div className="relative aspect-video">
-                <img
-                  src={p.media}
-                  className="absolute inset-0 -translate-y-4 scale-160 -rotate-10"
-                />
-              </div>
-            )}
-            <div className="relative p-4 z-1">
-              <div className="mb-1 font-semibold text-primary-foreground">
-                {p.title}
-              </div>
-              <p className="mb-4 text-sm text-primary-foreground opacity-80">
-                {p.description}
-              </p>
-            </div>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarGroup>
-    ));
+            <SidebarMenu className="mb-4">
+              <SidebarMenuItem
+                style={{
+                  background:
+                    "radial-gradient(ellipse 80% 60% at 50% 0%, rgba(34, 197, 94, 0.25), transparent 70%), #000000",
+                }}
+                className="relative border rounded-xl"
+              >
+                {p.media && (
+                  <div className="relative aspect-video">
+                    <img
+                      src={p.media}
+                      className="absolute inset-0 -translate-y-4 scale-160 -rotate-10"
+                    />
+                  </div>
+                )}
+                <div className="relative p-4 z-1">
+                  <div className="mb-1 font-semibold text-primary-foreground">
+                    {p.title}
+                  </div>
+                  <p className="mb-4 text-sm text-primary-foreground opacity-80">
+                    {p.description}
+                  </p>
+                </div>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroup>
+        ))}
+      </SidebarFooter>
+    );
   }
 
   return (
