@@ -1,0 +1,1 @@
+ALTER TABLE "promotion" RENAME COLUMN "image" TO "media";

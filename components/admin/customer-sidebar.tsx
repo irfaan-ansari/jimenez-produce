@@ -118,54 +118,103 @@ export function AppSidebar({ session }: { session: Session }) {
             })}
           </SidebarMenu>
         </SidebarGroup>
-        {/* <SidebarGroup className="group-data-[state=collapsed]:hidden">
-          <SidebarMenu className="mb-4">
-            <SidebarMenuItem className="rounded-xl border overflow-hidden bg-linear-to-br relative from-lime-100 via-emerald-50 to-white ">
-              <img src="/cup/paso.jpg" />
 
-              <div className="p-4">
-                <div className="mb-1 font-semibold dark:text-background">
-                  Exclusive Signature Cup
-                </div>
-                <p className="mb-4 text-sm text-muted-foreground">
-                  Designed to bring the perfect fiesta vibe to every order.
-                  <br />
-                </p>
-                <Button
-                  asChild
-                  variant="secondary"
-                  className="w-full rounded-xl bg-sidebar-accent! text-sidebar-accent-foreground"
-                >
-                  <Link href="/customer/new-order">Start New Order</Link>
-                </Button>
-              </div>
-            </SidebarMenuItem>
-          </SidebarMenu>
-        </SidebarGroup> */}
-        <SidebarGroup className="group-data-[state=collapsed]:hidden">
-          <SidebarMenu className="mb-4">
-            <SidebarMenuItem className="rounded-xl bg-linear-to-br relative from-lime-100 via-emerald-50 to-white p-4">
-              <div className="mb-1 font-semibold dark:text-background">
-                Reorder smarter
-              </div>
-              <p className="mb-4 text-sm text-muted-foreground">
-                Your top items and recent purchases are ready to add in seconds.
-                <br />
-                <span className="bg-lime-200 py-0.5 rounded-lg text-xs px-2 inline-block mt-2">
-                  Coming Soon
-                </span>
-              </p>
-              <Button
-                asChild
-                variant="secondary"
-                className="w-full rounded-xl bg-sidebar-accent! text-sidebar-accent-foreground"
-              >
-                <Link href="/customer/new-order">Start New Order</Link>
-              </Button>
-            </SidebarMenuItem>
-          </SidebarMenu>
-        </SidebarGroup>
+        {/* promotion card */}
+        <PromotionCard teamId={"AqHm1jDVPlkWsy3lJmLMJX9KV0o2Obih"} />
       </SidebarContent>
     </Sidebar>
   );
 }
+
+const PromotionCard = ({ teamId }: { teamId: string }) => {
+  // el paso
+  if (teamId == "KhzULm7rxKpVJsnXZayhFa1WRdTp5eEu") {
+    return (
+      <SidebarGroup className="group-data-[state=collapsed]:hidden mt-6">
+        <SidebarMenu className="mb-4">
+          <SidebarMenuItem
+            style={{
+              background:
+                "radial-gradient(ellipse 80% 60% at 50% 0%, rgba(34, 197, 94, 0.25), transparent 70%), #000000",
+            }}
+            className="rounded-xl border relative"
+          >
+            <div className="aspect-video relative">
+              <img
+                src="/cup/paso.png"
+                className="absolute inset-0 scale-160 -rotate-10 -translate-y-4"
+              />
+            </div>
+
+            <div className="p-4 relative z-1">
+              <div className="mb-1 font-semibold text-primary-foreground">
+                Exclusive Signature Cup
+              </div>
+              <p className="mb-4 text-sm text-primary-foreground opacity-80">
+                Designed to bring the perfect fiesta vibe to every order.
+                <br />
+              </p>
+              <Button asChild className="w-full rounded-xl">
+                <Link href="/customer/new-order">Start New Order</Link>
+              </Button>
+            </div>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarGroup>
+    );
+  } else if (teamId === "AqHm1jDVPlkWsy3lJmLMJX9KV0o2Obih") {
+    // pedros
+    return (
+      <SidebarGroup className="group-data-[state=collapsed]:hidden mt-6">
+        <SidebarMenu className="mb-4">
+          <SidebarMenuItem className="rounded-xl">
+            <div className="bg-linear-to-br flex border rounded-xl flex-col gap-4 from-lime-100 via-emerald-50 to-white p-4">
+              <span className="bg-sidebar-accent relative z-1 text-primary-foreground rounded-md h-6 px-2.5 ml-auto inline-flex items-center justify-center text-xs font-medium">
+                Coming Soon
+              </span>
+              <div className="aspect-video relative">
+                <img
+                  src="/cup/pedros.png"
+                  className="absolute inset-0 scale-150 -translate-y-5 drop-shadow-2xl drop-shadow-background -rotate-5"
+                />
+              </div>
+
+              <div className="relative z-1 space-y-1">
+                <div className="font-semibold">Exclusive Signature Cup</div>
+                <p className="text-sm text-muted-foreground">
+                  Designed to bring the perfect fiesta vibe to every order.
+                </p>
+              </div>
+            </div>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarGroup>
+    );
+  }
+
+  return (
+    <SidebarGroup className="group-data-[state=collapsed]:hidden">
+      <SidebarMenu className="mb-4">
+        <SidebarMenuItem className="rounded-xl bg-linear-to-br relative from-lime-100 via-emerald-50 to-white p-4">
+          <div className="mb-1 font-semibold dark:text-background">
+            Reorder smarter
+          </div>
+          <p className="mb-4 text-sm text-muted-foreground">
+            Your top items and recent purchases are ready to add in seconds.
+            <br />
+            <span className="bg-lime-200 py-0.5 rounded-lg text-xs px-2 inline-block mt-2">
+              Coming Soon
+            </span>
+          </p>
+          <Button
+            asChild
+            variant="secondary"
+            className="w-full rounded-xl bg-sidebar-accent! text-sidebar-accent-foreground"
+          >
+            <Link href="/customer/new-order">Start New Order</Link>
+          </Button>
+        </SidebarMenuItem>
+      </SidebarMenu>
+    </SidebarGroup>
+  );
+};

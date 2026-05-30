@@ -15,6 +15,8 @@ import {
   teamProduct,
   orderGuide,
   orderGuideTarget,
+  promotion,
+  promotionTarget,
 } from "./schema";
 
 import {
@@ -258,3 +260,25 @@ export const taxRuleRelations = relations(taxRule, ({ one, many }) => ({
     references: [organization.id],
   }),
 }));
+
+export const promotionRelations = relations(promotion, ({ one, many }) => ({
+  organization: one(organization, {
+    fields: [promotion.organizationId],
+    references: [organization.id],
+  }),
+  promotionTargets: many(promotionTarget),
+}));
+
+export const promotionTargetRelations = relations(
+  promotionTarget,
+  ({ one }) => ({
+    promotion: one(promotion, {
+      fields: [promotionTarget.promotionId],
+      references: [promotion.id],
+    }),
+    team: one(team, {
+      fields: [promotionTarget.teamId],
+      references: [team.id],
+    }),
+  }),
+);

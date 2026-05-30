@@ -28,7 +28,7 @@ const DashboardPage = async () => {
       </div>
       {/* content */}
       <div className="grid grid-cols-6 gap-8">
-        {/* <PromotionBanner /> */}
+        <PromotionBanner />
         <OrderStats />
 
         <OrderTrendChart />

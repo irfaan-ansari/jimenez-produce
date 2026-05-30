@@ -4,6 +4,10 @@ import ChangePasswordForm from "@/components/admin/change-password";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
+export const metadata = {
+  title: "Settings",
+};
+
 const tabs = [
   {
     value: "profile",

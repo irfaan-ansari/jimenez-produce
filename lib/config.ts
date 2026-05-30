@@ -10,6 +10,7 @@ import {
   IdCard,
   Clipboard,
   FolderUpload,
+  Rocket,
 } from "@duo-icons/react";
 
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL!;
@@ -127,6 +128,30 @@ export const SIDEBAR_MENU = [
     icon: FolderUpload,
     href: "/admin/order-guides",
     items: [],
+  },
+  {
+    label: "Promotions",
+    icon: Rocket,
+    href: "/admin/promotions",
+    items: [
+      {
+        label: "All",
+        href: "/admin/promotions",
+        color: "#A1A1AA",
+        query: { status: "" },
+      },
+      {
+        label: "Active",
+        href: "/admin/promotions?status=active",
+        color: "#F59E0B",
+      },
+
+      {
+        label: "Inactive",
+        href: "/admin/promotions?status=inactive",
+        color: "#22C55E",
+      },
+    ],
   },
   {
     label: "Warehouses",

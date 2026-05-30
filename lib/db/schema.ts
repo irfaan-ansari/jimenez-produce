@@ -676,6 +676,61 @@ export const lineItem = pgTable(
   ],
 );
 
+export const promotion = pgTable(
+  "promotion",
+  {
+    id: serial("id").primaryKey(),
+    organizationId: text("organization_id")
+      .notNull()
+      .references(() => organization.id, {
+        onDelete: "cascade",
+      }),
+    name: text("name"),
+    title: text("title"),
+    description: text("description"),
+    media: text("media"),
+    badge: text("badge"),
+    target: text("target").default("all").notNull() /** all | selected */,
+    status: text("status").default("active").notNull() /** active | inactive */,
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at")
+      .defaultNow()
+      .$onUpdate(() => /* @__PURE__ */ new Date())
+      .notNull(),
+  },
+  (table) => [index("promotion_organizationId_idx").on(table.organizationId)],
+);
+
+export const promotionTarget = pgTable(
+  "promotion_target",
+  {
+    id: serial("id").primaryKey(),
+    promotionId: integer("promotion_id")
+      .notNull()
+      .references(() => promotion.id, {
+        onDelete: "cascade",
+      }),
+    teamId: text("team_id")
+      .notNull()
+      .references(() => team.id, {
+        onDelete: "cascade",
+      }),
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at")
+      .defaultNow()
+      .$onUpdate(() => /* @__PURE__ */ new Date())
+      .notNull(),
+  },
+  (table) => [
+    index("promotion_target_promotionId_idx").on(table.promotionId),
+    index("promotion_target_teamId_idx").on(table.teamId),
+    unique("promotion_target_promotion_team_unique").on(
+      table.promotionId,
+      table.teamId,
+    ),
+  ],
+);
+
 export type ProductInsertType = InferInsertModel<typeof product>;
 export type ProductSelectType = InferSelectModel<typeof product>;
 export type CustomerSelectType = InferSelectModel<typeof customer>;
@@ -729,4 +784,14 @@ export type OrderGuideTargetSelectType = InferSelectModel<
 >;
 export type OrderGuideTargetInsertType = InferInsertModel<
   typeof orderGuideTarget
+>;
+
+export type PromotionSelectType = InferSelectModel<typeof promotion>;
+export type PromotionInsertType = InferInsertModel<typeof promotion>;
+
+export type PromotionTargetSelectType = InferSelectModel<
+  typeof promotionTarget
+>;
+export type PromotionTargetInsertType = InferInsertModel<
+  typeof promotionTarget
 >;
