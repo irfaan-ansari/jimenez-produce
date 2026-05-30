@@ -130,11 +130,10 @@ const PromotionDialog = ({
           setOpen(false);
           form.reset();
         }
-
-        queryClient.invalidateQueries({
-          queryKey: ["promotions"],
-        });
       }
+      queryClient.invalidateQueries({
+        queryKey: ["promotions"],
+      });
     },
   });
 

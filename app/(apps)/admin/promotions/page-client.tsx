@@ -1,92 +1,98 @@
 "use client";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarGroup,
+  AvatarGroupCount,
+  AvatarImage,
+} from "@/components/ui/avatar";
+import { format } from "date-fns";
+import { User } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { PromotionResponse, usePromotions } from "@/hooks/data/promotions";
-import { useRouterStuff } from "@/hooks/use-router-stuff";
+import { Tooltip } from "@/components/tooltip";
 import { ColumnDef } from "@tanstack/react-table";
-import React from "react";
+import { PromotionAction } from "./promotion-action";
+import { STATUS_MAP } from "@/lib/constants/status-map";
+import { useRouterStuff } from "@/hooks/use-router-stuff";
+import { DataTable } from "@/components/admin/data-table";
+import { PromotionTypeWithTeam, usePromotions } from "@/hooks/data/promotions";
 
 const PageClient = () => {
   const { searchParamsObj } = useRouterStuff();
 
-  const { data, isPending, isError, error } = usePromotions();
+  const { data, isPending, isError, error } = usePromotions(searchParamsObj);
 
-  return <div>Promotions page client</div>;
+  return (
+    <DataTable
+      columns={columns}
+      data={data}
+      isPending={isPending}
+      isError={isError}
+      error={error}
+    />
+  );
 };
 
-export const columns: ColumnDef<PromotionResponse["data"]>[] = [
+export const columns: ColumnDef<PromotionTypeWithTeam>[] = [
   {
     accessorKey: "id",
-    header: "Name",
+    header: "Promotion",
     cell: ({ row }) => {
-      const { name, title, status } = row.original;
-
+      const { name, status } = row.original;
+      const map = STATUS_MAP[status as keyof typeof STATUS_MAP];
       return (
         <div className="flex items-center gap-2">
-          {title}
+          {name}
           <Badge
             variant="outline"
+            style={{ "--color": map.color } as React.CSSProperties}
             className="h-7 gap-1.5 rounded-xl border-(--color)/10 bg-(--color)/10 pr-2.5 pl-1.5 text-sm [&>svg]:size-3.5!"
           >
-            {status}
+            <map.icon className="text-(--color)" />
+            {map.label}
           </Badge>
         </div>
       );
     },
   },
   {
-    id: "role",
-    header: "Role",
+    accessorKey: "title",
+    header: "Title",
     cell: ({ row }) => {
-      const role = row.original.member?.role;
-      if (!role)
-        return (
-          <span className="inline-block w-20 rounded-md h-7 bg-secondary" />
-        );
-
-      const {
-        label,
-        color,
-        icon: Icon,
-      } = roleMap[role as keyof typeof roleMap];
-
       return (
-        <Badge
-          className="h-7 rounded-md border-(--color)/20 bg-(--color)/10 text-sm text-(--color)"
-          style={
-            {
-              "--color": color,
-            } as React.CSSProperties
-          }
-        >
-          <Icon />
-          {label}
-        </Badge>
-      );
-    },
-  },
-  {
-    id: "contact",
-    header: "Contact",
-    cell: ({ row }) => {
-      const { phoneNumber, email } = row.original;
-      return (
-        <div className="flex flex-col text-muted-foreground">
-          <CopyButton value={phoneNumber!} />
-          <CopyButton value={email} />
-        </div>
-      );
-    },
-  },
-
-  {
-    id: "last-login",
-    header: "Last Login",
-    cell: ({ row }) => {
-      const { lastLogin } = row.original;
-      return (
-        <span className="text-muted-foreground">
-          {lastLogin ? format(new Date(lastLogin), "MMM dd • hh:mm a") : "-"}
+        <span className="text-sm font-medium text-muted-foreground">
+          {row.original.title}
         </span>
+      );
+    },
+  },
+
+  {
+    id: "visibility",
+    header: "Visibility",
+    cell: ({ row }) => {
+      const { target, teams } = row.original;
+      if (target === "all") {
+        return <Badge variant="warning-outline">All Customers</Badge>;
+      }
+
+      const visible = teams.slice(0, 3);
+      const remaining = teams.length - visible.length;
+
+      return (
+        <AvatarGroup>
+          {visible.map((team) => (
+            <Tooltip key={team.id} content={team.name}>
+              <Avatar>
+                <AvatarImage src={team.logo!} alt={team.name} />
+                <AvatarFallback>
+                  <User className="size-4" />
+                </AvatarFallback>
+              </Avatar>
+            </Tooltip>
+          ))}
+          {remaining > 0 && <AvatarGroupCount>+{remaining}</AvatarGroupCount>}
+        </AvatarGroup>
       );
     },
   },
@@ -106,12 +112,12 @@ export const columns: ColumnDef<PromotionResponse["data"]>[] = [
 
   {
     id: "action",
-    header: "",
+    header: "Action",
     meta: {
       className: "w-10",
     },
     cell: ({ row }) => {
-      return <UserAction data={row.original} />;
+      return <PromotionAction data={row.original} />;
     },
   },
 ];

@@ -37,7 +37,7 @@ export const STATUS_MAP = {
     icon: FileEdit,
   },
   active: {
-    label: "Approved",
+    label: "Active",
     color: "#22C55E",
     icon: CheckCircle,
   },

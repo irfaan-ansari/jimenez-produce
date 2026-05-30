@@ -3,17 +3,37 @@ import { fetcher } from "@/lib/helper/fetcher";
 import { Pagination } from "@/lib/types";
 import { useQuery } from "@tanstack/react-query";
 
+export type PromotionTypeWithTeam = PromotionSelectType & {
+  teams: TeamSelectType[];
+};
+
 export interface PromotionResponse {
   pagination: Pagination;
-  data: PromotionSelectType & { teams: TeamSelectType };
+  data: PromotionTypeWithTeam[];
+}
+
+export interface PromotionResponseCustomer {
+  pagination: Pagination;
+  data: PromotionSelectType[];
 }
 
 export const usePromotions = (query?: Record<string, string>) => {
   const url = new URLSearchParams(query);
   return useQuery({
     queryKey: ["promotions", query],
+    queryFn: () =>
+      fetcher<PromotionResponse>(`/api/promotions?${url.toString()}`),
+  });
+};
+
+export const usePromotionsCustomer = (query?: Record<string, string>) => {
+  const url = new URLSearchParams(query);
+  return useQuery({
+    queryKey: ["promotions", query],
     queryFn: () => {
-      return fetcher<PromotionResponse>(`/api/promotions?${url.toString()}`);
+      return fetcher<PromotionResponseCustomer>(
+        `/api/customer/promotions?${url.toString()}`,
+      );
     },
     staleTime: 1000 * 60 * 5,
   });

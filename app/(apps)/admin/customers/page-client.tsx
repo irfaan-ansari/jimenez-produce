@@ -84,13 +84,12 @@ export const columns: ColumnDef<Team>[] = [
     },
   },
   {
-    id: "deliveryDate",
+    id: "members",
     header: "Members",
     cell: ({ row }) => {
       const members = row.original.members ?? [];
       const visible = members.slice(0, 3);
-      const remaining = members.length - members.length;
-      console.log("remaining", members);
+      const remaining = members.length - visible.length;
 
       return (
         <AvatarGroup>
@@ -104,7 +103,7 @@ export const columns: ColumnDef<Team>[] = [
               </Avatar>
             </Tooltip>
           ))}
-          {remaining > 0 && <AvatarGroupCount>+${remaining}</AvatarGroupCount>}
+          {remaining > 0 && <AvatarGroupCount>+{remaining}</AvatarGroupCount>}
         </AvatarGroup>
       );
     },

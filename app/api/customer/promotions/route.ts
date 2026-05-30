@@ -10,6 +10,7 @@ export const GET = async (req: NextRequest) => {
 
     if (!session || !session.session.activeOrganizationId)
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+
     const { activeTeamId, activeOrganizationId } = session.session || {};
 
     if (!activeTeamId || !activeOrganizationId) {
@@ -23,6 +24,7 @@ export const GET = async (req: NextRequest) => {
       where: (p, { eq, and, or, exists }) =>
         and(
           eq(p.organizationId, activeOrganizationId),
+          eq(p.status, "active"),
           or(
             eq(p.target, "all"),
             exists(
@@ -45,6 +47,7 @@ export const GET = async (req: NextRequest) => {
       promotion,
       and(
         eq(promotion.organizationId, activeOrganizationId),
+        eq(promotion.status, "active"),
         or(
           eq(promotion.target, "all"),
           exists(
