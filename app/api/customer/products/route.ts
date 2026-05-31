@@ -35,6 +35,7 @@ export async function GET(req: NextRequest) {
 
     const { page, limit, q, cat, offset = 0 } = getQueryObject(search);
 
+    // special items
     const ids = await db.query.teamProduct.findMany({
       where: eq(teamProduct.teamId, activeTeamId!),
       columns: {

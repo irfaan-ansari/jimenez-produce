@@ -2,7 +2,6 @@ import React from "react";
 import { ProductGrid } from "./product-grid";
 import { formOpt } from "./order-form-options";
 import { withForm } from "@/hooks/form-context";
-import { LoadingSkeleton } from "@/components/admin/placeholder-component";
 import { useOrderUIStore } from "@/lib/store/order-store";
 import { QueryState } from "@/components/admin/query-state";
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";

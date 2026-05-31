@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import {
   InputGroup,
   InputGroupAddon,
@@ -16,6 +17,18 @@ export const ProductItemQty = ({
   onChange: (arg: number) => void;
   className?: string;
 }) => {
+  if (value === 0) {
+    return (
+      <Button
+        size="xs"
+        variant="secondary"
+        className={cn("h-8 rounded-lg border-sidebar-accent/20", className)}
+        onClick={() => onChange(1)}
+      >
+        <Plus /> Add to cart
+      </Button>
+    );
+  }
   return (
     <InputGroup
       className={cn("h-8 w-24 shrink-0 self-center rounded-xl", className)}

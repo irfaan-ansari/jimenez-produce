@@ -22,6 +22,7 @@ import { OrderFormToolbar, ToolbarSearch } from "./order-from-toolbar";
 import { OrderGuideDialog } from "@/components/admin/order-guide-dialog";
 import { LoadingSkeleton } from "@/components/admin/placeholder-component";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { PromoProducts } from "./promo-products";
 
 const STORAGE_KEY = "order-line-items";
 
@@ -169,7 +170,7 @@ export const OrderForm = ({ taxRule }: { taxRule: TaxRule | null }) => {
         <div className="flex items-center w-full gap-4">
           <OrderFormToolbar />
         </div>
-
+        <PromoProducts form={form} />
         <TabsContent value="all">
           <ItemList form={form} />
         </TabsContent>
