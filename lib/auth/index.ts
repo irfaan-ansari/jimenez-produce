@@ -175,7 +175,9 @@ export const auth = betterAuth({
           return {
             data: {
               ...session,
-              activeOrganizationId: memberUser?.organizationId,
+              activeOrganizationId: activeTeam
+                ? activeTeam.organizationId
+                : memberUser?.organizationId,
               activeTeamId: activeTeam?.id,
               role: memberUser?.role,
             },

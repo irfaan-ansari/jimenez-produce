@@ -12,12 +12,14 @@ export const ProductItemQty = ({
   value = 0,
   onChange,
   className,
+  showButton = false,
 }: {
   value: number;
   onChange: (arg: number) => void;
   className?: string;
+  showButton?: boolean;
 }) => {
-  if (value === 0) {
+  if (showButton && value === 0) {
     return (
       <Button
         size="xs"

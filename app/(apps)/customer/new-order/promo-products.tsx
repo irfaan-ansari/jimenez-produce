@@ -8,14 +8,9 @@ import { ImageOff, X } from "lucide-react";
 import { formatUSD } from "@/lib/utils";
 import { ProductItemQty } from "./product-item-qty";
 import { Button } from "@/components/ui/button";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
+
 import { useLocalStorage } from "@/hooks/use-local-storage";
+import { Stack, StackItem } from "@/components/ui/stack";
 
 const STORAGE_KEY = "hide-promo-products";
 
@@ -66,73 +61,73 @@ export const PromoProducts = withForm({
     );
 
     return (
-      <Carousel opts={{ align: "start" }}>
-        <Button
-          size="icon-xs"
-          className="absolute -right-3 rounded-full -top-3 z-4"
-          variant="outline"
-          onClick={() => set(true)}
-        >
-          <X />
-        </Button>
-        <CarouselContent>
-          {products.map((p) => {
-            const qty =
-              lineItems.find((i) => i.productId === p.productId)?.quantity ?? 0;
-            return (
-              <CarouselItem
-                key={p.productId}
-                className="basis-4/5 md:basis-1/2 lg:basis-2/5 xl:basis-2/7"
+      <Stack
+        side="top"
+        expandOnHover
+        className="fixed bottom-34 right-6 w-100 z-3"
+      >
+        {products.map((p) => {
+          const qty =
+            lineItems.find((i) => i.productId === p.productId)?.quantity ?? 0;
+          return (
+            <StackItem
+              key={p.productId}
+              className="bg-linear-to-br from-white via-lime-50 to-sky-50 rounded-xl relative"
+            >
+              <Button
+                size="icon-xs"
+                variant="outline"
+                className="absolute -right-2 -top-2 rounded-full"
               >
-                <div className="flex gap-3 h-full border-2 shadow-xs items-start p-3 relative rounded-xl bg-linear-to-br from-white via-lime-50 to-sky-50">
-                  <div className="relative inline-flex aspect-square w-16 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-secondary">
-                    {p.image ? (
-                      <img
-                        src={p.image}
-                        alt={p.title}
-                        width={200}
-                        height={200}
-                        className="absolute inset-0 h-full w-full object-contain mix-blend-multiply"
-                      />
-                    ) : (
-                      <ImageOff className="size-4 opacity-40 group-data-[layout=grid]/card:size-6" />
-                    )}
+                <X />
+              </Button>
+              <div className="flex gap-3 items-start relative">
+                <div className="relative inline-flex aspect-square w-16 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-secondary">
+                  {p.image ? (
+                    <img
+                      src={p.image}
+                      alt={p.title}
+                      width={200}
+                      height={200}
+                      className="absolute inset-0 h-full w-full object-contain mix-blend-multiply"
+                    />
+                  ) : (
+                    <ImageOff className="size-4 opacity-40 group-data-[layout=grid]/card:size-6" />
+                  )}
+                </div>
+                <div className="space-y-2 flex-1">
+                  <h4 className="text-sm leading-tight font-medium">
+                    {p.title}
+                  </h4>
+                  <div className="min-w-0 overflow-auto text-muted-foreground uppercase text-xs font-medium">
+                    {p.categories?.join(" • ")}
                   </div>
-                  <div className="space-y-2 flex-1">
-                    <h4 className="text-sm leading-tight font-medium">
-                      {p.title}
-                    </h4>
-                    <div className="min-w-0 overflow-auto text-muted-foreground uppercase text-xs font-medium">
-                      {p.categories?.join(" • ")}
+                  <div className="flex justify-between">
+                    <div className="w-24 self-center font-bold text-primary">
+                      {formatUSD(p.finalPrice ?? 0)}
                     </div>
-                    <div className="flex justify-between">
-                      <div className="w-24 self-center font-bold text-primary">
-                        {formatUSD(p.finalPrice ?? 0)}
-                      </div>
-                      <ProductItemQty
-                        value={Number(qty)}
-                        onChange={(newQty) =>
-                          updateQty(
-                            // @ts-ignore
-                            {
-                              ...p,
-                              price: p.finalPrice,
-                              total: p.finalPrice,
-                            },
-                            newQty,
-                          )
-                        }
-                      />
-                    </div>
+                    <ProductItemQty
+                      showButton={true}
+                      value={Number(qty)}
+                      onChange={(newQty) =>
+                        updateQty(
+                          // @ts-ignore
+                          {
+                            ...p,
+                            price: p.finalPrice,
+                            total: p.finalPrice,
+                          },
+                          newQty,
+                        )
+                      }
+                    />
                   </div>
                 </div>
-              </CarouselItem>
-            );
-          })}
-        </CarouselContent>
-        <CarouselPrevious className="-left-3" />
-        <CarouselNext className="-right-3" />
-      </Carousel>
+              </div>
+            </StackItem>
+          );
+        })}
+      </Stack>
     );
   },
 });

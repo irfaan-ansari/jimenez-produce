@@ -6,22 +6,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { resolvePrices } from "@/lib/helper/resolve-price";
 import { eq, and, desc, inArray, countDistinct } from "drizzle-orm";
 
-const PROMO = [
-  "6BMX01",
-  "6BMX02",
-  "6BMX04",
-  "6BMX041",
-  "6BMX042",
-  "6BMX051",
-  "6BMX061",
-  "6BMX11",
-  "6BMX12",
-  "6BMX20",
-  "6BMX21",
-  "6BMX22",
-  "6BMX23",
-  "6BMX03",
-];
+const PROMO = ["6BMX12", "6BMX11"];
 
 export async function GET(req: NextRequest) {
   try {
