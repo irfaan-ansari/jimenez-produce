@@ -7,7 +7,7 @@ import {
   AvatarImage,
 } from "@/components/ui/avatar";
 import { format } from "date-fns";
-import { User } from "lucide-react";
+import { ImageOff, User } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip } from "@/components/tooltip";
 import { ColumnDef } from "@tanstack/react-table";
@@ -63,6 +63,41 @@ export const columns: ColumnDef<PromotionTypeWithTeam>[] = [
         <span className="text-sm font-medium text-muted-foreground">
           {row.original.title}
         </span>
+      );
+    },
+  },
+
+  {
+    id: "products",
+    header: "Products",
+    cell: ({ row }) => {
+      const { products } = row.original;
+
+      const visible = products.slice(0, 3);
+      const remaining = products.length - visible.length;
+
+      if (products.length == 0) {
+        return <span className="text-sm text-muted-foreground">NA</span>;
+      }
+      return (
+        <AvatarGroup>
+          {visible.map((product) => (
+            <Tooltip key={product.id} content={product.title}>
+              <Avatar>
+                <AvatarImage
+                  width={40}
+                  height={40}
+                  src={product.image!}
+                  alt={product.title}
+                />
+                <AvatarFallback>
+                  <ImageOff className="size-4" />
+                </AvatarFallback>
+              </Avatar>
+            </Tooltip>
+          ))}
+          {remaining > 0 && <AvatarGroupCount>+{remaining}</AvatarGroupCount>}
+        </AvatarGroup>
       );
     },
   },

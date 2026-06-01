@@ -19,13 +19,24 @@ import {
 } from "@/components/ui/field";
 import { CustomersSelector } from "@/components/admin/customers-selector";
 import { Button } from "@/components/ui/button";
-import { ImageUp, Loader, Plus, Trash2 } from "lucide-react";
+import { ImageUp, Loader, Plus, Trash2, ImageOff } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { deleteBlob } from "@/server/blob";
 import { upload } from "@vercel/blob/client";
 import { createPromotion, updatePromotion } from "@/server/promotion";
 import { useQueryClient } from "@tanstack/react-query";
+import { ProductSelectorAdmin } from "@/components/admin/product-selector-admin";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { formatUSD } from "@/lib/utils";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const schema = z.object({
   name: z.string().min(2, "Name is required"),
@@ -35,12 +46,22 @@ const schema = z.object({
   media: z.string(),
   target: z.string(),
   status: z.string(),
+  placement: z.string(),
   teams: z.array(
     z.object({
       teamId: z.string(),
       name: z.string(),
       phone: z.string(),
       email: z.string(),
+    }),
+  ),
+  products: z.array(
+    z.object({
+      id: z.number(),
+      title: z.string(),
+      image: z.string(),
+      identifier: z.string(),
+      basePrice: z.string(),
     }),
   ),
 });
@@ -66,7 +87,9 @@ const PromotionDialog = ({
     status = "active",
     media = "",
     target = "all",
+    placement = "new-order",
     teams = [],
+    products = [],
   } = initialData || {};
 
   const form = useAppForm({
@@ -82,11 +105,14 @@ const PromotionDialog = ({
       target,
       status,
       teams,
+      products,
+      placement,
     },
     onSubmit: async ({ value }) => {
-      const { teams, ...rest } = value;
+      const { teams, products, placement, ...rest } = value;
 
       const teamIds = teams.map((t) => t.teamId);
+      const productIds = products.map((p) => p.id);
 
       const toastId = toast.loading("Please wait...");
 
@@ -112,7 +138,9 @@ const PromotionDialog = ({
       if (id) {
         const { success, error } = await updatePromotion(id, {
           ...rest,
+          placement: [placement],
           teamIds,
+          productIds,
         });
         if (!success) {
           toast.error(error.message, { id: toastId });
@@ -122,7 +150,12 @@ const PromotionDialog = ({
           form.reset();
         }
       } else {
-        const { success, error } = await createPromotion({ ...rest, teamIds });
+        const { success, error } = await createPromotion({
+          ...rest,
+          placement: [placement],
+          teamIds,
+          productIds,
+        });
         if (!success) {
           toast.error(error.message, { id: toastId });
         } else {
@@ -268,13 +301,129 @@ const PromotionDialog = ({
                   />
                 )}
               />
-              <form.AppField
-                name="badge"
-                children={(field) => (
-                  <field.TextField label="Badge" placeholder="Coming soon" />
-                )}
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                <form.AppField
+                  name="badge"
+                  children={(field) => (
+                    <field.TextField label="Badge" placeholder="Coming soon" />
+                  )}
+                />
+                <form.Field
+                  name="placement"
+                  children={(field) => {
+                    const isInvalid =
+                      field.state.meta.isTouched && !field.state.meta.isValid;
+                    return (
+                      <Field orientation="vertical" data-invalid={isInvalid}>
+                        <FieldLabel>Placement</FieldLabel>
+                        <Select
+                          name={field.name}
+                          value={field.state.value}
+                          onValueChange={field.handleChange}
+                        >
+                          <SelectTrigger
+                            aria-invalid={isInvalid}
+                            className="w-full! h-11!"
+                          >
+                            <SelectValue placeholder="Select" />
+                          </SelectTrigger>
+                          <SelectContent position="item-aligned">
+                            <SelectItem value="sidebar">
+                              Sidebar card
+                            </SelectItem>
+                            <SelectItem value="banner">
+                              Dashborad Banner
+                            </SelectItem>
+                            <SelectItem value="new-order">
+                              New order page
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </Field>
+                    );
+                  }}
+                />
+              </div>
+              <form.Field
+                name="products"
+                mode="array"
+                children={(field) => {
+                  const items = field.state.value;
+                  return (
+                    <div className="space-y-4">
+                      <ProductSelectorAdmin
+                        selected={items.map((i) => i.id)}
+                        setSelectedChange={(value) => {
+                          console.log(items);
+                          const index = field.state.value.findIndex(
+                            (s) => s.id === value.id,
+                          );
+                          if (index >= 0) {
+                            field.removeValue(index);
+                          } else {
+                            field.pushValue({ ...value, id: value.id });
+                          }
+                        }}
+                      >
+                        <Button
+                          variant="outline"
+                          size="lg"
+                          type="button"
+                          className="justify-start w-full text-muted-foreground"
+                        >
+                          <Plus /> Select Products
+                        </Button>
+                      </ProductSelectorAdmin>
+                      {items.length > 0 ? (
+                        <div className="space-y-1">
+                          {items?.map((item, i) => (
+                            <div
+                              key={item.id}
+                              className="flex items-center gap-2 p-2 border rounded-xl bg-secondary/20"
+                            >
+                              <div className="flex items-start flex-1 gap-3">
+                                <div className="shrink-0">
+                                  <Avatar className="size-9 rounded-lg ring-2 ring-green-600/40 ring-offset-1 **:rounded-lg after:hidden">
+                                    <AvatarImage src={item?.image as string} />
+                                    <AvatarFallback>
+                                      <ImageOff className="size-4" />
+                                    </AvatarFallback>
+                                  </Avatar>
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <h4 className="font-medium leading-tight whitespace-normal">
+                                    {item.title}
+                                  </h4>
+                                  <Badge
+                                    variant="secondary"
+                                    className="uppercase border rounded-xl border-border"
+                                  >
+                                    {item.identifier}
+                                  </Badge>
+                                </div>
+                              </div>
+                              <div className="self-center font-medium text-right w-28 text-muted-foreground">
+                                {formatUSD(item.basePrice)}
+                              </div>
+                              <Button
+                                size="icon-xs"
+                                type="button"
+                                variant="destructive"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  field.removeValue(i);
+                                }}
+                              >
+                                <Trash2 />
+                              </Button>
+                            </div>
+                          ))}
+                        </div>
+                      ) : null}
+                    </div>
+                  );
+                }}
               />
-
               <form.AppField
                 name="target"
                 children={(field) => (

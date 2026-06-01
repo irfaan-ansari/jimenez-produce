@@ -26,6 +26,7 @@ export const createPromotion = handleAction(async (data: PromotionProps) => {
   const { activeOrganizationId } = session.session;
 
   const teamIds = data.teamIds;
+  const productIds = data.productIds;
 
   if (data.target == "selected" && (!teamIds || teamIds.length <= 0)) {
     throw new Error("Required atleat 1 customer");
@@ -41,7 +42,9 @@ export const createPromotion = handleAction(async (data: PromotionProps) => {
       badge: data.badge ?? "",
       media: data.media ?? "",
       target: data.target ?? "all",
+      placement: data.placement ?? ["new-order"],
       organizationId: activeOrganizationId!,
+      productIds,
     })
     .returning();
 
@@ -72,6 +75,7 @@ export const updatePromotion = handleAction(
     const { activeOrganizationId } = session.session;
 
     const teamIds = data.teamIds ?? [];
+    const productIds = data.productIds ?? [];
 
     const existing = await db.query.promotion.findFirst({
       where: (p, { eq, and }) =>
@@ -95,6 +99,8 @@ export const updatePromotion = handleAction(
         media: data.media ?? "",
         target: data.target ?? "all",
         organizationId: activeOrganizationId!,
+        placement: data.placement ?? ["new-order"],
+        productIds,
       })
       .where(eq(promotion.id, id))
       .returning();

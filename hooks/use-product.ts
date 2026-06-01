@@ -109,12 +109,3 @@ export const useInfiniteProductsCustomer = (query: string) => {
     staleTime: 1000 * 60 * 5,
   });
 };
-
-export const usePromoProducts = () => {
-  return useQuery({
-    queryKey: ["promo-products"],
-    queryFn: () =>
-      fetcher<CustomerProductResponse>(`/api/customer/promo-products`),
-    staleTime: 1000 * 60 * 5,
-  });
-};

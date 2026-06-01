@@ -127,7 +127,9 @@ export function AppSidebar({ session }: { session: Session }) {
 }
 
 const PromotionCard = () => {
-  const { data, isPending, isError } = usePromotionsCustomer();
+  const { data, isPending, isError } = usePromotionsCustomer({
+    placement: "sidebar",
+  });
 
   if (isPending || isError) return null;
 

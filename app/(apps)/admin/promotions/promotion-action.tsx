@@ -55,6 +55,7 @@ export const PromotionAction = ({ data }: { data: PromotionTypeWithTeam }) => {
           description: data.description ?? "",
           badge: data?.badge ?? "",
           media: data?.media ?? "",
+          placement: data.placement?.[0] ?? "new-order",
           teams:
             data.teams.map((t) => ({
               teamId: t.id,
@@ -62,6 +63,13 @@ export const PromotionAction = ({ data }: { data: PromotionTypeWithTeam }) => {
               phone: t.phone,
               email: t.email,
             })) ?? [],
+          products: data.products.map((p) => ({
+            id: p.id,
+            title: p.title,
+            image: p.image!,
+            identifier: p.identifier,
+            basePrice: p.basePrice,
+          })),
         }}
       >
         <Button variant="ghost" className="justify-start rounded-lg!">

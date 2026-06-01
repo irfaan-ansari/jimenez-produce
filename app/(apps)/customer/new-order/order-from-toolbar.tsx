@@ -185,7 +185,7 @@ export const CategoryFilter = () => {
             type="button"
             data-active={filter.cat === cat}
             variant="outline"
-            className="rounded-lg data-[active=true]:bg-foreground data-[active=true]:text-primary-foreground"
+            className="rounded-lg data-[active=true]:bg-foreground data-[active=true]:text-primary-foreground data-[active=true]:pr-1"
             onClick={() => toggle(cat)}
           >
             {cat}

@@ -1,0 +1,1 @@
+ALTER TABLE "promotion" ADD COLUMN "product_ids" jsonb DEFAULT '[]'::jsonb;

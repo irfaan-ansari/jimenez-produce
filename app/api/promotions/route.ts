@@ -36,7 +36,7 @@ export const GET = async (req: NextRequest) => {
 
     const filters = and(...conditions);
 
-    const response = await db.query.promotion.findMany({
+    const promotions = await db.query.promotion.findMany({
       where: filters,
       with: {
         promotionTargets: {
@@ -52,16 +52,32 @@ export const GET = async (req: NextRequest) => {
 
     const total = await db.$count(promotion, filters);
 
-    const transformed = response.map((r) => {
-      const { promotionTargets, ...rest } = r;
+    // Get all unique product ids
+    const productIds = [
+      ...new Set(promotions.flatMap((p) => p.productIds ?? [])),
+    ];
+
+    const products = await db.query.product.findMany({
+      where: (product, { inArray }) => inArray(product.id, productIds),
+    });
+
+    const productsMap = new Map(products.map((p) => [p.id, p]));
+
+    const response = promotions.map((promotion) => {
+      const { productIds, promotionTargets, ...rest } = promotion;
+
       return {
         ...rest,
         teams: promotionTargets.map((pt) => pt.team),
+        products: (promotion.productIds ?? [])
+          .map((id) => productsMap.get(id))
+          .filter(Boolean),
       };
     });
+
     return NextResponse.json(
       {
-        data: transformed,
+        data: response,
         pagination: {
           page,
           limit,

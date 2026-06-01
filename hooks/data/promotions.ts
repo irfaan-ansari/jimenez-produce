@@ -1,10 +1,15 @@
-import { PromotionSelectType, TeamSelectType } from "@/lib/db/schema";
+import {
+  ProductSelectType,
+  PromotionSelectType,
+  TeamSelectType,
+} from "@/lib/db/schema";
 import { fetcher } from "@/lib/helper/fetcher";
 import { Pagination } from "@/lib/types";
 import { useQuery } from "@tanstack/react-query";
 
 export type PromotionTypeWithTeam = PromotionSelectType & {
   teams: TeamSelectType[];
+  products: ProductSelectType[];
 };
 
 export interface PromotionResponse {
@@ -12,9 +17,16 @@ export interface PromotionResponse {
   data: PromotionTypeWithTeam[];
 }
 
+export type PromotionProductType = Omit<ProductSelectType, "basePrice"> & {
+  finalPrice: string;
+};
+export type PromotionTypeWithProduct = PromotionSelectType & {
+  products: PromotionProductType[];
+};
+
 export interface PromotionResponseCustomer {
   pagination: Pagination;
-  data: PromotionSelectType[];
+  data: PromotionTypeWithProduct[];
 }
 
 export const usePromotions = (query?: Record<string, string>) => {

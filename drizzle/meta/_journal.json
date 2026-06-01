@@ -694,6 +694,20 @@
       "when": 1780085707374,
       "tag": "0098_magical_namorita",
       "breakpoints": true
+    },
+    {
+      "idx": 99,
+      "version": "7",
+      "when": 1780308318981,
+      "tag": "0099_low_mordo",
+      "breakpoints": true
+    },
+    {
+      "idx": 100,
+      "version": "7",
+      "when": 1780308351848,
+      "tag": "0100_quiet_exodus",
+      "breakpoints": true
     }
   ]
 }

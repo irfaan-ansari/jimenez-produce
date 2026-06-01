@@ -3,7 +3,9 @@
 import { usePromotionsCustomer } from "@/hooks/data/promotions";
 
 export const PromotionBanner = () => {
-  const { data, isPending, isError } = usePromotionsCustomer();
+  const { data, isPending, isError } = usePromotionsCustomer({
+    placement: "banner",
+  });
 
   if (isPending || isError) return null;
 

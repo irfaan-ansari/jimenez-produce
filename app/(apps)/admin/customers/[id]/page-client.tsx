@@ -564,7 +564,7 @@ const ProductAccessForm = ({
                   if (index >= 0) {
                     field.removeValue(index);
                   } else {
-                    // @ts-expect-error
+                    // @ts-ignore
                     field.pushValue({ ...value, id: value.id });
                   }
                 }}

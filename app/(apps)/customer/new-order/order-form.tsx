@@ -43,7 +43,6 @@ export const OrderForm = ({ taxRule }: { taxRule: TaxRule | null }) => {
   const selectedCount = Object.keys(selectionState.items).length;
 
   const { open: sidebarOpen, setOpen: setSidebarOpen } = useSidebar();
-
   const form = useAppForm({
     ...formOpt,
     defaultValues: {
@@ -167,7 +166,7 @@ export const OrderForm = ({ taxRule }: { taxRule: TaxRule | null }) => {
 
       {/* toolbar */}
       <div className="flex flex-col gap-3 h-full">
-        <div className="flex items-center w-full gap-4">
+        <div className="flex items-center w-full gap-4 overflow-hidden">
           <OrderFormToolbar />
         </div>
         <PromoProducts form={form} />

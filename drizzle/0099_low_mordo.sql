@@ -1,0 +1,1 @@
+ALTER TABLE "promotion" ADD COLUMN "placement" jsonb DEFAULT '[]'::jsonb;

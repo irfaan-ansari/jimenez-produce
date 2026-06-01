@@ -690,6 +690,8 @@ export const promotion = pgTable(
     description: text("description"),
     media: text("media"),
     badge: text("badge"),
+    placement: jsonb("placement").$type<string[]>().default([]),
+    productIds: jsonb("product_ids").$type<number[]>().default([]),
     target: text("target").default("all").notNull() /** all | selected */,
     status: text("status").default("active").notNull() /** active | inactive */,
     createdAt: timestamp("created_at").defaultNow(),
