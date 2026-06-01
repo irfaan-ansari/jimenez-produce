@@ -1,57 +1,35 @@
 "use client";
-import { withForm } from "@/hooks/form-context";
-import { formOpt, OrderItem } from "./order-form-options";
 
-import { useStore } from "@tanstack/react-form";
-import React from "react";
-import { ImageOff, X } from "lucide-react";
 import { formatUSD } from "@/lib/utils";
+import { ImageOff, X } from "lucide-react";
+import { useStore } from "@tanstack/react-form";
+import { withForm } from "@/hooks/form-context";
+import { Button } from "@/components/ui/button";
 import { ProductItemQty } from "./product-item-qty";
-
-import { useLocalStorage } from "@/hooks/use-local-storage";
-import Autoplay from "embla-carousel-autoplay";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
+import { AnimatePresence, motion } from "motion/react";
+import { formOpt, OrderItem } from "./order-form-options";
 import { usePromotionsCustomer } from "@/hooks/data/promotions";
-
-const STORAGE_KEY = "hide-promo-products";
+import React, { useMemo, useEffect, useState, useRef } from "react";
 
 export const PromoProducts = withForm({
   ...formOpt,
   render: function Render({ form }) {
-    const { value, set } = useLocalStorage(STORAGE_KEY, false);
+    const [showPromo, setShowPromo] = useState(false);
+    const prevProductIds = useRef<Set<number>>(new Set());
 
-    if (value) {
-      return null;
-    }
-
-    const { data, isPending, isError } = usePromotionsCustomer({
-      placement: "new-order",
-    });
-
+    const { data } = usePromotionsCustomer({ placement: "new-order" });
     const lineItems = useStore(form.store, (s) => s.values.lineItems);
 
-    const lineItemMap = React.useMemo(() => {
-      return new Map<
-        number,
-        {
-          qty: number;
-          index: number;
-        }
-      >(
-        lineItems.map((item, index) => [
-          item.productId,
-          {
-            qty: Number(item.quantity),
-            index,
-          },
-        ]),
-      );
+    const lineItemMap = useMemo(() => {
+      const map = new Map<number, { qty: number; index: number }>();
+      for (let i = 0; i < lineItems.length; i++) {
+        const item = lineItems[i];
+        map.set(item.productId, {
+          qty: Number(item.quantity),
+          index: i,
+        });
+      }
+      return map;
     }, [lineItems]);
 
     const updateQty = React.useCallback(
@@ -75,85 +53,160 @@ export const PromoProducts = withForm({
           });
         }
       },
-      [form, lineItems],
+      [form, lineItemMap],
     );
 
-    const plugin = React.useMemo(
-      () => Autoplay({ delay: 5000, stopOnInteraction: true }),
-      [],
-    );
+    const promoProducts = useMemo(() => {
+      if (!data?.data) return [];
+      return data.data
+        .flatMap((x) => x.products)
+        .filter((p) => !lineItemMap.has(p.id))
+        .map((p) => ({
+          productId: p.id,
+          title: p.title,
+          image: p.image,
+          identifier: p.identifier,
+          categories: p.categories ?? [],
+          price: p.finalPrice,
+          total: p.finalPrice,
+          quantity: "0",
+          isTaxable: p.isTaxable ?? false,
+          lastPurchased: null,
+        }));
+    }, [data, lineItemMap]);
+
+    useEffect(() => {
+      let hasNewAddition = false;
+      const currentIds = new Set<number>();
+
+      for (const item of lineItems) {
+        currentIds.add(item.productId);
+        if (!prevProductIds.current.has(item.productId)) {
+          hasNewAddition = true;
+        }
+      }
+
+      prevProductIds.current = currentIds;
+
+      if (hasNewAddition && promoProducts.length > 0) {
+        setShowPromo(true);
+      }
+    }, [lineItems, promoProducts.length]);
 
     return (
-      <Carousel
-        opts={{
-          align: "start",
-          loop: true,
-        }}
-        plugins={[plugin]}
-        className="md:max-w-90 md:fixed md:bottom-6 md:right-6 md:z-3"
-      >
-        <CarouselContent>
-          {data?.data.map((p) => {
-            return p.products.map((product) => {
-              const qty = lineItemMap.get(product.id)?.qty ?? 0;
-              return (
-                <CarouselItem
-                  key={product.id}
-                  className="basis-full sm:basis-1/2 md:basis-full"
-                >
-                  <div className="flex gap-3  items-start relative p-3 bg-linear-to-br border-2 shadow-xs from-white via-lime-50 to-sky-50 rounded-xl">
-                    <div className="relative inline-flex aspect-square w-16 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-secondary">
-                      {product.image ? (
-                        <img
-                          src={product.image}
-                          alt={product.title}
-                          width={200}
-                          height={200}
-                          className="absolute inset-0 h-full w-full object-contain mix-blend-multiply"
-                        />
-                      ) : (
-                        <ImageOff className="size-4 opacity-40 group-data-[layout=grid]/card:size-6" />
-                      )}
-                    </div>
-                    <div className="space-y-2 flex-1">
-                      <h4 className="text-sm leading-tight font-medium">
-                        {product.title}
-                      </h4>
-                      <div className="min-w-0 overflow-auto text-muted-foreground uppercase text-xs font-medium">
-                        {product.categories?.join(" • ")}
-                      </div>
-                      <div className="flex justify-between">
-                        <div className="w-24 self-center font-bold text-primary">
-                          {formatUSD(product.finalPrice ?? 0)}
-                        </div>
-                        <ProductItemQty
-                          showButton={true}
-                          value={Number(qty)}
-                          onChange={(newQty) => {
-                            const { id, finalPrice, ...rest } = product;
-                            updateQty(
-                              // @ts-ignore
-                              {
-                                ...rest,
-                                productId: id,
-                                price: finalPrice,
-                                total: finalPrice,
-                              },
-                              newQty,
-                            );
-                          }}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </CarouselItem>
-              );
-            });
-          })}
-        </CarouselContent>
-        <CarouselPrevious className="-left-2" />
-        <CarouselNext className="-right-2" />
-      </Carousel>
+      <AnimatePresence mode="wait">
+        {showPromo && promoProducts.length > 0 && (
+          <PromoCard
+            products={promoProducts}
+            lineItemMap={lineItemMap}
+            onClose={() => setShowPromo(false)}
+            onQtyChange={updateQty}
+          />
+        )}
+      </AnimatePresence>
     );
   },
 });
+
+interface PromoCardProps {
+  products: OrderItem[];
+  lineItemMap: Map<number, { qty: number; index: number }>;
+  onClose: () => void;
+  onQtyChange: (product: OrderItem, qty: number) => void;
+}
+
+export const PromoCard: React.FC<PromoCardProps> = ({
+  products,
+  lineItemMap,
+  onClose,
+  onQtyChange,
+}) => {
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveIndex((current) => {
+        if (current >= products.length - 1) {
+          onClose();
+          return current;
+        }
+        return current + 1;
+      });
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [products.length, onClose]);
+
+  const product = products[activeIndex];
+
+  if (!product) return null;
+
+  const currentQty = lineItemMap.get(product.productId)?.qty ?? 0;
+
+  return (
+    <motion.div
+      key={product.productId}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.2 }}
+      className="fixed z-50 bottom-6 right-6 w-90"
+    >
+      <div className="relative p-3 overflow-hidden border-2 shadow-lg rounded-xl bg-linear-to-br from-white via-lime-50 to-sky-50">
+        <Button
+          variant="outline"
+          className="absolute transition-colors rounded-full right-2 top-2 text-muted-foreground hover:text-foreground"
+          onClick={onClose}
+        >
+          <X className="size-4" />
+        </Button>
+
+        <div className="flex items-start gap-3">
+          <div className="relative inline-flex items-center justify-center w-16 overflow-hidden rounded-lg aspect-square shrink-0 bg-secondary">
+            {product.image ? (
+              <img
+                src={product.image}
+                alt={product.title}
+                className="absolute inset-0 object-contain w-full h-full mix-blend-multiply"
+                loading="lazy"
+              />
+            ) : (
+              <ImageOff className="size-4 opacity-40" />
+            )}
+          </div>
+
+          <div className="flex-1 space-y-2">
+            <h4 className="text-sm font-medium leading-tight line-clamp-2">
+              {product.title}
+            </h4>
+
+            {product.categories && (
+              <div className="min-w-0 overflow-hidden text-xs font-medium uppercase text-ellipsis whitespace-nowrap text-muted-foreground">
+                {product.categories.join(" • ")}
+              </div>
+            )}
+
+            <div className="flex items-center justify-between">
+              <div className="font-bold text-primary">
+                {formatUSD(product.price ?? 0)}
+              </div>
+              <ProductItemQty
+                showButton
+                value={currentQty}
+                onChange={(newQty) => onQtyChange(product, newQty)}
+              />
+            </div>
+          </div>
+        </div>
+
+        <motion.div
+          key={`progress-${product.productId}`}
+          className="absolute inset-x-0 rounded-xl top-0 h-0.5 origin-left bg-sidebar-accent"
+          initial={{ scaleX: 0 }}
+          animate={{ scaleX: 1 }}
+          transition={{ duration: 5, ease: "linear" }}
+        />
+      </div>
+    </motion.div>
+  );
+};
