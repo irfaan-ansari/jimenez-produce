@@ -266,7 +266,7 @@ export const APPLICATION_GROUP = [
   },
   {
     label: "Catalog Requests",
-    href: "/admin/catalog-requests",
+    href: "/admin/applications/catalog-requests",
     icon: Message,
     items: [],
   },

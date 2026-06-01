@@ -48,7 +48,7 @@ export const PageClient = () => {
             <Card
               size="sm"
               key={i}
-              className="relative flex flex-col rounded-xl pt-0! transition ease-out hover:ring-2 hover:ring-offset-1 hover:ring-offset-background"
+              className="relative flex flex-col border rounded-xl pt-0! transition ease-out hover:ring-2 hover:ring-offset-1 hover:ring-offset-background"
               style={{ "--color": map.color } as React.CSSProperties}
             >
               {/* actions */}
@@ -85,8 +85,8 @@ export const PageClient = () => {
                   <ImageOff className="size-6 opacity-40" />
                 )}
               </div>
-              <CardContent className="flex flex-col flex-1 space-y-2 -translate-y-6">
-                <div className="flex items-center gap-2">
+              <CardContent className="relative flex flex-col flex-1 pt-1.5 space-y-1">
+                <div className="absolute flex items-center gap-2 -top-6 left-4">
                   {/* tax status */}
                   {product.isTaxable && (
                     <Badge className="h-5 rounded-sm">Taxable</Badge>
@@ -96,7 +96,7 @@ export const PageClient = () => {
                 </div>
 
                 <div className="text-xs font-medium uppercase text-muted-foreground">
-                  {product.categories?.join(" 〡 ")}
+                  {product.categories?.join(" • ")}
                 </div>
                 <CardTitle className="mt-auto font-semibold">
                   {product.title}
