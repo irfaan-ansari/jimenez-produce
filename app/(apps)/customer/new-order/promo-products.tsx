@@ -124,18 +124,20 @@ export const PromoCard: React.FC<PromoCardProps> = ({
   const [activeIndex, setActiveIndex] = useState(0);
 
   useEffect(() => {
+    if (activeIndex >= products.length) {
+      onClose();
+    }
+  }, [activeIndex, products.length, onClose]);
+
+  useEffect(() => {
     const interval = setInterval(() => {
       setActiveIndex((current) => {
-        if (current >= products.length - 1) {
-          onClose();
-          return current;
-        }
         return current + 1;
       });
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [products.length, onClose]);
+  }, [products.length]);
 
   const product = products[activeIndex];
 
@@ -146,14 +148,20 @@ export const PromoCard: React.FC<PromoCardProps> = ({
   return (
     <motion.div
       key={product.productId}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.2 }}
+      initial={{ opacity: 0, scale: 0.85, y: 20 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.9, y: 20 }}
+      transition={{
+        type: "spring",
+        stiffness: 500,
+        damping: 18,
+        opacity: { duration: 1 },
+      }}
       className="fixed z-50 bottom-6 right-6 w-90"
     >
       <div className="relative p-3 overflow-hidden border-2 shadow-lg rounded-xl bg-linear-to-br from-white via-lime-50 to-sky-50">
         <Button
+          size="icon-xs"
           variant="outline"
           className="absolute transition-colors rounded-full right-2 top-2 text-muted-foreground hover:text-foreground"
           onClick={onClose}
