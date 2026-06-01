@@ -80,6 +80,7 @@ export const auth = betterAuth({
       teams: {
         enabled: true,
       },
+      membershipLimit: 10000,
       schema: {
         organization: {
           additionalFields: {
