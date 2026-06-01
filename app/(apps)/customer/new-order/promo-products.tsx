@@ -79,9 +79,17 @@ export const PromoProducts = withForm({
       let hasNewAddition = false;
       const currentIds = new Set<number>();
 
+      const allPromoIds = new Set(
+        data?.data?.flatMap((x) => x.products).map((p) => p.id) ?? [],
+      );
+
       for (const item of lineItems) {
         currentIds.add(item.productId);
-        if (!prevProductIds.current.has(item.productId)) {
+
+        const isNewAddition = !prevProductIds.current.has(item.productId);
+        const isPromoItem = allPromoIds.has(item.productId);
+
+        if (isNewAddition && isPromoItem) {
           hasNewAddition = true;
         }
       }

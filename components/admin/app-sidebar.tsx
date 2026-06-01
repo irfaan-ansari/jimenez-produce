@@ -117,7 +117,7 @@ const MenuGroup = ({ menu }: { menu: typeof SIDEBAR_MENU }) => {
                     >
                       <SidebarMenuSubButton
                         asChild
-                        className="rounded-xl px-3  hover:bg-muted hover:text-sidebar-foreground data-active:bg-muted data-active:text-sidebar-foreground"
+                        className="px-3 rounded-xl hover:bg-muted hover:text-sidebar-foreground data-active:bg-muted data-active:text-sidebar-foreground"
                         isActive={isSubItemActive(subItem.href)}
                       >
                         <Link href={subItem.href}>

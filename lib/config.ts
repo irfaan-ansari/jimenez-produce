@@ -11,6 +11,12 @@ import {
   Clipboard,
   FolderUpload,
   Rocket,
+  Message,
+  Box2,
+  Box,
+  Approved,
+  Bookmark,
+  Briefcase,
 } from "@duo-icons/react";
 
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL!;
@@ -54,7 +60,7 @@ export const SIDEBAR_MENU = [
   },
   {
     label: "Orders",
-    icon: FolderOpen,
+    icon: Box,
     href: "/admin/orders",
     items: [
       {
@@ -83,7 +89,7 @@ export const SIDEBAR_MENU = [
 
   {
     label: "Products",
-    icon: File,
+    icon: Box2,
     href: "/admin/products",
     items: [
       {
@@ -116,16 +122,11 @@ export const SIDEBAR_MENU = [
         href: "/admin/products/tax-rules",
         color: "#A1A1AA",
       },
-      {
-        label: "Catalog Requests",
-        href: "/admin/products/catalog-requests",
-        color: "#A1A1AA",
-      },
     ],
   },
   {
     label: "Order Guides",
-    icon: FolderUpload,
+    icon: FolderOpen,
     href: "/admin/order-guides",
     items: [],
   },
@@ -161,7 +162,7 @@ export const SIDEBAR_MENU = [
   },
   {
     label: "Customers",
-    icon: IdCard,
+    icon: Approved,
     href: "/admin/customers",
     items: [],
   },
@@ -176,7 +177,7 @@ export const SIDEBAR_MENU = [
 export const APPLICATION_GROUP = [
   {
     label: "Customer",
-    icon: IdCard,
+    icon: Bookmark,
     href: "/admin/applications/customer",
     items: [
       {
@@ -223,7 +224,7 @@ export const APPLICATION_GROUP = [
   },
   {
     label: "Candidate",
-    icon: Clipboard,
+    icon: Briefcase,
     href: "/admin/applications/candidate",
     items: [
       {
@@ -262,6 +263,12 @@ export const APPLICATION_GROUP = [
         color: "#A1A1AA",
       },
     ],
+  },
+  {
+    label: "Catalog Requests",
+    href: "/admin/catalog-requests",
+    icon: Message,
+    items: [],
   },
 ];
 

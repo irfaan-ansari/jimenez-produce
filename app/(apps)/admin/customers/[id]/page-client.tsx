@@ -10,6 +10,7 @@ import {
   CircleDashed,
   PackageCheck,
   ChevronsUpDown,
+  ImageOff,
 } from "lucide-react";
 import {
   Card,
@@ -135,7 +136,10 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
               selected={data.members?.map((m) => m.id) || []}
               onAction={handleAssign}
             >
-              <Button size="default">Assign user</Button>
+              <Button size="default">
+                <Plus />
+                Add user
+              </Button>
             </UserSelector>
             <CustomerActions data={data} showView={false} />
           </div>
@@ -202,7 +206,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
           <CardHeader>
             <CardTitle className="font-semibold">Price level</CardTitle>
             <CardDescription>
-              Manage price level of this account
+              Manage price level for this account
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -229,7 +233,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
         <Card className="rounded-2xl">
           <CardHeader>
             <CardTitle className="font-semibold">Tax rules</CardTitle>
-            <CardDescription>Manage tax rules of this account</CardDescription>
+            <CardDescription>Manage tax rules for this account</CardDescription>
           </CardHeader>
           <CardContent>
             <TaxRulesForm data={data.taxRule} teamId={data.id} />
@@ -239,8 +243,8 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
         {/* members */}
         <Card className="rounded-2xl">
           <CardHeader>
-            <CardTitle className="font-semibold">Members</CardTitle>
-            <CardDescription>Manage members of this team</CardDescription>
+            <CardTitle className="font-semibold">Users</CardTitle>
+            <CardDescription>Manage users for this account</CardDescription>
           </CardHeader>
           <CardContent>
             <Members members={data.members} handleRemove={handleRemove} />
@@ -521,7 +525,7 @@ const ProductAccessForm = ({
                           <Avatar className="size-9 rounded-lg ring-2 ring-green-600/40 ring-offset-1 **:rounded-lg after:hidden">
                             <AvatarImage src={item?.image as string} />
                             <AvatarFallback>
-                              <User className="size-4" />
+                              <ImageOff className="size-4" />
                             </AvatarFallback>
                           </Avatar>
                         </div>

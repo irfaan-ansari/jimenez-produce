@@ -40,15 +40,15 @@ export const PageClient = () => {
   // data
   return (
     <div className="flex-1 space-y-3">
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 lg:gap-6 xl:grid-cols-4 2xl:grid-cols-6">
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:gap-4 xl:grid-cols-4 2xl:grid-cols-6">
         {(data as AdminProductResponse)?.data?.map((product, i) => {
           const map = STATUS_MAP[product.status as keyof typeof STATUS_MAP];
-          const defaultImage = getInitialsAvatar(product.title);
+
           return (
             <Card
               size="sm"
               key={i}
-              className="relative flex h-full flex-col rounded-xl pt-0! transition ease-out hover:ring-2 hover:ring-offset-1 hover:ring-offset-background"
+              className="relative flex flex-col rounded-xl pt-0! transition ease-out hover:ring-2 hover:ring-offset-1 hover:ring-offset-background"
               style={{ "--color": map.color } as React.CSSProperties}
             >
               {/* actions */}
@@ -63,7 +63,7 @@ export const PageClient = () => {
                 </Button>
               </ProductDialog>
 
-              <div className="absolute top-2 left-2 z-2 flex flex-col gap-1">
+              <div className="absolute flex flex-col gap-1 top-2 left-2 z-2">
                 {/* status */}
                 <Badge className="h-6 rounded-md  border border-(--color)/20 bg-background/80 text-sm text-(--color) shadow-sm backdrop-blur-2xl">
                   <map.icon className="size-3.5" />
@@ -71,7 +71,7 @@ export const PageClient = () => {
                 </Badge>
               </div>
 
-              <div className="relative inline-flex items-center justify-center aspect-[1.6/1] overflow-hidden rounded-t-xl bg-secondary">
+              <div className="relative inline-flex items-center justify-center overflow-hidden aspect-video rounded-t-xl bg-secondary">
                 {product.image ? (
                   <img
                     width={100}
@@ -79,13 +79,13 @@ export const PageClient = () => {
                     src={product.image!}
                     alt={product.title}
                     loading={i <= 10 ? "eager" : "lazy"}
-                    className="absolute inset-0 size-full object-cover transition ease-out"
+                    className="absolute inset-0 object-contain transition ease-out mix-blend-multiply size-full"
                   />
                 ) : (
                   <ImageOff className="size-6 opacity-40" />
                 )}
               </div>
-              <CardContent className="flex flex-1 flex-col space-y-2 -translate-y-6">
+              <CardContent className="flex flex-col flex-1 space-y-2 -translate-y-6">
                 <div className="flex items-center gap-2">
                   {/* tax status */}
                   {product.isTaxable && (
