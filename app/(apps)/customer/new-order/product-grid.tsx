@@ -17,6 +17,7 @@ export const ProductGrid = withForm({
   props: {} as ProductGridProps,
   render: function Render({ form, items, selectable, draggable }) {
     const layout = useOrderUIStore((s) => s.layout);
+    const setShowPromo = useOrderUIStore((s) => s.setShowPromo);
     const currentLayout = LAYOUT_MAP[layout as keyof typeof LAYOUT_MAP];
 
     const lineItems = useStore(form.store, (s) => s.values.lineItems);
@@ -39,6 +40,8 @@ export const ProductGrid = withForm({
       );
     }, [lineItems]);
 
+    const promo = [8237, 8236];
+
     const updateQty = React.useCallback(
       (product: OrderItem, qty: number) => {
         const index = lineItemMap.get(product.productId)?.index ?? -1;
@@ -58,6 +61,9 @@ export const ProductGrid = withForm({
             ...product,
             quantity: String(qty),
           });
+          if (promo.includes(product.productId)) {
+            setShowPromo(true);
+          }
         }
       },
       [form, lineItems],

@@ -10,12 +10,13 @@ import { AnimatePresence, motion } from "motion/react";
 import { formOpt, OrderItem } from "./order-form-options";
 import { usePromotionsCustomer } from "@/hooks/data/promotions";
 import React, { useMemo, useEffect, useState, useRef } from "react";
+import { useOrderUIStore } from "@/lib/store/order-store";
 
 export const PromoProducts = withForm({
   ...formOpt,
   render: function Render({ form }) {
-    const [showPromo, setShowPromo] = useState(false);
-    const prevProductIds = useRef<Set<number>>(new Set());
+    const showPromo = useOrderUIStore((s) => s.showPromo);
+    const setShowPromo = useOrderUIStore((s) => s.setShowPromo);
 
     const { data } = usePromotionsCustomer({ placement: "new-order" });
     const lineItems = useStore(form.store, (s) => s.values.lineItems);
@@ -31,6 +32,24 @@ export const PromoProducts = withForm({
       }
       return map;
     }, [lineItems]);
+
+    const promoProducts = useMemo(() => {
+      if (!data?.data) return [];
+      return data.data
+        .flatMap((x) => x.products)
+        .map((p) => ({
+          productId: p.id,
+          title: p.title,
+          image: p.image,
+          identifier: p.identifier,
+          categories: p.categories ?? [],
+          price: p.finalPrice,
+          total: p.finalPrice,
+          quantity: "0",
+          isTaxable: p.isTaxable ?? false,
+          lastPurchased: null,
+        }));
+    }, [data, lineItemMap]);
 
     const updateQty = React.useCallback(
       (product: OrderItem, qty: number) => {
@@ -55,49 +74,6 @@ export const PromoProducts = withForm({
       },
       [form, lineItemMap],
     );
-
-    const promoProducts = useMemo(() => {
-      if (!data?.data) return [];
-      return data.data
-        .flatMap((x) => x.products)
-        .filter((p) => !lineItemMap.has(p.id))
-        .map((p) => ({
-          productId: p.id,
-          title: p.title,
-          image: p.image,
-          identifier: p.identifier,
-          categories: p.categories ?? [],
-          price: p.finalPrice,
-          total: p.finalPrice,
-          quantity: "0",
-          isTaxable: p.isTaxable ?? false,
-          lastPurchased: null,
-        }));
-    }, [data, lineItemMap]);
-
-    useEffect(() => {
-      let hasNewAddition = false;
-      const currentIds = new Set<number>();
-
-      const allPromoIds = new Set(
-        data?.data?.flatMap((x) => x.products).map((p) => p.id) ?? [],
-      );
-
-      for (const item of lineItems) {
-        const isNewAddition = !prevProductIds.current.has(item.productId);
-        const isPromoItem = allPromoIds.has(item.productId);
-
-        if (isNewAddition && isPromoItem) {
-          hasNewAddition = true;
-        }
-      }
-
-      prevProductIds.current = currentIds;
-
-      if (hasNewAddition && promoProducts.length > 0) {
-        setShowPromo(true);
-      }
-    }, [lineItems, promoProducts.length]);
 
     return (
       <AnimatePresence mode="wait">

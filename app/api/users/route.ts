@@ -6,7 +6,6 @@ import { ERROR_MESSAGE } from "@/lib/helper/error-message";
 import { member, session, user } from "@/lib/db/auth-schema";
 import { eq, max, asc, and, ilike, or, isNotNull, count } from "drizzle-orm";
 
-
 export async function GET(req: NextRequest) {
   try {
     const auth = await getSession();
@@ -33,13 +32,13 @@ export async function GET(req: NextRequest) {
       accountType,
     } = getQueryObject(req.nextUrl.searchParams);
 
-    const offset = ((Number(page) - 1) * Number(limit))
+    const offset = (Number(page) - 1) * Number(limit);
 
     const conditions = [];
 
-    if (accountType === "customer") {
-      conditions.push(eq(user.accountType, "customer"), isNotNull(member.id));
-    }
+    // if (accountType === "customer") {
+    //   conditions.push(eq(user.accountType, "customer"), isNotNull(member.id));
+    // }
 
     if (q) {
       conditions.push(
@@ -94,23 +93,30 @@ export async function GET(req: NextRequest) {
       .offset(offset)
       .orderBy(asc(lastSession.lastLogin));
 
-    const [{ total }] = await db.select({ total: count() }).from(user).leftJoin(
-      member,
-      and(
-        eq(member.userId, user.id),
-        eq(member.organizationId, activeOrganizationId),
-      ),
-    ).where(and(...conditions))
+    const [{ total }] = await db
+      .select({ total: count() })
+      .from(user)
+      .leftJoin(
+        member,
+        and(
+          eq(member.userId, user.id),
+          eq(member.organizationId, activeOrganizationId),
+        ),
+      )
+      .where(and(...conditions));
 
-    return NextResponse.json({
-      data: users, pagination: {
-        page,
-        limit,
-        total: total,
-        totalPages: Math.ceil(total / (Number(limit))),
+    return NextResponse.json(
+      {
+        data: users,
+        pagination: {
+          page,
+          limit,
+          total: total,
+          totalPages: Math.ceil(total / Number(limit)),
+        },
       },
-    }, { status: 200 });
-
+      { status: 200 },
+    );
   } catch (error) {
     console.error("API Error:", error);
     return NextResponse.json(

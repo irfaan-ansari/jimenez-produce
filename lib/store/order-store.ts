@@ -58,6 +58,10 @@ type OrderUIStore = {
   // filters
   filter: Record<string, string | undefined>;
   setFilter: ({ key, value }: Record<string, string | undefined>) => void;
+
+  // promo
+  showPromo: boolean;
+  setShowPromo: (value: boolean) => void;
 };
 
 export const useOrderUIStore = create<OrderUIStore>()(
@@ -135,6 +139,10 @@ export const useOrderUIStore = create<OrderUIStore>()(
         set({
           filter,
         });
+      },
+      showPromo: false,
+      setShowPromo: (value) => {
+        set({ showPromo: value });
       },
     }),
     {
