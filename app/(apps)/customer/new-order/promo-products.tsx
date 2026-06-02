@@ -84,8 +84,6 @@ export const PromoProducts = withForm({
       );
 
       for (const item of lineItems) {
-        currentIds.add(item.productId);
-
         const isNewAddition = !prevProductIds.current.has(item.productId);
         const isPromoItem = allPromoIds.has(item.productId);
 
