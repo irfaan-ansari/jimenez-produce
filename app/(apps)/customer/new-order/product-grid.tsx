@@ -40,7 +40,7 @@ export const ProductGrid = withForm({
       );
     }, [lineItems]);
 
-    const promo = [8237, 8236];
+    const promo = ["6BMX01", "6BMX02"];
 
     const updateQty = React.useCallback(
       (product: OrderItem, qty: number) => {
@@ -61,7 +61,7 @@ export const ProductGrid = withForm({
             ...product,
             quantity: String(qty),
           });
-          if (promo.includes(product.productId)) {
+          if (promo.includes(product.identifier)) {
             setShowPromo(true);
           }
         }
