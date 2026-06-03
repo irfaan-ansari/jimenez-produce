@@ -1,3 +1,4 @@
+"use client";
 import { useState, useCallback } from "react";
 
 type SetValue<T> = T;
@@ -22,7 +23,7 @@ export function useLocalStorage<T>(key: string, initialValue?: T) {
         console.error("Error setting localStorage key:", key, error);
       }
     },
-    [key, storedValue]
+    [key, storedValue],
   );
 
   const removeValue = useCallback(() => {

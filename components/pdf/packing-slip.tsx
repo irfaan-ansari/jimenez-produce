@@ -6,7 +6,6 @@ import {
 } from "@/lib/db/schema";
 import { format } from "date-fns";
 import { styles } from "./styles";
-import { formatUSD } from "@/lib/utils";
 import { Document, Page, Text, View, Image } from "@react-pdf/renderer";
 
 interface PackingSlipProps {
@@ -32,7 +31,7 @@ export const PackingSlip = ({ data }: PackingSlipProps) => {
               {
                 borderBottomWidth: 1,
                 paddingHorizontal: 6,
-                paddingVertical: 20,
+                paddingVertical: 10,
               },
             ]}
           >
@@ -45,11 +44,6 @@ export const PackingSlip = ({ data }: PackingSlipProps) => {
                 },
               ]}
             >
-              <Image
-                src={process.env.BETTER_AUTH_URL + "/logo.png"}
-                style={[styles.logo]}
-              />
-
               <View style={[styles.headerContactText]}>
                 <Text
                   style={{ fontSize: 14, fontWeight: "bold", marginBottom: 6 }}
@@ -65,7 +59,10 @@ export const PackingSlip = ({ data }: PackingSlipProps) => {
 
             <View style={[styles.headerRight, { width: "40%" }]}>
               <Text
-                style={[styles.docTitle, { fontSize: 24, marginBottom: 10 }]}
+                style={[
+                  styles.docTitle,
+                  { fontSize: 14, fontWeight: "bold", marginBottom: 6 },
+                ]}
               >
                 Packing Slip
               </Text>
@@ -87,7 +84,6 @@ export const PackingSlip = ({ data }: PackingSlipProps) => {
               style={{
                 width: "33%",
                 padding: 6,
-                paddingBottom: 40,
                 borderRightWidth: 1,
               }}
             >
@@ -107,7 +103,6 @@ export const PackingSlip = ({ data }: PackingSlipProps) => {
                 width: "33%",
                 borderRightWidth: 1,
                 padding: 6,
-                paddingBottom: 40,
               }}
             >
               <Text
@@ -127,7 +122,6 @@ export const PackingSlip = ({ data }: PackingSlipProps) => {
               style={{
                 width: "33%",
                 padding: 6,
-                paddingBottom: 40,
               }}
             >
               <Text style={{ fontSize: 10, marginBottom: 5 }}>Ship To</Text>
@@ -146,20 +140,15 @@ export const PackingSlip = ({ data }: PackingSlipProps) => {
               ]}
             >
               <View style={{ width: "15%" }}>
+                <Text style={styles.tableColHeader}>Quantity</Text>
+              </View>
+              <View style={{ width: "15%" }}>
                 <Text style={styles.tableColHeader}>Item #</Text>
               </View>
-              <View style={{ width: "70%" }}>
-                <Text style={styles.tableColHeader}>Description</Text>
-              </View>
 
-              <View style={{ width: "15%" }}>
-                <Text
-                  style={[
-                    styles.tableColHeader,
-                    { borderRightWidth: 0, textAlign: "right" },
-                  ]}
-                >
-                  Quantity
+              <View style={{ width: "70%" }}>
+                <Text style={[styles.tableColHeader, { borderRightWidth: 0 }]}>
+                  Description
                 </Text>
               </View>
             </View>
@@ -173,20 +162,17 @@ export const PackingSlip = ({ data }: PackingSlipProps) => {
                 ]}
               >
                 <View style={{ width: "15%" }}>
-                  <Text style={styles.tableCell}>{item.identifier}</Text>
+                  <Text style={styles.tableCellPacking}>{item.quantity}</Text>
                 </View>
-                <View style={{ width: "70%" }}>
-                  <Text style={styles.tableCell}>{item.title}</Text>
+                <View style={{ width: "15%" }}>
+                  <Text style={styles.tableCellPacking}>{item.identifier}</Text>
                 </View>
 
-                <View style={{ width: "15%" }}>
+                <View style={{ width: "70%" }}>
                   <Text
-                    style={[
-                      styles.tableCell,
-                      { textAlign: "right", borderRightWidth: 0 },
-                    ]}
+                    style={[styles.tableCellPacking, { borderRightWidth: 0 }]}
                   >
-                    {item.quantity}
+                    {item.title}
                   </Text>
                 </View>
               </View>

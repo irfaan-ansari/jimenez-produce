@@ -150,6 +150,15 @@ const styles = StyleSheet.create({
     fontSize: 9,
     lineHeight: 1,
   },
+  tableCellPacking: {
+    height: "auto",
+    width: "100%",
+    borderRightWidth: 1,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    fontSize: 8,
+    lineHeight: 1,
+  },
   pageNumber: {
     position: "absolute",
     bottom: 20,

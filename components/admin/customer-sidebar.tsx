@@ -25,6 +25,8 @@ import { TeamSwitcher } from "./team-switcher";
 import { SIDEBAR_MENU_CUSTOMER } from "@/lib/config";
 import { useRouterStuff } from "@/hooks/use-router-stuff";
 import { usePromotionsCustomer } from "@/hooks/data/promotions";
+import { useLocalStorage } from "@/hooks/use-local-storage";
+import React from "react";
 
 export function AppSidebar({ session }: { session: Session }) {
   const { pathname, getQueryString } = useRouterStuff();
@@ -131,17 +133,38 @@ const PromotionCard = () => {
     placement: "sidebar",
   });
 
+  const { set: setCartItem, value: cartItems } = useLocalStorage(
+    "order-line-items",
+    [],
+  );
   if (isPending || isError) return null;
 
   if (data?.data.length > 0) {
+    // const mapped = data?.data?.flatMap((item) => ({
+    //   ...item,
+    //   products: item.products,
+    // }));
+
+    // const handleAddToCard = React.useCallback(
+    //   (product: any) => {
+    //     let newItems = cartItems;
+    //     if (newItems.length > 0) {
+    //       const parsed = JSON.parse(cartItems);
+    //       newItems = [...parsed, product];
+    //     } else {
+    //       newItems = [product];
+    //     }
+    //     // @ts-ignore
+    //     setCartItem(JSON.stringify(newItems));
+    //   },
+    //   [data],
+    // );
+
     return (
       <SidebarFooter>
-        {data?.data?.map((p) => (
-          <SidebarGroup
-            className="group-data-[state=collapsed]:hidden mt-6"
-            key={p.id}
-          >
-            <SidebarMenu className="mb-4">
+        <SidebarGroup className="group-data-[state=collapsed]:hidden mt-6">
+          <SidebarMenu className="mb-4">
+            {data?.data?.map((p) => (
               <SidebarMenuItem
                 style={{
                   background:
@@ -166,9 +189,9 @@ const PromotionCard = () => {
                     </div>
                   ))}
               </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroup>
-        ))}
+            ))}
+          </SidebarMenu>
+        </SidebarGroup>
       </SidebarFooter>
     );
   }
