@@ -27,6 +27,7 @@ export const createPromotion = handleAction(async (data: PromotionProps) => {
 
   const teamIds = data.teamIds;
   const productIds = data.productIds;
+  const triggerProductIds = data.triggerProductIds;
 
   if (data.target == "selected" && (!teamIds || teamIds.length <= 0)) {
     throw new Error("Required atleat 1 customer");
@@ -45,6 +46,7 @@ export const createPromotion = handleAction(async (data: PromotionProps) => {
       placement: data.placement ?? ["new-order"],
       organizationId: activeOrganizationId!,
       productIds,
+      triggerProductIds,
     })
     .returning();
 

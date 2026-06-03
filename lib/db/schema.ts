@@ -685,12 +685,16 @@ export const promotion = pgTable(
       .references(() => organization.id, {
         onDelete: "cascade",
       }),
-    name: text("name"),
-    title: text("title"),
-    description: text("description"),
+    name: text("name") /** internal refrence only */,
+    title: text("title") /** deprecated */,
+    description: text("description") /** deprecated */,
     media: text("media"),
-    badge: text("badge"),
+    badge: text("badge") /** deprecated */,
+    action: text("action") /** add-to-cart | popup */,
     placement: jsonb("placement").$type<string[]>().default([]),
+    triggerProductIds: jsonb("trigger_product_ids")
+      .$type<number[]>()
+      .default([]),
     productIds: jsonb("product_ids").$type<number[]>().default([]),
     target: text("target").default("all").notNull() /** all | selected */,
     status: text("status").default("active").notNull() /** active | inactive */,

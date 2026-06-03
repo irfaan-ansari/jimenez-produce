@@ -20,13 +20,21 @@ import {
 } from "@/components/ui/sidebar";
 import { Button } from "../ui/button";
 import { Session } from "@/lib/types";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Plus } from "lucide-react";
 import { TeamSwitcher } from "./team-switcher";
 import { SIDEBAR_MENU_CUSTOMER } from "@/lib/config";
 import { useRouterStuff } from "@/hooks/use-router-stuff";
 import { usePromotionsCustomer } from "@/hooks/data/promotions";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import React from "react";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "../ui/carousel";
+import { Tooltip } from "../tooltip";
 
 export function AppSidebar({ session }: { session: Session }) {
   const { pathname, getQueryString } = useRouterStuff();
@@ -140,56 +148,63 @@ const PromotionCard = () => {
   if (isPending || isError) return null;
 
   if (data?.data.length > 0) {
-    // const mapped = data?.data?.flatMap((item) => ({
-    //   ...item,
-    //   products: item.products,
-    // }));
+    const mapped = data?.data?.flatMap((item) => ({
+      ...item,
+      products: item.products,
+    }));
 
-    // const handleAddToCard = React.useCallback(
-    //   (product: any) => {
-    //     let newItems = cartItems;
-    //     if (newItems.length > 0) {
-    //       const parsed = JSON.parse(cartItems);
-    //       newItems = [...parsed, product];
-    //     } else {
-    //       newItems = [product];
-    //     }
-    //     // @ts-ignore
-    //     setCartItem(JSON.stringify(newItems));
-    //   },
-    //   [data],
-    // );
+    const handleAddToCart = React.useCallback(
+      (product: any) => {
+        let newItems = cartItems;
+        if (newItems.length > 0) {
+          const parsed = JSON.parse(cartItems);
+          newItems = [...parsed, product];
+        } else {
+          newItems = [product];
+        }
+        // @ts-ignore
+        setCartItem(JSON.stringify(newItems));
+      },
+      [data],
+    );
 
     return (
       <SidebarFooter>
         <SidebarGroup className="group-data-[state=collapsed]:hidden mt-6">
           <SidebarMenu className="mb-4">
-            {data?.data?.map((p) => (
-              <SidebarMenuItem
-                style={{
-                  background:
-                    "radial-gradient(ellipse 80% 60% at 50% 0%, rgba(34, 197, 94, 0.25), transparent 70%), #000000",
-                }}
-                className="relative border rounded-xl overflow-hidden"
-              >
-                {p.media && (
-                  <div className="relative">
-                    <img src={p.media} className="" />
-                  </div>
-                )}
-                {p.title ||
-                  (p.description && (
-                    <div className="relative p-4 z-1">
-                      <div className="mb-1 font-semibold text-primary-foreground">
-                        {p.title}
+            <Carousel>
+              <CarouselContent>
+                {data?.data?.map((p) => (
+                  <CarouselItem key={p.id}>
+                    <SidebarMenuItem onClick={handleAddToCart}>
+                      <div className="relative bg-secondary rounded-xl hover:-translate-y-0.5 transition">
+                        <img
+                          src={p.media ?? ""}
+                          className="object-contain size-full rounded-xl"
+                        />
+                        {p.products.length > 0 && (
+                          <Tooltip content="Add to Cart">
+                            <Button
+                              variant="default"
+                              size="icon-sm"
+                              className="absolute right-3 bottom-3"
+                            >
+                              <Plus />
+                            </Button>
+                          </Tooltip>
+                        )}
                       </div>
-                      <p className="mb-4 text-sm text-primary-foreground opacity-80">
-                        {p.description}
-                      </p>
-                    </div>
-                  ))}
-              </SidebarMenuItem>
-            ))}
+                    </SidebarMenuItem>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              {data.data?.length > 1 && (
+                <>
+                  <CarouselPrevious className="-left-2" />
+                  <CarouselNext className="-right-2" />
+                </>
+              )}
+            </Carousel>
           </SidebarMenu>
         </SidebarGroup>
       </SidebarFooter>

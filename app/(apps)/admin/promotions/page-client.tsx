@@ -56,13 +56,21 @@ export const columns: ColumnDef<PromotionTypeWithTeam>[] = [
     },
   },
   {
-    accessorKey: "title",
-    header: "Title",
+    accessorKey: "media",
+    header: "Media",
     cell: ({ row }) => {
       return (
-        <span className="text-sm font-medium text-muted-foreground">
-          {row.original.title}
-        </span>
+        <Avatar>
+          <AvatarImage
+            width={40}
+            height={40}
+            src={row.original.media ?? ""}
+            alt={row.original.name ?? ""}
+          />
+          <AvatarFallback>
+            <ImageOff className="size-4" />
+          </AvatarFallback>
+        </Avatar>
       );
     },
   },

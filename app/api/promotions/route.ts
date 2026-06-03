@@ -53,24 +53,37 @@ export const GET = async (req: NextRequest) => {
     const total = await db.$count(promotion, filters);
 
     // Get all unique product ids
+    const triggerProductIds = [
+      ...new Set(promotions.flatMap((p) => p.triggerProductIds ?? [])),
+    ];
     const productIds = [
       ...new Set(promotions.flatMap((p) => p.productIds ?? [])),
     ];
 
-    const products = await db.query.product.findMany({
-      where: (product, { inArray }) => inArray(product.id, productIds),
-    });
+    const [trigger, products] = await Promise.all([
+      db.query.product.findMany({
+        where: (product, { inArray }) => inArray(product.id, triggerProductIds),
+      }),
+      db.query.product.findMany({
+        where: (product, { inArray }) => inArray(product.id, productIds),
+      }),
+    ]);
 
+    const triggerProductsMap = new Map(trigger.map((p) => [p.id, p]));
     const productsMap = new Map(products.map((p) => [p.id, p]));
 
     const response = promotions.map((promotion) => {
-      const { productIds, promotionTargets, ...rest } = promotion;
+      const { productIds, triggerProductIds, promotionTargets, ...rest } =
+        promotion;
 
       return {
         ...rest,
         teams: promotionTargets.map((pt) => pt.team),
         products: (promotion.productIds ?? [])
           .map((id) => productsMap.get(id))
+          .filter(Boolean),
+        triggerProducts: (promotion.triggerProductIds ?? [])
+          .map((id) => triggerProductsMap.get(id))
           .filter(Boolean),
       };
     });

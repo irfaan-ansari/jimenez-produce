@@ -10,6 +10,7 @@ import { useQuery } from "@tanstack/react-query";
 export type PromotionTypeWithTeam = PromotionSelectType & {
   teams: TeamSelectType[];
   products: ProductSelectType[];
+  triggerProducts: ProductSelectType[];
 };
 
 export interface PromotionResponse {
@@ -21,6 +22,7 @@ export type PromotionProductType = Omit<ProductSelectType, "basePrice"> & {
   finalPrice: string;
 };
 export type PromotionTypeWithProduct = PromotionSelectType & {
+  triggerProducts: PromotionProductType[];
   products: PromotionProductType[];
 };
 

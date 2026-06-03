@@ -12,6 +12,7 @@ import {
 import { useAppForm } from "@/hooks/form-context";
 import {
   Field,
+  FieldDescription,
   FieldError,
   FieldGroup,
   FieldLabel,
@@ -40,9 +41,6 @@ import {
 
 const schema = z.object({
   name: z.string().min(2, "Name is required"),
-  title: z.string(),
-  description: z.string(),
-  badge: z.string(),
   media: z.string(),
   target: z.string(),
   status: z.string(),
@@ -56,6 +54,15 @@ const schema = z.object({
     }),
   ),
   products: z.array(
+    z.object({
+      id: z.number(),
+      title: z.string(),
+      image: z.string(),
+      identifier: z.string(),
+      basePrice: z.string(),
+    }),
+  ),
+  triggerProducts: z.array(
     z.object({
       id: z.number(),
       title: z.string(),
@@ -81,15 +88,13 @@ const PromotionDialog = ({
   const {
     id,
     name = "",
-    title = "",
-    description = "",
-    badge = "",
     status = "active",
     media = "",
     target = "all",
     placement = "new-order",
     teams = [],
     products = [],
+    triggerProducts = [],
   } = initialData || {};
 
   const form = useAppForm({
@@ -98,21 +103,20 @@ const PromotionDialog = ({
     },
     defaultValues: {
       name,
-      title,
-      description,
-      badge,
       media,
       target,
       status,
       teams,
       products,
       placement,
+      triggerProducts,
     },
     onSubmit: async ({ value }) => {
-      const { teams, products, placement, ...rest } = value;
+      const { teams, products, triggerProducts, placement, ...rest } = value;
 
       const teamIds = teams.map((t) => t.teamId);
       const productIds = products.map((p) => p.id);
+      const triggerProductIds = triggerProducts.map((p) => p.id);
 
       const toastId = toast.loading("Please wait...");
 
@@ -141,6 +145,7 @@ const PromotionDialog = ({
           placement: [placement],
           teamIds,
           productIds,
+          triggerProductIds,
         });
         if (!success) {
           toast.error(error.message, { id: toastId });
@@ -155,6 +160,7 @@ const PromotionDialog = ({
           placement: [placement],
           teamIds,
           productIds,
+          triggerProductIds,
         });
         if (!success) {
           toast.error(error.message, { id: toastId });
@@ -286,69 +292,152 @@ const PromotionDialog = ({
                 )}
               />
 
-              <form.AppField
-                name="title"
-                children={(field) => (
-                  <field.TextField label="Title" placeholder="product launch" />
-                )}
-              />
-              <form.AppField
-                name="description"
-                children={(field) => (
-                  <field.TextAreaField
-                    label="Description"
-                    placeholder="access our newest product"
-                  />
-                )}
-              />
-              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                <form.AppField
-                  name="badge"
-                  children={(field) => (
-                    <field.TextField label="Badge" placeholder="Coming soon" />
-                  )}
-                />
-                <form.Field
-                  name="placement"
-                  children={(field) => {
-                    const isInvalid =
-                      field.state.meta.isTouched && !field.state.meta.isValid;
-                    return (
-                      <Field orientation="vertical" data-invalid={isInvalid}>
-                        <FieldLabel>Placement</FieldLabel>
-                        <Select
-                          name={field.name}
-                          value={field.state.value}
-                          onValueChange={field.handleChange}
+              <form.Field
+                name="placement"
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid;
+                  return (
+                    <Field orientation="vertical" data-invalid={isInvalid}>
+                      <FieldLabel>Placement</FieldLabel>
+                      <Select
+                        name={field.name}
+                        value={field.state.value}
+                        onValueChange={field.handleChange}
+                      >
+                        <SelectTrigger
+                          aria-invalid={isInvalid}
+                          className="w-full! h-11!"
                         >
-                          <SelectTrigger
-                            aria-invalid={isInvalid}
-                            className="w-full! h-11!"
-                          >
-                            <SelectValue placeholder="Select" />
-                          </SelectTrigger>
-                          <SelectContent position="item-aligned">
-                            <SelectItem value="sidebar">
-                              Sidebar card
-                            </SelectItem>
-                            <SelectItem value="banner">
-                              Dashborad Banner
-                            </SelectItem>
-                            <SelectItem value="new-order">
-                              New order page
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </Field>
+                          <SelectValue placeholder="Select" />
+                        </SelectTrigger>
+                        <SelectContent position="item-aligned">
+                          <SelectItem value="sidebar">Sidebar</SelectItem>
+                          <SelectItem value="banner">Banner</SelectItem>
+                          <SelectItem value="new-order">
+                            New order popup
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+
+                      <FieldDescription>
+                        {field.state.value === "sidebar"
+                          ? "Promotion displayed on the sidebar"
+                          : field.state.value === "banner"
+                            ? "Promotion displays on the dashboard"
+                            : field.state.value === "new-order"
+                              ? "Shows the popup when selected products are added to the cart."
+                              : "Select placement to view the details"}
+                      </FieldDescription>
+                    </Field>
+                  );
+                }}
+              />
+
+              <form.Subscribe
+                selector={(state) => state.values.placement}
+                children={(placement) => {
+                  if (placement === "new-order")
+                    return (
+                      <form.Field
+                        name="triggerProducts"
+                        mode="array"
+                        children={(field) => {
+                          const items = field.state.value;
+                          const placement = form.getFieldValue("placement");
+                          return (
+                            <div className="space-y-4">
+                              <ProductSelectorAdmin
+                                selected={items.map((i) => i.id)}
+                                setSelectedChange={(value) => {
+                                  console.log(items);
+                                  const index = field.state.value.findIndex(
+                                    (s) => s.id === value.id,
+                                  );
+                                  if (index >= 0) {
+                                    field.removeValue(index);
+                                  } else {
+                                    field.pushValue({ ...value, id: value.id });
+                                  }
+                                }}
+                              >
+                                <div className="space-y-2">
+                                  <FieldLabel>Trigger Products</FieldLabel>
+                                  <Button
+                                    variant="outline"
+                                    size="lg"
+                                    type="button"
+                                    className="justify-start w-full text-muted-foreground"
+                                  >
+                                    <Plus /> Select Products
+                                  </Button>
+                                  <FieldDescription>
+                                    Select the products that will trigger the
+                                    popup when added to the cart.
+                                  </FieldDescription>
+                                </div>
+                              </ProductSelectorAdmin>
+                              {items.length > 0 ? (
+                                <div className="space-y-1">
+                                  {items?.map((item, i) => (
+                                    <div
+                                      key={item.id}
+                                      className="flex items-center gap-2 p-2 border rounded-xl bg-secondary/20"
+                                    >
+                                      <div className="flex items-start flex-1 gap-3">
+                                        <div className="shrink-0">
+                                          <Avatar className="size-9 rounded-lg ring-2 ring-green-600/40 ring-offset-1 **:rounded-lg after:hidden">
+                                            <AvatarImage
+                                              src={item?.image as string}
+                                            />
+                                            <AvatarFallback>
+                                              <ImageOff className="size-4" />
+                                            </AvatarFallback>
+                                          </Avatar>
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                          <h4 className="font-medium leading-tight whitespace-normal">
+                                            {item.title}
+                                          </h4>
+                                          <Badge
+                                            variant="secondary"
+                                            className="uppercase border rounded-xl border-border"
+                                          >
+                                            {item.identifier}
+                                          </Badge>
+                                        </div>
+                                      </div>
+                                      <div className="self-center font-medium text-right w-28 text-muted-foreground">
+                                        {formatUSD(item.basePrice)}
+                                      </div>
+                                      <Button
+                                        size="icon-xs"
+                                        type="button"
+                                        variant="destructive"
+                                        onClick={(e) => {
+                                          e.preventDefault();
+                                          field.removeValue(i);
+                                        }}
+                                      >
+                                        <Trash2 />
+                                      </Button>
+                                    </div>
+                                  ))}
+                                </div>
+                              ) : null}
+                            </div>
+                          );
+                        }}
+                      />
                     );
-                  }}
-                />
-              </div>
+                }}
+              />
               <form.Field
                 name="products"
                 mode="array"
                 children={(field) => {
                   const items = field.state.value;
+                  const placement = form.getFieldValue("placement");
                   return (
                     <div className="space-y-4">
                       <ProductSelectorAdmin
@@ -365,14 +454,24 @@ const PromotionDialog = ({
                           }
                         }}
                       >
-                        <Button
-                          variant="outline"
-                          size="lg"
-                          type="button"
-                          className="justify-start w-full text-muted-foreground"
-                        >
-                          <Plus /> Select Products
-                        </Button>
+                        <div className="space-y-2">
+                          <FieldLabel>Select Products</FieldLabel>
+                          <Button
+                            variant="outline"
+                            size="lg"
+                            type="button"
+                            className="justify-start w-full text-muted-foreground"
+                          >
+                            <Plus /> Select Products
+                          </Button>
+                          <FieldDescription>
+                            {placement === "sidebar" || placement === "banner"
+                              ? "Select products to automatically add to the cart when this media is interacted with. Leave empty if no action is required."
+                              : placement === "new-order"
+                                ? "Select the products that will be displayed in the popup."
+                                : null}
+                          </FieldDescription>
+                        </div>
                       </ProductSelectorAdmin>
                       {items.length > 0 ? (
                         <div className="space-y-1">
@@ -474,14 +573,21 @@ const PromotionDialog = ({
                                 }
                               }}
                             >
-                              <Button
-                                variant="outline"
-                                size="lg"
-                                type="button"
-                                className="justify-start w-full text-muted-foreground"
-                              >
-                                <Plus /> Select Accounts
-                              </Button>
+                              <div className="space-y-2">
+                                <FieldLabel>Select accounts</FieldLabel>
+                                <Button
+                                  variant="outline"
+                                  size="lg"
+                                  type="button"
+                                  className="justify-start w-full text-muted-foreground"
+                                >
+                                  <Plus /> Select Accounts
+                                </Button>
+                                <FieldDescription>
+                                  Select the accounts that should be able to see
+                                  this promotion.
+                                </FieldDescription>
+                              </div>
                             </CustomersSelector>
                             {teams.length > 0 ? (
                               <div className="space-y-1">

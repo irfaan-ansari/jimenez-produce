@@ -18,13 +18,14 @@ export const PromotionAction = ({ data }: { data: PromotionTypeWithTeam }) => {
 
   const handleDelete = () => {
     confirm.delete({
-      title: "",
-      description: "",
+      title: "Are you sure?",
+      description:
+        "Are you sure? you want to delete this promotion. This action cannot be undone.",
       action: async () => {
         const toastId = toast.loading("Please wait...");
         const { success, error } = await deletePromotion(data.id);
         if (success) {
-          toast.success("Deleted", { id: toastId });
+          toast.success("Deleted promotion.", { id: toastId });
           queryClient.invalidateQueries({
             queryKey: ["promotions"],
           });
@@ -51,9 +52,6 @@ export const PromotionAction = ({ data }: { data: PromotionTypeWithTeam }) => {
         initialData={{
           ...data,
           name: data.name ?? "",
-          title: data.title ?? "",
-          description: data.description ?? "",
-          badge: data?.badge ?? "",
           media: data?.media ?? "",
           placement: data.placement?.[0] ?? "new-order",
           teams:
@@ -64,6 +62,13 @@ export const PromotionAction = ({ data }: { data: PromotionTypeWithTeam }) => {
               email: t.email,
             })) ?? [],
           products: data.products.map((p) => ({
+            id: p.id,
+            title: p.title,
+            image: p.image!,
+            identifier: p.identifier,
+            basePrice: p.basePrice,
+          })),
+          triggerProducts: data.triggerProducts.map((p) => ({
             id: p.id,
             title: p.title,
             image: p.image!,

@@ -50,10 +50,16 @@ export const PackingSlip = ({ data }: PackingSlipProps) => {
                 >
                   Jimenez Produce
                 </Text>
-                <Text>{metadata?.street || ""}</Text>
-                <Text>{`${metadata?.city || ""}, ${metadata?.state || ""} ${metadata?.zip || ""}`}</Text>
-                <Text>Phone: {data.organization?.phone}</Text>
-                <Text>Email: {data.organization?.email}</Text>
+                <Text style={{ fontSize: 9 }}>{metadata?.street || ""}</Text>
+                <Text
+                  style={{ fontSize: 9 }}
+                >{`${metadata?.city || ""}, ${metadata?.state || ""} ${metadata?.zip || ""}`}</Text>
+                <Text style={{ fontSize: 9 }}>
+                  Phone: {data.organization?.phone}
+                </Text>
+                <Text style={{ fontSize: 9 }}>
+                  Email: {data.organization?.email}
+                </Text>
               </View>
             </View>
 
@@ -67,11 +73,11 @@ export const PackingSlip = ({ data }: PackingSlipProps) => {
                 Packing Slip
               </Text>
               <View style={{ gap: 2 }}>
-                <Text style={{ fontSize: 10 }}>
+                <Text style={{ fontSize: 9 }}>
                   Invoice #:{" "}
                   <Text style={{ fontWeight: "bold" }}>{data.id}</Text>
                 </Text>
-                <Text style={{ fontSize: 10 }}>
+                <Text style={{ fontSize: 9 }}>
                   Date: {format(new Date(data.createdAt!), "MMM dd, yyyy")}
                 </Text>
               </View>
@@ -114,9 +120,9 @@ export const PackingSlip = ({ data }: PackingSlipProps) => {
                 Bill To
               </Text>
 
-              <Text style={{ fontSize: 10 }}>{data.team.name}</Text>
-              <Text style={{ fontSize: 10 }}>{data.team.phone}</Text>
-              <Text style={{ fontSize: 10 }}>{data.team.email}</Text>
+              <Text style={{ fontSize: 9 }}>{data.team.name}</Text>
+              <Text style={{ fontSize: 9 }}>{data.team.phone}</Text>
+              <Text style={{ fontSize: 9 }}>{data.team.email}</Text>
             </View>
             <View
               style={{
@@ -125,9 +131,9 @@ export const PackingSlip = ({ data }: PackingSlipProps) => {
               }}
             >
               <Text style={{ fontSize: 10, marginBottom: 5 }}>Ship To</Text>
-              <Text style={{ fontSize: 10 }}>{data.team.name}</Text>
-              <Text style={{ fontSize: 10 }}>{data.team.phone}</Text>
-              <Text style={{ fontSize: 10 }}>{data.team.email}</Text>
+              <Text style={{ fontSize: 9 }}>{data.team.name}</Text>
+              <Text style={{ fontSize: 9 }}>{data.team.phone}</Text>
+              <Text style={{ fontSize: 9 }}>{data.team.email}</Text>
             </View>
           </View>
 
