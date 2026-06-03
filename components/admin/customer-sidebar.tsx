@@ -147,24 +147,24 @@ const PromotionCard = () => {
                   background:
                     "radial-gradient(ellipse 80% 60% at 50% 0%, rgba(34, 197, 94, 0.25), transparent 70%), #000000",
                 }}
-                className="relative border rounded-xl"
+                className="relative border rounded-xl overflow-hidden"
               >
                 {p.media && (
-                  <div className="relative aspect-video">
-                    <img
-                      src={p.media}
-                      className="absolute inset-0 -translate-y-4 scale-160 -rotate-10"
-                    />
+                  <div className="relative">
+                    <img src={p.media} className="" />
                   </div>
                 )}
-                <div className="relative p-4 z-1">
-                  <div className="mb-1 font-semibold text-primary-foreground">
-                    {p.title}
-                  </div>
-                  <p className="mb-4 text-sm text-primary-foreground opacity-80">
-                    {p.description}
-                  </p>
-                </div>
+                {p.title ||
+                  (p.description && (
+                    <div className="relative p-4 z-1">
+                      <div className="mb-1 font-semibold text-primary-foreground">
+                        {p.title}
+                      </div>
+                      <p className="mb-4 text-sm text-primary-foreground opacity-80">
+                        {p.description}
+                      </p>
+                    </div>
+                  ))}
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroup>
