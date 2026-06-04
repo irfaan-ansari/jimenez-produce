@@ -35,7 +35,7 @@ interface AdminOrderGuidesResponse {
 export interface AdminOrderGuideItem
   extends OrderGuideItemSelectType, ProductSelectType {}
 
-export const useInfiniteOrderGuides = (query?: string) => {
+export const useInfiniteOrderGuides = (query?: Record<string, string>) => {
   return useInfiniteQuery({
     queryKey: ["customer-order-guides", query],
     initialPageParam: 1,

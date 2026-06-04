@@ -1,14 +1,14 @@
-import { db } from "@/lib/db";
 import {
+  eq,
+  or,
   and,
   asc,
   count,
-  DrizzleQueryError,
-  eq,
-  exists,
   ilike,
-  or,
+  exists,
+  DrizzleQueryError,
 } from "drizzle-orm";
+import { db } from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 import { resolvePrices } from "@/lib/helper/resolve-price";
 import { withPermission } from "@/lib/helper/with-permission";
@@ -60,6 +60,7 @@ export const GET = async (req: NextRequest) => {
         limit: 24,
         offset,
       }),
+
       db
         .select({ total: count() })
         .from(orderGuide)

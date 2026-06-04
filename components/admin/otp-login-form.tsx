@@ -177,7 +177,7 @@ export function OTPLoginForm({
                     <InputGroupAddon>
                       <Badge
                         variant="secondary"
-                        className="h-4 bg-transparent hover:bg-transparent! mr-2 pr-4 rounded-none"
+                        className="h-4 bg-transparent hover:bg-transparent! rounded-none"
                       >
                         +1
                       </Badge>
@@ -305,7 +305,6 @@ export function OTPLoginForm({
             <Button
               type="submit"
               size="xl"
-              className="bg-[#385e25] hover:bg-[#385e25]/80"
               disabled={isSubmitting || !canSubmit}
             >
               {isSubmitting ? (
@@ -332,7 +331,8 @@ export function OTPLoginForm({
         <Button
           type="button"
           size="xl"
-          className="bg-[#ddeab4] text-[#385e25] hover:bg-[#ddeab4]/80 hover:text-[#385e25]"
+          variant="secondary"
+          className="bg-primary/20 hover:bg-primary/30"
           asChild
         >
           <Link href="/signin">Login with password</Link>

@@ -35,6 +35,8 @@ import { Copy, GripVertical, Loader, PenSquare, Trash2 } from "lucide-react";
 export const GuideList = withForm({
   ...formOpt,
   render: function Render({ form }) {
+    const filter = useOrderUIStore((s) => s.filter) as Record<string, string>;
+
     const {
       data,
       isPending,
@@ -43,7 +45,7 @@ export const GuideList = withForm({
       isFetchingNextPage,
       hasNextPage,
       fetchNextPage,
-    } = useInfiniteOrderGuides("");
+    } = useInfiniteOrderGuides();
 
     const columns = useOrderGuideStore((s) => s.columns);
     const columnMeta = useOrderGuideStore((s) => s.columnMeta);
@@ -132,7 +134,7 @@ export const GuideList = withForm({
                 <KanbanColumn
                   key={colKey}
                   value={colKey}
-                  className={`border shadow-sm rounded-xl bg-background ${!meta.isOwner ? "border-2 border-yellow-500" : ""}`}
+                  className={`border shadow-sm dark:bg-background rounded-xl bg-background ${!meta.isOwner ? "border-2 border-yellow-500" : ""}`}
                 >
                   <ColumnHeader value={colKey} />
                   <ProductGrid

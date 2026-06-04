@@ -131,14 +131,26 @@ export const LastPurchase = ({
 /* Product Price */
 export const Price = ({
   price,
+  unit,
   className,
 }: {
   price: number | string;
   className?: string;
+  unit?: string | null;
 }) => {
   return (
-    <div className={cn("w-24 self-center font-bold text-primary", className)}>
+    <div
+      className={cn(
+        "w-24 self-center flex flex-col items-center font-bold text-primary",
+        className,
+      )}
+    >
       {formatUSD(price ?? 0)}
+      {unit && (
+        <span className="text-[10px] leading-1 font-normal text-muted-foreground">
+          /per {unit}
+        </span>
+      )}
     </div>
   );
 };

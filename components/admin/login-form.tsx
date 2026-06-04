@@ -148,7 +148,6 @@ export function LoginForm({
               <Button
                 type="submit"
                 size="xl"
-                className="bg-[#385e25] hover:bg-[#385e25]/80"
                 disabled={isSubmitting || !canSubmit}
               >
                 {isSubmitting ? <Loader className="animate-spin" /> : "Login"}
@@ -169,7 +168,8 @@ export function LoginForm({
           <Button
             type="button"
             size="xl"
-            className="bg-[#ddeab4] text-[#385e25] hover:bg-[#ddeab4]/80 hover:text-[#385e25]"
+            variant="secondary"
+            className="bg-primary/20 hover:bg-primary/30"
             asChild
           >
             <Link href="/otp-login">Login with OTP</Link>

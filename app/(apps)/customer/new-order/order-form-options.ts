@@ -11,6 +11,7 @@ export type OrderItem = {
   identifier: string;
   categories: string[];
   isTaxable: boolean;
+  unit?: string | null;
   lastPurchased?: {
     id: number | null;
     quantity: string | null;
