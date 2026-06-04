@@ -78,6 +78,7 @@ export const updatePromotion = handleAction(
 
     const teamIds = data.teamIds ?? [];
     const productIds = data.productIds ?? [];
+    const triggerProductIds = data.triggerProductIds ?? [];
 
     const existing = await db.query.promotion.findFirst({
       where: (p, { eq, and }) =>
@@ -103,6 +104,7 @@ export const updatePromotion = handleAction(
         organizationId: activeOrganizationId!,
         placement: data.placement ?? ["new-order"],
         productIds,
+        triggerProductIds,
       })
       .where(eq(promotion.id, id))
       .returning();
@@ -117,7 +119,6 @@ export const updatePromotion = handleAction(
     }
 
     // insert and delete
-
     const existingTargets = await db.query.promotionTarget.findMany({
       where: (pt, { eq }) => eq(pt.promotionId, id),
     });

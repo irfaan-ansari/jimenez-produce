@@ -95,8 +95,8 @@ export const TeamSwitcher = ({
   return (
     <SidebarHeader className={className}>
       <SidebarMenu>
-        <SidebarMenuItem className="rounded-xl group-data-[state=expanded]:absolute group-data-[state=expanded]:top-4 group-data-[state=expanded]:-right-4 group-data-[state=expanded]:z-1 group-data-[state=expanded]:bg-muted">
-          <SidebarTrigger className="hidden md:inline-flex" />
+        <SidebarMenuItem className="rounded-full text-sidebar-foreground group-data-[state=expanded]:bg-sidebar-accent shadow-sm group-data-[state=expanded]:text-sidebar-accent-foreground overflow-hidden group-data-[state=expanded]:absolute group-data-[state=expanded]:top-4 group-data-[state=expanded]:-right-4 group-data-[state=expanded]:z-1">
+          <SidebarTrigger className="hidden md:inline-flex w-full min-w-8" />
         </SidebarMenuItem>
 
         <SidebarMenuItem>
@@ -105,10 +105,7 @@ export const TeamSwitcher = ({
             setOpen={setOpen}
             className="w-full px-0 *:gap-0 data-[slot=popover-content]:max-w-56 data-[slot=popover-content]:w-56"
             trigger={
-              <SidebarMenuButton
-                size="lg"
-                className="hover:bg-muted! hover:text-sidebar-foreground! data-open:bg-muted! data-open:hover:bg-muted data-open:hover:text-sidebar-foreground data-active:hover:bg-muted"
-              >
+              <SidebarMenuButton size="lg">
                 <Avatar className="size-9 rounded-lg ring-2 ring-green-600/20 ring-offset-1 **:rounded-lg after:hidden">
                   <AvatarImage
                     src={getInitialsAvatar(activeTeam?.name)}
@@ -128,7 +125,7 @@ export const TeamSwitcher = ({
                     <Skeleton className="w-3/4 h-4 rounded-lg bg-sidebar-accent/10" />
                   )}
 
-                  <span className="text-xs leading-tight truncate text-muted-foreground">
+                  <span className="text-xs leading-tight truncate">
                     {user?.name}
                   </span>
                 </div>

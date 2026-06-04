@@ -65,7 +65,7 @@ export function AppSidebar({ session }: { session: Session }) {
                       asChild
                       isActive={isActive(item.href)}
                       tooltip={item.label}
-                      className="h-10 rounded-xl px-3.5 font-medium transition duration-200 group-data-[collapsible=icon]:px-1.5! hover:bg-muted hover:text-sidebar-foreground data-active:hover:bg-sidebar-accent data-active:hover:text-sidebar-accent-foreground [&>svg]:size-5!"
+                      className="h-11 px-3 transition duration-200 group-data-[collapsible=icon]:px-1.5! [&>svg]:size-5!"
                     >
                       <Link href={item.href}>
                         {item.icon && <item.icon />}
@@ -84,11 +84,11 @@ export function AppSidebar({ session }: { session: Session }) {
                   data-active={isActive(item.href)}
                 >
                   <SidebarMenuItem>
-                    <CollapsibleTrigger asChild className="rounded-xl">
+                    <CollapsibleTrigger asChild>
                       <SidebarMenuButton
                         tooltip={item.label}
                         isActive={isActive(item.href)}
-                        className="h-10 px-3.5 transition duration-200 group-data-[collapsible=icon]:px-1.5! hover:bg-muted hover:text-sidebar-foreground data-open:hover:bg-muted data-open:hover:text-sidebar-foreground data-active:hover:bg-sidebar-accent data-active:hover:text-sidebar-accent-foreground [&>.duo-icons]:size-5"
+                        className="h-11 px-3 transition duration-200 group-data-[collapsible=icon]:px-1.5! [&>.duo-icons]:size-5"
                         asChild
                       >
                         <Link href={item.href}>
@@ -113,7 +113,7 @@ export function AppSidebar({ session }: { session: Session }) {
                           >
                             <SidebarMenuSubButton
                               asChild
-                              className="px-3 rounded-xl hover:bg-muted hover:text-sidebar-foreground data-active:bg-muted data-active:text-sidebar-foreground"
+                              className="px-3"
                               isActive={isSubItemActive(subItem.href)}
                             >
                               <Link href={subItem.href}>
@@ -214,7 +214,7 @@ const PromotionCard = () => {
   return (
     <SidebarGroup className="group-data-[state=collapsed]:hidden">
       <SidebarMenu className="mb-4">
-        <SidebarMenuItem className="relative p-4 rounded-xl bg-linear-to-br from-lime-100 via-emerald-50 to-white">
+        <SidebarMenuItem className="relative p-4 bg-linear-to-br from-lime-100 via-emerald-50 to-white">
           <div className="mb-1 font-semibold dark:text-background">
             Reorder smarter
           </div>
@@ -225,11 +225,7 @@ const PromotionCard = () => {
               Coming Soon
             </span>
           </p>
-          <Button
-            asChild
-            variant="secondary"
-            className="w-full rounded-xl bg-sidebar-accent! text-sidebar-accent-foreground"
-          >
+          <Button asChild variant="secondary" className="w-full">
             <Link href="/customer/new-order">Start New Order</Link>
           </Button>
         </SidebarMenuItem>
