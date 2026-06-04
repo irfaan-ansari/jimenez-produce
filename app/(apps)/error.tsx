@@ -20,7 +20,7 @@ export default function ErrorPage({
 }) {
   return (
     <div className="flex flex-col h-svh items-center justify-center">
-      <Empty className="border max-h-72 border-solid max-w-md rounded-2xl shadow-xs bg-sidebar p-6">
+      <Empty className="border max-h-72 border-solid max-w-md shadow-xs p-6">
         <EmptyHeader>
           <EmptyMedia
             variant="icon"
@@ -36,7 +36,7 @@ export default function ErrorPage({
         <EmptyContent>
           <Button
             variant="outline"
-            className="rounded-xl px-6"
+            className="px-6"
             size="lg"
             onClick={() => reset()}
           >

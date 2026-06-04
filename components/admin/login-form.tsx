@@ -92,7 +92,7 @@ export function LoginForm({
             <field.TextField
               label="Email or phone"
               placeholder="email or phone"
-              className="*:data-[slot=input]:rounded-xl *:data-[slot=input]:bg-background"
+              className="*:data-[slot=input]:bg-background"
             />
           )}
         />
@@ -104,7 +104,7 @@ export function LoginForm({
               <field.PasswordField
                 label="Password"
                 placeholder="••••••"
-                className="*:data-[slot=input-group]:bg-background"
+                className="*:data-[slot=input-group]:bg-background *:data-[slot=input-group]:rounded-md"
               />
             )}
           />
@@ -148,7 +148,7 @@ export function LoginForm({
               <Button
                 type="submit"
                 size="xl"
-                className="rounded-xl bg-sidebar-accent hover:bg-sidebar-accent/80"
+                className="bg-[#385e25] hover:bg-[#385e25]/80"
                 disabled={isSubmitting || !canSubmit}
               >
                 {isSubmitting ? <Loader className="animate-spin" /> : "Login"}
@@ -166,7 +166,12 @@ export function LoginForm({
         </div>
 
         <Field className="text-center">
-          <Button type="button" size="xl" className="rounded-xl" asChild>
+          <Button
+            type="button"
+            size="xl"
+            className="bg-[#ddeab4] text-[#385e25] hover:bg-[#ddeab4]/80 hover:text-[#385e25]"
+            asChild
+          >
             <Link href="/otp-login">Login with OTP</Link>
           </Button>
         </Field>

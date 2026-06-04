@@ -17,7 +17,7 @@ export const ProductGrid = withForm({
   ...formOpt,
   props: {} as ProductGridProps,
   render: function Render({ form, items, selectable, draggable }) {
-    const { data, isPending, isError } = usePromotionsCustomer({
+    const { data } = usePromotionsCustomer({
       placement: "new-order",
     });
 
@@ -46,7 +46,7 @@ export const ProductGrid = withForm({
     }, [lineItems]);
 
     const promoTriggers = data?.data?.flatMap((x) => x.triggerProductIds) ?? [];
-    console.log(promoTriggers, data?.data);
+
     const updateQty = React.useCallback(
       (product: OrderItem, qty: number) => {
         const index = lineItemMap.get(product.productId)?.index ?? -1;

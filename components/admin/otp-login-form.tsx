@@ -1,32 +1,31 @@
 "use client";
 
 import z from "zod";
-
 import React from "react";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "../ui/input-group";
 import Link from "next/link";
 import { toast } from "sonner";
+import { Badge } from "../ui/badge";
+import { formatPhone } from "@/lib/utils";
 import {
   Field,
   FieldError,
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
+import { REGEXP_ONLY_DIGITS } from "input-otp";
 import { useStore } from "@tanstack/react-form";
 import { Button } from "@/components/ui/button";
 import { useAppForm } from "@/hooks/form-context";
+import { sendOtp, verifyOtp } from "@/server/auth";
+import { phoneSchema } from "@/lib/form-schema/common";
 import { AlertCircleIcon, Loader, X } from "lucide-react";
 import { Alert, AlertAction, AlertTitle } from "../ui/alert";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "../ui/input-otp";
-import { REGEXP_ONLY_DIGITS } from "input-otp";
-import { phoneSchema } from "@/lib/form-schema/common";
-import { sendOtp, verifyOtp } from "@/server/auth";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupInput,
-} from "../ui/input-group";
-import { Badge } from "../ui/badge";
-import { formatPhone } from "@/lib/utils";
 
 const phone = z.object({
   phoneNumber: phoneSchema,
@@ -120,6 +119,7 @@ export function OTPLoginForm({
       form.setFieldValue("seconds", 60);
       form.setFieldValue("step", "verify");
       form.setFieldValue("canResend", false);
+      form.setFieldMeta;
       toast.success("OTP sent successfully!", {
         id: toastId,
       });
@@ -173,11 +173,11 @@ export function OTPLoginForm({
                 <Field className="gap-2">
                   <FieldLabel htmlFor={field.name}>Phone Number</FieldLabel>
 
-                  <InputGroup className="bg-background rounded-xl">
+                  <InputGroup className="bg-background">
                     <InputGroupAddon>
                       <Badge
-                        className="h-4 hover:bg-transparent! mr-2 pr-4 rounded-none relative after:absolute after:right-0 after:inset-y-0 after:w-0.5 after:bg-foreground/30 "
                         variant="secondary"
+                        className="h-4 bg-transparent hover:bg-transparent! mr-2 pr-4 rounded-none"
                       >
                         +1
                       </Badge>
@@ -305,7 +305,7 @@ export function OTPLoginForm({
             <Button
               type="submit"
               size="xl"
-              className="rounded-xl bg-sidebar-accent hover:bg-sidebar-accent/80"
+              className="bg-[#385e25] hover:bg-[#385e25]/80"
               disabled={isSubmitting || !canSubmit}
             >
               {isSubmitting ? (
@@ -329,7 +329,12 @@ export function OTPLoginForm({
       </div>
 
       <Field className="text-center">
-        <Button type="button" size="xl" className="rounded-xl" asChild>
+        <Button
+          type="button"
+          size="xl"
+          className="bg-[#ddeab4] text-[#385e25] hover:bg-[#ddeab4]/80 hover:text-[#385e25]"
+          asChild
+        >
           <Link href="/signin">Login with password</Link>
         </Button>
       </Field>
