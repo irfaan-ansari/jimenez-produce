@@ -6,14 +6,15 @@ import { formatUSD } from "@/lib/utils";
 import { ItemList } from "./item-list";
 import { GuideList } from "./guide-list";
 import { OrderCart } from "./order-cart";
-import { type TaxRule } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import { createOrder } from "@/server/order";
 import { ShoppingBag } from "@duo-icons/react";
 import { Button } from "@/components/ui/button";
 import { useStore } from "@tanstack/react-form";
+import { PromoProducts } from "./promo-products";
 import { useConfirm } from "@/hooks/use-confirm";
 import { useAppForm } from "@/hooks/form-context";
+import { Session, type TaxRule } from "@/lib/types";
 import { useSidebar } from "@/components/ui/sidebar";
 import { List, Loader, Plus, Star } from "lucide-react";
 import { formOpt, getTotals } from "./order-form-options";
@@ -22,14 +23,21 @@ import { OrderFormToolbar, ToolbarSearch } from "./order-from-toolbar";
 import { OrderGuideDialog } from "@/components/admin/order-guide-dialog";
 import { LoadingSkeleton } from "@/components/admin/placeholder-component";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { PromoProducts } from "./promo-products";
+import { useLocalStorage } from "@/hooks/use-local-storage";
 
 const STORAGE_KEY = "order-line-items";
 
-export const OrderForm = ({ taxRule }: { taxRule: TaxRule | null }) => {
+export const OrderForm = ({
+  taxRule,
+  session,
+}: {
+  taxRule: TaxRule | null;
+  session: Session;
+}) => {
+  const storageKey = `${STORAGE_KEY}-${session.session.activeTeamId}`;
   const router = useRouter();
   const confirm = useConfirm();
-
+  const { value, set, remove } = useLocalStorage(storageKey, []);
   const [mounted, setMounted] = React.useState(false);
 
   const setShowCart = useOrderUIStore((s) => s.setShowCart);
@@ -57,7 +65,7 @@ export const OrderForm = ({ taxRule }: { taxRule: TaxRule | null }) => {
       });
 
       if (success) {
-        localStorage.removeItem(STORAGE_KEY);
+        remove();
         toast.success("Order submitted successfully!", { id: toastId });
         confirm.success({
           title: "Order Confirmed!",
@@ -92,14 +100,7 @@ export const OrderForm = ({ taxRule }: { taxRule: TaxRule | null }) => {
       if (sidebarOpen) {
         setSidebarOpen(false);
       }
-
-      const storedItems = localStorage.getItem(STORAGE_KEY);
-
-      if (!storedItems) return;
-
-      const parsed = JSON.parse(storedItems);
-
-      form.setFieldValue("lineItems", parsed);
+      form.setFieldValue("lineItems", value);
     } catch (error) {
       console.error("Failed to restore cart", error);
     } finally {
@@ -107,9 +108,8 @@ export const OrderForm = ({ taxRule }: { taxRule: TaxRule | null }) => {
     }
   }, []);
 
-  // persist cart to local storage on change
   React.useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(lineItems));
+    set(lineItems as []);
   }, [lineItems]);
 
   if (!mounted) return <LoadingSkeleton />;

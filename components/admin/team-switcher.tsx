@@ -13,11 +13,10 @@ import {
 } from "@/components/ui/sidebar";
 import { Button } from "../ui/button";
 import { Session } from "@/lib/types";
-import { SITE_CONFIG } from "@/lib/config";
 import { Skeleton } from "../ui/skeleton";
 import { Separator } from "../ui/separator";
 import { useRouter } from "next/navigation";
-import { useTeams, useUserTeams } from "@/hooks/use-teams";
+import { useUserTeams } from "@/hooks/use-teams";
 import { authClient } from "@/lib/auth/client";
 import { PopoverXDrawer } from "../popover-x-drawer";
 import { useQueryClient } from "@tanstack/react-query";
@@ -73,9 +72,7 @@ export const TeamSwitcher = ({
         id: toastId,
       });
     }
-
-    queryClient.invalidateQueries();
-    router.refresh();
+    window.location.reload();
   };
 
   const handleLogout = async () => {
@@ -85,7 +82,7 @@ export const TeamSwitcher = ({
       loading: "Signing out...",
       success: () => {
         queryClient.clear();
-        router.push("/signin");
+        window.location.href = "/signin";
         return "Signed out successfully";
       },
       error: "Failed to sign out",

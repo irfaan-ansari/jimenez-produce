@@ -35,7 +35,6 @@ import {
   CarouselPrevious,
 } from "../ui/carousel";
 import { Tooltip } from "../tooltip";
-import { useMap } from "../ui/map";
 
 export function AppSidebar({ session }: { session: Session }) {
   const { pathname, getQueryString } = useRouterStuff();
@@ -132,50 +131,45 @@ export function AppSidebar({ session }: { session: Session }) {
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
-      <PromotionCard />
+      <PromotionCard session={session} />
     </Sidebar>
   );
 }
 
-const PromotionCard = () => {
+const STORAGE_KEY = "order-line-items";
+
+const PromotionCard = ({ session }: { session: Session }) => {
+  const storageKey = `${STORAGE_KEY}-${session?.session?.activeTeamId}`;
+  const { router } = useRouterStuff();
+  const { set, value } = useLocalStorage(storageKey, []);
+
   const { data, isPending, isError } = usePromotionsCustomer({
     placement: "sidebar",
   });
 
-  const { set: setCartItem, value: cartItems } = useLocalStorage(
-    "order-line-items",
-    [],
-  );
+  const mappedProducts = React.useMemo(() => {
+    return (
+      data?.data
+        ?.flatMap((item) => item.products ?? [])
+        .map((p) => ({
+          productId: p.id,
+          title: p.title,
+          image: p.image,
+          identifier: p.identifier,
+          categories: p.categories ?? [],
+          price: p.finalPrice,
+          total: p.finalPrice,
+          quantity: "1",
+          isTaxable: p.isTaxable ?? false,
+        })) ?? []
+    );
+  }, []);
 
-  const handleAddToCart = React.useCallback(
-    (product: any) => {
-      let newItems = cartItems;
-      if (newItems.length > 0) {
-        const parsed = JSON.parse(cartItems);
-        newItems = [...parsed, product];
-      } else {
-        newItems = [product];
-      }
-      // @ts-ignore
-      setCartItem(JSON.stringify(newItems));
-    },
-    [data],
-  );
-
-  const mappedProducts = data?.data
-    ?.flatMap((item) => item.products ?? [])
-    .map((p) => ({
-      productId: p.id,
-      title: p.title,
-      image: p.image,
-      identifier: p.identifier,
-      categories: p.categories ?? [],
-      price: p.finalPrice,
-      total: p.finalPrice,
-      quantity: "1",
-      isTaxable: p.isTaxable ?? false,
-    }));
-  console.log(mappedProducts, data?.data);
+  const handleAddToCart = React.useCallback(() => {
+    const newItems = [...value, ...mappedProducts];
+    set(newItems as []);
+    router.push("/customer/new-order");
+  }, [data]);
 
   if (isPending || isError) return null;
 
