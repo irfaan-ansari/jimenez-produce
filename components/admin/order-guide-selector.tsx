@@ -46,8 +46,6 @@ export const OrderGuideSelector = ({
     setDebounced(val);
   }, 500);
 
-  const query = new URLSearchParams({ q: debounced });
-
   const {
     data,
     isError,
@@ -56,7 +54,7 @@ export const OrderGuideSelector = ({
     isFetchingNextPage,
     hasNextPage,
     fetchNextPage,
-  } = useInfiniteOrderGuides(query.toString());
+  } = useInfiniteOrderGuides({ q: debounced });
 
   const loadMoreRef = useInfiniteScroll(() => {
     if (hasNextPage && !isFetchingNextPage) {
@@ -122,7 +120,7 @@ export const OrderGuideSelector = ({
             <QueryState
               isPending={isPending}
               isError={isError}
-              isEmpty={guides.length===0}
+              isEmpty={guides.length === 0}
               error={error}
             >
               {guides?.map((guide) => {
