@@ -166,7 +166,10 @@ const PromotionCard = ({ session }: { session: Session }) => {
   }, []);
 
   const handleAddToCart = React.useCallback(() => {
-    const newItems = [...value, ...mappedProducts];
+    let newItems = [...mappedProducts];
+    if (Array.isArray(value) && value.length > 0) {
+      newItems = [...value, ...mappedProducts];
+    }
     set(newItems as []);
     router.push("/customer/new-order");
   }, [data]);

@@ -17,7 +17,7 @@ import { useAppForm } from "@/hooks/form-context";
 import { Session, type TaxRule } from "@/lib/types";
 import { useSidebar } from "@/components/ui/sidebar";
 import { List, Loader, Plus, Star } from "lucide-react";
-import { formOpt, getTotals } from "./order-form-options";
+import { formOpt, getTotals, OrderItem } from "./order-form-options";
 import { OrderTab, useOrderUIStore } from "@/lib/store/order-store";
 import { OrderFormToolbar, ToolbarSearch } from "./order-from-toolbar";
 import { OrderGuideDialog } from "@/components/admin/order-guide-dialog";
@@ -100,7 +100,7 @@ export const OrderForm = ({
       if (sidebarOpen) {
         setSidebarOpen(false);
       }
-      form.setFieldValue("lineItems", value);
+      form.setFieldValue("lineItems", value as OrderItem[]);
     } catch (error) {
       console.error("Failed to restore cart", error);
     } finally {
