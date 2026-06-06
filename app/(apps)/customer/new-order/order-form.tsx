@@ -100,7 +100,10 @@ export const OrderForm = ({
       if (sidebarOpen) {
         setSidebarOpen(false);
       }
-      form.setFieldValue("lineItems", value as OrderItem[]);
+      const items = window.localStorage.getItem(storageKey);
+      const json = JSON.parse(items as string) as OrderItem[];
+
+      form.setFieldValue("lineItems", json);
     } catch (error) {
       console.error("Failed to restore cart", error);
     } finally {

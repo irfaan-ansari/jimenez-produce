@@ -4,19 +4,21 @@ import { useState, useCallback, useEffect } from "react";
 type SetValue<T> = T;
 
 export function useLocalStorage<T>(key: string, initialValue?: T) {
-  const [storedValue, setStoredValue] = useState<T | null>(() => {
-    if (typeof window === "undefined") {
-      return initialValue;
-    }
+  const [storedValue, setStoredValue] = useState<T | null>(
+    initialValue ?? null,
+  );
 
+  useEffect(() => {
     try {
       const item = window.localStorage.getItem(key);
-      return item ? JSON.parse(item) : initialValue;
+
+      if (item !== null) {
+        setStoredValue(JSON.parse(item));
+      }
     } catch (error) {
-      console.error("Error reading localStorage key:", key, error);
-      return initialValue;
+      console.error("Error reading local cart:", key, error);
     }
-  });
+  }, [key]);
 
   const setValue = useCallback(
     (value: SetValue<T>) => {

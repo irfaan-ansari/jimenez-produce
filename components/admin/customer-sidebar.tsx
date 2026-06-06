@@ -35,6 +35,7 @@ import {
   CarouselPrevious,
 } from "../ui/carousel";
 import { Tooltip } from "../tooltip";
+import { OrderItem } from "@/app/(apps)/customer/new-order/order-form-options";
 
 export function AppSidebar({ session }: { session: Session }) {
   const { pathname, getQueryString } = useRouterStuff();
@@ -166,12 +167,12 @@ const PromotionCard = ({ session }: { session: Session }) => {
   }, []);
 
   const handleAddToCart = React.useCallback(() => {
-    let newItems = [...mappedProducts];
-    if (Array.isArray(value) && value.length > 0) {
-      newItems = [...value, ...mappedProducts];
-    }
-    set(newItems as []);
-    router.push("/customer/new-order");
+    const items = (window.localStorage.getItem(storageKey) ??
+      []) as OrderItem[];
+    const newItems = [...items, ...mappedProducts].filter((p) => p.productId);
+
+    window.localStorage.setItem(storageKey, JSON.stringify(newItems));
+    window.location.href = "/customer/new-order";
   }, [data]);
 
   if (isPending || isError) return null;
