@@ -8,14 +8,8 @@ import { authClient } from "@/lib/auth/client";
 import { useStore } from "@tanstack/react-form";
 import { Button } from "@/components/ui/button";
 import { useAppForm } from "@/hooks/form-context";
-import {
-  AlertCircleIcon,
-  CheckCircle,
-  CircleCheck,
-  Loader,
-  X,
-} from "lucide-react";
 import { Field, FieldGroup } from "@/components/ui/field";
+import { AlertCircleIcon, CircleCheck, Loader, X } from "lucide-react";
 import { Alert, AlertAction, AlertDescription, AlertTitle } from "../ui/alert";
 
 const schema = z.object({
@@ -38,7 +32,7 @@ export function ForgotPasswordForm({
     defaultValues: {
       username: "",
       error: "",
-      success: true,
+      success: false,
     },
     validators: {
       onChange: schema,

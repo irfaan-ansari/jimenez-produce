@@ -23,9 +23,7 @@ import { OrderFormToolbar, ToolbarSearch } from "./order-from-toolbar";
 import { OrderGuideDialog } from "@/components/admin/order-guide-dialog";
 import { LoadingSkeleton } from "@/components/admin/placeholder-component";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useLocalStorage } from "@/hooks/use-local-storage";
-
-const STORAGE_KEY = "order-line-items";
+import { storage } from "@/lib/local-storage";
 
 export const OrderForm = ({
   taxRule,
@@ -34,16 +32,21 @@ export const OrderForm = ({
   taxRule: TaxRule | null;
   session: Session;
 }) => {
-  const storageKey = `${STORAGE_KEY}-${session.session.activeTeamId}`;
   const router = useRouter();
   const confirm = useConfirm();
-  const { value, set, remove } = useLocalStorage(storageKey, []);
+
+  const CART_KEY = `order-items-${session.session.activeTeamId}`;
   const [mounted, setMounted] = React.useState(false);
 
   const setShowCart = useOrderUIStore((s) => s.setShowCart);
 
+  // tab switch
   const selectedTab = useOrderUIStore((s) => s.selectedTab);
   const setSelectedTab = useOrderUIStore((s) => s.setSelectedTab);
+
+  // promo cart state
+  const setPromoCart = useOrderUIStore((s) => s.setPromoCart);
+  const promoItems = useOrderUIStore((s) => s.promoCart[CART_KEY]) ?? [];
 
   // for selection store
   const setSelectionState = useOrderUIStore((s) => s.setSelectionState);
@@ -51,6 +54,7 @@ export const OrderForm = ({
   const selectedCount = Object.keys(selectionState.items).length;
 
   const { open: sidebarOpen, setOpen: setSidebarOpen } = useSidebar();
+
   const form = useAppForm({
     ...formOpt,
     defaultValues: {
@@ -65,7 +69,7 @@ export const OrderForm = ({
       });
 
       if (success) {
-        remove();
+        storage.remove(CART_KEY);
         toast.success("Order submitted successfully!", { id: toastId });
         confirm.success({
           title: "Order Confirmed!",
@@ -94,25 +98,46 @@ export const OrderForm = ({
     };
   }, [selectionState.items]);
 
-  // restore cart from local storage on mount
+  // restore cart
   React.useEffect(() => {
-    try {
-      if (sidebarOpen) {
-        setSidebarOpen(false);
-      }
-      const items = window.localStorage.getItem(storageKey);
-      const json = JSON.parse(items as string) as OrderItem[];
-
-      form.setFieldValue("lineItems", json);
-    } catch (error) {
-      console.error("Failed to restore cart", error);
-    } finally {
-      setMounted(true);
+    if (sidebarOpen) {
+      setSidebarOpen(false);
     }
+    const items = storage.get<OrderItem[]>(CART_KEY) ?? [];
+    if (items.length > 0) form.setFieldValue("lineItems", items);
+    setMounted(true);
   }, []);
 
+  // add promo items to cart
   React.useEffect(() => {
-    set(lineItems as []);
+    if (promoItems.length > 0) {
+      const existing = storage.get<OrderItem[]>(CART_KEY, []) ?? [];
+
+      const merged = [...existing];
+
+      promoItems.forEach((promoItem) => {
+        const index = merged.findIndex(
+          (item) => item.productId === promoItem.productId,
+        );
+
+        if (index >= 0) {
+          merged[index] = {
+            ...merged[index],
+            quantity: String(Number(merged[index].quantity) + 1),
+          };
+        } else {
+          merged.push(promoItem);
+        }
+      });
+
+      form.setFieldValue("lineItems", merged);
+      setPromoCart({ key: CART_KEY, items: [] });
+    }
+  }, [promoItems]);
+
+  // set to local storage
+  React.useEffect(() => {
+    storage.set(CART_KEY, lineItems);
   }, [lineItems]);
 
   if (!mounted) return <LoadingSkeleton />;
@@ -121,7 +146,7 @@ export const OrderForm = ({
     <Tabs
       value={selectedTab}
       onValueChange={(value) => setSelectedTab(value as OrderTab)}
-      className="flex flex-col w-full gap-6 h-full"
+      className="flex flex-col w-full h-full gap-6"
     >
       <div className="flex flex-wrap justify-start w-full gap-x-2 gap-y-4 md:flex-nowrap">
         <TabsList className="bg-background p-1 *:h-9 group-data-horizontal/tabs:h-11 border *:data-active:bg-secondary rounded-xl *:rounded-lg">
@@ -168,7 +193,7 @@ export const OrderForm = ({
       </div>
 
       {/* toolbar */}
-      <div className="flex flex-col gap-3 h-full">
+      <div className="flex flex-col h-full gap-3">
         <div className="flex items-center w-full gap-4 overflow-hidden">
           <OrderFormToolbar />
         </div>
@@ -221,7 +246,7 @@ export const OrderForm = ({
                 <Button
                   type="submit"
                   size="lg"
-                  className="w-32 rounded-xl bg-sidebar-accent hover:bg-sidebar-accent/80"
+                  className="w-32 rounded-xl"
                   disabled={isSubmitting || !canSubmit}
                   onClick={() => form.handleSubmit()}
                 >

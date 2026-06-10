@@ -25,7 +25,6 @@ import { TeamSwitcher } from "./team-switcher";
 import { SIDEBAR_MENU_CUSTOMER } from "@/lib/config";
 import { useRouterStuff } from "@/hooks/use-router-stuff";
 import { usePromotionsCustomer } from "@/hooks/data/promotions";
-import { useLocalStorage } from "@/hooks/use-local-storage";
 import React from "react";
 import {
   Carousel,
@@ -35,7 +34,8 @@ import {
   CarouselPrevious,
 } from "../ui/carousel";
 import { Tooltip } from "../tooltip";
-import { OrderItem } from "@/app/(apps)/customer/new-order/order-form-options";
+import { useOrderUIStore } from "@/lib/store/order-store";
+import { storage } from "@/lib/local-storage";
 
 export function AppSidebar({ session }: { session: Session }) {
   const { pathname, getQueryString } = useRouterStuff();
@@ -137,12 +137,11 @@ export function AppSidebar({ session }: { session: Session }) {
   );
 }
 
-const STORAGE_KEY = "order-line-items";
-
 const PromotionCard = ({ session }: { session: Session }) => {
-  const storageKey = `${STORAGE_KEY}-${session?.session?.activeTeamId}`;
-  const { router } = useRouterStuff();
-  const { set, value } = useLocalStorage(storageKey, []);
+  const CART_KEY = `order-items-${session.session.activeTeamId}`;
+  const { router, pathname } = useRouterStuff();
+
+  const addItemsToCart = useOrderUIStore((s) => s.setPromoCart);
 
   const { data, isPending, isError } = usePromotionsCustomer({
     placement: "sidebar",
@@ -164,15 +163,14 @@ const PromotionCard = ({ session }: { session: Session }) => {
           isTaxable: p.isTaxable ?? false,
         })) ?? []
     );
-  }, []);
+  }, [data]);
 
   const handleAddToCart = React.useCallback(() => {
-    const items = (window.localStorage.getItem(storageKey) ??
-      []) as OrderItem[];
-    const newItems = [...items, ...mappedProducts].filter((p) => p.productId);
+    addItemsToCart({ key: CART_KEY, items: mappedProducts });
 
-    window.localStorage.setItem(storageKey, JSON.stringify(newItems));
-    window.location.href = "/customer/new-order";
+    if (pathname !== "/customer/new-order") {
+      router.push("/customer/new-order");
+    }
   }, [data]);
 
   if (isPending || isError) return null;
@@ -184,7 +182,7 @@ const PromotionCard = ({ session }: { session: Session }) => {
           <SidebarMenu className="mb-4">
             <Carousel>
               <CarouselContent>
-                {data?.data?.map((p) => (
+                {data?.data?.map((p, i) => (
                   <CarouselItem key={p.id}>
                     <SidebarMenuItem onClick={handleAddToCart}>
                       <div className="relative bg-secondary rounded-xl hover:-translate-y-0.5 transition">

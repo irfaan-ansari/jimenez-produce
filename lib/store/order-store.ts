@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { LayoutGrid, LayoutList } from "lucide-react";
+import { OrderItem } from "@/app/(apps)/customer/new-order/order-form-options";
 
 export const LAYOUT_MAP = {
   list: {
@@ -62,6 +63,10 @@ type OrderUIStore = {
   // promo
   showPromo: boolean;
   setShowPromo: (value: boolean) => void;
+
+  // cart state
+  promoCart: Record<string, OrderItem[] | []>;
+  setPromoCart: (args: { key: string; items: OrderItem[] }) => void;
 };
 
 export const useOrderUIStore = create<OrderUIStore>()(
@@ -144,6 +149,15 @@ export const useOrderUIStore = create<OrderUIStore>()(
       setShowPromo: (value) => {
         set({ showPromo: value });
       },
+      promoCart: {},
+      setPromoCart: ({ key, items }) => {
+        set((state) => ({
+          promoCart: {
+            ...state.promoCart,
+            [key]: items,
+          },
+        }));
+      },
     }),
     {
       name: "order-ui-store",
@@ -151,6 +165,7 @@ export const useOrderUIStore = create<OrderUIStore>()(
         layout: state.layout,
         selectedTab: state.selectedTab,
         filter: state.filter,
+        cart: state.promoCart,
       }),
     },
   ),
