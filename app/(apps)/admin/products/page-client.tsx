@@ -98,13 +98,27 @@ export const PageClient = () => {
                 <div className="text-xs font-medium uppercase text-muted-foreground">
                   {product.categories?.join(" • ")}
                 </div>
+
                 <CardTitle className="mt-auto font-semibold">
                   {product.title}
                 </CardTitle>
 
-                <span className="text-base font-semibold text-primary">
-                  {formatUSD(product.basePrice)}
-                </span>
+                {product.pack && (
+                  <span className="text-xs font-medium uppercase">
+                    Pack of {product.pack}
+                  </span>
+                )}
+
+                <div className="flex items-end gap-0.5">
+                  <span className="text-base leading-tight font-semibold text-primary">
+                    {formatUSD(product.basePrice)}
+                  </span>
+                  {product.unit && (
+                    <span className="text-xs leading-tight text-muted-foreground">
+                      / Per {product.unit}
+                    </span>
+                  )}
+                </div>
               </CardContent>
             </Card>
           );
