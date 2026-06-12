@@ -43,6 +43,8 @@ export const PageClient = () => {
       <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:gap-4 xl:grid-cols-4 2xl:grid-cols-6">
         {(data as AdminProductResponse)?.data?.map((product, i) => {
           const map = STATUS_MAP[product.status as keyof typeof STATUS_MAP];
+          const displayPrice =
+            Number(product.basePrice) / Math.max(Number(product.pack) || 1, 1);
 
           return (
             <Card
@@ -85,7 +87,7 @@ export const PageClient = () => {
                   <ImageOff className="size-6 opacity-40" />
                 )}
               </div>
-              <CardContent className="relative flex flex-col flex-1 pt-1.5 space-y-1">
+              <CardContent className="relative flex flex-col flex-1 pt-1.5 space-y-1.5">
                 <div className="absolute flex items-center gap-2 -top-6 left-4">
                   {/* tax status */}
                   {product.isTaxable && (
@@ -103,20 +105,45 @@ export const PageClient = () => {
                   {product.title}
                 </CardTitle>
 
-                {product.pack && (
-                  <span className="text-xs font-medium uppercase">
-                    Pack of {product.pack}
-                  </span>
-                )}
+                <div className="font-semibold">
+                  {displayPrice < Number(product.basePrice) ? (
+                    <>
+                      <div className="text-xs">
+                        {formatUSD(displayPrice)}
 
-                <div className="flex items-end gap-0.5">
-                  <span className="text-base leading-tight font-semibold text-primary">
-                    {formatUSD(product.basePrice)}
-                  </span>
-                  {product.unit && (
-                    <span className="text-xs leading-tight text-muted-foreground">
-                      / Per {product.unit}
-                    </span>
+                        {product.unit && (
+                          <span className="text-muted-foreground ml-1 text-[10px]">
+                            /{product.unit}
+                          </span>
+                        )}
+
+                        {product.unit && product.pack && (
+                          <span className="text-muted-foreground pl-1 text-[10px] uppercase">
+                            • {product.pack} {product.unit} Pack
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="mt-1 text-sm font-bold text-primary">
+                        {formatUSD(product.basePrice)}
+                      </div>
+                    </>
+                  ) : (
+                    <div className="font-bold text-primary">
+                      {formatUSD(displayPrice)}
+
+                      {product.unit && (
+                        <span className="text-muted-foreground ml-1 text-[10px]">
+                          /{product.unit}
+                        </span>
+                      )}
+
+                      {product.unit && product.pack && (
+                        <span className="text-muted-foreground pl-1 text-[10px] uppercase">
+                          • {product.pack} {product.unit} Pack
+                        </span>
+                      )}
+                    </div>
                   )}
                 </div>
               </CardContent>
