@@ -132,24 +132,21 @@ export const LastPurchase = ({
 export const Price = ({
   price,
   unit,
+  pack,
   className,
 }: {
   price: number | string;
   className?: string;
   unit?: string | null;
+  pack?: string | null;
 }) => {
+  const displayPrice = Number(price) / Math.max(Number(pack) || 1, 1);
+
   return (
-    <div
-      className={cn(
-        "w-24 self-center flex flex-col items-center font-bold text-primary",
-        className,
-      )}
-    >
-      {formatUSD(price ?? 0)}
+    <div className={cn("w-24 font-bold text-primary", className)}>
+      {formatUSD(displayPrice)}
       {unit && (
-        <span className="text-[10px] leading-1 font-normal text-muted-foreground">
-          /per {unit}
-        </span>
+        <span className="text-muted-foreground text-[10px]">/{unit}</span>
       )}
     </div>
   );

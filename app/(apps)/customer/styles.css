@@ -129,9 +129,9 @@
   --radius: 0.75rem;
 
   --sidebar-primary: #385e25;
-  --primary: oklch(0.77 0.2 131);
+  --primary: oklch(0.7189 0.1657 130.38);
   --primary-foreground: oklch(1 0 0);
-  --highlight: oklch(0.77 0.2 131);
+  --highlight: oklch(0.7189 0.1657 130.38);
 
   /* new colors */
   --destructive-foreground: var(--color-red-800);

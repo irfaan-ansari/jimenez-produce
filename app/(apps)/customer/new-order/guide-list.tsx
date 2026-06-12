@@ -73,6 +73,8 @@ export const GuideList = withForm({
           identifier: i.identifier,
           categories: i.categories ?? [],
           price: i.finalPrice,
+          pack: i.pack,
+          unit: i.unit,
           total: i.finalPrice,
           quantity: "0",
           isTaxable: i.isTaxable ?? false,

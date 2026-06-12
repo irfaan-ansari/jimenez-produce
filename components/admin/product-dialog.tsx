@@ -411,7 +411,7 @@ export const ProductDialog = ({
                 name="pack"
                 children={(field) => (
                   <field.TextField
-                    label="Pack"
+                    label="Pack size"
                     className="**:data-[slot=input]:rounded-xl"
                   />
                 )}
@@ -421,7 +421,7 @@ export const ProductDialog = ({
                 name="unit"
                 children={(field) => (
                   <field.TextField
-                    label="Unit"
+                    label="Pack unit"
                     className="**:data-[slot=input]:rounded-xl"
                   />
                 )}
