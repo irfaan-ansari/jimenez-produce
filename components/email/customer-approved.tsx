@@ -54,7 +54,7 @@ export const CustomerApproved = ({ name, company }: CustomerApprovedProps) => {
           </Text>
 
           <Button
-            href="https://order.jimenezproduce.com"
+            href="https://jimenezproduce.com/signin"
             target="_blank"
             className="bg-[#80b83a] p-4 text-white uppercase text-sm font-semibold text-center"
           >

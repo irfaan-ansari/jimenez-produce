@@ -2,7 +2,17 @@ import { db } from "@/lib/db";
 import { product } from "@/lib/db/schema";
 import { getSession } from "@/server/auth";
 import { NextRequest, NextResponse } from "next/server";
-import { eq, or, and, ilike, arrayContains } from "drizzle-orm";
+import {
+  eq,
+  or,
+  and,
+  ilike,
+  arrayContains,
+  sql,
+  getTableColumns,
+  desc,
+  asc,
+} from "drizzle-orm";
 
 export async function GET(req: NextRequest) {
   try {
@@ -29,25 +39,16 @@ export async function GET(req: NextRequest) {
       eq(product.organizationId, activeOrganizationId),
       status ? eq(product.status, status) : undefined,
       cat ? arrayContains(product.categories, [cat]) : undefined,
-      q
-        ? or(
-            ilike(product.title, `%${q}%`),
-            ilike(product.description, `%${q}%`),
-            ilike(product.identifier, `%${q}%`),
-          )
-        : undefined,
+      q ? ilike(product.searchText, q.toLowerCase()) : undefined,
     );
 
     const products = await db.query.product.findMany({
       where: filters,
       limit: Number(limit),
       offset,
-      orderBy: (product, { desc, asc }) => [
-        desc(product.createdAt),
-        asc(product.id),
-      ],
+      orderBy: [desc(product.createdAt), asc(product.id)],
     });
-
+    console.log(products);
     const total = await db.$count(product, filters);
 
     return NextResponse.json(

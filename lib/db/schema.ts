@@ -351,6 +351,7 @@ export const product = pgTable(
     images: jsonb("images")
       .$type<string[]>()
       .default(sql`'[]'::jsonb`),
+    searchText: text("search_text"),
     isTaxable: boolean("is_taxable").default(true),
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at")
@@ -365,6 +366,10 @@ export const product = pgTable(
     unique("products_organization_id_identifier_idx").on(
       table.organizationId,
       table.identifier,
+    ),
+    index("products_name_trgm_idx").using(
+      "gin",
+      sql`${table.searchText} gin_trgm_ops`,
     ),
   ],
 );
