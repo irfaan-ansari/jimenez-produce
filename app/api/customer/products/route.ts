@@ -9,6 +9,7 @@ import {
   inArray,
   arrayContains,
   countDistinct,
+  sql,
 } from "drizzle-orm";
 import {
   product,
@@ -56,12 +57,7 @@ export async function GET(req: NextRequest) {
     }
 
     if (q) {
-      const searchCondition = or(
-        ilike(product.title, `%${q}%`),
-        ilike(product.description, `%${q}%`),
-        ilike(product.identifier, `%${q}%`),
-      ) as SQL<unknown>;
-      conditions.push(searchCondition);
+      conditions.push(ilike(product.searchText, `%${q}%`));
     }
 
     const filters = and(...conditions);

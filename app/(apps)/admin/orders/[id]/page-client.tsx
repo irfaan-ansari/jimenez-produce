@@ -8,6 +8,7 @@ import {
   ClipboardCheck,
   Receipt,
   Package,
+  ImageOff,
 } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -139,12 +140,23 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
             </CardTitle>
           </CardHeader>
           <CardContent className="divide-y">
+            <div className="flex items-center gap-4 py-2 text-xs font-medium text-muted-foreground uppercase">
+              <div className="flex-1">Item</div>
+              <div className="w-20 text-right text-muted-foreground">Price</div>
+              <div className="w-20 text-right text-muted-foreground">
+                Quantity
+              </div>
+              <div className="w-20 text-right text-muted-foreground">Tax</div>
+              <div className="w-20 text-right text-muted-foreground">Total</div>
+            </div>
             {data.lineItems.map((line) => (
               <div className="flex items-center justify-between gap-4 p-2">
                 <div className="flex items-center flex-1 gap-3">
-                  <Avatar className="size-9 rounded-lg ring-2 ring-green-600/20 ring-offset-1 **:rounded-lg after:hidden">
+                  <Avatar className="size-9 rounded-md ring-2 ring-ring ring-offset-1 **:rounded-md after:hidden">
                     <AvatarImage src={line?.image!} />
-                    <AvatarFallback>{line.title?.charAt(0)}</AvatarFallback>
+                    <AvatarFallback>
+                      <ImageOff className="size-4" />
+                    </AvatarFallback>
                   </Avatar>
                   <div className="space-y-1">
                     <h4 className="font-medium leading-tight whitespace-normal">
@@ -153,7 +165,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
                     {line.identifier && (
                       <Badge
                         variant="secondary"
-                        className="border rounded-xl border-border"
+                        className="border rounded-sm! border-border"
                       >
                         {line.identifier}
                       </Badge>
@@ -165,6 +177,9 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
                 </div>
                 <div className="w-20 text-right text-muted-foreground">
                   {line.quantity}
+                </div>
+                <div className="w-20 text-right text-muted-foreground">
+                  {line.taxAmount}
                 </div>
                 <div className="w-20 font-semibold text-right">
                   {formatUSD(line.total!)}

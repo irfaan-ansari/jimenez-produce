@@ -369,7 +369,7 @@ export const product = pgTable(
     ),
     index("products_name_trgm_idx").using(
       "gin",
-      sql`${table.searchText} gin_trgm_ops`,
+      table.searchText.op("gin_trgm_ops"),
     ),
   ],
 );

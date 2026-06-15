@@ -39,7 +39,7 @@ export async function GET(req: NextRequest) {
       eq(product.organizationId, activeOrganizationId),
       status ? eq(product.status, status) : undefined,
       cat ? arrayContains(product.categories, [cat]) : undefined,
-      q ? ilike(product.searchText, q.toLowerCase()) : undefined,
+      q ? ilike(product.searchText, `%${q}%`) : undefined,
     );
 
     const products = await db.query.product.findMany({
@@ -48,7 +48,7 @@ export async function GET(req: NextRequest) {
       offset,
       orderBy: [desc(product.createdAt), asc(product.id)],
     });
-    console.log(products);
+
     const total = await db.$count(product, filters);
 
     return NextResponse.json(
