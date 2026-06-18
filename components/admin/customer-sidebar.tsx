@@ -36,6 +36,7 @@ import {
 import { Tooltip } from "../tooltip";
 import { useOrderUIStore } from "@/lib/store/order-store";
 import { storage } from "@/lib/local-storage";
+import { Badge } from "../ui/badge";
 
 export function AppSidebar({ session }: { session: Session }) {
   const { pathname, getQueryString } = useRouterStuff();
@@ -222,18 +223,16 @@ const PromotionCard = ({ session }: { session: Session }) => {
   return (
     <SidebarGroup className="group-data-[state=collapsed]:hidden">
       <SidebarMenu className="mb-4">
-        <SidebarMenuItem className="relative p-4 bg-linear-to-br from-lime-100 via-emerald-50 to-white">
-          <div className="mb-1 font-semibold dark:text-background">
+        <SidebarMenuItem className="relative p-4 bg-linear-to-br rounded-lg from-lime-100 via-emerald-50 to-white">
+          <div className="mb-1 font-semibold text-foreground">
             Reorder smarter
           </div>
           <p className="mb-4 text-sm text-muted-foreground">
             Your top items and recent purchases are ready to add in seconds.
             <br />
-            <span className="bg-lime-200 py-0.5 rounded-lg text-xs px-2 inline-block mt-2">
-              Coming Soon
-            </span>
+            <Badge variant="warning-outline">Coming Soon</Badge>
           </p>
-          <Button asChild variant="secondary" className="w-full">
+          <Button asChild className="w-full">
             <Link href="/customer/new-order">Start New Order</Link>
           </Button>
         </SidebarMenuItem>

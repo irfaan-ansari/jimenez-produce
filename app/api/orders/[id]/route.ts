@@ -28,6 +28,8 @@ export const GET = async (
       where: filters,
       with: {
         lineItems: true,
+        team: true,
+        user: true,
       },
     });
 

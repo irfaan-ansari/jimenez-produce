@@ -79,6 +79,7 @@ export type ProductCategoriesResponse = {
 export type OrderType = OrderSelectType & {
   lineItems: LineItemSelectType[];
   team: TeamSelectType;
+  user: UserSelectType;
 };
 
 export type OrderResponse = {
@@ -145,7 +146,7 @@ export type Team = typeof auth.$Infer.Team & {
 };
 
 export type TeamDetail = Team & {
-  taxRule: TaxRuleSelectType|null;
+  taxRule: TaxRuleSelectType | null;
   products: ProductSelectType[];
   priceLevel: PriceLevelSelectType | null;
   orders: OrderType[];

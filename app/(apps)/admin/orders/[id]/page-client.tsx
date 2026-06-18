@@ -9,8 +9,12 @@ import {
   Receipt,
   Package,
   ImageOff,
+  Truck,
+  BadgeCheck,
+  User,
+  UserCheck2,
+  UserCheck,
 } from "lucide-react";
-import Link from "next/link";
 import { toast } from "sonner";
 import React, { use } from "react";
 import { formatUSD } from "@/lib/utils";
@@ -28,8 +32,15 @@ import { useQueryClient } from "@tanstack/react-query";
 import { STATUS_MAP } from "@/lib/constants/status-map";
 import { OrderActions } from "@/components/admin/order-actions";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { useRouter } from "next/navigation";
+import { CopyButton } from "@/components/copy-button";
 
 export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = use(params);
@@ -125,13 +136,56 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
 
         {/* progress */}
         <Card className="rounded-2xl">
-          <CardContent className="flex flex-col md:flex-row justify-between items-start gap-4 text-base">
+          <CardContent className="flex flex-col md:flex-row relative justify-between items-start gap-4 text-base">
             {STEPS.map((step, i) => (
               <StepItem key={i} {...step} />
             ))}
           </CardContent>
         </Card>
 
+        {/* stats */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <Card className="flex-row items-start px-6 rounded-xl">
+            <div className="flex-1">
+              <CardTitle className="mb-2 font-medium">Delivery</CardTitle>
+              <span className="text-sm font-medium text-muted-foreground">
+                {data.deliveryDate + " " + data.deliveryWindow}
+              </span>
+              <span className="text-sm font-medium text-muted-foreground">
+                {data.deliveryInstruction}
+              </span>
+            </div>
+            <Badge className="size-10" variant="success-light">
+              <Truck className="size-4" />
+            </Badge>
+          </Card>
+          <Card className="flex-row items-start px-6 rounded-xl">
+            <div className="flex-1">
+              <CardTitle className="mb-2 font-medium">Customer</CardTitle>
+              <span className="text-sm font-medium text-muted-foreground line-clamp-1">
+                {data.team?.name}
+              </span>
+              <CopyButton value={data.team?.phone} />
+              <CopyButton value={data.team?.email} />
+            </div>
+            <Badge className="size-10" variant="info-light">
+              <BadgeCheck className="size-4" />
+            </Badge>
+          </Card>
+          <Card className="flex-row items-start px-6 rounded-xl">
+            <div className="flex-1 truncate min-w-0">
+              <CardTitle className="mb-2 font-medium">Placed by</CardTitle>
+              <span className="text-sm font-medium text-muted-foreground truncate line-clamp-1">
+                {data.user?.name}
+              </span>
+              <CopyButton value={data.user?.phoneNumber ?? ""} />
+              <CopyButton value={data.user?.email ?? ""} />
+            </div>
+            <Badge className="size-10 shrink-0" variant="warning-light">
+              <UserCheck className="size-4" />
+            </Badge>
+          </Card>
+        </div>
         {/* purchased items */}
         <Card className="rounded-2xl">
           <CardHeader>
@@ -188,27 +242,6 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
             ))}
           </CardContent>
         </Card>
-
-        {/* delivery */}
-        <Card className="rounded-2xl">
-          <CardHeader className="border-b">
-            <CardTitle className="text-lg font-semibold">Delivery</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <h4 className="mb-2 text-sm font-medium text-muted-foreground">
-              Delivery By
-            </h4>
-            <p>
-              {format(data.deliveryDate || new Date(), "MMMM dd, yyyy")} -{" "}
-              {data.deliveryWindow}
-            </p>
-
-            <h4 className="mb-2 text-sm font-medium text-muted-foreground">
-              Instructions
-            </h4>
-            <p>{data.deliveryInstruction}</p>
-          </CardContent>
-        </Card>
       </div>
 
       {/* order summary */}
@@ -216,7 +249,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
         <CardHeader>
           <CardTitle className="text-xl font-semibold">Order Summary</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-4">
           <div className="space-y-2 text-sm">
             <div className="flex items-center justify-between text-muted-foreground">
               <span>Line Items</span> <span>{data.lineItemCount}</span>
@@ -224,20 +257,33 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
             <div className="flex items-center justify-between text-muted-foreground">
               <span>Quantity</span> <span>{data.lineItemQuantity}</span>
             </div>
-            <div className="flex items-center justify-between text-muted-foreground">
-              <span>Subtotal</span> <span>{formatUSD(data.subtotal)}</span>
-            </div>
-            <div className="flex items-center justify-between text-muted-foreground">
-              <span>Tax {data?.taxName && `(${data.taxName})`}</span>
-              <span className="font-medium">{formatUSD(data.tax)}</span>
-            </div>
-            <div className="flex items-center justify-between text-muted-foreground">
-              <span>{data.charges?.type}</span>
-              <span>{formatUSD(data.charges?.amount ?? 0)}</span>
-            </div>
-            <div className="flex items-center justify-between text-lg font-semibold">
-              <span>Total</span> <span>{formatUSD(data.total)}</span>
-            </div>
+          </div>
+          <div className="border-t" />
+          <div className="flex items-center justify-between text-muted-foreground">
+            <span>Subtotal</span> <span>{formatUSD(data.subtotal)}</span>
+          </div>
+          <div className="flex items-center justify-between text-muted-foreground">
+            <span>
+              Tax {Number(data.tax) > 0 && data?.taxName && `(${data.taxName})`}
+            </span>
+            <span
+              className={`font-medium ${Number(data?.tax) > 0 ? "text-red-700" : ""}`}
+            >
+              {formatUSD(data.tax)}
+            </span>
+          </div>
+          <div className="flex items-center justify-between text-muted-foreground">
+            <span>{data.charges?.type}</span>
+            <span
+              className={`font-medium ${Number(data.charges?.amount) > 0 ? "text-red-700" : ""}`}
+            >
+              {formatUSD(data.charges?.amount ?? 0)}
+            </span>
+          </div>
+          <div className="border-t" />
+          <div className="flex items-center justify-between text-xl font-bold">
+            <span>Total</span>
+            <span className="text-primary">{formatUSD(data.total)}</span>
           </div>
 
           <div className="grid gap-3">
@@ -248,14 +294,14 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
                 onClick={handleComplete}
               >
                 <CheckCircle />
-                Mark as Completed
+                Complete Order
               </Button>
             )}
 
             <Button className="w-full rounded-xl" size="xl" asChild>
               <a href={`/api/orders/${data.id}/packing-slip`} target="_blank">
                 <Package />
-                Download Packing Slip
+                Packing Slip
               </a>
             </Button>
             <Button
@@ -266,7 +312,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
             >
               <a href={`/api/orders/${data.id}/invoice`} target="_blank">
                 <Receipt />
-                Download Invoice
+                Invoice
               </a>
             </Button>
           </div>

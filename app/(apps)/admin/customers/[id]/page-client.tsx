@@ -522,7 +522,7 @@ const ProductAccessForm = ({
                     >
                       <div className="flex items-start flex-1 gap-3">
                         <div className="shrink-0">
-                          <Avatar className="size-9 rounded-lg ring-2 ring-green-600/40 ring-offset-1 **:rounded-lg after:hidden">
+                          <Avatar className="size-9 rounded-lg ring-2 ring-ring ring-offset-1 **:rounded-lg after:hidden">
                             <AvatarImage src={item?.image as string} />
                             <AvatarFallback>
                               <ImageOff className="size-4" />

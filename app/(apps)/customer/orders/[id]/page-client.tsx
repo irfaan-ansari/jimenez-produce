@@ -137,31 +137,38 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
         <CardHeader>
           <CardTitle className="text-xl font-semibold">Order Summary</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-6 text-base">
-          <div className="space-y-1.5 text-sm text-muted-foreground">
-            <div className="flex items-center justify-between">
-              <span>Item Count</span>{" "}
-              <span className="font-medium">{data.lineItemCount}</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span>Quantity</span>{" "}
-              <span className="font-medium">{data.lineItemQuantity}</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span>Subtotal</span>{" "}
-              <span className="font-medium">{formatUSD(data.subtotal)}</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span>Tax {data?.taxName && `(${data.taxName})`}</span>
-              <span className="font-medium">{formatUSD(data.tax)}</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span>{data.charges?.type}</span>
-              <span className="font-medium">
-                {formatUSD(data.charges?.amount ?? 0)}
-              </span>
-            </div>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between">
+            <span>Item Count</span>{" "}
+            <span className="font-medium">{data.lineItemCount}</span>
           </div>
+          <div className="flex items-center justify-between">
+            <span>Quantity</span>{" "}
+            <span className="font-medium">{data.lineItemQuantity}</span>
+          </div>
+          <div className="border-t" />
+
+          <div className="flex items-center justify-between">
+            <span>Subtotal</span>{" "}
+            <span className="font-medium">{formatUSD(data.subtotal)}</span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span>Tax {data?.taxName && `(${data.taxName})`}</span>
+            <span
+              className={`font-medium ${Number(data?.tax) > 0 ? "text-red-700" : ""}`}
+            >
+              {formatUSD(data.tax)}
+            </span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span>{data.charges?.type}</span>
+            <span
+              className={`font-medium ${Number(data.charges?.amount) > 0 ? "text-red-700" : ""}`}
+            >
+              {formatUSD(data.charges?.amount ?? 0)}
+            </span>
+          </div>
+          <div className="border-t" />
 
           <div className="flex items-center justify-between text-xl font-semibold">
             <span>Total</span> <span>{formatUSD(data.total)}</span>
