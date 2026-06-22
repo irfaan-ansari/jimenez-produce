@@ -66,7 +66,18 @@ export const columns: ColumnDef<OrderType>[] = [
   },
   {
     id: "createdAt",
-    header: "Date",
+    header: "Invoice Date",
+    cell: ({ row }) => {
+      return (
+        <span className="text-sm text-muted-foreground">
+          {format(row.original.createdAt!, "MMM dd • hh:mm a")}
+        </span>
+      );
+    },
+  },
+  {
+    id: "createdAt",
+    header: "Due Date",
     cell: ({ row }) => {
       return (
         <span className="text-sm text-muted-foreground">
@@ -89,8 +100,8 @@ export const columns: ColumnDef<OrderType>[] = [
   },
 
   {
-    id: "total",
-    header: "Total",
+    id: "amount",
+    header: "Amount",
     cell: ({ row }) => {
       return (
         <span className="font-medium">{formatUSD(row.original.total)}</span>
@@ -104,7 +115,7 @@ export const columns: ColumnDef<OrderType>[] = [
       className: "w-10",
     },
     cell: ({ row }) => {
-      return <OrderActions data={row.original} />;
+      return <OrderActions data={row.original} showView={true} />;
     },
   },
 ];

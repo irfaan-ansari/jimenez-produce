@@ -21,7 +21,7 @@ export const Pagination = ({
   return (
     <div className="sticky bottom-4 z-2 mx-auto mt-auto flex w-full max-w-sm items-center justify-between rounded-2xl border-2 bg-white/90 p-4 text-sm text-muted-foreground backdrop-blur-2xl">
       <span>
-        Viewing {start}–{end} of {total}
+        Showing {start}–{end} of {total}
       </span>
       <div className="flex gap-2">
         <Button

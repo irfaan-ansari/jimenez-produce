@@ -49,8 +49,8 @@ export const CustomerDialog = ({
       managerName: data?.managerName || "",
       phone: data?.phone || "",
       email: data?.email || "",
-      creditLimit: data?.creditLimit,
-      creditDays: data?.creditDays,
+      creditLimit: data?.creditLimit ?? "",
+      creditDays: data?.creditDays ?? "",
     },
     validators: {
       onSubmit: ({ formApi }) => {

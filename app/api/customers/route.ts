@@ -99,6 +99,8 @@ export const GET = async (req: NextRequest) => {
         email: t.email,
         logo: t.logo,
         priceLevelId: t.priceLevelId,
+        creditDays: t.creditDays,
+        creditLimit: t.creditLimit,
         members: t.teamMembers.map((tm) => {
           return {
             id: tm.userId,

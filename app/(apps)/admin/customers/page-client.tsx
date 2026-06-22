@@ -87,20 +87,25 @@ export const columns: ColumnDef<Team>[] = [
     id: "credit",
     header: "Credit",
     cell: ({ row }) => {
-      const used = 20;
-      const limit = 50;
-      const percentUsed = (used / limit) * 100;
+      const limit = Number(row.original.creditLimit ?? 0);
+      const used = 0;
+      const percentUsed = (used / limit) * 100 || 0;
+
       return (
         <div className="space-y-2.5">
-          <div className="flex justify-between text-[11px] text-muted-foreground">
-            <span>{Math.round(percentUsed)}% used</span>
-            <span>Limit {formatUSD(limit)}</span>
+          <div className="flex justify-between text-xs text-muted-foreground">
+            <span>Used</span>
+            <span>{Math.round(percentUsed)}%</span>
           </div>
           <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden">
             <div
               className="h-full bg-primary rounded-full transition-all duration-500 ease-out"
               style={{ width: `${percentUsed}%` }}
             />
+          </div>
+          <div className="flex justify-between text-xs">
+            <span>Limit</span>
+            <span>{formatUSD(limit)}</span>
           </div>
         </div>
       );
