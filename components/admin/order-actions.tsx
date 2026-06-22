@@ -8,6 +8,9 @@ import {
   FileCheck,
   CheckCircle,
   MoreVertical,
+  Download,
+  CircleCheck,
+  Mail,
 } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -53,6 +56,40 @@ export const OrderActions = ({
         });
         break;
 
+      case "send-invoice":
+        confirm.warning({
+          title: "Send Invoice?",
+          description: "This will send an invoice to the customer.",
+          actionLabel: "Send",
+          cancelLabel: "Cancel",
+          action: async () => {
+            // const { success, error } = await updateOrder(Number(id), {
+            //   status: "completed",
+            // });
+            // if (success) {
+            //   toast.success("Order completed successfully.");
+            //   queryClient.invalidateQueries({ queryKey: ["orders"] });
+            // } else toast.error(error.message);
+          },
+        });
+        break;
+      case "mark-paid":
+        confirm.warning({
+          title: "Mark as Paid?",
+          description: "This will mark the order as paid.",
+          actionLabel: "Proceed",
+          cancelLabel: "Cancel",
+          action: async () => {
+            // const { success, error } = await updateOrder(Number(id), {
+            //   status: "completed",
+            // });
+            // if (success) {
+            //   toast.success("Order completed successfully.");
+            //   queryClient.invalidateQueries({ queryKey: ["orders"] });
+            // } else toast.error(error.message);
+          },
+        });
+        break;
       case "delete":
         confirm.delete({
           title: "Delete Order",
@@ -99,7 +136,7 @@ export const OrderActions = ({
 
       <Button variant="ghost" asChild>
         <a href={`/api/orders/${id}/invoice`} target="_blank">
-          <FileCheck /> Invoice
+          <Download /> Invoice
         </a>
       </Button>
       <Button variant="ghost" asChild>
@@ -123,6 +160,17 @@ export const OrderActions = ({
         </Button>
       )}
 
+      {/* payment */}
+      {data.status === "completed" && (
+        <>
+          <Button variant="ghost" onClick={() => handleAction("send-invoice")}>
+            <Mail /> Send Invoice
+          </Button>
+          <Button variant="ghost" onClick={() => handleAction("mark-paid")}>
+            <CircleCheck /> Mark as Paid
+          </Button>
+        </>
+      )}
       <Button
         variant="ghost"
         className="hover:bg-destructive/10 hover:text-destructive"

@@ -121,6 +121,9 @@ export const team = pgTable(
     logo: text("logo"),
     priceLevelId: integer("price_level_id"),
     taxRuleId: integer("tax_rule_id"),
+    isCreditEnabled: boolean("is_credit_enabled").default(true),
+    creditDays: text("credit_days"),
+    creditLimit: text("credit_limit"),
   },
   (table) => [index("team_organizationId_idx").on(table.organizationId)],
 );

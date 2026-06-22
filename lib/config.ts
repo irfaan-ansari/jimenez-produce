@@ -4,12 +4,8 @@ import {
   ShoppingBag,
   Settings,
   CoinStack,
-  File,
   Building,
   User,
-  IdCard,
-  Clipboard,
-  FolderUpload,
   Rocket,
   Message,
   Box2,
@@ -17,6 +13,7 @@ import {
   Approved,
   Bookmark,
   Briefcase,
+  Clipboard,
 } from "@duo-icons/react";
 
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL!;
@@ -83,6 +80,44 @@ export const SIDEBAR_MENU = [
         label: "Completed",
         href: "/admin/orders?status=completed",
         color: "#22C55E",
+      },
+    ],
+  },
+  {
+    label: "Invoices",
+    icon: Clipboard,
+    href: "/admin/invoices",
+    items: [
+      {
+        label: "All",
+        href: "/admin/invoices",
+        color: "#A1A1AA",
+        query: { status: "" },
+      },
+      {
+        label: "Unpaid",
+        href: "/admin/invoices?status=unpaid",
+        color: "#F59E0B",
+      },
+      {
+        label: "Paid",
+        href: "/admin/invoices?status=paid",
+        color: "#22C55E",
+      },
+      {
+        label: "Partially Paid",
+        href: "/admin/invoices?status=partially_paid",
+        color: "#F59E0B",
+      },
+      {
+        label: "Overdue",
+        href: "/admin/invoices?status=overdue",
+        color: "#EF4444",
+      },
+      {
+        label: "Payments",
+        href: "/admin/invoices/payments",
+        color: "#F59E0B",
       },
     ],
   },
@@ -154,12 +189,13 @@ export const SIDEBAR_MENU = [
       },
     ],
   },
-  {
-    label: "Warehouses",
-    icon: Building,
-    href: "/admin/warehouses",
-    items: [],
-  },
+  // disabled
+  // {
+  //   label: "Warehouses",
+  //   icon: Building,
+  //   href: "/admin/warehouses",
+  //   items: [],
+  // },
   {
     label: "Customers",
     icon: Approved,

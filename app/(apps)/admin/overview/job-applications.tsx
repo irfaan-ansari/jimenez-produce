@@ -18,7 +18,7 @@ import { EmptyComponent } from "@/components/admin/placeholder-component";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export const JobApplications = () => {
-  const { data, isPending, isError, error } = useJobApplications("?limit=5");
+  const { data, isPending, isError, error } = useJobApplications("limit=5");
   return (
     <Card className="col-span-6 lg:col-span-4 rounded-2xl">
       <CardHeader>

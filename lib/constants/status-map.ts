@@ -146,6 +146,26 @@ export const STATUS_MAP = {
     color: "#EF4444",
     icon: CircleOff,
   },
+  unpaid: {
+    label: "Unpaid",
+    color: "#F59E0B",
+    icon: Clock,
+  },
+  paid: {
+    label: "Paid",
+    color: "#22C55E",
+    icon: CheckCircle,
+  },
+  partially_paid: {
+    label: "Partially Paid",
+    color: "#F59E0B",
+    icon: CircleOff,
+  },
+  overdue: {
+    label: "Overdue",
+    color: "#EF4444",
+    icon: CircleOff,
+  },
 };
 
 export const CUSTOMER_ACTIONS = {

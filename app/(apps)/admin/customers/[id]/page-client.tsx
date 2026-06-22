@@ -11,6 +11,9 @@ import {
   PackageCheck,
   ChevronsUpDown,
   ImageOff,
+  CreditCard,
+  Phone,
+  Mail,
 } from "lucide-react";
 import {
   Card,
@@ -114,8 +117,8 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
   };
 
   return (
-    <div className="grid grid-cols-6 gap-8">
-      <div className="col-span-6 space-y-6 lg:col-span-4">
+    <div className="grid grid-cols-7 gap-8">
+      <div className="col-span-7 space-y-6 lg:col-span-5">
         {/* page header */}
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-4">
@@ -147,111 +150,208 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
 
         {/* account info */}
         <Card className="rounded-2xl">
-          <CardContent className="flex items-center gap-6">
+          <CardContent className="flex items-start gap-6">
             <Avatar className="size-16 shrink-0 ring-2 ring-primary/40 ring-offset-2 ring-offset-background lg:size-20">
               <AvatarImage src={data.logo} />
               <AvatarFallback>
                 <User className="size-4" />
               </AvatarFallback>
             </Avatar>
-            <div>
+            <div className="flex-1">
               <CardTitle className="font-semibold">{data.name}</CardTitle>
-              <CardDescription>{data.managerName}</CardDescription>
-              <div className="flex flex-col gap-1 mt-3 lg:flex-row lg:gap-2">
-                <CopyButton value={data.phone} />
-                <CopyButton value={data.email} />
+              <CardDescription className="flex flex-col mt-2">
+                <span className="inline-flex items-center gap-1.5">
+                  <User className="size-3.5" />
+                  {data.managerName}
+                </span>
+                <span className="inline-flex items-center gap-1.5">
+                  <Phone className="size-3.5" />
+                  <CopyButton value={data.phone} />
+                </span>
+                <span className="inline-flex items-center gap-1.5">
+                  <Mail className="size-3.5" />
+                  <CopyButton value={data.email} />
+                </span>
+              </CardDescription>
+            </div>
+            <div className="border-l self-stretch w-px" />
+            {/* credit limit */}
+
+            <div className="basis-xs flex gap-3 items-stretch">
+              <div className="space-y-1.5 self-center">
+                <div className="text-xs text-muted-foreground">
+                  Credit limit
+                </div>
+                <div className="font-semibold">$124.00</div>
+                <div className="border-b" />
+                <div className="text-xs text-muted-foreground">
+                  Available credit
+                </div>
+                <div className="text-primary font-semibold">$124.00</div>
+              </div>
+              <div className="relative size-28 ml-auto">
+                <svg
+                  className="size-full -rotate-90"
+                  viewBox="0 0 36 36"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <circle
+                    cx="18"
+                    cy="18"
+                    r="16"
+                    fill="none"
+                    className="stroke-current text-foreground/10"
+                    stroke-width="2"
+                  ></circle>
+
+                  <circle
+                    cx="18"
+                    cy="18"
+                    r="16"
+                    fill="none"
+                    className="stroke-current text-primary"
+                    stroke-width="2"
+                    stroke-dasharray="100"
+                    stroke-dashoffset="65"
+                    stroke-linecap="round"
+                  ></circle>
+                </svg>
+
+                <div className="absolute top-1/2 left-1/2 transform -translate-y-1/2 -translate-x-1/2">
+                  <span className="text-center text-2xl font-bold text-primary">
+                    35%
+                  </span>
+                </div>
+              </div>
+              <div className="space-y-1.5 self-center">
+                <div className="text-xs text-muted-foreground">Credit used</div>
+                <div className="text-sm font-semibold">$124.00</div>
               </div>
             </div>
           </CardContent>
         </Card>
 
         {/* stats cards */}
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 xl:grid-cols-3">
           <Card className="flex-row items-start px-6 rounded-2xl">
             <div className="flex-1">
-              <CardTitle className="mb-2 text-3xl font-bold">
+              <div className="text-sm mb-2 font-medium text-muted-foreground">
+                Active Orders
+              </div>
+              <CardTitle className="text-3xl mb-2 font-bold">
                 {data.stats?.activeCount}
               </CardTitle>
-              <CardDescription className="mb-6 text-base font-semibold">
+              <CardDescription className="text-base mb-3 font-semibold">
                 {formatUSD(data.stats?.activeValue!)}
               </CardDescription>
-              <span className="text-sm font-medium text-muted-foreground">
-                Active Orders
+              <span className="text-xs font-medium text-muted-foreground">
+                View orders
               </span>
             </div>
-            <span className="inline-flex items-center justify-center p-0 rounded-lg size-10 bg-amber-100 text-foreground">
+            <span className="inline-flex items-center shrink-0 justify-center p-0 rounded-lg size-10 bg-amber-100 text-foreground">
               <CircleDashed className="size-4" />
             </span>
           </Card>
           <Card className="flex-row items-start px-6 rounded-2xl">
             <div className="flex-1">
-              <CardTitle className="mb-2 text-3xl font-bold">
+              <div className="text-sm mb-2 font-medium text-muted-foreground">
+                Completed Orders
+              </div>
+              <CardTitle className="text-3xl mb-2 font-bold">
                 {data.stats?.completedCount}
               </CardTitle>
-              <CardDescription className="mb-6 text-base font-semibold">
+              <CardDescription className="text-base mb-3 font-semibold">
                 {formatUSD(data.stats?.completedValue!)}
               </CardDescription>
-              <span className="text-sm font-medium text-muted-foreground">
-                Completed Orders
+              <span className="text-xs font-medium text-muted-foreground">
+                View orders
               </span>
             </div>
-            <span className="inline-flex items-center justify-center p-0 bg-green-100 rounded-lg size-10 text-foreground">
+            <span className="inline-flex shrink-0 items-center justify-center p-0 bg-green-100 rounded-lg size-10 text-foreground">
               <PackageCheck className="size-4" />
+            </span>
+          </Card>
+          <Card className="flex-row items-start px-6 rounded-2xl">
+            <div className="flex-1">
+              <div className="text-sm mb-2 font-medium text-muted-foreground">
+                Total Spent
+              </div>
+              <CardTitle className="text-3xl mb-2 font-bold">
+                {formatUSD(
+                  Number(data.stats?.completedValue) +
+                    Number(data.stats?.activeValue),
+                )}
+              </CardTitle>
+              <CardDescription className="text-base mb-3 font-semibold">
+                {Number(data.stats?.completedCount) +
+                  Number(data.stats?.activeCount)}{" "}
+                Orders
+              </CardDescription>
+              <span className="text-xs font-medium  text-muted-foreground">
+                View orders
+              </span>
+            </div>
+            <span className="inline-flex items-center justify-center shrink-0 p-0 bg-blue-100 rounded-lg size-10 text-foreground">
+              <CreditCard className="size-4" />
             </span>
           </Card>
         </div>
 
-        {/* Price level */}
-        <Card className="rounded-2xl">
-          <CardHeader>
-            <CardTitle className="font-semibold">Price level</CardTitle>
-            <CardDescription>
-              Manage price level for this account
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <PriceLevelForm data={data.priceLevel} teamId={data.id} />
-          </CardContent>
-        </Card>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
+          {/* Price level */}
+          <Card className="rounded-2xl">
+            <CardHeader>
+              <CardTitle className="font-semibold">Price level</CardTitle>
+              <CardDescription>
+                Manage price level for this account
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <PriceLevelForm data={data.priceLevel} teamId={data.id} />
+            </CardContent>
+          </Card>
 
-        {/* Product access */}
-        <Card className="rounded-2xl">
-          <CardHeader>
-            <CardTitle className="font-semibold">
-              Proprietary products
-            </CardTitle>
-            <CardDescription>
-              Manage proprietary products for this account
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ProductAccessForm data={data.products} teamId={data.id} />
-          </CardContent>
-        </Card>
+          {/* Product access */}
+          <Card className="rounded-2xl">
+            <CardHeader>
+              <CardTitle className="font-semibold">
+                Proprietary products
+              </CardTitle>
+              <CardDescription>
+                Manage proprietary products for this account
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ProductAccessForm data={data.products} teamId={data.id} />
+            </CardContent>
+          </Card>
 
-        {/* Tax rules */}
-        <Card className="rounded-2xl">
-          <CardHeader>
-            <CardTitle className="font-semibold">Tax rules</CardTitle>
-            <CardDescription>Manage tax rules for this account</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <TaxRulesForm data={data.taxRule} teamId={data.id} />
-          </CardContent>
-        </Card>
+          {/* Tax rules */}
+          <Card className="rounded-2xl">
+            <CardHeader>
+              <CardTitle className="font-semibold">Tax rules</CardTitle>
+              <CardDescription>
+                Manage tax rules for this account
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <TaxRulesForm data={data.taxRule} teamId={data.id} />
+            </CardContent>
+          </Card>
 
-        {/* members */}
-        <Card className="rounded-2xl">
-          <CardHeader>
-            <CardTitle className="font-semibold">Users</CardTitle>
-            <CardDescription>Manage users for this account</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Members members={data.members} handleRemove={handleRemove} />
-          </CardContent>
-        </Card>
+          {/* members */}
+          <Card className="rounded-2xl">
+            <CardHeader>
+              <CardTitle className="font-semibold">Users</CardTitle>
+              <CardDescription>Manage users for this account</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Members members={data.members} handleRemove={handleRemove} />
+            </CardContent>
+          </Card>
+        </div>
       </div>
-      <Card className="col-span-6 lg:col-span-2 rounded-2xl bg-card">
+      <Card className="col-span-7 lg:col-span-2 rounded-2xl bg-card">
         <CardHeader>
           <CardTitle className="font-semibold">Recent Orders</CardTitle>
         </CardHeader>
@@ -688,19 +788,7 @@ const TimelineRow = ({ order }: { order: any }) => {
       <TimelineIndicator />
       <TimelineSeparator />
       <TimelineContent className="space-y-0.5 rounded-xl bg-secondary p-4">
-        <div className="flex justify-between">
-          <span>Subtotal</span>
-          <span>{formatUSD(order.subtotal)}</span>
-        </div>
-        <div className="flex justify-between">
-          <span>Tax</span>
-          <span>{formatUSD(order.tax)}</span>
-        </div>
-        <div className="flex justify-between">
-          <span>{order?.charges?.type}</span>
-          <span>{formatUSD(order?.charges?.amount)}</span>
-        </div>
-        <div className="flex justify-between mt-2 text-base font-semibold text-foreground">
+        <div className="flex justify-between text-base font-semibold text-foreground">
           <span>Total</span>
           <span>{formatUSD(order.total)}</span>
         </div>

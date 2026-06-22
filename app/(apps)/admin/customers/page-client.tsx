@@ -15,7 +15,7 @@ import {
   AvatarGroupCount,
   AvatarImage,
 } from "@/components/ui/avatar";
-import { getInitialsAvatar } from "@/lib/utils";
+import { formatUSD, getInitialsAvatar } from "@/lib/utils";
 import { Tooltip } from "@/components/tooltip";
 
 export const PageClient = () => {
@@ -84,8 +84,31 @@ export const columns: ColumnDef<Team>[] = [
     },
   },
   {
-    id: "members",
-    header: "Members",
+    id: "credit",
+    header: "Credit",
+    cell: ({ row }) => {
+      const used = 20;
+      const limit = 50;
+      const percentUsed = (used / limit) * 100;
+      return (
+        <div className="space-y-2.5">
+          <div className="flex justify-between text-[11px] text-muted-foreground">
+            <span>{Math.round(percentUsed)}% used</span>
+            <span>Limit {formatUSD(limit)}</span>
+          </div>
+          <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden">
+            <div
+              className="h-full bg-primary rounded-full transition-all duration-500 ease-out"
+              style={{ width: `${percentUsed}%` }}
+            />
+          </div>
+        </div>
+      );
+    },
+  },
+  {
+    id: "users",
+    header: "users",
     cell: ({ row }) => {
       const members = row.original.members ?? [];
       const visible = members.slice(0, 3);
@@ -95,7 +118,7 @@ export const columns: ColumnDef<Team>[] = [
         <AvatarGroup>
           {visible.map((member) => (
             <Tooltip key={member.id} content={member.name}>
-              <Avatar>
+              <Avatar className="shadow-2xs">
                 <AvatarImage src={member.image} alt={member.name} />
                 <AvatarFallback>
                   {getInitialsAvatar(member.name)}

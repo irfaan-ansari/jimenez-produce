@@ -116,6 +116,23 @@ export const columns: ColumnDef<OrderType>[] = [
       );
     },
   },
+  {
+    id: "payment",
+    header: "Payment",
+    cell: ({ row }) => {
+      const map = STATUS_MAP["unpaid"];
+      return (
+        <Badge
+          variant="outline"
+          style={{ "--color": map.color } as React.CSSProperties}
+          className="h-7 gap-1.5 rounded-xl border-(--color)/10 bg-(--color)/10 pr-2.5 pl-1.5 text-sm [&>svg]:size-3.5!"
+        >
+          <map.icon className="text-(--color)" />
+          {map.label}
+        </Badge>
+      );
+    },
+  },
 
   {
     id: "action",

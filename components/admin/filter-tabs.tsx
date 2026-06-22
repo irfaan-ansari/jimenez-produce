@@ -22,7 +22,7 @@ export const FilterTab = ({ tabs, path }: FilterTabProps) => {
       : undefined;
 
   return (
-    <div className="relative no-scrollbar flex shrink-0 items-start gap-1.5 overflow-x-auto">
+    <div className="relative no-scrollbar flex shrink-0 items-start gap-0.5 overflow-x-auto">
       {tabs.map(({ label, value }, i) => {
         const map = STATUS_MAP[(value || "all") as keyof typeof STATUS_MAP];
 

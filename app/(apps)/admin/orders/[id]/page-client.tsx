@@ -11,9 +11,9 @@ import {
   ImageOff,
   Truck,
   BadgeCheck,
-  User,
-  UserCheck2,
   UserCheck,
+  Mail,
+  Download,
 } from "lucide-react";
 import { toast } from "sonner";
 import React, { use } from "react";
@@ -32,13 +32,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { STATUS_MAP } from "@/lib/constants/status-map";
 import { OrderActions } from "@/components/admin/order-actions";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useRouter } from "next/navigation";
 import { CopyButton } from "@/components/copy-button";
 
@@ -61,6 +55,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
   const { data } = result;
 
   const map = STATUS_MAP[data.status as keyof typeof STATUS_MAP];
+  const paymentMap = STATUS_MAP["unpaid"];
 
   const STEPS = [
     {
@@ -83,30 +78,65 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
     },
   ];
 
-  const handleComplete = () => {
-    confirm.warning({
-      title: "Mark as Completed",
-      description: "This will mark the order as delivered to the customer.",
-      actionLabel: "Yes",
-      cancelLabel: "Cancel",
-      action: async () => {
-        const { success, error } = await updateOrder(Number(id), {
-          status: "completed",
-        });
+  const handleAction = (action: string) => {
+    switch (action) {
+      case "complete":
+        confirm.warning({
+          title: "Mark as Completed",
+          description: "This will mark the order as delivered to the customer.",
+          actionLabel: "Yes",
+          cancelLabel: "Cancel",
+          action: async () => {
+            const { success, error } = await updateOrder(Number(id), {
+              status: "completed",
+            });
 
-        if (success) {
-          toast.success("Order completed successfully.");
-          queryClient.invalidateQueries({ queryKey: ["orders"] });
-        } else toast.error(error.message);
-      },
-    });
+            if (success) {
+              toast.success("Order completed successfully.");
+              queryClient.invalidateQueries({ queryKey: ["orders"] });
+            } else toast.error(error.message);
+          },
+        });
+        break;
+      case "send-invoice":
+        confirm.warning({
+          title: "Send Invoice?",
+          description: "This will send an invoice to the customer.",
+          actionLabel: "Send",
+          cancelLabel: "Cancel",
+          action: async () => {
+            // const { success, error } = await updateOrder(Number(id), {
+            //   status: "completed",
+            // });
+            // if (success) {
+            //   toast.success("Order completed successfully.");
+            //   queryClient.invalidateQueries({ queryKey: ["orders"] });
+            // } else toast.error(error.message);
+          },
+        });
+        break;
+      case "mark-paid":
+        confirm.warning({
+          title: "Mark as Paid?",
+          description: "This will mark the order as paid.",
+          actionLabel: "Proceed",
+          cancelLabel: "Cancel",
+          action: async () => {
+            // const { success, error } = await updateOrder(Number(id), {
+            //   status: "completed",
+            // });
+            // if (success) {
+            //   toast.success("Order completed successfully.");
+            //   queryClient.invalidateQueries({ queryKey: ["orders"] });
+            // } else toast.error(error.message);
+          },
+        });
+        break;
+    }
   };
 
   return (
-    <div
-      className="grid grid-cols-6 gap-8"
-      style={{ "--color": map.color } as React.CSSProperties}
-    >
+    <div className="grid grid-cols-6 gap-8">
       <div className="col-span-6 space-y-6 lg:col-span-4">
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-4">
@@ -126,10 +156,23 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
             <Badge
               variant="outline"
               className="h-7 gap-1.5 rounded-xl border-(--color)/10 bg-(--color)/10 pr-2.5 pl-1.5 text-sm [&>svg]:size-3.5!"
+              style={{ "--color": map.color } as React.CSSProperties}
             >
               <map.icon className="text-(--color)" />
               {map.label}
             </Badge>
+
+            {/* payment badge */}
+            {data.status == "completed" && (
+              <Badge
+                variant="outline"
+                className="h-7 gap-1.5 rounded-xl border-(--color)/10 bg-(--color)/10 pr-2.5 pl-1.5 text-sm [&>svg]:size-3.5!"
+                style={{ "--color": paymentMap.color } as React.CSSProperties}
+              >
+                <paymentMap.icon className="text-(--color)" />
+                {paymentMap.label}
+              </Badge>
+            )}
             <OrderActions showView={false} data={data} />
           </div>
         </div>
@@ -161,8 +204,10 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
           </Card>
           <Card className="flex-row items-start px-6 rounded-xl">
             <div className="flex-1">
-              <CardTitle className="mb-2 font-medium">Customer</CardTitle>
-              <span className="text-sm font-medium text-muted-foreground line-clamp-1">
+              <CardTitle className="mb-2 font-medium uppercase text-xs text-muted-foreground">
+                Customer
+              </CardTitle>
+              <span className="text-sm font-medium line-clamp-1">
                 {data.team?.name}
               </span>
               <CopyButton value={data.team?.phone} />
@@ -174,8 +219,10 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
           </Card>
           <Card className="flex-row items-start px-6 rounded-xl">
             <div className="flex-1 truncate min-w-0">
-              <CardTitle className="mb-2 font-medium">Placed by</CardTitle>
-              <span className="text-sm font-medium text-muted-foreground truncate line-clamp-1">
+              <CardTitle className="mb-2 font-medium uppercase text-xs text-muted-foreground">
+                Placed by
+              </CardTitle>
+              <span className="text-sm font-medium truncate line-clamp-1">
                 {data.user?.name}
               </span>
               <CopyButton value={data.user?.phoneNumber ?? ""} />
@@ -188,11 +235,11 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
         </div>
         {/* purchased items */}
         <Card className="rounded-2xl">
-          <CardHeader>
+          {/* <CardHeader>
             <CardTitle className="text-lg font-semibold">
               Items ({data?.lineItemCount})
             </CardTitle>
-          </CardHeader>
+          </CardHeader> */}
           <CardContent className="divide-y">
             <div className="flex items-center gap-4 py-2 text-xs font-medium text-muted-foreground uppercase">
               <div className="flex-1">Item</div>
@@ -282,7 +329,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
           </div>
           <div className="border-t" />
           <div className="flex items-center justify-between text-xl font-bold">
-            <span>Total</span>
+            <span>Total Payable</span>
             <span className="text-primary">{formatUSD(data.total)}</span>
           </div>
 
@@ -291,31 +338,56 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
               <Button
                 className="w-full rounded-xl bg-sidebar-accent hover:bg-sidebar-accent/80"
                 size="xl"
-                onClick={handleComplete}
+                onClick={() => handleAction("complete")}
               >
                 <CheckCircle />
                 Complete Order
               </Button>
             )}
 
-            <Button className="w-full rounded-xl" size="xl" asChild>
-              <a href={`/api/orders/${data.id}/packing-slip`} target="_blank">
-                <Package />
-                Packing Slip
-              </a>
-            </Button>
-            <Button
-              className="w-full rounded-xl"
-              variant="secondary"
-              size="xl"
-              asChild
-            >
-              <a href={`/api/orders/${data.id}/invoice`} target="_blank">
-                <Receipt />
-                Invoice
-              </a>
-            </Button>
+            {data?.status === "completed" ? (
+              <Button
+                className="w-full rounded-xl bg-sidebar-accent hover:bg-sidebar-accent/80"
+                size="xl"
+                asChild
+              >
+                <a href={`/api/orders/${data.id}/invoice`} target="_blank">
+                  <Download />
+                  Download Invoice
+                </a>
+              </Button>
+            ) : (
+              <Button className="w-full rounded-xl" size="xl" asChild>
+                <a href={`/api/orders/${data.id}/packing-slip`} target="_blank">
+                  <Package />
+                  Packing Slip
+                </a>
+              </Button>
+            )}
           </div>
+          {data.status == "completed" && (
+            <>
+              <div className="border-t" />
+              <div className="grid gap-3">
+                <Button
+                  className="w-full rounded-xl bg-sidebar-accent hover:bg-sidebar-accent/80"
+                  size="xl"
+                  onClick={() => handleAction("send-invoice")}
+                >
+                  <Mail />
+                  Send Invoice
+                </Button>
+                <Button
+                  className="w-full rounded-xl"
+                  size="xl"
+                  onClick={() => handleAction("mark-paid")}
+                >
+                  <Mail />
+                  Mark as Paid (Manually)
+                </Button>
+              </div>
+            </>
+          )}
         </CardContent>
       </Card>
     </div>

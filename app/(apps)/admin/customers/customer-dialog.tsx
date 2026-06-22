@@ -5,7 +5,7 @@ import { toast } from "sonner";
 
 import { Team } from "@/lib/types";
 import React, { useState } from "react";
-import { Loader, User, } from "lucide-react";
+import { Loader, User } from "lucide-react";
 import { authClient } from "@/lib/auth/client";
 import { getInitialsAvatar } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -13,13 +13,22 @@ import { useAppForm } from "@/hooks/form-context";
 import { useQueryClient } from "@tanstack/react-query";
 import { phoneSchema } from "@/lib/form-schema/common";
 import { Field, FieldGroup } from "@/components/ui/field";
-import { AppDialog, AppDialogClose, AppDialogContent, AppDialogHeader, AppDialogTitle, AppDialogTrigger } from "@/components/app-dialog";
+import {
+  AppDialog,
+  AppDialogClose,
+  AppDialogContent,
+  AppDialogHeader,
+  AppDialogTitle,
+  AppDialogTrigger,
+} from "@/components/app-dialog";
 
 const schema = z.object({
   name: z.string().min(1, "Name is required"),
   managerName: z.string().min(1, "Manager Name is required"),
   phone: phoneSchema,
   email: z.email("Invalid email"),
+  creditLimit: z.string("Invalid email"),
+  creditDays: z.string("Invalid email"),
 });
 
 export const CustomerDialog = ({
@@ -40,6 +49,8 @@ export const CustomerDialog = ({
       managerName: data?.managerName || "",
       phone: data?.phone || "",
       email: data?.email || "",
+      creditLimit: data?.creditLimit,
+      creditDays: data?.creditDays,
     },
     validators: {
       onSubmit: ({ formApi }) => {
@@ -120,19 +131,38 @@ export const CustomerDialog = ({
                   <field.TextField label="Manager Name" placeholder="John" />
                 )}
               />
-
-              <form.AppField
-                name="phone"
-                children={(field) => (
-                  <field.PhoneField label="Phone" placeholder="xxx-xxx-xxxx" />
-                )}
-              />
-              <form.AppField
-                name="email"
-                children={(field) => (
-                  <field.TextField label="Email" placeholder="name@email.com" />
-                )}
-              />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <form.AppField
+                  name="phone"
+                  children={(field) => (
+                    <field.PhoneField
+                      label="Phone"
+                      placeholder="xxx-xxx-xxxx"
+                    />
+                  )}
+                />
+                <form.AppField
+                  name="email"
+                  children={(field) => (
+                    <field.TextField
+                      label="Email"
+                      placeholder="name@email.com"
+                    />
+                  )}
+                />
+                <form.AppField
+                  name="creditLimit"
+                  children={(field) => (
+                    <field.TextField label="Credit Limit" placeholder="10000" />
+                  )}
+                />
+                <form.AppField
+                  name="creditDays"
+                  children={(field) => (
+                    <field.TextField label="Credit Days" placeholder="30" />
+                  )}
+                />
+              </div>
             </FieldGroup>
           </div>
           <Field className="flex flex-col-reverse sm:flex-row sm:justify-end sm:[&>button]:w-32">

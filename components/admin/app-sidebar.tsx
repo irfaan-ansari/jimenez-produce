@@ -24,6 +24,7 @@ import { ChevronRight } from "lucide-react";
 import { useRouterStuff } from "@/hooks/use-router-stuff";
 import { APPLICATION_GROUP, SIDEBAR_MENU } from "@/lib/config";
 import { OrganizationSwitcher } from "./organization-switcher";
+import { STATUS_MAP } from "@/lib/constants/status-map";
 
 const ROLES = ["admin", "owner"];
 
@@ -105,27 +106,29 @@ const MenuGroup = ({ menu }: { menu: typeof SIDEBAR_MENU }) => {
 
               <CollapsibleContent>
                 <SidebarMenuSub className="ml-5">
-                  {item.items?.map((subItem) => (
-                    <SidebarMenuSubItem
-                      key={subItem.href}
-                      className="after:absolute after:top-1/2 after:-left-3.5 after:size-2 after:-translate-y-1/2  after:rounded-full after:bg-(--color) after:opacity-0 after:transition group-data-[active=true]/collapsible:after:opacity-100"
-                      style={
-                        {
-                          "--color": subItem.color,
-                        } as React.CSSProperties
-                      }
-                    >
-                      <SidebarMenuSubButton
-                        asChild
-                        className="px-3 rounded-xl hover:bg-muted hover:text-sidebar-foreground data-active:bg-muted data-active:text-sidebar-foreground"
-                        isActive={isSubItemActive(subItem.href)}
+                  {item.items?.map((subItem) => {
+                    return (
+                      <SidebarMenuSubItem
+                        key={subItem.href}
+                        className="after:absolute after:top-1/2 after:-left-3.5 after:size-2 after:-translate-y-1/2  after:rounded-full after:bg-(--color) after:opacity-0 after:transition group-data-[active=true]/collapsible:after:opacity-100"
+                        style={
+                          {
+                            "--color": subItem.color,
+                          } as React.CSSProperties
+                        }
                       >
-                        <Link href={subItem.href}>
-                          <span>{subItem.label}</span>
-                        </Link>
-                      </SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
-                  ))}
+                        <SidebarMenuSubButton
+                          asChild
+                          className="px-3 rounded-xl hover:bg-muted hover:text-sidebar-foreground data-active:bg-muted data-active:text-sidebar-foreground"
+                          isActive={isSubItemActive(subItem.href)}
+                        >
+                          <Link href={subItem.href}>
+                            <span>{subItem.label}</span>
+                          </Link>
+                        </SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
+                    );
+                  })}
                 </SidebarMenuSub>
               </CollapsibleContent>
             </SidebarMenuItem>

@@ -127,6 +127,21 @@ export const auth = betterAuth({
               required: false,
               input: true,
             },
+            isCreditEnabled: {
+              type: "boolean",
+              required: false,
+              input: true,
+            },
+            creditDays: {
+              type: "string",
+              required: false,
+              input: true,
+            },
+            creditLimit: {
+              type: "string",
+              required: false,
+              input: true,
+            },
           },
         },
       },

@@ -729,6 +729,20 @@
       "when": 1781467619319,
       "tag": "0103_unusual_marauders",
       "breakpoints": true
+    },
+    {
+      "idx": 104,
+      "version": "7",
+      "when": 1782125042736,
+      "tag": "0104_special_glorian",
+      "breakpoints": true
+    },
+    {
+      "idx": 105,
+      "version": "7",
+      "when": 1782125430627,
+      "tag": "0105_same_cardiac",
+      "breakpoints": true
     }
   ]
 }

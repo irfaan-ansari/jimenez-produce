@@ -1,0 +1,1 @@
+ALTER TABLE "team" ALTER COLUMN "is_credit_enabled" SET DEFAULT true;
