@@ -43,7 +43,7 @@ export const columns: ColumnDef<OrderType>[] = [
 
       return (
         <Link
-          href={`/admin/orders/${row.original.id}`}
+          href={`/customer/orders/${row.original.id}`}
           className="flex flex-col gap-1.5"
         >
           <div className="flex items-center gap-2">
@@ -76,18 +76,16 @@ export const columns: ColumnDef<OrderType>[] = [
     },
   },
   {
-    id: "team",
-    header: "Customer",
+    id: "updatedAt",
+    header: "Due Date",
     cell: ({ row }) => {
       return (
-        <div className="flex flex-col gap-1">
-          <span className="text-sm font-medium">{row.original.team?.name}</span>
-          <CopyButton value={row.original.team?.phone} />
-        </div>
+        <span className="text-sm text-muted-foreground">
+          {format(row.original.updatedAt!, "MMM dd • hh:mm a")}
+        </span>
       );
     },
   },
-
   {
     id: "total",
     header: "Amount",
