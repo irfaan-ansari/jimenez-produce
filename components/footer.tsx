@@ -12,7 +12,7 @@ const { categories } = HOME_SECTIONS;
 
 export const Footer = () => {
   return (
-    <footer className="bg-secondary  py-16">
+    <footer className="bg-secondary py-16">
       <Container>
         <div className="grid grid-cols-9 gap-8">
           {/* branding */}

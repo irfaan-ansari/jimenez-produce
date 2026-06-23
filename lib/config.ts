@@ -345,6 +345,44 @@ export const SIDEBAR_MENU_CUSTOMER = [
     ],
   },
   {
+    label: "Invoices",
+    icon: Clipboard,
+    href: "/customer/invoices",
+    items: [
+      {
+        label: "All",
+        href: "/customer/invoices",
+        color: "#A1A1AA",
+        query: { status: "" },
+      },
+      {
+        label: "Unpaid",
+        href: "/customer/invoices?status=unpaid",
+        color: "#F59E0B",
+      },
+      {
+        label: "Paid",
+        href: "/customer/invoices?status=paid",
+        color: "#22C55E",
+      },
+      {
+        label: "Partially Paid",
+        href: "/customer/invoices?status=partially_paid",
+        color: "#F59E0B",
+      },
+      {
+        label: "Overdue",
+        href: "/customer/invoices?status=overdue",
+        color: "#EF4444",
+      },
+      {
+        label: "Payments",
+        href: "/customer/invoices/payments",
+        color: "#F59E0B",
+      },
+    ],
+  },
+  {
     label: "Catalog",
     icon: CoinStack,
     href: "/customer/products",

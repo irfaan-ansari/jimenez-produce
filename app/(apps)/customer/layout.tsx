@@ -8,6 +8,7 @@ import { Container } from "@/components/container";
 import { AppSidebar } from "@/components/admin/customer-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import AppHeader from "@/components/admin/app-header";
+import { Button } from "@/components/ui/button";
 
 export const metadata = {
   metadataBase: new URL(SITE_CONFIG.url),
@@ -39,6 +40,13 @@ const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
     >
       <AppSidebar session={{ session, user }} />
       <SidebarInset className="min-w-0 bg-slate-50">
+        {/* <div className="flex gap-2 items-center rounded-xl bg-background p-4 border shadow-2xs">
+          <div className="max-w-xs">
+            <div>Payment Required </div>
+            <div>Please complete payment to avoid account restrictions.</div>
+          </div>
+          <Button className="ml-auto">Pay Now</Button>
+        </div> */}
         <AppHeader session={{ session, user }} type="customer" />
         <Container className="h-full max-w-full p-4 mx-0 md:p-8">
           {children}

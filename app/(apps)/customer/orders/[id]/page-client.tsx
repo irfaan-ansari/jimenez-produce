@@ -1,6 +1,6 @@
 "use client";
 
-import { Copy, Home, Download, ChevronLeft } from "lucide-react";
+import { Copy, Home, Download, ChevronLeft, CreditCard } from "lucide-react";
 import Link from "next/link";
 import { format } from "date-fns";
 import React, { use } from "react";
@@ -17,13 +17,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 
 import { Badge } from "@/components/ui/badge";
+import { useConfirm } from "@/hooks/use-confirm";
 
 type StatusIndex = keyof typeof STATUS_MAP;
 
 export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = use(params);
   const { data: result, isPending, error, isError } = useOrder(Number(id));
-
+  const confirm = useConfirm();
   // loading
   if (isPending) return <LoadingSkeleton />;
 
@@ -35,12 +36,22 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
   const { data } = result;
 
   const status = STATUS_MAP[data?.status as StatusIndex];
+  const paymentStatus = STATUS_MAP["unpaid"];
 
+  const handlePay = () => {
+    confirm.warning({
+      title: "Pay Invoice?",
+      description:
+        "You will be redirected to our secure payment page to complete payment for this invoice.",
+      actionLabel: "Pay Now",
+      cancelLabel: "Cancel",
+      action: async () => {
+        // Redirect to payment gateway
+      },
+    });
+  };
   return (
-    <div
-      className="grid grid-cols-6 gap-8"
-      style={{ "--color": status.color } as React.CSSProperties}
-    >
+    <div className="grid grid-cols-6 gap-8">
       <div className="col-span-6 space-y-6 lg:col-span-4">
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-4">
@@ -56,13 +67,25 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
             </Button>
             <h1 className="font-semibold line-clamp-1">Order #{data.id}</h1>
           </div>
-          <Badge
-            variant="outline"
-            className="h-7 gap-1.5 rounded-xl border-(--color)/10 bg-(--color)/10 pr-2.5 pl-1.5 text-sm [&>svg]:size-3.5!"
-          >
-            <status.icon className="text-(--color)" />
-            {status.label}
-          </Badge>
+          <div className="flex gap-2 items-center">
+            <Badge
+              variant="outline"
+              className="h-7 gap-1.5 rounded-xl border-(--color)/10 bg-(--color)/10 pr-2.5 pl-1.5 text-sm [&>svg]:size-3.5!"
+              style={{ "--color": status.color } as React.CSSProperties}
+            >
+              <status.icon className="text-(--color)" />
+              {status.label}
+            </Badge>
+
+            <Badge
+              variant="outline"
+              className="h-7 gap-1.5 rounded-xl border-(--color)/10 bg-(--color)/10 pr-2.5 pl-1.5 text-sm [&>svg]:size-3.5!"
+              style={{ "--color": paymentStatus.color } as React.CSSProperties}
+            >
+              <paymentStatus.icon className="text-(--color)" />
+              {paymentStatus.label}
+            </Badge>
+          </div>
         </div>
 
         {/* progress */}
@@ -171,7 +194,8 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
           <div className="border-t" />
 
           <div className="flex items-center justify-between text-xl font-semibold">
-            <span>Total</span> <span>{formatUSD(data.total)}</span>
+            <span>Total Payable</span>{" "}
+            <span className="text-primary">{formatUSD(data.total)}</span>
           </div>
           <div className="space-y-3">
             <Button className="w-full rounded-xl " size="xl" asChild>
@@ -181,14 +205,12 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
               </a>
             </Button>
             <Button
-              className="w-full rounded-xl bg-sidebar-accent hover:bg-sidebar-accent/80"
+              className="w-full rounded-xl bg-sidebar hover:bg-sidebar/80"
               size="xl"
-              asChild
+              onClick={handlePay}
             >
-              <Link href={`/customer/new-order?id=${data.id}`}>
-                <Copy />
-                Reorder
-              </Link>
+              <CreditCard />
+              Pay Now
             </Button>
           </div>
 
