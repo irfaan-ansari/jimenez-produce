@@ -139,14 +139,14 @@ export const Footer = () => {
           </div>
           <div className="flex gap-2 items-center">
             <Link
-              href="/"
+              href="/terms-and-conditions"
               className="hover:text-primary hover:underline transition ease-out"
             >
               Terms and Condtions
             </Link>
             <span>•</span>
             <Link
-              href="/"
+              href="/privacy-policy"
               className="hover:text-primary hover:underline transition ease-out"
             >
               Privacy Policy

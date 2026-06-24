@@ -159,7 +159,11 @@
 
       "acknowledge": "Personal Guarantee Agreement",
       "acknowledgeDesc": "I acknowledge that I have read, understand, and agree to the Personal Guarantee Agreement above. I agree that this electronic submission serves as my legally binding signature.",
-      "acknowledgeError": "You must accept the personal guarantee agreement."
+      "acknowledgeError": "You must accept the personal guarantee agreement.",
+
+      "consent": "SMS & Email Consent",
+      "consentDesc": "I agree to receive email and SMS messages from Jimenez Produce regarding orders, account updates, deliveries, invoices, and customer support.",
+      "consentError": "You must accept the personal guarantee agreement."
     }
   },
 
@@ -324,7 +328,11 @@
 
       "acknowledge": "Acuerdo de garantía personal",
       "acknowledgeDesc": "Reconozco que he leído, entiendo y acepto el Acuerdo de Garantía Personal anterior. Acepto que esta presentación electrónica constituye mi firma legalmente vinculante.",
-      "acknowledgeError": "Debe aceptar el acuerdo de garantía personal."
+      "acknowledgeError": "Debe aceptar el acuerdo de garantía personal.",
+
+      "consent": "Consentimiento de Email y SMS",
+      "consentDesc": "Acepto recibir correos electrónicos y mensajes SMS de Jimenez Produce sobre pedidos, actualizaciones de cuenta, entregas, facturas y servicio al cliente. La frecuencia de mensajes puede variar. Pueden aplicarse tarifas de mensajes y datos.",
+      "consentError": "Debe aceptar el acuerdo de garantía personal."
     }
   }
 }

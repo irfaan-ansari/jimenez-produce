@@ -3,10 +3,7 @@ import {
   CheckCircle,
   Circle,
   CircleOff,
-  Clock,
-  FileEdit,
   FileText,
-  Pause,
   Send,
 } from "lucide-react";
 
@@ -73,10 +70,11 @@ export const businessAuthorization: BusinessAuthorizationType = {
   signature: null as any,
   signatureName: "",
   acknowledge: false,
+  consent: false,
 };
 
 export const defaultValues: CustomerFormType = {
-  step: 0,
+  step: 4,
   ...businessDetails,
   ...businessContacts,
   ...businessAdditionalContact,
