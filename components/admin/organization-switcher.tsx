@@ -88,8 +88,6 @@ export const OrganizationSwitcher = ({
     });
   };
 
-  const metadata = JSON.parse(activeOrganization?.metadata ?? {});
-
   return (
     <SidebarHeader className={className}>
       <SidebarMenu>
@@ -157,25 +155,6 @@ export const OrganizationSwitcher = ({
                 </div>
               </Button>
               <div className="flex gap-2">
-                <WarehouseDialog
-                  data={{
-                    id: activeOrganization?.id ?? "",
-                    name: activeOrganization?.name ?? "",
-                    phone: activeOrganization?.phone ?? "",
-                    email: activeOrganization?.email ?? "",
-                    ...metadata,
-                  }}
-                >
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="rounded-md!"
-                    disabled
-                  >
-                    <Settings />
-                    Settings
-                  </Button>
-                </WarehouseDialog>
                 <Button
                   variant="outline"
                   asChild
