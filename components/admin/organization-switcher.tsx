@@ -22,7 +22,19 @@ import { PopoverXDrawer } from "../popover-x-drawer";
 import { WarehouseDialog } from "./warehouse-dialog";
 import { useQueryClient } from "@tanstack/react-query";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { Check, ChevronsUpDown, LogOut, Plus, Store, User } from "lucide-react";
+import {
+  Check,
+  ChevronsUpDown,
+  Lock,
+  LogOut,
+  Plus,
+  Settings,
+  Store,
+  User,
+  UserRound,
+  UserRoundPlus,
+} from "lucide-react";
+import { Badge } from "../ui/badge";
 
 export const OrganizationSwitcher = ({
   session,
@@ -76,6 +88,8 @@ export const OrganizationSwitcher = ({
     });
   };
 
+  const metadata = JSON.parse(activeOrganization?.metadata ?? {});
+
   return (
     <SidebarHeader className={className}>
       <SidebarMenu>
@@ -87,21 +101,18 @@ export const OrganizationSwitcher = ({
           <PopoverXDrawer
             open={open}
             setOpen={setOpen}
-            className="w-full px-0 *:gap-0 data-[slot=popover-content]:max-w-56 data-[slot=popover-content]:w-56"
+            className="w-full p-4 *:gap-0 data-[slot=popover-content]:max-w-72 data-[slot=popover-content]:w-72 data-[slot=popover-content]:rounded-xl"
             trigger={
               <SidebarMenuButton
                 size="lg"
                 className="hover:bg-muted! hover:text-sidebar-foreground! data-open:bg-muted! data-open:hover:bg-muted data-open:hover:text-sidebar-foreground data-active:hover:bg-muted"
               >
                 <Avatar className="size-9 rounded-lg ring-2 ring-green-600/20 ring-offset-1 **:rounded-lg after:hidden">
-                  <AvatarImage src={SITE_CONFIG.logo} alt="Logo" asChild>
-                    <Image
-                      src={SITE_CONFIG.logo}
-                      alt="Logo"
-                      width={100}
-                      height={100}
-                    />
-                  </AvatarImage>
+                  <AvatarImage
+                    src={activeOrganization?.logo || SITE_CONFIG.logo}
+                    alt="Logo"
+                  />
+
                   <AvatarFallback className="rounded-xl">
                     <Store className="size-4" />
                   </AvatarFallback>
@@ -112,7 +123,7 @@ export const OrganizationSwitcher = ({
                   </span>
 
                   {activeOrganization?.name ? (
-                    <span className="text-sm leading-tight truncate text-muted-foreground">
+                    <span className="text-sm font-medium leading-tight truncate text-muted-foreground">
                       {activeOrganization?.name}
                     </span>
                   ) : (
@@ -123,34 +134,66 @@ export const OrganizationSwitcher = ({
               </SidebarMenuButton>
             }
           >
-            <div className="px-1">
+            <div className="space-y-2">
               <Button
                 size="lg"
                 variant="ghost"
-                className="w-full gap-2 hover:bg-transparent"
-                asChild
+                className="w-full gap-2 px-0 hover:bg-transparent"
               >
-                <Link href={`/admin/settings?tab=profile`}>
-                  <Avatar className="size-9 rounded-lg ring-2 ring-primary/40 ring-offset-1 **:rounded-lg after:hidden">
-                    <AvatarImage src={user?.image || ""} alt={user?.name} />
-
-                    <AvatarFallback className="text-xs font-semibold bg-foreground text-primary-foreground">
-                      <User className="size-4" />
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="grid flex-1 min-w-0 text-left">
-                    <span className="text-sm font-semibold leading-tight truncate">
-                      {user?.name}
-                    </span>
-                    <span className="text-sm font-normal leading-tight truncate text-muted-foreground">
-                      {user?.email}
-                    </span>
-                  </div>
-                </Link>
+                <Avatar className="size-9 rounded-lg ring-2 ring-primary/40 ring-offset-1 **:rounded-lg after:hidden">
+                  <AvatarImage
+                    src={activeOrganization?.logo || ""}
+                    alt={activeOrganization?.name}
+                  />
+                  <AvatarFallback className="text-xs font-semibold bg-foreground text-primary-foreground">
+                    <User className="size-4" />
+                  </AvatarFallback>
+                </Avatar>
+                <div className="grid flex-1 min-w-0 text-left">
+                  <span className="text-sm font-semibold leading-tight truncate">
+                    {activeOrganization?.name}
+                  </span>
+                  <Badge variant="success-light">Active</Badge>
+                </div>
               </Button>
+              <div className="flex gap-2">
+                <WarehouseDialog
+                  data={{
+                    id: activeOrganization?.id ?? "",
+                    name: activeOrganization?.name ?? "",
+                    phone: activeOrganization?.phone ?? "",
+                    email: activeOrganization?.email ?? "",
+                    ...metadata,
+                  }}
+                >
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="rounded-md!"
+                    disabled
+                  >
+                    <Settings />
+                    Settings
+                  </Button>
+                </WarehouseDialog>
+                <Button
+                  variant="outline"
+                  asChild
+                  size="sm"
+                  className="rounded-md!"
+                  disabled={!user.isSuperAdmin}
+                >
+                  <Link href="/admin/users">
+                    <UserRoundPlus />
+                    Invite members
+                  </Link>
+                </Button>
+              </div>
             </div>
-            <Separator className="my-1" />
-            <div className="flex flex-col px-2">
+            <div className="overflow-hidden -mx-4">
+              <Separator className="my-2.5 scale-x-150" />
+            </div>
+            <div className="flex flex-col">
               {isPending ? (
                 <Skeleton className="w-full h-9" />
               ) : (
@@ -161,9 +204,9 @@ export const OrganizationSwitcher = ({
                       org.id === activeOrganization?.id ? "secondary" : "ghost"
                     }
                     onClick={() => handleChange(org.id)}
-                    className="rounded-lg! px-1.5"
+                    className="rounded-lg! pl-0"
                   >
-                    <Avatar className="size-6 rounded-md **:rounded-md">
+                    <Avatar className="size-8 rounded-md **:rounded-md">
                       <AvatarImage src={org.logo!} alt={org.name} />
                       <AvatarFallback>{org.name[0]}</AvatarFallback>
                     </Avatar>
@@ -177,10 +220,7 @@ export const OrganizationSwitcher = ({
               )}
               {user.isSuperAdmin && (
                 <WarehouseDialog>
-                  <Button
-                    variant="ghost"
-                    className="w-full justify-start px-1.5"
-                  >
+                  <Button variant="ghost" className="w-full justify-start px-0">
                     <span className="p-1 border rounded-md">
                       <Plus />
                     </span>
@@ -189,8 +229,27 @@ export const OrganizationSwitcher = ({
                 </WarehouseDialog>
               )}
             </div>
-            <Separator className="my-1" />
-            <div className="px-2">
+            <div className="overflow-hidden -mx-4">
+              <Separator className="my-2.5 scale-x-150" />
+            </div>
+            <div>
+              <Button
+                disabled
+                variant="ghost"
+                className="w-full rounded-lg! justify-start"
+              >
+                <UserRound />
+                Profile
+              </Button>
+              <Button
+                variant="ghost"
+                disabled
+                className="w-full rounded-lg! justify-start"
+              >
+                <Lock />
+                Security
+              </Button>
+
               <Button
                 onClick={handleLogout}
                 variant="destructive"

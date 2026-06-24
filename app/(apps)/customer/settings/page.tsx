@@ -40,7 +40,7 @@ const SettingsPage = async ({
   const { tab } = await searchParams;
 
   return (
-    <div className="flex h-full max-w-2xl flex-col gap-5">
+    <div className="flex h-full flex-col gap-5">
       <div className="space-y-1">
         <h1 className="text-2xl font-bold">Settings</h1>
         <p className="text-sm text-muted-foreground">
