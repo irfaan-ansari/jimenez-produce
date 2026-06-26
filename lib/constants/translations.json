@@ -161,9 +161,7 @@
       "acknowledgeDesc": "I acknowledge that I have read, understand, and agree to the Personal Guarantee Agreement above. I agree that this electronic submission serves as my legally binding signature.",
       "acknowledgeError": "You must accept the personal guarantee agreement.",
 
-      "consent": "SMS & Email Consent",
-      "consentDesc": "I agree to receive email and SMS messages from Jimenez Produce regarding orders, account updates, deliveries, invoices, and customer support.",
-      "consentError": "You must accept the personal guarantee agreement."
+      "consentDesc": "I agree to receive SMS messages from Jimenez Produce regarding orders, deliveries, account updates, invoices, and customer support. Message frequency varies. Message and data rates may apply. Reply STOP to opt out and HELP for help."
     }
   },
 
@@ -330,9 +328,7 @@
       "acknowledgeDesc": "Reconozco que he leído, entiendo y acepto el Acuerdo de Garantía Personal anterior. Acepto que esta presentación electrónica constituye mi firma legalmente vinculante.",
       "acknowledgeError": "Debe aceptar el acuerdo de garantía personal.",
 
-      "consent": "Consentimiento de Email y SMS",
-      "consentDesc": "Acepto recibir correos electrónicos y mensajes SMS de Jimenez Produce sobre pedidos, actualizaciones de cuenta, entregas, facturas y servicio al cliente. La frecuencia de mensajes puede variar. Pueden aplicarse tarifas de mensajes y datos.",
-      "consentError": "Debe aceptar el acuerdo de garantía personal."
+      "consentDesc": "☐ Acepto recibir mensajes de texto (SMS) de Jimenez Produce relacionados con mis pedidos, entregas, actualizaciones de mi cuenta, facturas y atención al cliente. La frecuencia de los mensajes puede variar. Pueden aplicarse tarifas por mensajes y datos. Responda **STOP** para dejar de recibir mensajes y **HELP** para obtener ayuda."
     }
   }
 }

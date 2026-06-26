@@ -26,7 +26,9 @@ export const Authorization = withForm({
 
         <form.AppField
           name="certificate"
-          children={(field) => <field.FileField label={t[field.name]} />}
+          children={(field) => (
+            <field.FileField label={t[field.name]} className="" />
+          )}
         />
 
         <form.AppField
@@ -106,9 +108,6 @@ export const Authorization = withForm({
                       }
                     />
                     <FieldContent>
-                      <FieldTitle className="text-foreground">
-                        {t[field.name]}
-                      </FieldTitle>
                       <FieldDescription>
                         {t[`${field.name}Desc`]}
                       </FieldDescription>
