@@ -187,7 +187,7 @@ export const SIDEBAR_MENU = [
       },
       {
         label: "Catalog",
-        href: "/admin/promotions/catalog",
+        href: "/admin/promotions/catalogs",
         color: "#A1A1AA",
       },
       {
