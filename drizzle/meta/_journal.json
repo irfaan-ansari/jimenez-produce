@@ -743,6 +743,27 @@
       "when": 1782125430627,
       "tag": "0105_same_cardiac",
       "breakpoints": true
+    },
+    {
+      "idx": 106,
+      "version": "7",
+      "when": 1782770913405,
+      "tag": "0106_misty_madame_hydra",
+      "breakpoints": true
+    },
+    {
+      "idx": 107,
+      "version": "7",
+      "when": 1782771714223,
+      "tag": "0107_lowly_lethal_legion",
+      "breakpoints": true
+    },
+    {
+      "idx": 108,
+      "version": "7",
+      "when": 1782772295013,
+      "tag": "0108_abnormal_giant_girl",
+      "breakpoints": true
     }
   ]
 }

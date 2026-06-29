@@ -17,6 +17,8 @@ import {
   orderGuideTarget,
   promotion,
   promotionTarget,
+  catalog,
+  catalogView,
 } from "./schema";
 
 import {
@@ -282,3 +284,11 @@ export const promotionTargetRelations = relations(
     }),
   }),
 );
+
+export const catalogRelations = relations(catalog, ({ one, many }) => ({
+  organization: one(organization, {
+    fields: [catalog.organizationId],
+    references: [organization.id],
+  }),
+  views: many(catalogView),
+}));

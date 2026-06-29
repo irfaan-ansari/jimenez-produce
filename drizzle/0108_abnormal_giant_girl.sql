@@ -1,0 +1,1 @@
+ALTER TABLE "catalog" ADD COLUMN "pdf_url" text NOT NULL;

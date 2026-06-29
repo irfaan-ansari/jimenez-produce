@@ -174,18 +174,26 @@ export const SIDEBAR_MENU = [
         label: "All",
         href: "/admin/promotions",
         color: "#A1A1AA",
-        query: { status: "" },
       },
       {
         label: "Active",
         href: "/admin/promotions?status=active",
         color: "#F59E0B",
       },
-
       {
         label: "Inactive",
         href: "/admin/promotions?status=inactive",
         color: "#22C55E",
+      },
+      {
+        label: "Catalog",
+        href: "/admin/promotions/catalog",
+        color: "#A1A1AA",
+      },
+      {
+        label: "Campaigns",
+        href: "/admin/promotions/campaigns",
+        color: "#A1A1AA",
       },
     ],
   },
