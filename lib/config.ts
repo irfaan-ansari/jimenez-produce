@@ -148,6 +148,11 @@ export const SIDEBAR_MENU = [
         color: "#71717A",
       },
       {
+        label: "Brochures",
+        href: "/admin/products/brochures",
+        color: "#A1A1AA",
+      },
+      {
         label: "Price Level",
         href: "/admin/products/price-level",
         color: "#A1A1AA",
@@ -185,11 +190,7 @@ export const SIDEBAR_MENU = [
         href: "/admin/promotions?status=inactive",
         color: "#22C55E",
       },
-      {
-        label: "Catalog",
-        href: "/admin/promotions/catalogs",
-        color: "#A1A1AA",
-      },
+
       {
         label: "Campaigns",
         href: "/admin/promotions/campaigns",

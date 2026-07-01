@@ -1,15 +1,23 @@
+import { ProductSelectType } from "@/lib/db/schema";
 import { styles } from "./styles";
 import { formatUSD } from "@/lib/utils";
 import { Document, Page, Text, View, Image } from "@react-pdf/renderer";
+import { format } from "date-fns";
 
 const colors = {
   background: "#13360c",
   border: "#d9f99d",
   text: "#ffffff",
 };
-
-export const CatalogPDF = ({ data }: { data: any }) => {
-  console.log(data);
+interface CatalogProps {
+  orgName: string;
+  products: Record<string, ProductSelectType[]>;
+  effectiveFrom: string | Date;
+  effectiveTo: string | Date;
+  featured: ProductSelectType[];
+}
+export const CatalogPDF = (data: CatalogProps) => {
+  const { orgName, products, effectiveFrom, effectiveTo, featured } = data;
   return (
     <Document>
       <Page
@@ -81,7 +89,7 @@ export const CatalogPDF = ({ data }: { data: any }) => {
                 Weekly Price List • Food Service Distribution
               </Text>
               <Text style={[styles.label, { color: colors.border }]}>
-                Lafayette
+                {orgName}
               </Text>
             </View>
           </View>
@@ -112,7 +120,8 @@ export const CatalogPDF = ({ data }: { data: any }) => {
                   color: "#fff",
                 }}
               >
-                June 29 - July 6, 2026
+                {format(effectiveFrom, "MMMM dd")} -{" "}
+                {format(effectiveTo, "MMMM dd")}
               </Text>
             </View>
             <Text
@@ -138,9 +147,10 @@ export const CatalogPDF = ({ data }: { data: any }) => {
           style={{
             gap: 12,
             flexDirection: "row",
+            flexWrap: "wrap",
           }}
         >
-          {[...Array(4)].map((_, i) => (
+          {featured.map((product, i) => (
             <View
               key={i}
               style={{
@@ -153,7 +163,7 @@ export const CatalogPDF = ({ data }: { data: any }) => {
               }}
             >
               <Image
-                src={process.env.BETTER_AUTH_URL + "/logo.png"}
+                src={product.image ?? ""}
                 style={{
                   width: 40,
                   height: 40,
@@ -162,7 +172,7 @@ export const CatalogPDF = ({ data }: { data: any }) => {
                 }}
               />
               <Text style={[styles.label, { fontSize: 8 }]}>
-                Chicken Breast Jumbo
+                {product.title}
               </Text>
               <Text
                 style={[
@@ -170,43 +180,48 @@ export const CatalogPDF = ({ data }: { data: any }) => {
                   { color: colors.background, fontWeight: "bold" },
                 ]}
               >
-                {formatUSD(12)}
+                {formatUSD(product.basePrice)}
               </Text>
             </View>
           ))}
         </View>
 
-        <View style={{ gap: 12, marginTop: 12, flex: 1 }}>
+        {/* DYNAMIC CATEGORY BLOCKS LOOP */}
+
+        <View
+          style={{
+            backgroundColor: "#fff",
+            borderRadius: 12,
+            marginTop: 12,
+            flexGrow: 1,
+            flexShrink: 0,
+          }}
+        >
           {/* DYNAMIC CATEGORY BLOCKS LOOP */}
-          {Object.entries(data.products).map(
+          {Object.entries(products).map(
             ([category, products]: [string, any], i) => (
-              <View
-                key={category}
-                wrap={false}
-                style={{
-                  backgroundColor: "#fff",
-                  borderWidth: 2,
-                  borderColor: "#052e16",
-                  borderRadius: 12,
-                  overflow: "hidden",
-                  flexGrow: 1,
-                }}
-              >
-                {/* 1. Category Header Banner (Colored top segment) */}
+              <View key={category}>
+                {/* Category Header */}
                 <View
                   style={{
                     backgroundColor: colors.border,
-                    borderTopLeftRadius: 10,
-                    borderTopRightRadius: 10,
+                    width: "100%",
+                    borderTopLeftRadius: i === 0 ? 12 : 0,
+                    borderTopRightRadius: i === 0 ? 12 : 0,
+                    paddingVertical: 4,
+                    paddingHorizontal: 8,
+                    marginBottom: 8,
                   }}
                 >
                   <Text
                     style={[
-                      styles.tagline,
+                      styles.label,
                       {
-                        color: "#000",
-                        lineHeight: 1,
-                        padding: 12,
+                        color: colors.background,
+                        fontSize: 8,
+                        fontWeight: "bold",
+                        textTransform: "uppercase",
+                        letterSpacing: 0.5,
                       },
                     ]}
                   >
@@ -214,54 +229,47 @@ export const CatalogPDF = ({ data }: { data: any }) => {
                   </Text>
                 </View>
 
-                {/* 2. White Grid Container for Products */}
                 <View
                   style={{
-                    padding: 8,
                     flexDirection: "row",
                     flexWrap: "wrap",
                     justifyContent: "space-between",
+                    paddingHorizontal: 12,
                   }}
                 >
                   {products?.map((product: any) => (
                     <View
                       key={product.id}
                       style={{
-                        width: "48.5%", // Clean 2-column distribution side-by-side
+                        width: "48.5%",
                         flexDirection: "row",
                         justifyContent: "space-between",
                         alignItems: "flex-start",
-                        paddingVertical: 4,
-                        paddingHorizontal: 2,
+                        paddingVertical: 3,
                         borderBottomWidth: 1,
                         borderBottomColor: "#f2f5f3",
                       }}
                     >
-                      {/* Left Product Title Section */}
-                      <View style={{ flex: 1, paddingRight: 6 }}>
+                      <View style={{ flex: 1, paddingRight: 8 }}>
                         <Text
                           style={[
                             styles.label,
                             {
-                              color: "#052e16",
                               fontSize: 8,
-                              flexWrap: "wrap",
                               textTransform: "none",
-                              lineHeight: 1.25,
+                              lineHeight: 1.2,
                             },
                           ]}
                         >
                           {product.title}
                         </Text>
                       </View>
-
-                      {/* Right Product Price Section */}
-                      <View style={{ flexShrink: 0 }}>
+                      <View style={{ flexShrink: 0, textAlign: "right" }}>
                         <Text
                           style={[
                             styles.tagline,
                             {
-                              color: "#052e16",
+                              color: colors.background,
                               fontWeight: "bold",
                               fontSize: 8,
                             },
@@ -277,6 +285,7 @@ export const CatalogPDF = ({ data }: { data: any }) => {
             ),
           )}
         </View>
+
         <View
           style={{
             flexDirection: "row",

@@ -78,6 +78,17 @@ export const verifyOtp = handleAction(
 export const signUpUser = async (data: SignupProps) => {
   const { name, email, phoneNumber, password, accountType = "admin" } = data;
 
+  const user = await db.query.user.findFirst({
+    where: (u, { or, eq }) =>
+      or(eq(u.email, email), eq(u.phoneNumber, phoneNumber)),
+  });
+
+  if (user) {
+    if (phoneNumber === user.phoneNumber)
+      throw new Error("Phone number already exist");
+    if (email === user.email) throw new Error("Email number already exist");
+  }
+
   return await auth.api.signUpEmail({
     body: {
       name,
@@ -151,7 +162,7 @@ export const signupWithOrganization = handleAction(
     const session = await getSession();
 
     if (!session) {
-      throw new Error("No session found");
+      throw new Error("Authentication required.");
     }
 
     if (!session.session.activeOrganizationId) {

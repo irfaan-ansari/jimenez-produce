@@ -292,3 +292,10 @@ export const catalogRelations = relations(catalog, ({ one, many }) => ({
   }),
   views: many(catalogView),
 }));
+
+export const catalogViewRelations = relations(catalogView, ({ one }) => ({
+  catalog: one(catalog, {
+    fields: [catalogView.catalogId],
+    references: [catalog.id],
+  }),
+}));

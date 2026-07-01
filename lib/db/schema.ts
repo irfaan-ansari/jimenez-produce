@@ -746,15 +746,16 @@ export const catalog = pgTable(
   "catalog",
   {
     id: serial("id").primaryKey(),
+    name: text("name").notNull(),
     organizationId: text("organization_id")
       .notNull()
-      .references(() => team.id, {
+      .references(() => organization.id, {
         onDelete: "cascade",
       }),
     featuredProductIds: jsonb("featured_product_ids")
       .$type<number[]>()
       .default([]),
-    pdfUrl: text("pdf_url").notNull(),
+    pdfUrl: text("pdf_url").notNull().default(""),
     effectiveFrom: timestamp("effective_from").notNull(),
     effectiveTo: timestamp("effective_to").notNull(),
     createdAt: timestamp("created_at").defaultNow(),
@@ -774,7 +775,7 @@ export const catalogView = pgTable("catalog_view", {
     }),
   source: text("source"), // email, whatsapp, qr, direct
   email: text("email"), // email, whatsapp, qr, direct
-  viewType: text("view_type"), // pdf, digital
+  viewType: text("view_type"), // pdf, web
   ipAddress: text("ip_address"),
   userAgent: text("user_agent"),
   sessionId: text("session_id"),

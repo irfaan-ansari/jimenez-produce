@@ -11,12 +11,16 @@ export const twilioSendOTP = async ({
 }: {
   phoneNumber: string;
 }) => {
-  return await twilioClient.verify.v2
-    .services(serviceId!)
-    .verifications.create({
-      to: `+1${phoneNumber}`,
-      channel: "sms",
-    });
+  try {
+    return await twilioClient.verify.v2
+      .services(serviceId!)
+      .verifications.create({
+        to: `+1${phoneNumber}`,
+        channel: "sms",
+      });
+  } catch (error) {
+    throw new Error("Failed to send otp, try again.");
+  }
 };
 
 export const twilioVerifyOTP = async ({
@@ -26,10 +30,14 @@ export const twilioVerifyOTP = async ({
   phoneNumber: string;
   code: string;
 }) => {
-  return await twilioClient.verify.v2
-    .services(serviceId!)
-    .verificationChecks.create({
-      to: `+1${phoneNumber}`,
-      code,
-    });
+  try {
+    return await twilioClient.verify.v2
+      .services(serviceId!)
+      .verificationChecks.create({
+        to: `+1${phoneNumber}`,
+        code,
+      });
+  } catch (error) {
+    throw new Error("Failed to verify otp, try again.");
+  }
 };
