@@ -16,6 +16,8 @@ import { waitUntil } from "@vercel/functions";
 import { renderToBuffer } from "@react-pdf/renderer";
 import { CatalogPDF } from "@/components/pdf/catalog";
 import { handleAction } from "@/lib/helper/error-handler";
+import { sendEmail } from "@/lib/email";
+import CatalogTemplate from "@/components/email/catalog-template";
 
 export const updateCatalog = async () => {
   const session = await getSession();
@@ -70,6 +72,8 @@ export const emailBrochure = handleAction(
     id: number,
     { viewType, email }: { viewType: "web" | "pdf"; email: string },
   ) => {
+    if (!email) throw new Error("Email id required.");
+
     const session = await getSession();
     if (!session) throw new Error("Authentication required.");
 
@@ -77,7 +81,21 @@ export const emailBrochure = handleAction(
       where: (catalog, { eq }) => eq(catalog.id, id),
     });
 
-    //   send email
+    if (!response) throw new Error("Resource not found.");
+
+    const pdfUrl = `https://jimenezproduce.com/api/products/catalog/${response.id}?view=${viewType}&source=link&share=true`;
+
+    waitUntil(
+      sendEmail({
+        to: [email],
+        subject: "Weekly Product Catalog – Jimenez Produce Food Distribution",
+        template: CatalogTemplate,
+        variables: {
+          pdfUrl: pdfUrl,
+        },
+      }),
+    );
+
     return true;
   },
 );
