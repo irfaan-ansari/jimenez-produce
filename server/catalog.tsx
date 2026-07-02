@@ -83,7 +83,7 @@ export const emailBrochure = handleAction(
 
     if (!response) throw new Error("Resource not found.");
 
-    const pdfUrl = `https://jimenezproduce.com/api/products/catalog/${response.id}?view=${viewType}&source=link&share=true`;
+    const pdfUrl = `https://jimenezproduce.com/api/products/catalog/${response.id}?view=${viewType}&source=email&email=${email}&share=true`;
 
     waitUntil(
       sendEmail({
