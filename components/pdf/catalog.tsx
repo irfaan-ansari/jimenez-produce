@@ -1,6 +1,6 @@
-import { ProductSelectType } from "@/lib/db/schema";
+import { OrganizationSelectType, ProductSelectType } from "@/lib/db/schema";
 import { styles } from "./styles";
-import { formatUSD } from "@/lib/utils";
+import { formatPhone, formatUSD } from "@/lib/utils";
 import { Document, Page, Text, View, Image } from "@react-pdf/renderer";
 import { format } from "date-fns";
 
@@ -10,14 +10,15 @@ const colors = {
   text: "#ffffff",
 };
 interface CatalogProps {
-  orgName: string;
+  org: OrganizationSelectType;
   products: Record<string, ProductSelectType[]>;
   effectiveFrom: string | Date;
   effectiveTo: string | Date;
   featured: ProductSelectType[];
 }
 export const CatalogPDF = (data: CatalogProps) => {
-  const { orgName, products, effectiveFrom, effectiveTo, featured } = data;
+  const { org, products, effectiveFrom, effectiveTo, featured } = data;
+
   return (
     <Document>
       <Page
@@ -25,9 +26,9 @@ export const CatalogPDF = (data: CatalogProps) => {
         style={[
           styles.page,
           {
-            backgroundColor: colors.background,
-            paddingVertical: 12,
-            paddingHorizontal: 12,
+            backgroundColor: "#fff",
+            paddingHorizontal: 0,
+            paddingVertical: 0,
           },
         ]}
       >
@@ -37,9 +38,9 @@ export const CatalogPDF = (data: CatalogProps) => {
             styles.header,
             {
               borderBottom: 0,
-              paddingBottom: 0,
+              padding: 12,
               justifyContent: "space-between",
-              marginBottom: 12,
+              backgroundColor: colors.background,
             },
           ]}
         >
@@ -81,15 +82,17 @@ export const CatalogPDF = (data: CatalogProps) => {
                   {
                     color: "#fff",
                     fontSize: 9,
-                    lineHeight: 1.2,
+
                     fontWeight: 500,
                   },
                 ]}
               >
-                Weekly Price List • Food Service Distribution
-              </Text>
-              <Text style={[styles.label, { color: colors.border }]}>
-                {orgName}
+                Weekly Price List •{" "}
+                <Text
+                  style={[styles.label, { color: colors.border, fontSize: 9 }]}
+                >
+                  {org.name}
+                </Text>
               </Text>
             </View>
           </View>
@@ -125,146 +128,138 @@ export const CatalogPDF = (data: CatalogProps) => {
               </Text>
             </View>
             <Text
-              style={{ ...styles.label, color: "#fff", textTransform: "none" }}
+              style={{
+                ...styles.label,
+                color: "#fff",
+                textTransform: "none",
+                lineHeight: 1.2,
+              }}
             >
-              Office: (337) 896-0060
+              Phone: {formatPhone(org.phone)}
             </Text>
             <Text
-              style={{ ...styles.label, color: "#fff", textTransform: "none" }}
+              style={{
+                ...styles.label,
+                color: "#fff",
+                textTransform: "none",
+                lineHeight: 1.2,
+              }}
             >
-              Admin: (337) 840-1440
-            </Text>
-            <Text
-              style={{ ...styles.label, color: "#fff", textTransform: "none" }}
-            >
-              Sales: (769) 684-8857
+              Email: {org.email}
             </Text>
           </View>
         </View>
 
         {/* FEATURED */}
-        <View
-          style={{
-            gap: 12,
-            flexDirection: "row",
-            flexWrap: "wrap",
-          }}
-        >
-          {featured.map((product, i) => (
-            <View
-              key={i}
-              style={{
-                flex: 1,
-                borderWidth: 2,
-                borderColor: colors.border,
-                backgroundColor: "#f7fee7",
-                borderRadius: 12,
-                padding: 8,
-              }}
-            >
-              <Image
-                src={product.image ?? ""}
+        {featured && featured.length > 0 && (
+          <View
+            style={{
+              gap: 12,
+              flexDirection: "row",
+              flexWrap: "wrap",
+              padding: 12,
+              marginTop: 12,
+            }}
+          >
+            {featured.map((product, i) => (
+              <View
+                key={i}
                 style={{
-                  width: 40,
-                  height: 40,
-                  alignSelf: "center",
-                  marginBottom: 4,
+                  flex: 1,
+                  borderWidth: 2,
+                  borderColor: colors.border,
+                  backgroundColor: "#f7fee7",
+                  borderRadius: 12,
+                  padding: 8,
                 }}
-              />
-              <Text style={[styles.label, { fontSize: 8 }]}>
-                {product.title}
-              </Text>
-              <Text
-                style={[
-                  styles.tagline,
-                  { color: colors.background, fontWeight: "bold" },
-                ]}
               >
-                {formatUSD(product.basePrice)}
-              </Text>
-            </View>
-          ))}
-        </View>
-
+                <Image
+                  src={product.image ?? ""}
+                  style={{
+                    width: 40,
+                    height: 40,
+                    alignSelf: "center",
+                    marginBottom: 4,
+                  }}
+                />
+                <Text style={[styles.label, { fontSize: 8 }]}>
+                  {product.title}
+                </Text>
+                <Text
+                  style={[
+                    styles.tagline,
+                    { color: colors.background, fontWeight: "bold" },
+                  ]}
+                >
+                  {formatUSD(product.basePrice)}
+                </Text>
+              </View>
+            ))}
+          </View>
+        )}
         {/* DYNAMIC CATEGORY BLOCKS LOOP */}
+        {Object.entries(products).map(
+          ([category, categoryProducts]: [string, any], i) => {
+            // Split products into rows of 2
+            const rows = [];
+            for (let j = 0; j < categoryProducts.length; j += 2) {
+              rows.push(categoryProducts.slice(j, j + 2));
+            }
 
-        <View
-          style={{
-            backgroundColor: "#fff",
-            borderRadius: 12,
-            marginTop: 12,
-            flexGrow: 1,
-            flexShrink: 0,
-          }}
-        >
-          {/* DYNAMIC CATEGORY BLOCKS LOOP */}
-          {Object.entries(products).map(
-            ([category, products]: [string, any], i) => (
-              <View key={category}>
+            return (
+              <View style={{ backgroundColor: "#fff" }} key={category}>
                 {/* Category Header */}
                 <View
                   style={{
                     backgroundColor: colors.border,
-                    width: "100%",
-                    borderTopLeftRadius: i === 0 ? 12 : 0,
-                    borderTopRightRadius: i === 0 ? 12 : 0,
-                    paddingVertical: 4,
-                    paddingHorizontal: 8,
-                    marginBottom: 8,
+                    paddingHorizontal: 12,
+                    paddingVertical: 8,
+                    minHeight: 24,
                   }}
+                  wrap={false}
                 >
-                  <Text
-                    style={[
-                      styles.label,
-                      {
-                        color: colors.background,
-                        fontSize: 8,
-                        fontWeight: "bold",
-                        textTransform: "uppercase",
-                        letterSpacing: 0.5,
-                      },
-                    ]}
-                  >
+                  <Text style={[styles.label, { color: colors.background }]}>
                     {category}
                   </Text>
                 </View>
-
-                <View
-                  style={{
-                    flexDirection: "row",
-                    flexWrap: "wrap",
-                    justifyContent: "space-between",
-                    paddingHorizontal: 12,
-                  }}
-                >
-                  {products?.map((product: any) => (
-                    <View
-                      key={product.id}
-                      style={{
-                        width: "48.5%",
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                        alignItems: "flex-start",
-                        paddingVertical: 3,
-                        borderBottomWidth: 1,
-                        borderBottomColor: "#f2f5f3",
-                      }}
-                    >
-                      <View style={{ flex: 1, paddingRight: 8 }}>
+                {rows.map((col: any[], rowIndex: number) => (
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      borderTopWidth: rowIndex > 0 ? 1 : 0,
+                      borderTopColor: "#f2f5f3",
+                    }}
+                    key={rowIndex}
+                    wrap={false}
+                  >
+                    {col.map((product) => (
+                      <View
+                        key={product.id}
+                        style={{
+                          width: "48.5%",
+                          flexDirection: "row",
+                          paddingHorizontal: 12,
+                          paddingTop: 4,
+                          paddingBottom: 2,
+                          justifyContent: "space-between",
+                          alignItems: "flex-start",
+                        }}
+                      >
                         <Text
                           style={[
                             styles.label,
                             {
                               fontSize: 8,
                               textTransform: "none",
-                              lineHeight: 1.2,
+                              minWidth: 0,
+                              lineHeight: 1.4,
+                              paddingRight: 4,
+                              flex: 1,
                             },
                           ]}
                         >
                           {product.title}
                         </Text>
-                      </View>
-                      <View style={{ flexShrink: 0, textAlign: "right" }}>
                         <Text
                           style={[
                             styles.tagline,
@@ -272,29 +267,29 @@ export const CatalogPDF = (data: CatalogProps) => {
                               color: colors.background,
                               fontWeight: "bold",
                               fontSize: 8,
+                              flexShrink: 0,
+                              lineHeight: 1.4,
                             },
                           ]}
                         >
                           {formatUSD(product.basePrice)}
                         </Text>
                       </View>
-                    </View>
-                  ))}
-                </View>
+                    ))}
+                  </View>
+                ))}
               </View>
-            ),
-          )}
-        </View>
+            );
+          },
+        )}
 
         <View
           style={{
             flexDirection: "row",
             paddingVertical: 16,
             backgroundColor: "#f7fee7",
-            marginLeft: -12,
-            marginRight: -12,
-            marginBottom: -12,
-            marginTop: 12,
+            marginTop: "auto",
+            justifySelf: "end",
           }}
         >
           <View

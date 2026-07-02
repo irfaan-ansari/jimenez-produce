@@ -9,6 +9,7 @@ import {
   AppDialogTitle,
   AppDialogTrigger,
 } from "@/components/app-dialog";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Field, FieldLabel, FieldTitle } from "@/components/ui/field";
 import {
@@ -27,6 +28,7 @@ import {
   Copy,
   FileText,
   Globe,
+  InfoIcon,
   Loader2,
   RefreshCw,
   Send,
@@ -102,13 +104,16 @@ const CatalogDialog = ({ children }: { children: React.ReactNode }) => {
     refreshcatalog(async () => {
       await updateCatalog();
       queryClient.invalidateQueries({ queryKey: ["catalog"] });
+      toast.info(
+        "Updating catalog with the latest prices. Please check back in 5–10 minutes.",
+      );
     });
   };
 
   React.useEffect(() => {
     setValues({
       ...values,
-      link: `https://jimenezproduce.com/api/products/brochures/${catalogId}?view=${values.shareType}&source=link&share=true`,
+      link: `https://jimenezproduce.com/api/products/catalog/${catalogId}?view=${values.shareType}&source=link&share=true`,
     });
   }, [values.shareType, data]);
 
@@ -117,25 +122,29 @@ const CatalogDialog = ({ children }: { children: React.ReactNode }) => {
       <AppDialogTrigger asChild>{children}</AppDialogTrigger>
       <AppDialogContent className="overflow-hidden rounded-2xl ring-ring/10 sm:max-w-xl">
         <AppDialogHeader className="gap-0">
-          <AppDialogTitle className="text-lg font-bold">
-            Share catalog
-          </AppDialogTitle>
-          <div className="flex items-center gap-2">
-            <span className="text-muted-foreground">Last updated: </span>
-            <span className="text-muted-foreground">
-              {data?.data.updatedAt &&
-                format(data?.data.updatedAt, "MMM dd, hh:mm a")}
-            </span>
-            <Button
-              size="xs"
-              variant="outline"
-              disabled={isRefreshing}
-              onClick={handleRefresh}
-            >
-              <RefreshCw className={isRefreshing ? "animate-spin" : ""} />
-              Refresh
-            </Button>
-          </div>
+          <AppDialogTitle className="text-lg font-bold">Catalog</AppDialogTitle>
+          {data?.data.updatedAt && (
+            <AppDialogDescription>
+              Price last updated •{" "}
+              {format(data?.data.updatedAt, "MMM dd, hh:mm a")}
+            </AppDialogDescription>
+          )}
+          <Button
+            size="xs"
+            disabled={isRefreshing}
+            onClick={handleRefresh}
+            className="self-start mt-2"
+          >
+            <RefreshCw className={isRefreshing ? "animate-spin" : ""} />
+            {isRefreshing ? "Updating..." : "Update Catalog"}
+          </Button>
+
+          <Alert className="bg-amber-50 border-amber-300 mt-4">
+            <InfoIcon />
+            <AlertTitle>
+              <strong>Note: </strong>Catalog updates take 5–10 minutes
+            </AlertTitle>
+          </Alert>
         </AppDialogHeader>
         <QueryState
           isPending={isPending}
@@ -185,6 +194,7 @@ const CatalogDialog = ({ children }: { children: React.ReactNode }) => {
               onValueChange={(value) =>
                 setValues({ ...values, shareType: value })
               }
+              disabled
             >
               {items.map((item) => (
                 <FieldLabel
@@ -228,11 +238,17 @@ const CatalogDialog = ({ children }: { children: React.ReactNode }) => {
           </>
         </QueryState>
         <AppDialogClose asChild>
-          <Button size="xl" className="mt-2" asChild>
-            <a href={data?.data?.pdfUrl ?? ""} target="_blank">
+          {data?.data?.pdfUrl ? (
+            <Button size="xl" className="mt-2" asChild>
+              <a href={data?.data?.pdfUrl ?? ""} target="_blank">
+                Download PDF
+              </a>
+            </Button>
+          ) : (
+            <Button size="xl" className="mt-2" disabled>
               Download PDF
-            </a>
-          </Button>
+            </Button>
+          )}
         </AppDialogClose>
       </AppDialogContent>
     </AppDialog>

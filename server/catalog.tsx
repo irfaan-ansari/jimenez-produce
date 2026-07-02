@@ -99,7 +99,7 @@ const generatePDF = async ({
   const session = await getSession();
   if (!session) throw new Error("Authentication required.");
   const { activeOrganizationId } = session.session;
-
+  console.log("creating pdf...");
   const [org, allProducts] = await Promise.all([
     db.query.organization.findFirst({
       where: (organization, { eq }) =>
@@ -135,7 +135,7 @@ const generatePDF = async ({
   }, {});
   const buffer = await renderToBuffer(
     <CatalogPDF
-      orgName={org?.name ?? ""}
+      org={org!}
       effectiveFrom={effectiveFrom}
       effectiveTo={effectiveTo}
       featured={featured}
@@ -147,6 +147,6 @@ const generatePDF = async ({
     access: "public",
     addRandomSuffix: true,
   });
-
+  console.log("created pdf...");
   return blob.url;
 };
