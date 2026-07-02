@@ -1,10 +1,11 @@
 import { PageClient } from "./page-client";
-import { Plus, Upload } from "lucide-react";
+import { FileText, FileUp, Plus, Upload } from "lucide-react";
 import { ImportDialog } from "./import-dialog";
 import { Button } from "@/components/ui/button";
 import { FilterTab } from "@/components/admin/filter-tabs";
 import { SearchBar } from "@/components/admin/search-filters";
 import { ProductDialog } from "@/components/admin/product-dialog";
+import CatalogDialog from "./catalog-dialog";
 
 export const metadata = {
   title: "Products",
@@ -27,10 +28,14 @@ const CatalogPage = async () => {
             Manage your products, prices, and inventory.
           </p>
         </div>
-
+        <CatalogDialog>
+          <Button variant="outline" size="xl" className="rounded-xl md:order-3">
+            <FileText /> Catalog
+          </Button>
+        </CatalogDialog>
         <ImportDialog>
           <Button variant="outline" size="xl" className="rounded-xl md:order-3">
-            <Upload /> Import
+            <FileUp /> Import Prices
           </Button>
         </ImportDialog>
         <ProductDialog>
@@ -39,10 +44,11 @@ const CatalogPage = async () => {
             Add New
           </Button>
         </ProductDialog>
+      </div>
+      <div className="flex justify-between items-start">
+        <FilterTab tabs={OPTIONS} path="/api/products/count" />
         <SearchBar className="basis-full md:basis-xs md:order-2 max-w-full" />
       </div>
-
-      <FilterTab tabs={OPTIONS} path="/api/products/count" />
 
       {/* content */}
       <PageClient />

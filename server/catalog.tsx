@@ -1,111 +1,67 @@
 "use server";
 
-import { CatalogPDF } from "@/components/pdf/catalog";
-import { catalog } from "@/lib/db/schema";
-import { getSession } from "./auth";
+import {
+  startOfDay,
+  endOfDay,
+  nextFriday,
+  previousSaturday,
+  isSaturday,
+} from "date-fns";
 import { db } from "@/lib/db";
-import { handleAction } from "@/lib/helper/error-handler";
 import { eq } from "drizzle-orm";
+import { getSession } from "./auth";
+import { del, put } from "@vercel/blob";
+import { catalog } from "@/lib/db/schema";
 import { waitUntil } from "@vercel/functions";
-import { put } from "@vercel/blob";
 import { renderToBuffer } from "@react-pdf/renderer";
+import { CatalogPDF } from "@/components/pdf/catalog";
+import { handleAction } from "@/lib/helper/error-handler";
 
-type CreateBrochureInput = {
-  name: string;
-  effectiveTo: string;
-  productIds: number[];
-};
+export const updateCatalog = async () => {
+  const session = await getSession();
+  const { activeOrganizationId } = session?.session!;
 
-/**
- * create brochure
- * @param data {CreateBrochureInput} brochure data
- * @returns
- */
-export const createBrochure = handleAction(
-  async (data: CreateBrochureInput) => {
-    const session = await getSession();
+  const now = new Date();
+  const validFrom = isSaturday(now)
+    ? startOfDay(now)
+    : startOfDay(previousSaturday(now));
 
-    if (!session) throw new Error("Authentication required.");
+  const validUntil = endOfDay(nextFriday(now));
 
-    const { activeOrganizationId } = session.session;
+  let cat = await db.query.catalog.findFirst({
+    where: (c, { eq }) => eq(c.organizationId, activeOrganizationId!),
+  });
 
-    const { name, productIds, effectiveTo } = data;
-
-    const [result] = await db
+  if (!cat) {
+    [cat] = await db
       .insert(catalog)
       .values({
-        name,
-        pdfUrl: "",
-        featuredProductIds: productIds,
-        effectiveFrom: new Date(),
-        effectiveTo: new Date(effectiveTo),
+        name: "catalog",
         organizationId: activeOrganizationId!,
+        effectiveFrom: validFrom,
+        effectiveTo: validUntil,
+        pdfUrl: "",
       })
       .returning();
+  }
 
-    waitUntil(
+  waitUntil(
+    Promise.all([
       generatePDF({
-        productIds,
-        effectiveFrom: result.effectiveFrom,
-        effectiveTo: result.effectiveTo,
+        productIds: cat.featuredProductIds ?? [],
+        effectiveFrom: validFrom,
+        effectiveTo: validUntil,
       }).then((pdfUrl) =>
-        db.update(catalog).set({ pdfUrl }).where(eq(catalog.id, result.id)),
+        db
+          .update(catalog)
+          .set({ pdfUrl, effectiveFrom: validFrom, effectiveTo: validUntil })
+          .where(eq(catalog.id, cat.id)),
       ),
-    );
-
-    return result;
-  },
-);
-
-/**
- * update brochure
- * @param id {number} brochure id
- * @param data {CreateBrochureInput} brochure data
- * @returns
- */
-export const updateBrochure = handleAction(
-  async (id: number, data: CreateBrochureInput) => {
-    const session = await getSession();
-
-    if (!session) throw new Error("Authentication required.");
-    const { activeOrganizationId } = session.session;
-
-    const { name, productIds, effectiveTo } = data;
-
-    const existing = await db.query.catalog.findFirst({
-      where: (catalog, { eq, and }) =>
-        and(
-          eq(catalog.id, id),
-          eq(catalog.organizationId, activeOrganizationId!),
-        ),
-    });
-
-    if (!existing) throw new Error("Resource not found");
-
-    const [result] = await db
-      .update(catalog)
-      .set({
-        name,
-        featuredProductIds: productIds,
-        effectiveTo: new Date(effectiveTo),
-      })
-      .where(eq(catalog.id, id))
-      .returning();
-
-    waitUntil(
-      generatePDF({
-        productIds,
-        effectiveFrom: result.effectiveFrom,
-        effectiveTo: result.effectiveTo,
-      }).then((pdfUrl) =>
-        db.update(catalog).set({ pdfUrl }).where(eq(catalog.id, id)),
-      ),
-    );
-
-    return result;
-  },
-);
-
+      del(cat.pdfUrl),
+    ]),
+  );
+  return true;
+};
 /**
  * send brochure link to email
  */

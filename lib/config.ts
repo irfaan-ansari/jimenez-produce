@@ -147,11 +147,7 @@ export const SIDEBAR_MENU = [
         href: "/admin/products?status=archived",
         color: "#71717A",
       },
-      {
-        label: "Brochures",
-        href: "/admin/products/brochures",
-        color: "#A1A1AA",
-      },
+
       {
         label: "Price Level",
         href: "/admin/products/price-level",
