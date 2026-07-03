@@ -47,7 +47,8 @@ export const CatalogTemplate = ({ name, pdfUrl, digitalUrl }: Props) => {
 
         <Text className="text-base text-gray-700 mt-6">
           If you have any questions or would like to place an order, simply
-          reach out to us on WhatsApp!
+          reach out to us on WhatsApp or contact us using the email address or
+          phone number listed below.
         </Text>
         <Text className="text-base text-gray-700 mt-6">
           Thank you for choosing Jimenez Produce!
