@@ -104,6 +104,10 @@ const CatalogDialog = ({ children }: { children: React.ReactNode }) => {
     refreshcatalog(async () => {
       await updateCatalog();
       queryClient.invalidateQueries({ queryKey: ["catalog"] });
+      toast.info("Price List Update", {
+        description:
+          "Please wait 5–10 minutes, then refresh the page to download the latest price list.",
+      });
     });
   };
 
@@ -119,11 +123,12 @@ const CatalogDialog = ({ children }: { children: React.ReactNode }) => {
       <AppDialogTrigger asChild>{children}</AppDialogTrigger>
       <AppDialogContent className="overflow-hidden rounded-2xl ring-ring/10 sm:max-w-xl">
         <AppDialogHeader className="gap-0">
-          <AppDialogTitle className="text-lg font-bold">Catalog</AppDialogTitle>
+          <AppDialogTitle className="text-lg font-bold">
+            Price List
+          </AppDialogTitle>
           {data?.data.updatedAt && (
             <AppDialogDescription>
-              Price last updated •{" "}
-              {format(data?.data.updatedAt, "MMM dd, hh:mm a")}
+              Last updated • {format(data?.data.updatedAt, "MMM dd, hh:mm a")}
             </AppDialogDescription>
           )}
           <Button
@@ -133,15 +138,8 @@ const CatalogDialog = ({ children }: { children: React.ReactNode }) => {
             className="self-start mt-2"
           >
             <RefreshCw className={isRefreshing ? "animate-spin" : ""} />
-            {isRefreshing ? "Updating..." : "Update Catalog"}
+            {isRefreshing ? "Updating..." : "Update list"}
           </Button>
-
-          <Alert className="bg-amber-50 border-amber-300 mt-4">
-            <InfoIcon />
-            <AlertTitle>
-              <strong>Note: </strong>Price list updates take 5–10 minutes
-            </AlertTitle>
-          </Alert>
         </AppDialogHeader>
         <QueryState
           isPending={isPending}
@@ -151,6 +149,7 @@ const CatalogDialog = ({ children }: { children: React.ReactNode }) => {
           className="min-h-40"
         >
           <>
+            {/* <div className="rounded-xl border bg-secondary p-4 h-20 grid grid-cols-3"></div> */}
             <div className="space-y-2">
               <div className="font-medium">Email</div>
               <InputGroup>
@@ -181,7 +180,7 @@ const CatalogDialog = ({ children }: { children: React.ReactNode }) => {
             </div>
             <div className="relative border-b-2 my-2">
               <span className="absolute bottom-0 left-1/2 translate-y-2.5 px-3 -translate-x-1/2 bg-background text-muted-foreground font-medium">
-                OR
+                COPY LINK
               </span>
             </div>
 
