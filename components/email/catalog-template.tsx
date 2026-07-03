@@ -25,7 +25,7 @@ export const CatalogTemplate = ({ name, pdfUrl, digitalUrl }: Props) => {
         <Section className="my-8 text-left flex">
           <Button
             href={pdfUrl}
-            className="rounded-xl mr-6 bg-[#80b83a] text-base inline-flex items-center px-10 py-4 text-white font-medium no-underline"
+            className="rounded-xl mr-6 bg-[#80b83a] align-middle text-base inline-flex items-center px-10 py-4 text-white font-medium no-underline"
           >
             View Price List
           </Button>
