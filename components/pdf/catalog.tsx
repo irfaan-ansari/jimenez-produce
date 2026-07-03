@@ -213,7 +213,7 @@ export const CatalogPDF = (data: CatalogProps) => {
                   style={{
                     backgroundColor: colors.border,
                     paddingHorizontal: 12,
-                    paddingVertical: 8,
+                    paddingVertical: 6,
                     minHeight: 24,
                   }}
                   wrap={false}
@@ -291,6 +291,7 @@ export const CatalogPDF = (data: CatalogProps) => {
             marginTop: "auto",
             justifySelf: "end",
           }}
+          wrap={false}
         >
           <View
             style={{
@@ -307,7 +308,7 @@ export const CatalogPDF = (data: CatalogProps) => {
             />
             <View>
               <Text style={{ ...styles.label, color: colors.background }}>
-                Fresh Quanlity
+                Fresh Quality
               </Text>
               <Text>Hand selected produce</Text>
             </View>

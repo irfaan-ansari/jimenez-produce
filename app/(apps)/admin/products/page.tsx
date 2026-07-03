@@ -30,7 +30,7 @@ const CatalogPage = async () => {
         </div>
         <CatalogDialog>
           <Button variant="outline" size="xl" className="rounded-xl md:order-3">
-            <FileText /> Catalog
+            <FileText /> Price List
           </Button>
         </CatalogDialog>
         <ImportDialog>

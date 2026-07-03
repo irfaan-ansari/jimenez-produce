@@ -1,17 +1,19 @@
 "use server";
-
+import { toZonedTime } from "date-fns-tz";
 import {
   startOfDay,
   endOfDay,
   nextFriday,
   previousSaturday,
   isSaturday,
+  isFriday,
+  format,
 } from "date-fns";
 import { db } from "@/lib/db";
 import { eq } from "drizzle-orm";
 import { getSession } from "./auth";
 import { del, put } from "@vercel/blob";
-import { catalog } from "@/lib/db/schema";
+import { catalog, ProductSelectType } from "@/lib/db/schema";
 import { waitUntil } from "@vercel/functions";
 import { renderToBuffer } from "@react-pdf/renderer";
 import { CatalogPDF } from "@/components/pdf/catalog";
@@ -19,16 +21,19 @@ import { handleAction } from "@/lib/helper/error-handler";
 import { sendEmail } from "@/lib/email";
 import CatalogTemplate from "@/components/email/catalog-template";
 
-export const updateCatalog = async () => {
+export const updateCatalog = async (timeZone: string = "America/Chicago") => {
   const session = await getSession();
   const { activeOrganizationId } = session?.session!;
 
-  const now = new Date();
+  console.log(timeZone);
+
+  const now = toZonedTime(new Date(), timeZone);
+
   const validFrom = isSaturday(now)
     ? startOfDay(now)
     : startOfDay(previousSaturday(now));
 
-  const validUntil = endOfDay(nextFriday(now));
+  const validUntil = isFriday(now) ? endOfDay(now) : endOfDay(nextFriday(now));
 
   let cat = await db.query.catalog.findFirst({
     where: (c, { eq }) => eq(c.organizationId, activeOrganizationId!),
@@ -138,19 +143,21 @@ const generatePDF = async ({
     productIdSet.has(product.id),
   );
 
+  const seen = new Set<number>();
+
   const groupedProducts = allProducts.reduce<
     Record<string, typeof allProducts>
   >((acc, product) => {
-    for (const category of product.categories ?? []) {
-      if (!acc[category]) {
-        acc[category] = [];
-      }
+    if (seen.has(product.id)) return acc;
 
-      acc[category].push(product);
-    }
+    const primaryCategory = getPrimaryCategory(product);
+
+    (acc[primaryCategory] ??= []).push(product);
+    seen.add(product.id);
 
     return acc;
   }, {});
+
   const buffer = await renderToBuffer(
     <CatalogPDF
       org={org!}
@@ -160,11 +167,29 @@ const generatePDF = async ({
       products={groupedProducts}
     />,
   );
+  const startDate = format(effectiveFrom, "MMMM dd");
+  const endDate = format(effectiveTo, "MMMM dd");
 
-  const blob = await put(`brochure/brochure.pdf`, buffer, {
+  const fileName = `Week of ${startDate} - ${endDate} • Jimenez Produce ${org?.name} Price List`;
+
+  const blob = await put(`catalog/${fileName}.pdf`, buffer, {
     access: "public",
-    addRandomSuffix: true,
   });
+
   console.log("created pdf...");
+
   return blob.url;
+};
+
+// get product primary category
+const getPrimaryCategory = (product: ProductSelectType) => {
+  const title = product.title.toLowerCase();
+
+  return (
+    product.categories?.find((category) =>
+      title.includes(category.toLowerCase().replace(/s$/, "")),
+    ) ??
+    product.categories?.[0] ??
+    "Other"
+  );
 };

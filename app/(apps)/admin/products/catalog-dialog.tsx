@@ -9,7 +9,7 @@ import {
   AppDialogTitle,
   AppDialogTrigger,
 } from "@/components/app-dialog";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Alert, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Field, FieldLabel, FieldTitle } from "@/components/ui/field";
 import {
@@ -41,13 +41,13 @@ const items = [
     label: "Digital",
     value: "web",
     icon: Globe,
-    description: "Share digital catalog",
+    description: "Share digital price list",
   },
   {
     label: "Pdf",
     value: "pdf",
     icon: FileText,
-    description: "Share PDF catalog.",
+    description: "Share PDF price list",
   },
 ];
 
@@ -104,9 +104,6 @@ const CatalogDialog = ({ children }: { children: React.ReactNode }) => {
     refreshcatalog(async () => {
       await updateCatalog();
       queryClient.invalidateQueries({ queryKey: ["catalog"] });
-      toast.info(
-        "Updating catalog with the latest prices. Please check back in 5–10 minutes.",
-      );
     });
   };
 
@@ -142,7 +139,7 @@ const CatalogDialog = ({ children }: { children: React.ReactNode }) => {
           <Alert className="bg-amber-50 border-amber-300 mt-4">
             <InfoIcon />
             <AlertTitle>
-              <strong>Note: </strong>Catalog updates take 5–10 minutes
+              <strong>Note: </strong>Price list updates take 5–10 minutes
             </AlertTitle>
           </Alert>
         </AppDialogHeader>
