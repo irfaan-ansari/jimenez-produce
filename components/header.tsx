@@ -16,7 +16,7 @@ export const Header = () => {
   return (
     <header className="sticky top-0 z-10 bg-background shadow-md backdrop-blur-md">
       <div className="max-w-7xl mx-auto px-8 py-3">
-        <div className="flex w-full items-center h-14 lg:h-20">
+        <div className="flex w-full items-center h-14 gap-6 lg:h-20">
           <div className="inline-flex flex-[1_1_0] self-center">
             <Link href="/">
               <Image
@@ -43,6 +43,11 @@ export const Header = () => {
               ))}
             </ul>
           </nav>
+          <Button asChild size="xl" className="lg:hidden">
+            <a href="/otp-login" target="_blank">
+              Place Order
+            </a>
+          </Button>
           <div className="flex-[1_1_0] justify-end hidden lg:flex gap-4">
             <Button asChild size="xl" variant="outline">
               <a href="/otp-login" target="_blank">
