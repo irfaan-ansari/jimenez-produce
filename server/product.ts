@@ -67,10 +67,23 @@ export const createProduct = handleAction(async (data: ProductInsertType) => {
   const { activeOrganizationId } = session.session;
   const { status, ...rest } = data;
 
+  const searchText = [
+    rest.title,
+    rest.categories?.join(" "),
+    rest.identifier,
+    rest.basePrice,
+    rest.type,
+    rest.unit,
+    status,
+  ]
+    .filter(Boolean)
+    .join(" ");
+
   const [result] = await db
     .insert(product)
     .values({
       ...rest,
+      searchText,
       status: status?.toLowerCase(),
       organizationId: activeOrganizationId,
     })
@@ -153,10 +166,21 @@ export const updateProduct = handleAction(
     });
 
     if (!existing) throw new Error("Resource not found.");
+    const searchText = [
+      data.title,
+      data.categories?.join(" "),
+      data.identifier,
+      data.basePrice,
+      data.type,
+      data.unit,
+      data.status,
+    ]
+      .filter(Boolean)
+      .join(" ");
 
     const [result] = await db
       .update(product)
-      .set(data)
+      .set({ ...data, searchText })
       .where(eq(product.id, id))
       .returning();
 
