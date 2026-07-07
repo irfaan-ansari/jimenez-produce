@@ -191,7 +191,7 @@ export const ProductDialog = ({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="rounded-2xl px-0 ring-ring/10 sm:max-w-2xl">
+      <DialogContent className="px-0 rounded-2xl ring-ring/10 sm:max-w-2xl">
         <DialogHeader className="px-6">
           <DialogTitle className="text-2xl font-bold">
             {product ? "Edit Product" : "Create Product"}
@@ -209,7 +209,7 @@ export const ProductDialog = ({
           }}
           className="flex h-[calc(100svh-200px)] flex-col gap-6"
         >
-          <div className="no-scrollbar flex-1 overflow-y-auto px-6">
+          <div className="flex-1 px-6 overflow-y-auto no-scrollbar">
             <FieldGroup className="grid grid-cols-1 lg:grid-cols-2">
               <form.Field
                 name="image"
@@ -220,13 +220,13 @@ export const ProductDialog = ({
                   return (
                     <Field aria-invalid={isInvalid} className="lg:col-span-2">
                       {field.state.value ? (
-                        <div className="relative z-1 flex h-28 w-full justify-center rounded-xl border border-dashed bg-secondary p-2">
+                        <div className="relative flex justify-center w-full p-2 border border-dashed z-1 h-28 rounded-xl bg-secondary">
                           <Image
                             src={field.state.value}
                             width={112}
                             height={112}
                             alt="Product Image"
-                            className="h-full w-auto"
+                            className="w-auto h-full"
                           />
                           <Button
                             type="button"
@@ -359,7 +359,7 @@ export const ProductDialog = ({
                             <Badge
                               key={v}
                               variant="secondary"
-                              className="h-7 rounded-xl pr-1 text-sm"
+                              className="pr-1 text-sm h-7 rounded-xl"
                             >
                               {v}
                               <Button
@@ -397,7 +397,7 @@ export const ProductDialog = ({
                         onBlur={field.handleBlur}
                         onChange={(e) => field.handleChange(e.target.value)}
                         aria-invalid={isInvalid}
-                        className="min-h-24 resize-none rounded-xl"
+                        className="resize-none min-h-24 rounded-xl"
                       />
                       {isInvalid && (
                         <FieldError errors={field.state.meta.errors} />

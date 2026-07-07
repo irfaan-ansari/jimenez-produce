@@ -1,0 +1,1 @@
+ALTER TABLE "messages" ADD COLUMN "audience_target" text NOT NULL;

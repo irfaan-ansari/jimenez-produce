@@ -4,6 +4,8 @@ const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
 const serviceId = process.env.TWILIO_SID;
 
+const messagingServiceId = process.env.TWILIO_MESSAGING_SID;
+
 export const twilioClient = twilio(accountSid, authToken);
 
 export const twilioSendOTP = async ({
@@ -40,4 +42,18 @@ export const twilioVerifyOTP = async ({
   } catch (error) {
     throw new Error("Failed to verify otp, try again.");
   }
+};
+
+export const twilioSendMessage = async ({
+  phoneNumber,
+  body,
+}: {
+  phoneNumber: string;
+  body: string;
+}) => {
+  return twilioClient.messages.create({
+    messagingServiceSid: messagingServiceId,
+    to: `+1${phoneNumber}`,
+    body,
+  });
 };

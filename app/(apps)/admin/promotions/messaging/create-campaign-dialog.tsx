@@ -18,25 +18,31 @@ import {
 import z from "zod";
 import { CustomersSelector } from "@/components/admin/customers-selector";
 import { Label } from "@/components/ui/label";
+import { createMessage } from "@/server/message";
+import { toast } from "sonner";
 
 const schema = z
   .object({
     name: z.string().min(1, "Name is required"),
-    recipient: z.enum(["all", "selected", "custom"]),
-    customers: z.array(z.string()),
+    audienceType: z.enum(["team", "user", "custom"]),
+    audienceTarget: z.enum(["all", "selected"]),
+    selectedTargets: z.array(z.string()),
     phoneNumbers: z.string(),
     messageContent: z.string().min(1, "Message is required"),
   })
   .superRefine((data, ctx) => {
-    if (data.recipient === "selected" && data.customers.length === 0) {
+    if (
+      data.audienceTarget === "selected" &&
+      data.selectedTargets.length === 0
+    ) {
       ctx.addIssue({
         code: "custom",
-        path: ["customers"],
+        path: ["selectedTargets"],
         message: "Select at least one customer.",
       });
     }
 
-    if (data.recipient === "custom" && data.phoneNumbers.trim() === "") {
+    if (data.audienceType === "custom" && data.phoneNumbers.trim() === "") {
       ctx.addIssue({
         code: "custom",
         path: ["phoneNumbers"],
@@ -51,11 +57,13 @@ export function CreateCampaignDialog({
   children: React.ReactNode;
 }) {
   const [open, setOpen] = React.useState(false);
+
   const form = useAppForm({
     defaultValues: {
       name: "",
-      recipient: "all" as "selected" | "custom" | "all",
-      customers: [] as string[],
+      audienceType: "team" as "team" | "user" | "custom",
+      audienceTarget: "all" as "all" | "selected",
+      selectedTargets: [] as string[],
       phoneNumbers: "",
       messageContent: "",
     },
@@ -64,12 +72,24 @@ export function CreateCampaignDialog({
     },
     onSubmit: async ({ value }) => {
       const payload = {
-        ...value,
+        name: value.name,
+        audienceType: value.audienceType,
+        audienceTarget: value.audienceTarget,
+        selectedTargets: value.selectedTargets,
+        content: value.messageContent,
         phoneNumbers: value.phoneNumbers
           .split("\n")
           .map((n) => n.trim())
           .filter(Boolean),
       };
+
+      const toastId = toast.loading("Starting message delivery...");
+
+      await createMessage(payload);
+
+      toast.success("Your messages are being sent in the background.", {
+        id: toastId,
+      });
 
       console.log(payload);
     },
@@ -101,7 +121,7 @@ export function CreateCampaignDialog({
               New Message
             </AppDialogTitle>
           </AppDialogHeader>
-          <FieldGroup className="flex-1 overflow-auto">
+          <FieldGroup className="flex-1 overflow-auto no-scrollbar">
             <form.AppField
               name="name"
               children={(field) => (
@@ -113,24 +133,17 @@ export function CreateCampaignDialog({
               )}
             />
             <form.AppField
-              name="recipient"
+              name="audienceType"
               children={(field) => (
                 <field.RadioField
-                  label="Send To"
+                  label="Recipient"
                   options={[
                     {
-                      label: "All Customers",
-                      description: "Send to all customers.",
-                      value: "all",
+                      label: "Customers",
+                      value: "team",
                     },
                     {
-                      label: "Selected Customers",
-                      description: "Choose specific customers.",
-                      value: "selected",
-                    },
-                    {
-                      label: "Custom Numbers",
-                      description: "Enter phone numbers manually.",
+                      label: "Custom Phone Numbers",
                       value: "custom",
                     },
                   ]}
@@ -139,73 +152,110 @@ export function CreateCampaignDialog({
             />
 
             <form.Subscribe
-              selector={(state) => state.values.recipient}
-              children={(value) => (
-                <>
+              selector={(state) => state.values.audienceType}
+              children={(type) =>
+                type !== "custom" && (
                   <form.AppField
-                    name="phoneNumbers"
+                    name="audienceTarget"
                     children={(field) => (
-                      <field.TextAreaField
-                        className={value !== "custom" ? "hidden" : ""}
-                        label="Phone Numbers"
-                        placeholder={`+19876543210
-+19812345678
-+18888888888`}
+                      <field.RadioField
+                        label="Audience"
+                        options={[
+                          {
+                            label: "All",
+                            value: "all",
+                          },
+                          {
+                            label: "Selected",
+                            value: "selected",
+                          },
+                        ]}
                       />
                     )}
                   />
-                  <form.Field
-                    name="customers"
-                    mode="array"
-                    children={(field) => {
-                      const teams = field.state.value;
-                      return (
-                        <div
-                          className={
-                            value !== "selected" ? "hidden" : "space-y-2"
-                          }
-                        >
-                          <Label htmlFor="customer-selector">
-                            Select Customers
-                          </Label>
-                          <CustomersSelector
-                            selected={field.state.value.map((i) => ({ id: i }))}
-                            setSelectedChange={(value) => {
-                              const index = field.state.value.findIndex(
-                                (s) => s === value.id,
-                              );
+                )
+              }
+            />
 
-                              if (index >= 0) {
-                                field.removeValue(index);
-                              } else {
-                                field.pushValue(value.id);
-                              }
-                            }}
+            <form.Subscribe
+              selector={(state) => ({
+                type: state.values.audienceType,
+                target: state.values.audienceTarget,
+              })}
+            >
+              {({ type, target }) => (
+                <>
+                  {type === "custom" && (
+                    <form.AppField
+                      name="phoneNumbers"
+                      children={(field) => (
+                        <field.TextAreaField
+                          label="Phone Numbers"
+                          placeholder={`+19876543210
++19812345678`}
+                        />
+                      )}
+                    />
+                  )}
+
+                  {type !== "custom" && target === "selected" && (
+                    <form.Field
+                      name="selectedTargets"
+                      mode="array"
+                      children={(field) => {
+                        const teams = field.state.value;
+                        return (
+                          <div
+                            className={
+                              target !== "selected" ? "hidden" : "space-y-2"
+                            }
                           >
-                            <Button
-                              id="customer-selector"
-                              variant="outline"
-                              size="lg"
-                              type="button"
-                              className="justify-start w-full text-muted-foreground"
+                            <Label htmlFor="customer-selector">
+                              Select Customers
+                            </Label>
+                            <CustomersSelector
+                              selected={
+                                field.state.value?.map((i) => ({
+                                  id: i,
+                                })) ?? []
+                              }
+                              setSelectedChange={(value) => {
+                                const index = field.state.value.findIndex(
+                                  (s) => s === value.id,
+                                );
+
+                                if (index >= 0) {
+                                  field.removeValue(index);
+                                } else {
+                                  field.pushValue(value.id);
+                                }
+                              }}
                             >
-                              <Plus />
-                              <span className="flex-1 text-left">
-                                Select customers...
-                              </span>
-                              {teams.length > 0 && (
-                                <Badge>{teams.length + " selected"}</Badge>
-                              )}
-                              <ChevronsUpDown />
-                            </Button>
-                          </CustomersSelector>
-                        </div>
-                      );
-                    }}
-                  />
+                              <Button
+                                id="customer-selector"
+                                variant="outline"
+                                size="lg"
+                                type="button"
+                                className="justify-start w-full text-muted-foreground"
+                              >
+                                <Plus />
+                                <span className="flex-1 text-left">
+                                  Select customers...
+                                </span>
+                                {teams.length > 0 && (
+                                  <Badge>{teams.length + " selected"}</Badge>
+                                )}
+                                <ChevronsUpDown />
+                              </Button>
+                            </CustomersSelector>
+                          </div>
+                        );
+                      }}
+                    />
+                  )}
                 </>
               )}
-            />
+            </form.Subscribe>
 
             <div className="space-y-3">
               <div className="relative">

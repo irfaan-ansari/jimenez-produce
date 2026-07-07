@@ -1,9 +1,10 @@
 import { db } from "@/lib/db";
 import { order } from "@/lib/db/schema";
 import { getSession } from "@/server/auth";
-import { or, and, ilike, eq } from "drizzle-orm";
+import { or, and, ilike, eq, exists } from "drizzle-orm";
 import { getQueryObject } from "@/lib/helper/query";
 import { NextRequest, NextResponse } from "next/server";
+import { team } from "@/lib/db/auth-schema";
 
 export async function GET(req: NextRequest) {
   try {
@@ -30,7 +31,19 @@ export async function GET(req: NextRequest) {
     const filters = and(
       eq(order.organizationId, activeOrganizationId),
       status ? eq(order.status, status) : undefined,
-      q ? or(ilike(order.deliveryInstruction, `%${q}%`)) : undefined,
+      q
+        ? or(
+            ilike(order.deliveryInstruction, `%${q}%`),
+            exists(
+              db
+                .select()
+                .from(team)
+                .where(
+                  and(eq(team.id, order.teamId), ilike(team.name, `%${q}%`)),
+                ),
+            ),
+          )
+        : undefined,
     );
 
     const response = await db.query.order.findMany({

@@ -19,6 +19,8 @@ import {
   promotionTarget,
   catalog,
   catalogView,
+  messageRecipients,
+  messages,
 } from "./schema";
 
 import {
@@ -299,3 +301,17 @@ export const catalogViewRelations = relations(catalogView, ({ one }) => ({
     references: [catalog.id],
   }),
 }));
+
+export const messageRelation = relations(messages, ({ many }) => ({
+  recipients: many(messageRecipients),
+}));
+
+export const messageRecipientRelation = relations(
+  messageRecipients,
+  ({ one }) => ({
+    message: one(messages, {
+      fields: [messageRecipients.messageId],
+      references: [messages.id],
+    }),
+  }),
+);

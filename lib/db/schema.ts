@@ -785,10 +785,18 @@ export const catalogView = pgTable("catalog_view", {
 
 export const messages = pgTable("messages", {
   id: serial("id").primaryKey(),
+  organizationId: text("organization_id")
+    .notNull()
+    .references(() => organization.id, {
+      onDelete: "cascade",
+    }),
   name: text("name").notNull(),
   content: text("content").notNull(),
-  audienceType: text("audience_type").notNull(),
-  status: text("status").default("draft").notNull(),
+  audienceType: text("audience_type").notNull() /** customer | user  */,
+  audienceTarget: text("audience_target").notNull() /** all | selected */,
+  status: text("status")
+    .default("processing")
+    .notNull() /** processing | completed | failed */,
   metadata: jsonb("metadata").$type<{}>().default({}),
   createdBy: text("created_by").references(() => user.id, {
     onDelete: "set null",
@@ -884,3 +892,12 @@ export type CatalogSelectType = InferSelectModel<typeof catalog>;
 export type CatalogInsertType = InferInsertModel<typeof catalog>;
 export type CatalogViewSelectType = InferSelectModel<typeof catalogView>;
 export type CatalogViewInsertType = InferInsertModel<typeof catalogView>;
+
+export type MessageSelectType = InferSelectModel<typeof messages>;
+export type MessageInsertType = InferInsertModel<typeof messages>;
+export type MessageRecipientSelectType = InferSelectModel<
+  typeof messageRecipients
+>;
+export type MessageRecipientInsertType = InferInsertModel<
+  typeof messageRecipients
+>;
