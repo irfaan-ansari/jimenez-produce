@@ -378,7 +378,7 @@ const FileField = ({ label, description, className }: FieldProps) => {
       </FieldLegend>
       <FieldLabel
         htmlFor={field.name}
-        className={`h-11 px-4 border border-primary border-dashed bg-primary/20`}
+        className={`h-11 px-4 border border-primary border-dashed bg-primary/20 relative`}
       >
         {field.state.value ? (
           <>
@@ -388,7 +388,7 @@ const FileField = ({ label, description, className }: FieldProps) => {
               variant="outline"
               type="button"
               size="icon-sm"
-              className="ml-auto"
+              className="absolute right-1 top-1/2 -translate-y-1/2"
               onClick={(e) => {
                 e.preventDefault();
                 field.handleChange(undefined as any);
@@ -409,7 +409,7 @@ const FileField = ({ label, description, className }: FieldProps) => {
           onChange={(e) => {
             field.handleChange(e.target.files?.[0] as File);
           }}
-          className="sr-only"
+          className="opacity-0"
           accept="image/jpeg, image/png, application/pdf"
         />
       </FieldLabel>

@@ -6,7 +6,7 @@ export const fileSchema = z
   .max(MAX_UPLOAD_SIZE, "Upload file less than 10MB")
   .mime(
     ["image/png", "image/jpeg", "application/pdf"],
-    "File type is not allowed"
+    "File type is not allowed",
   );
 
 export const step1Schema = z.object({
@@ -23,7 +23,7 @@ export const step1Schema = z.object({
     .trim()
     .regex(
       /^(\+1\s?)?(\(?\d{3}\)?[\s.-]?)\d{3}[\s.-]?\d{4}$/,
-      "Invalid phone number"
+      "Invalid phone number",
     ),
   // new field
   companyType: z.string().min(2, "Business type is required"),
@@ -40,7 +40,7 @@ export const step2Schema = z.object({
     .trim()
     .regex(
       /^(\+1\s?)?(\(?\d{3}\)?[\s.-]?)\d{3}[\s.-]?\d{4}$/,
-      "Invalid phone number"
+      "Invalid phone number",
     ),
   officerEmail: z.email("Email is required"),
   officerStreet: z.string().min(2, "Street address is required"),
@@ -57,7 +57,7 @@ export const step3Schema = z.object({
     .trim()
     .regex(
       /^(\+1\s?)?(\(?\d{3}\)?[\s.-]?)\d{3}[\s.-]?\d{4}$/,
-      "Invalid phone number"
+      "Invalid phone number",
     ),
   accountPayableEmail: z.email("Email is required"),
   guarantorName: z.string().min(2, "Name is required"),
@@ -78,10 +78,10 @@ export const step4Schema = z.object({
         .trim()
         .regex(
           /^(\+1\s?)?(\(?\d{3}\)?[\s.-]?)\d{3}[\s.-]?\d{4}$/,
-          "Invalid phone number"
+          "Invalid phone number",
         ),
       instructions: z.string().min(2, "Instruction is required"),
-    })
+    }),
   ),
 });
 
@@ -90,13 +90,14 @@ export const step5Schema = z.object({
   acknowledge: z.boolean().refine((val) => val === true, {
     message: "Guarantee agreement is required",
   }),
+  consent: z.boolean(),
   // files
   certificate: z
     .file("Resale certificate is required")
     .max(MAX_UPLOAD_SIZE, "Upload file less tant 5MB")
     .mime(
       ["image/png", "image/jpeg", "application/pdf"],
-      "File type is not allowed"
+      "File type is not allowed",
     ),
   dlFront: fileSchema,
   dlBack: fileSchema,

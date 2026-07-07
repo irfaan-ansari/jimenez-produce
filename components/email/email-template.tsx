@@ -32,21 +32,30 @@ export const EmailTemplate = ({
         }}
       >
         <Body className="mx-auto my-auto px-4 font-sans bg-[#f2f8eb]">
-          <Container className="mx-auto my-20 max-w-[660px] border bg-white border-[#eaeaea] overflow-hidden">
+          <Container className="mx-auto my-20 max-w-[660px] border bg-white rounded=[1.5rem] border-[#eaeaea] overflow-hidden">
             {/* Header */}
-            <Section className="py-10 px-4 text-center bg-[#80b83a]">
-              <Img
-                src={`https://jimenezproduce.com/logo.png`}
-                width="100"
-                height="100"
-                alt="Logo"
-                className="h-24 w-24 mx-auto object-contain bg-white p-2 rounded-full"
-              />
-              <Heading className="text-[44px] font-bold text-center text-white">
-                {heading || "Status"}
-              </Heading>
-            </Section>
+            <Section className="bg-[#80b83a] px-6 py-8">
+              <Row>
+                <Column width="100" className="pr-6">
+                  <Img
+                    src="https://jimenezproduce.com/logo.png"
+                    width="80"
+                    height="80"
+                    alt="Jimenez Produce"
+                    className="rounded-2xl w-20 h-20 object-contain  border-2 bg-[#f7fee7] border-[#d9f99d] p-2"
+                  />
+                </Column>
 
+                <Column>
+                  <Heading className="m-0 text-[36px] mb-2 font-bold text-white">
+                    Jimenez Produce
+                  </Heading>
+                  <Heading className="m-0 text-[28px] font-semibold text-neutral-100">
+                    {heading ?? "Foodservice distribution"}
+                  </Heading>
+                </Column>
+              </Row>
+            </Section>
             {/* body  */}
             {children}
             {template === "admin" ? (

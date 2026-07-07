@@ -51,7 +51,7 @@ export function DataTable<TData, TValue>({
   const {
     pagination = {
       page: 1,
-      limit: 10,
+      limit: 24,
       total: 0,
       totalPages: 1,
     },

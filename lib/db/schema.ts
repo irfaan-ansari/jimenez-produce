@@ -742,6 +742,46 @@ export const promotionTarget = pgTable(
   ],
 );
 
+export const catalog = pgTable(
+  "catalog",
+  {
+    id: serial("id").primaryKey(),
+    name: text("name").notNull(),
+    organizationId: text("organization_id")
+      .notNull()
+      .references(() => organization.id, {
+        onDelete: "cascade",
+      }),
+    featuredProductIds: jsonb("featured_product_ids")
+      .$type<number[]>()
+      .default([]),
+    pdfUrl: text("pdf_url").notNull().default(""),
+    effectiveFrom: timestamp("effective_from").notNull(),
+    effectiveTo: timestamp("effective_to").notNull(),
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at")
+      .defaultNow()
+      .$onUpdate(() => /* @__PURE__ */ new Date())
+      .notNull(),
+  },
+  (table) => [index("catalog_organizationId_idx").on(table.organizationId)],
+);
+export const catalogView = pgTable("catalog_view", {
+  id: serial("id").primaryKey(),
+  catalogId: integer("catalog_id")
+    .notNull()
+    .references(() => catalog.id, {
+      onDelete: "cascade",
+    }),
+  source: text("source"), // email, whatsapp, qr, direct
+  email: text("email"), // email, whatsapp, qr, direct
+  viewType: text("view_type"), // pdf, web
+  ipAddress: text("ip_address"),
+  userAgent: text("user_agent"),
+  sessionId: text("session_id"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 export type ProductInsertType = InferInsertModel<typeof product>;
 export type ProductSelectType = InferSelectModel<typeof product>;
 export type CustomerSelectType = InferSelectModel<typeof customer>;
@@ -803,6 +843,9 @@ export type PromotionInsertType = InferInsertModel<typeof promotion>;
 export type PromotionTargetSelectType = InferSelectModel<
   typeof promotionTarget
 >;
-export type PromotionTargetInsertType = InferInsertModel<
-  typeof promotionTarget
->;
+export type CatalogTargetInsertType = InferInsertModel<typeof promotionTarget>;
+
+export type CatalogSelectType = InferSelectModel<typeof catalog>;
+export type CatalogInsertType = InferInsertModel<typeof catalog>;
+export type CatalogViewSelectType = InferSelectModel<typeof catalogView>;
+export type CatalogViewInsertType = InferInsertModel<typeof catalogView>;

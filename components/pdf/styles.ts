@@ -77,9 +77,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   label: {
-    fontSize: 7,
+    fontSize: 8,
     color: COLORS.secondary,
-    fontWeight: "bold",
+    fontWeight: 600,
     textTransform: "uppercase",
     marginBottom: 2,
     lineHeight: 1,

@@ -127,7 +127,7 @@ export const createOrder = handleAction(
 
     // create order line items
     const lineItemsWithOrderId = lineItems.map((item) => {
-      const { createdAt, updatedAt, ...rest } = item;
+      const { createdAt, updatedAt, id, ...rest } = item;
       return {
         ...rest,
         orderId: orderRes.id,

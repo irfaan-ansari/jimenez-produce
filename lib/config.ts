@@ -147,6 +147,7 @@ export const SIDEBAR_MENU = [
         href: "/admin/products?status=archived",
         color: "#71717A",
       },
+
       {
         label: "Price Level",
         href: "/admin/products/price-level",
@@ -174,18 +175,22 @@ export const SIDEBAR_MENU = [
         label: "All",
         href: "/admin/promotions",
         color: "#A1A1AA",
-        query: { status: "" },
       },
       {
         label: "Active",
         href: "/admin/promotions?status=active",
         color: "#F59E0B",
       },
-
       {
         label: "Inactive",
         href: "/admin/promotions?status=inactive",
         color: "#22C55E",
+      },
+
+      {
+        label: "Campaigns",
+        href: "/admin/promotions/campaigns",
+        color: "#A1A1AA",
       },
     ],
   },

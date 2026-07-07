@@ -26,7 +26,9 @@ export const Authorization = withForm({
 
         <form.AppField
           name="certificate"
-          children={(field) => <field.FileField label={t[field.name]} />}
+          children={(field) => (
+            <field.FileField label={t[field.name]} className="" />
+          )}
         />
 
         <form.AppField
@@ -78,6 +80,34 @@ export const Authorization = withForm({
                       <FieldTitle className="text-foreground">
                         {t[field.name]}
                       </FieldTitle>
+                      <FieldDescription>
+                        {t[`${field.name}Desc`]}
+                      </FieldDescription>
+                    </FieldContent>
+                  </Field>
+                </FieldLabel>
+                {isInvalid && <FieldError errors={field.state.meta.errors} />}
+              </Field>
+            );
+          }}
+        />
+        <form.Field
+          name="consent"
+          children={(field) => {
+            const isInvalid =
+              field.state.meta.isTouched && !field.state.meta.isValid;
+
+            return (
+              <Field className="gap-2 @2xl:col-span-2" data-invalid={isInvalid}>
+                <FieldLabel className="col-span-2">
+                  <Field orientation="horizontal">
+                    <Checkbox
+                      id={field.name}
+                      onCheckedChange={(checked) =>
+                        field.handleChange(checked as boolean)
+                      }
+                    />
+                    <FieldContent>
                       <FieldDescription>
                         {t[`${field.name}Desc`]}
                       </FieldDescription>

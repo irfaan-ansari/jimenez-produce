@@ -5,7 +5,8 @@ import { getSession } from "./auth";
 import { cookies } from "next/headers";
 import { handleAction } from "@/lib/helper/error-handler";
 import { product, ProductInsertType } from "@/lib/db/schema";
-import { and, eq, ilike, desc, sql, countDistinct } from "drizzle-orm";
+import { and, eq, ilike, desc, countDistinct } from "drizzle-orm";
+import { updateCatalog } from "./catalog";
 
 export const getProducts = handleAction(
   async (query: Record<string, string>) => {
@@ -66,10 +67,23 @@ export const createProduct = handleAction(async (data: ProductInsertType) => {
   const { activeOrganizationId } = session.session;
   const { status, ...rest } = data;
 
+  const searchText = [
+    rest.title,
+    rest.categories?.join(" "),
+    rest.identifier,
+    rest.basePrice,
+    rest.type,
+    rest.unit,
+    status,
+  ]
+    .filter(Boolean)
+    .join(" ");
+
   const [result] = await db
     .insert(product)
     .values({
       ...rest,
+      searchText,
       status: status?.toLowerCase(),
       organizationId: activeOrganizationId,
     })
@@ -120,8 +134,8 @@ export const importProducts = handleAction(
         id: existingMap.get(item.identifier!),
       }));
 
-    const res = await Promise.all(
-      updateData.map((item) =>
+    const res = await Promise.all([
+      ...updateData.map((item) =>
         db
           .update(product)
           .set({
@@ -129,7 +143,8 @@ export const importProducts = handleAction(
           })
           .where(eq(product.id, item.id!)),
       ),
-    );
+      updateCatalog(),
+    ]);
 
     return res.length;
   },
@@ -151,10 +166,21 @@ export const updateProduct = handleAction(
     });
 
     if (!existing) throw new Error("Resource not found.");
+    const searchText = [
+      data.title,
+      data.categories?.join(" "),
+      data.identifier,
+      data.basePrice,
+      data.type,
+      data.unit,
+      data.status,
+    ]
+      .filter(Boolean)
+      .join(" ");
 
     const [result] = await db
       .update(product)
-      .set(data)
+      .set({ ...data, searchText })
       .where(eq(product.id, id))
       .returning();
 

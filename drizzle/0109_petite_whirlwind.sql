@@ -1,0 +1,1 @@
+ALTER TABLE "catalog" ADD COLUMN "name" text NOT NULL;
