@@ -766,6 +766,7 @@ export const catalog = pgTable(
   },
   (table) => [index("catalog_organizationId_idx").on(table.organizationId)],
 );
+
 export const catalogView = pgTable("catalog_view", {
   id: serial("id").primaryKey(),
   catalogId: integer("catalog_id")
@@ -780,6 +781,40 @@ export const catalogView = pgTable("catalog_view", {
   userAgent: text("user_agent"),
   sessionId: text("session_id"),
   createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const messages = pgTable("messages", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  content: text("content").notNull(),
+  audienceType: text("audience_type").notNull(),
+  status: text("status").default("draft").notNull(),
+  metadata: jsonb("metadata").$type<{}>().default({}),
+  createdBy: text("created_by").references(() => user.id, {
+    onDelete: "set null",
+  }),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const messageRecipients = pgTable("message_recipients", {
+  id: serial("id").primaryKey(),
+  messageId: integer("message_id")
+    .references(() => messages.id, {
+      onDelete: "cascade",
+    })
+    .notNull(),
+  entity: text("entity").notNull(),
+  entityId: text("entity_id"),
+  phoneNumber: text("phone_number").notNull(),
+  variables: jsonb("variables").$type<{}>().default({}),
+  providerSid: text("provider_sid"),
+  status: text("status").default("pending").notNull(),
+  error: text("error"),
+  updatedAt: timestamp("updated_at")
+    .defaultNow()
+    .$onUpdate(() => /* @__PURE__ */ new Date())
+    .notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
 export type ProductInsertType = InferInsertModel<typeof product>;

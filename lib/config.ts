@@ -167,40 +167,22 @@ export const SIDEBAR_MENU = [
     items: [],
   },
   {
-    label: "Promotions",
+    label: "Marketing",
     icon: Rocket,
     href: "/admin/promotions",
     items: [
       {
-        label: "All",
+        label: "Promotions",
         href: "/admin/promotions",
         color: "#A1A1AA",
       },
       {
-        label: "Active",
-        href: "/admin/promotions?status=active",
-        color: "#F59E0B",
-      },
-      {
-        label: "Inactive",
-        href: "/admin/promotions?status=inactive",
-        color: "#22C55E",
-      },
-
-      {
-        label: "Campaigns",
-        href: "/admin/promotions/campaigns",
+        label: "Messaging",
+        href: "/admin/promotions/messaging",
         color: "#A1A1AA",
       },
     ],
   },
-  // disabled
-  // {
-  //   label: "Warehouses",
-  //   icon: Building,
-  //   href: "/admin/warehouses",
-  //   items: [],
-  // },
   {
     label: "Customers",
     icon: Approved,
