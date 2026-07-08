@@ -2,7 +2,7 @@ export const TEMPLATES = {
   NEW_ORDER: `Hi {{user_name}},
 Your order for {{customer_name}} has been received.
 
-Order: #{{order_id}}
+Order #{{order_id}}
 Items: {{item_count}}
 Order Total: {{order_total}}
 
@@ -11,7 +11,7 @@ Thank you for choosing Jimenez Produce.`,
 
   NEW_ORDER_ADMIN: `New order received from {{customer_name}}.
 
-Order: #{{order_id}}
+Order #{{order_id}}
 Items: {{item_count}}
 Order Total: {{order_total}}
 
