@@ -257,6 +257,8 @@ const createNewOrderNotification = async (orderId: number) => {
   const customerMessage = renderTemplate(TEMPLATES.NEW_ORDER, variables);
   const adminMessage = renderTemplate(TEMPLATES.NEW_ORDER_ADMIN, variables);
 
+  console.log("sending new order:", adminPhoneNumbers);
+
   await Promise.all([
     twilioSendMessage({ phoneNumber, body: customerMessage }),
 
@@ -281,8 +283,10 @@ async function createOrderCompletedNotification(orderId: number) {
 
   const variables = buildOrderVariables(order);
 
-  const adminPhones = order.adminPhones;
+  const adminPhones = order?.adminPhones;
   const message = renderTemplate(TEMPLATES.ORDER_COMPLETED_ADMIN, variables);
+
+  console.log("sending order complete to:", adminPhones);
 
   await Promise.all(
     adminPhones.map((phone) =>
