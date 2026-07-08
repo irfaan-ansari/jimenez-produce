@@ -12,6 +12,10 @@ import { isBefore } from "date-fns";
 import { getSession } from "./auth";
 import { getTeamTaxRule } from "./tax-rule";
 import { handleAction } from "@/lib/helper/error-handler";
+import { renderTemplate } from "@/lib/sms/render";
+import { twilioSendMessage } from "@/lib/twilio";
+import { waitUntil } from "@vercel/functions";
+import { TEMPLATES } from "@/lib/sms/template";
 
 /**
  * create order
@@ -34,7 +38,6 @@ export const createOrder = handleAction(
 
     const { activeTeamId, activeOrganizationId, userId } = auth.session;
 
-    // TOTO get price levels
     const { data: taxRule, error } = await getTeamTaxRule();
 
     if (error) throw new Error("Failed to submit your order, please try again");
@@ -141,6 +144,9 @@ export const createOrder = handleAction(
       .values(lineItemsWithOrderId)
       .returning();
 
+    // send notification
+    waitUntil(createNewOrderNotification(orderRes.id));
+
     return { ...orderRes, lineItems: lineItemsres };
   },
 );
@@ -174,6 +180,11 @@ export const updateOrder = handleAction(
       .where(eq(order.id, id))
       .returning();
 
+    // send admin notification
+    if (result.status === "completed" && existing.status !== "completed") {
+      waitUntil(createOrderCompletedNotification(result.id));
+    }
+
     return result;
   },
 );
@@ -196,3 +207,88 @@ export const deleteOrder = handleAction(async (id: number) => {
 
   return res;
 });
+
+/** utility */
+const getOrderWithManager = async (orderId: number) => {
+  const order = await db.query.order.findFirst({
+    where: (o, { eq }) => eq(o.id, orderId),
+    with: {
+      user: true,
+      team: true,
+      organization: true,
+    },
+  });
+
+  const metadata = JSON.parse(order?.organization?.metadata!);
+
+  return { ...order, adminPhones: metadata.adminPhones as string[] };
+};
+
+function buildOrderVariables(
+  order: Awaited<ReturnType<typeof getOrderWithManager>>,
+) {
+  if (!order) throw new Error("Order not found");
+
+  return {
+    order_id: order.id!,
+    user_name: order.user?.name ?? "",
+    customer_name: order.team?.name ?? "",
+    item_count: order.lineItemCount!,
+    order_total: order.total!,
+  };
+}
+
+/**
+ * create new order notication
+ * @param param0
+ * @returns
+ */
+const createNewOrderNotification = async (orderId: number) => {
+  const order = await getOrderWithManager(orderId);
+
+  if (!order) return;
+
+  const phoneNumber = order?.user?.phoneNumber!;
+  const adminPhoneNumbers = order?.adminPhones;
+
+  const variables = buildOrderVariables(order);
+
+  const customerMessage = renderTemplate(TEMPLATES.NEW_ORDER, variables);
+  const adminMessage = renderTemplate(TEMPLATES.NEW_ORDER_ADMIN, variables);
+
+  await Promise.all([
+    twilioSendMessage({ phoneNumber, body: customerMessage }),
+
+    ...adminPhoneNumbers.map((phone) =>
+      twilioSendMessage({
+        phoneNumber: phone,
+        body: adminMessage,
+      }),
+    ),
+  ]);
+};
+
+/**
+ * create order complete notification
+ * @param orderId
+ * @returns
+ */
+async function createOrderCompletedNotification(orderId: number) {
+  const order = await getOrderWithManager(orderId);
+
+  if (!order) return;
+
+  const variables = buildOrderVariables(order);
+
+  const adminPhones = order.adminPhones;
+  const message = renderTemplate(TEMPLATES.ORDER_COMPLETED_ADMIN, variables);
+
+  await Promise.all(
+    adminPhones.map((phone) =>
+      twilioSendMessage({
+        phoneNumber: phone!,
+        body: message,
+      }),
+    ),
+  );
+}

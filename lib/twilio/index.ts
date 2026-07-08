@@ -51,9 +51,13 @@ export const twilioSendMessage = async ({
   phoneNumber: string;
   body: string;
 }) => {
-  return twilioClient.messages.create({
-    messagingServiceSid: messagingServiceId,
-    to: `+1${phoneNumber}`,
-    body,
-  });
+  try {
+    return twilioClient.messages.create({
+      messagingServiceSid: messagingServiceId,
+      to: `+1${phoneNumber}`,
+      body,
+    });
+  } catch (error) {
+    console.log("Message failed:", error);
+  }
 };

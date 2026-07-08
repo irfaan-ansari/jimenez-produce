@@ -56,7 +56,7 @@ export const createMessage = async (payload: Message) => {
       entityId: null,
       phoneNumber,
     }));
-  } else {
+  } else if (payload.audienceType === "customer") {
     const teams = await db.query.team.findMany({
       where: (c, { and, eq, inArray }) =>
         and(
@@ -73,6 +73,27 @@ export const createMessage = async (payload: Message) => {
         entity: payload.audienceType,
         entityId: team.id,
         phoneNumber: team.phone!,
+      }));
+  } else {
+    const members = await db.query.member.findMany({
+      where: (c, { and, eq, inArray }) =>
+        and(
+          eq(c.organizationId, activeOrganizationId!),
+          payload.audienceTarget === "selected"
+            ? inArray(c.userId, selectedTargets)
+            : undefined,
+        ),
+      with: {
+        user: true,
+      },
+    });
+
+    recipients = members
+      .filter((c) => c.user.phoneNumber)
+      .map((member) => ({
+        entity: payload.audienceType,
+        entityId: member.userId,
+        phoneNumber: member.user.phoneNumber!,
       }));
   }
 
@@ -151,13 +172,3 @@ export const sendMessage = async (messageId: number) => {
     failed,
   };
 };
-
-export async function renderTemplate(
-  template: string,
-  variables: Record<string, string | number | null | undefined>,
-) {
-  return template.replace(/\{\{\s*(\w+)\s*\}\}/g, (_, key) => {
-    const value = variables[key];
-    return value == null ? "" : String(value);
-  });
-}
