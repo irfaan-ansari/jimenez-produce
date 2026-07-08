@@ -16,6 +16,7 @@ import { renderTemplate } from "@/lib/sms/render";
 import { twilioSendMessage } from "@/lib/twilio";
 import { waitUntil } from "@vercel/functions";
 import { TEMPLATES } from "@/lib/sms/template";
+import { formatUSD } from "@/lib/utils";
 
 /**
  * create order
@@ -234,7 +235,7 @@ function buildOrderVariables(
     user_name: order.user?.name ?? "",
     customer_name: order.team?.name ?? "",
     item_count: order.lineItemCount!,
-    order_total: order.total!,
+    order_total: formatUSD(order.total ?? ""),
   };
 }
 
