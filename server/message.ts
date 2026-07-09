@@ -136,7 +136,7 @@ export const sendMessage = async (messageId: number) => {
           await db
             .update(messageRecipients)
             .set({
-              providerSid: result.sid,
+              providerSid: result?.sid,
               status: "sent",
               error: null,
             })
