@@ -126,7 +126,7 @@ export function MessageDialog({ children }: { children: React.ReactNode }) {
               name="audienceType"
               children={(field) => (
                 <field.RadioField
-                  label="Recipient"
+                  label="Audience"
                   options={[
                     {
                       label: "Customers",
@@ -155,7 +155,7 @@ export function MessageDialog({ children }: { children: React.ReactNode }) {
                       children={(field) => (
                         <field.RadioField
                           className={type === "custom" ? "hidden" : ""}
-                          label="Audience"
+                          label="Recipient"
                           options={[
                             {
                               label: "All",

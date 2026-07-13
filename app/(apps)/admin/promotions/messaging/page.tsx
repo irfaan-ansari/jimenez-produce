@@ -23,7 +23,7 @@ const PromotionsPage = () => {
         <div className="flex flex-col flex-1">
           <h1 className="text-xl font-bold">Messages</h1>
           <p className="text-sm text-muted-foreground line-clamp-1">
-            View past messages
+            View message history.
           </p>
         </div>
 
