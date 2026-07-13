@@ -35,7 +35,7 @@ const defaultValues: DriverFormType = {
   ...applicantExperience,
   ...applicantLicence,
   ...applicantTrafficConvictions,
-  step: 0,
+  step: 8,
   position: "Route Driver",
 };
 
@@ -58,7 +58,7 @@ export const DriverForm = ({
     validators: {
       onSubmit: ({ value, formApi }) => {
         return formApi.parseValuesWithSchema(
-          steps[value.step as number].schema as typeof driverFormSchema
+          steps[value.step as number].schema as typeof driverFormSchema,
         );
       },
     },

@@ -18,6 +18,7 @@ import {
   CircleDashed,
   Pause,
   Ban,
+  Info,
 } from "lucide-react";
 
 export const STATUS_MAP = {
@@ -165,6 +166,11 @@ export const STATUS_MAP = {
     label: "Overdue",
     color: "#EF4444",
     icon: CircleOff,
+  },
+  processing: {
+    label: "Processing",
+    color: "#F59E0B",
+    icon: Info,
   },
 };
 

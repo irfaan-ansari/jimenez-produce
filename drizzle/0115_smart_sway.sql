@@ -1,0 +1,1 @@
+ALTER TABLE "message_recipients" ADD COLUMN "counts" jsonb DEFAULT '{}'::jsonb;

@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronsUpDown, Loader2, Plus, Sparkles, Trash2 } from "lucide-react";
+import { ChevronsUpDown, Loader2, Plus, Sparkles } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
@@ -17,9 +17,9 @@ import {
 } from "@/components/app-dialog";
 import z from "zod";
 import { CustomersSelector } from "@/components/admin/customers-selector";
+import { toast } from "sonner";
 import { Label } from "@/components/ui/label";
 import { createMessage } from "@/server/message";
-import { toast } from "sonner";
 
 const schema = z
   .object({
@@ -51,11 +51,7 @@ const schema = z
     }
   });
 
-export function CreateCampaignDialog({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export function MessageDialog({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = React.useState(false);
 
   const form = useAppForm({
@@ -78,32 +74,26 @@ export function CreateCampaignDialog({
         selectedTargets: value.selectedTargets,
         content: value.messageContent,
         phoneNumbers: value.phoneNumbers
-          .split("\n")
-          .map((n) => n.trim())
+          .split(",")
+          .map((phone) => phone.trim())
           .filter(Boolean),
       };
 
-      const toastId = toast.loading("Starting message delivery...");
+      const toastId = toast.loading("Please wait...");
 
-      await createMessage(payload);
-
-      toast.success("Your messages are being sent in the background.", {
-        id: toastId,
-      });
-
-      console.log(payload);
+      const { success } = await createMessage(payload);
+      if (success) {
+        toast.success("Sending messages...", {
+          id: toastId,
+        });
+        form.reset();
+        setOpen(false);
+      } else {
+        toast.error("Failed to send messages.", { id: toastId });
+      }
     },
   });
-
-  const variables = [
-    { label: "First Name", value: "{{first_name}}" },
-    { label: "Last Name", value: "{{last_name}}" },
-    { label: "Phone", value: "{{phone}}" },
-    { label: "Email", value: "{{email}}" },
-    { label: "Order ID", value: "{{order_id}}" },
-    { label: "Order Total", value: "{{order_total}}" },
-  ];
-
+  console.log(form.state);
   return (
     <AppDialog open={open} onOpenChange={setOpen}>
       <AppDialogTrigger asChild>{children}</AppDialogTrigger>
@@ -152,53 +142,48 @@ export function CreateCampaignDialog({
             />
 
             <form.Subscribe
-              selector={(state) => state.values.audienceType}
-              children={(type) =>
-                type !== "custom" && (
-                  <form.AppField
-                    name="audienceTarget"
-                    children={(field) => (
-                      <field.RadioField
-                        label="Audience"
-                        options={[
-                          {
-                            label: "All",
-                            value: "all",
-                          },
-                          {
-                            label: "Selected",
-                            value: "selected",
-                          },
-                        ]}
-                      />
-                    )}
-                  />
-                )
-              }
-            />
-
-            <form.Subscribe
               selector={(state) => ({
                 type: state.values.audienceType,
                 target: state.values.audienceTarget,
               })}
-            >
-              {({ type, target }) => (
-                <>
-                  {type === "custom" && (
+              children={({ type, target }) => {
+                return (
+                  <>
+                    {/* audience type */}
+                    <form.AppField
+                      name="audienceTarget"
+                      children={(field) => (
+                        <field.RadioField
+                          className={type === "custom" ? "hidden" : ""}
+                          label="Audience"
+                          options={[
+                            {
+                              label: "All",
+                              value: "all",
+                            },
+                            {
+                              label: "Selected",
+                              value: "selected",
+                            },
+                          ]}
+                        />
+                      )}
+                    />
+
+                    {/* audience custom */}
                     <form.AppField
                       name="phoneNumbers"
                       children={(field) => (
                         <field.TextAreaField
+                          className={type !== "custom" ? "hidden" : ""}
                           label="Phone Numbers"
-                          placeholder={`+19876543210
-+19812345678`}
+                          placeholder={`9876543210,9812345678`}
+                          description="Enter comma-separated phone numbers without the country code"
                         />
                       )}
                     />
-                  )}
 
-                  {type !== "custom" && target === "selected" && (
+                    {/* audience selector */}
                     <form.Field
                       name="selectedTargets"
                       mode="array"
@@ -207,7 +192,9 @@ export function CreateCampaignDialog({
                         return (
                           <div
                             className={
-                              target !== "selected" ? "hidden" : "space-y-2"
+                              type === "custom" || target !== "selected"
+                                ? "hidden"
+                                : "space-y-2"
                             }
                           >
                             <Label htmlFor="customer-selector">
@@ -252,10 +239,10 @@ export function CreateCampaignDialog({
                         );
                       }}
                     />
-                  )}
-                </>
-              )}
-            </form.Subscribe>
+                  </>
+                );
+              }}
+            />
 
             <div className="space-y-3">
               <div className="relative">
@@ -264,10 +251,9 @@ export function CreateCampaignDialog({
                   children={(field) => (
                     <field.TextAreaField
                       label="Message Content"
-                      placeholder={`Hi {{first_name}},
+                      placeholder={`Hi {{name}},
 
-Your order {{order_id}} is ready for pickup.`}
-                      description=" You can insert variables using the buttons below."
+Check out our latest offers.`}
                     />
                   )}
                 />
@@ -275,21 +261,10 @@ Your order {{order_id}} is ready for pickup.`}
                   size="icon-sm"
                   variant="secondary"
                   disabled
-                  className="absolute right-2 bottom-9"
+                  className="absolute right-2 bottom-2"
                 >
                   <Sparkles />
                 </Button>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {variables.map((variable) => (
-                  <Badge
-                    key={variable.value}
-                    variant="outline"
-                    className="cursor-pointer"
-                  >
-                    {variable.label}
-                  </Badge>
-                ))}
               </div>
             </div>
           </FieldGroup>

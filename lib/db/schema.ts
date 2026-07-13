@@ -814,6 +814,7 @@ export const messageRecipients = pgTable("message_recipients", {
   entity: text("entity").notNull(),
   entityId: text("entity_id"),
   phoneNumber: text("phone_number").notNull(),
+  content: text("content").notNull(),
   variables: jsonb("variables").$type<{}>().default({}),
   providerSid: text("provider_sid"),
   status: text("status").default("pending").notNull(),

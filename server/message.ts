@@ -5,6 +5,9 @@ import { eq } from "drizzle-orm";
 import { getSession } from "./auth";
 import { twilioSendMessage } from "@/lib/twilio";
 import { messageRecipients, messages } from "@/lib/db/schema";
+import { extractVariables, renderTemplate } from "@/lib/sms/render";
+import { handleAction } from "@/lib/helper/error-handler";
+import { waitUntil } from "@vercel/functions";
 
 type Message = {
   name: string;
@@ -15,72 +18,88 @@ type Message = {
   phoneNumbers?: string[];
 };
 
-export const createMessage = async (payload: Message) => {
+export const createMessage = handleAction(async (payload: Message) => {
   const auth = await getSession();
 
   if (!auth) throw new Error("Authentication required.");
 
   const { activeOrganizationId, userId } = auth.session;
+  const recipients = await getRecipients(payload, activeOrganizationId!);
 
-  const phoneNumbers = payload.phoneNumbers ?? [];
-  const selectedTargets = payload.selectedTargets ?? [];
-
-  if (!payload.content.trim()) {
-    throw new Error("Message content is required.");
-  }
-
-  if (payload.audienceType === "custom" && !phoneNumbers.length) {
-    throw new Error("At least one phone number is required.");
-  }
-
-  //   create message
-  const [result] = await db
+  const [message] = await db
     .insert(messages)
     .values({
       ...payload,
       organizationId: activeOrganizationId!,
       createdBy: userId!,
       status: "processing",
+      metadata: {
+        total: recipients.length,
+      },
     })
     .returning();
 
-  let recipients: {
-    entity: string;
-    entityId: string | null;
-    phoneNumber: string;
-  }[] = [];
+  if (recipients.length) {
+    await db.insert(messageRecipients).values(
+      recipients.map((recipient) => ({
+        messageId: message.id,
+        ...recipient,
+        content: renderTemplate(payload.content, recipient.variables),
+      })),
+    );
+  }
+  waitUntil(processMessages(message.id));
+  return message;
+});
 
+/**
+ * get recipients
+ * @param payload
+ * @param organizationId
+ * @returns
+ */
+export async function getRecipients(payload: Message, organizationId: string) {
   if (payload.audienceType === "custom") {
-    recipients = phoneNumbers.map((phoneNumber) => ({
+    return (payload.phoneNumbers ?? []).map((phoneNumber) => ({
       entity: "custom",
       entityId: null,
       phoneNumber,
+      variables: {},
     }));
-  } else if (payload.audienceType === "customer") {
+  }
+
+  if (payload.audienceType === "team") {
     const teams = await db.query.team.findMany({
-      where: (c, { and, eq, inArray }) =>
+      where: (t, { and, eq, inArray }) =>
         and(
-          eq(c.organizationId, activeOrganizationId!),
+          eq(t.organizationId, organizationId),
           payload.audienceTarget === "selected"
-            ? inArray(c.id, selectedTargets)
+            ? inArray(t.id, payload.selectedTargets ?? [])
             : undefined,
         ),
     });
 
-    recipients = teams
-      .filter((c) => c.phone)
+    return teams
+      .filter((team) => team.phone)
       .map((team) => ({
-        entity: payload.audienceType,
+        entity: "team",
         entityId: team.id,
         phoneNumber: team.phone!,
+        variables: extractVariables(payload.content, {
+          name: team.name,
+          phone: team.phone,
+          manager: team.managerName,
+        }),
       }));
-  } else {
+  }
+
+  if (payload.audienceType === "user") {
     const members = await db.query.member.findMany({
-      where: (c, { and, eq, inArray }) =>
+      where: (m, { and, eq, inArray }) =>
         and(
-          eq(c.organizationId, activeOrganizationId!),
+          eq(m.organizationId, organizationId),
           payload.audienceTarget === "selected"
-            ? inArray(c.userId, selectedTargets)
+            ? inArray(m.userId, payload.selectedTargets ?? [])
             : undefined,
         ),
       with: {
@@ -88,27 +107,27 @@ export const createMessage = async (payload: Message) => {
       },
     });
 
-    recipients = members
-      .filter((c) => c.user.phoneNumber)
+    return members
+      .filter((member) => member.user.phoneNumber)
       .map((member) => ({
-        entity: payload.audienceType,
+        entity: "member",
         entityId: member.userId,
         phoneNumber: member.user.phoneNumber!,
+        variables: extractVariables(payload.content, {
+          name: member.user.name,
+          phone: member.user.phoneNumber,
+        }),
       }));
   }
+  return [];
+}
 
-  if (recipients.length) {
-    await db.insert(messageRecipients).values(
-      recipients.map((recipient) => ({
-        messageId: result.id,
-        ...recipient,
-      })),
-    );
-  }
-  return result;
-};
-
-export const sendMessage = async (messageId: number) => {
+/**
+ * process messages using wait until
+ * @param messageId
+ * @returns
+ */
+export const processMessages = async (messageId: number) => {
   const message = await db.query.messages.findFirst({
     where: (m, { eq }) => eq(m.id, messageId),
     with: {
@@ -130,7 +149,7 @@ export const sendMessage = async (messageId: number) => {
         try {
           const result = await twilioSendMessage({
             phoneNumber: recipient.phoneNumber,
-            body: message.content,
+            body: recipient.content,
           });
 
           await db
@@ -157,12 +176,15 @@ export const sendMessage = async (messageId: number) => {
       }),
   );
 
-  const status = failed === 0 ? "sent" : sent === 0 ? "failed" : "partial";
-
   await db
     .update(messages)
     .set({
-      status,
+      status: "completed",
+      metadata: {
+        ...message?.metadata,
+        sent,
+        failed,
+      },
     })
     .where(eq(messages.id, message.id));
 
