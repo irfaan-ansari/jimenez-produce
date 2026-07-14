@@ -82,7 +82,7 @@ async function getCroppedImage({
     0,
     0,
     cropWidth,
-    cropHeight
+    cropHeight,
   );
 
   return new Promise((resolve) => {
@@ -112,15 +112,15 @@ export const TransformImageDialog = ({
   onSave: (file: File) => Promise<void>;
 }) => {
   const [open, setOpen] = React.useState(false);
-  const [loading, setLoading] = React.useState(false);
+
   const [rotation, setRotation] = React.useState(0);
   const [zoom, setZoom] = React.useState(1);
   const [crop, setCrop] = React.useState({ x: 0, y: 0 });
   const [croppedArea, setCroppedArea] = React.useState<CroppedPixelType | null>(
-    null
+    null,
   );
 
-  const [previewUrl, setPreviewUrl] = React.useState<string | null>(null);
+  const [isPending, startTransition] = React.useTransition();
 
   const reset = () => {
     setRotation(0);
@@ -130,32 +130,7 @@ export const TransformImageDialog = ({
 
   const handleSave = async () => {
     if (!croppedArea) return;
-    setLoading(true);
-
-    try {
-      const blob = await getCroppedImage({
-        imageSrc: url,
-        croppedAreaPixels: croppedArea,
-        rotation,
-      });
-
-      const file = new File([blob], `edited-${Date.now()}.jpg`, {
-        type: "image/jpeg",
-      });
-
-      await onSave(file);
-      setOpen(false);
-    } catch (err: any) {
-      toast.message(err?.message ?? "Failed to transform file.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  React.useEffect(() => {
-    if (!croppedArea) return;
-
-    const generatePreview = async () => {
+    startTransition(async () => {
       try {
         const blob = await getCroppedImage({
           imageSrc: url,
@@ -163,47 +138,27 @@ export const TransformImageDialog = ({
           rotation,
         });
 
-        const preview = URL.createObjectURL(blob);
-        setPreviewUrl(preview);
-      } catch (err) {
-        console.error(err);
+        const file = new File([blob], `edited-${Date.now()}.jpg`, {
+          type: "image/jpeg",
+        });
+
+        await onSave?.(file);
+        setOpen(false);
+        toast.success("File saved successfully.");
+        window.location.reload();
+      } catch (err: any) {
+        toast.message(err?.message ?? "Failed to transform file.");
       }
-    };
-
-    generatePreview();
-
-    return () => {
-      if (previewUrl) URL.revokeObjectURL(previewUrl);
-    };
-  }, [croppedArea, rotation, zoom]);
+    });
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
 
-      <DialogContent className="overflow-hidden rounded-2xl sm:max-w-xl">
-        {/* Header */}
-        <DialogHeader>
-          <DialogTitle className="text-lg font-semibold">{title}</DialogTitle>
-        </DialogHeader>
-
-        {previewUrl && (
-          <div className="mt-4">
-            <p className="mb-2 text-xs text-muted-foreground uppercase">
-              Preview
-            </p>
-
-            <div className="flex items-center justify-center rounded-xl border bg-background p-2">
-              <img
-                src={previewUrl}
-                alt="Preview"
-                className="max-h-[200px] rounded-lg object-contain"
-              />
-            </div>
-          </div>
-        )}
+      <DialogContent className="overflow-hidden rounded-2xl p-0 sm:max-w-2xl">
         {/* croper */}
-        <div className="relative h-[320px] w-full overflow-hidden rounded-xl bg-secondary">
+        <div className="relative h-110 w-full overflow-hidden *:bg-black/80">
           <Cropper
             image={url}
             crop={crop}
@@ -219,7 +174,7 @@ export const TransformImageDialog = ({
         </div>
 
         {/* Controls */}
-        <div className="flex items-center gap-4  rounded-xl">
+        <div className="flex items-center gap-4  rounded-xl px-6">
           <Button variant="outline" className="rounded-xl" onClick={reset}>
             <History />
             Reset
@@ -246,24 +201,19 @@ export const TransformImageDialog = ({
             />
           </div>
         </div>
-        <DialogFooter className="mt-4 gap-4">
+        <DialogFooter className="px-6 pb-6 gap-4">
           <DialogClose asChild>
-            <Button
-              onClick={() => console.log("save")}
-              className="min-w-28 rounded-xl"
-              size="xl"
-              variant="outline"
-            >
+            <Button className="min-w-28 rounded-xl" size="xl" variant="outline">
               Cancel
             </Button>
           </DialogClose>
           <Button
             onClick={handleSave}
-            disabled={!croppedArea || loading}
+            disabled={!croppedArea || isPending}
             className="min-w-28 rounded-xl"
             size="xl"
           >
-            {loading ? <Loader className="animate-spin" /> : "Save"}
+            {isPending ? <Loader className="animate-spin" /> : "Save"}
           </Button>
         </DialogFooter>
       </DialogContent>

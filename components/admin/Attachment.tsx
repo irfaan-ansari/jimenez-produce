@@ -5,7 +5,6 @@ import { getFileType } from "@/lib/utils";
 import { upload } from "@vercel/blob/client";
 import { Eye, FileText, SquarePen } from "lucide-react";
 import { TransformImageDialog } from "./transform-image-dialog";
-import { deleteBlob } from "@/server/blob";
 
 export const Attachment = ({
   url,
@@ -23,15 +22,11 @@ export const Attachment = ({
   const hanldeSave = async (file: File) => {
     if (type !== "image") return;
 
-    // const [uploaded, _] = await Promise.all([
-    //   upload(file.name, file, {
-    //     access: "public",
-    //     handleUploadUrl: "/api/upload",
-    //   }),
-    //   deleteBlob(url),
-    // ]);
-
-    // await onUpdate?.(uploaded.url);
+    const blob = await upload(file.name, file, {
+      access: "public",
+      handleUploadUrl: "/api/upload",
+    });
+    await onUpdate?.(blob.url);
   };
 
   return (

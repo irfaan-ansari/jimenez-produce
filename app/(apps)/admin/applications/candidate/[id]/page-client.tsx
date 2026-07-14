@@ -43,6 +43,13 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
   const status = jobApplicationStatusMap[data?.status as JobApplicationStatus];
 
   const thumbnail = getInitialsAvatar(data.firstName);
+
+  const invalidateQuery = () => {
+    queryClient.invalidateQueries({
+      queryKey: ["job-application"],
+    });
+  };
+
   return (
     <div
       className="grid grid-cols-6 gap-8"
@@ -732,9 +739,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
                 await updateJobApplication(data.id, {
                   drivingLicenseFrontUrl: newUrl,
                 });
-                queryClient.invalidateQueries({
-                  queryKey: ["job-application"],
-                });
+                invalidateQuery();
               }}
             />
             <Attachment
@@ -744,9 +749,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
                 await updateJobApplication(data.id, {
                   drivingLicenseBackUrl: newUrl,
                 });
-                queryClient.invalidateQueries({
-                  queryKey: ["job-application"],
-                });
+                invalidateQuery();
               }}
             />
             <Attachment
@@ -756,9 +759,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
                 await updateJobApplication(data.id, {
                   dotFrontUrl: newUrl,
                 });
-                queryClient.invalidateQueries({
-                  queryKey: ["job-application"],
-                });
+                invalidateQuery();
               }}
             />
             <Attachment
@@ -768,9 +769,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
                 await updateJobApplication(data.id, {
                   dotBackUrl: newUrl,
                 });
-                queryClient.invalidateQueries({
-                  queryKey: ["job-application"],
-                });
+                invalidateQuery();
               }}
             />
             <Attachment
@@ -780,9 +779,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
                 await updateJobApplication(data.id, {
                   socialSecurityFrontUrl: newUrl,
                 });
-                queryClient.invalidateQueries({
-                  queryKey: ["job-application"],
-                });
+                invalidateQuery();
               }}
             />
             <Attachment
@@ -792,9 +789,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
                 await updateJobApplication(data.id, {
                   drivingLicenseBackUrl: newUrl,
                 });
-                queryClient.invalidateQueries({
-                  queryKey: ["job-application"],
-                });
+                invalidateQuery();
               }}
             />
             <Attachment
@@ -804,9 +799,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
                 await updateJobApplication(data.id, {
                   signatureUrl: newUrl,
                 });
-                queryClient.invalidateQueries({
-                  queryKey: ["job-application"],
-                });
+                invalidateQuery();
               }}
             />
             {data.agreementUrl && (

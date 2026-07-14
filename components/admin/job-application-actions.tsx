@@ -310,7 +310,7 @@ export const JobEditDialog = ({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="rounded-2xl ring-ring/10 sm:max-w-lg">
+      <DialogContent className="rounded-2xl ring-ring/10 sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle className="text-2xl font-semibold">
             Edit Application
@@ -384,7 +384,7 @@ export const JobEditDialog = ({
           </Tabs>
 
           {/* submit button */}
-          <Field className="mt-6 flex flex-col-reverse gap-4 sm:flex-row sm:[&>button]:flex-1">
+          <Field className="mt-6 flex flex-col-reverse gap-4 sm:flex-row sm:[&>button]:w-28 sm:justify-end">
             <Button
               variant="outline"
               size="xl"
