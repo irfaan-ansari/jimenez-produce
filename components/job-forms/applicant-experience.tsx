@@ -83,8 +83,8 @@ export const ApplicantExperience = withForm({
                             label="While employed here, were you subject to the Federal Motor Carrier Safety Regulations?"
                             className="@2xl:col-span-2"
                             options={[
-                              { label: "No", value: "no" },
                               { label: "Yes", value: "yes" },
+                              { label: "No", value: "no" },
                             ]}
                           />
                         )}
@@ -96,8 +96,8 @@ export const ApplicantExperience = withForm({
                             label="Was the job designated as a safety-sensitive function subject to DOT alcohol/controlled substances testing (49 CFR Part 40)?"
                             className="@2xl:col-span-2"
                             options={[
-                              { label: "No", value: "no" },
                               { label: "Yes", value: "yes" },
+                              { label: "No", value: "no" },
                             ]}
                           />
                         )}
