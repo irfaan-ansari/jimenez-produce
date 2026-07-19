@@ -229,8 +229,8 @@ export const jobApplicationStatusMap = {
     icon: Circle,
     actions: [
       {
-        label: "Interview",
-        action: "interview",
+        label: "Start Background Check",
+        action: "verification",
         icon: MessageCircle,
       },
       {
@@ -291,6 +291,12 @@ export const jobApplicationStatusMap = {
         icon: CheckCircle,
       },
     ],
+  },
+  verification_pending: {
+    label: "Verifying",
+    color: "#3B82F6",
+    icon: Clock,
+    actions: [],
   },
 } as const;
 

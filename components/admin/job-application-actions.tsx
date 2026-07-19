@@ -16,7 +16,11 @@ import {
   SquarePen,
   Trash2,
 } from "lucide-react";
-import { deleteJobApplication, updateJobApplication } from "@/server/job";
+import {
+  deleteJobApplication,
+  updateJobApplication,
+  startBackgroundCheck,
+} from "@/server/job";
 import { JobApplicationStatusDialog } from "./job-application-status-dialog";
 import { JobApplicationSelectType } from "@/lib/db/schema";
 import { useAppForm } from "@/hooks/form-context";
@@ -85,6 +89,25 @@ export const JobApplicationAction = ({
               toast.success("Agreement sent successfully.");
               queryClient.invalidateQueries({ queryKey: ["job-applications"] });
             } else toast.error(error.message);
+          },
+        });
+        break;
+      case "verification":
+        confirm.info({
+          title: "Start Background Verification",
+          description:
+            "This will submit the applicant's information to Verified First to begin the background screening. Processing may take 1–2 business days.",
+          actionLabel: "Start Verification",
+          cancelLabel: "Cancel",
+          action: async () => {
+            const { success, error } = await startBackgroundCheck(id);
+
+            if (success) {
+              toast.success("Background verification has been started.");
+              queryClient.invalidateQueries({ queryKey: ["job-applications"] });
+            } else {
+              toast.error(error.message);
+            }
           },
         });
         break;

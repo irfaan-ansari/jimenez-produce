@@ -172,6 +172,46 @@ export const updateJobApplication = handleAction(
 );
 
 /**
+ * start background check
+ */
+
+export const startBackgroundCheck = handleAction(async (id: number) => {
+  const session = await getSession();
+  if (!session) throw new Error("Authentication required.");
+
+  const existing = await db.query.jobApplications.findFirst({
+    where: eq(jobApplications.id, id),
+  });
+
+  if (!existing) throw new Error("Resource not found.");
+
+  await Promise.all([
+    db
+      .update(jobApplications)
+      .set({
+        status: "verification_pending",
+      })
+      .where(eq(jobApplications.id, id)),
+  ]);
+
+  // send to power automate
+  // fetch("YOUR_POWER_AUTOMATE_HTTP_POST_URL_HERE", {
+  //   method: "POST",
+  //   headers: {
+  //     "Content-Type": "application/json",
+  //   },
+  //   body: JSON.stringify({
+  //     applicationId: "APP-10294",
+  //     firstName: "Jane",
+  //     lastName: "Doe",
+  //     email: "janedoe@example.com",
+  //     phone: "+15555550123",
+  //   }),
+  // });
+  return true;
+});
+
+/**
  * delete job application
  * @param id
  * @returns

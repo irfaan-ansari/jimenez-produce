@@ -125,7 +125,6 @@ const columns: ColumnDef<JobApplicationSelectType>[] = [
   },
   {
     id: "action",
-
     meta: {
       className: "w-10",
     },
