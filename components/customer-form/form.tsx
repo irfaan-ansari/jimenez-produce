@@ -162,7 +162,19 @@ export const CustomerForm = () => {
 
           {/* submit and preview */}
           <CardFooter className="justify-end gap-6 lg:px-8">
-            {/* previous button */}
+            {/* reset*/}
+            <Button
+              size="xl"
+              className="min-w-32 rounded-2xl"
+              type="button"
+              variant="outline"
+              onClick={() => {
+                localStorage.removeItem(STORAGE_KEY);
+                form.reset();
+              }}
+            >
+              Reset
+            </Button>
             {step > 0 && step < steps.length && (
               <Button
                 size="xl"

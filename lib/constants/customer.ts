@@ -77,7 +77,7 @@ export const businessAuthorization: BusinessAuthorizationType = {
 };
 
 export const defaultValues: CustomerFormType = {
-  step: 4,
+  step: 0,
   ...businessDetails,
   ...businessContacts,
   ...businessAdditionalContact,
