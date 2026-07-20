@@ -1,16 +1,14 @@
 import { handleUpload, type HandleUploadBody } from "@vercel/blob/client";
 import { NextResponse } from "next/server";
 
-const ALLOWED_ORIGINS = [
-  "https://jimenezproduce.com/",
-  "http://localhost:3000",
-];
+const ALLOWED_ORIGINS = ["https://jimenezproduce.com", "http://localhost:3000"];
 export async function POST(request: Request): Promise<NextResponse> {
   const body = (await request.json()) as HandleUploadBody;
 
   try {
     const origin = request.headers.get("origin");
     console.log(origin);
+
     if (!origin || !ALLOWED_ORIGINS.includes(origin)) {
       throw new Error("Forbidden");
     }
