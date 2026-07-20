@@ -18,6 +18,7 @@ import translations from "@/lib/constants/translations.json";
 import { formOptions, useStore } from "@tanstack/react-form";
 import { customerSchema } from "@/lib/form-schema/customer-schema";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "../ui/tabs";
+import { Card, CardContent, CardFooter, CardHeader } from "../ui/card";
 
 export const formOpts = formOptions({
   defaultValues: {
@@ -98,7 +99,7 @@ export const CustomerForm = () => {
         onValueChange={(v) => setLanguage(v)}
         className="mb-8 ml-auto"
       />
-      <TabsList className="w-full bg-background gap-2 mb-8 p-0">
+      {/* <TabsList className="w-full bg-background gap-2 mb-8 p-0">
         {steps.map((s, i) => (
           <TabsTrigger
             key={s.title}
@@ -120,7 +121,8 @@ export const CustomerForm = () => {
             <span className="h-1 rounded-full flex-1 bg-muted-foreground relative after:absolute after:scale-x-0 after:inset-0 group-data-[completed=true]:after:scale-x-100 after:transition after:origin-left group-data-[completed=true]:after:bg-primary after:rounded-full" />
           </TabsTrigger>
         ))}
-      </TabsList>
+      </TabsList> */}
+
       <form
         className="@container"
         onSubmit={(e) => {
@@ -128,50 +130,64 @@ export const CustomerForm = () => {
           form.handleSubmit();
         }}
       >
-        {steps.map((step, i) => (
-          <TabsContent value={i.toString()} key={step.title}>
-            <h4 className="text-xl font-semibold mb-1">{t[step.title]}</h4>
-            <p className="mb-4 text-muted-foreground">{t[step.description]}</p>
+        <Card className="shadow-md rounded-2xl ring ring-border/50 bg-secondary/20">
+          <CardHeader className="space-y-1">
+            <div className="flex justify-between">
+              <span>Step 1 of 6</span>
+              <span>20% Complete</span>
+            </div>
+            <div className="bg-secondary h-2.5 rounded-full">
+              <div className="bg-primary w-3/4 h-full rounded-full"></div>
+            </div>
+          </CardHeader>
+          {steps.map((step, i) => (
+            <TabsContent value={i.toString()} key={step.title}>
+              {/* <h4 className="text-xl font-semibold mb-1">{t[step.title]}</h4>
+              <p className="mb-4 text-muted-foreground">
+              {t[step.description]}
+              </p> */}
+              <CardContent>
+                <step.component
+                  // @ts-ignore
+                  form={form}
+                />
+              </CardContent>
+            </TabsContent>
+          ))}
 
-            <step.component
-              // @ts-ignore
-              form={form}
-            />
-          </TabsContent>
-        ))}
-
-        {/* submit and preview */}
-        <div className="flex gap-4 items-center justify-end mt-8">
-          {/* previous button */}
-          {step > 0 && step < steps.length && (
-            <Button
-              size="xl"
-              className="min-w-32"
-              type="button"
-              variant="secondary"
-              onClick={() => form.setFieldValue("step", step - 1)}
-            >
-              <ArrowLeft />
-              Previous
-            </Button>
-          )}
-
-          {/* submit button */}
-          <form.Subscribe
-            children={({ isSubmitting }) => (
+          {/* submit and preview */}
+          <CardFooter className="justify-end">
+            {/* previous button */}
+            {step > 0 && step < steps.length && (
               <Button
                 size="xl"
-                className="min-w-32"
-                type="submit"
-                disabled={isSubmitting}
+                className="min-w-32 rounded-2xl"
+                type="button"
+                variant="secondary"
+                onClick={() => form.setFieldValue("step", step - 1)}
               >
-                {isSubmitting && <Loader className="animate-spin" />}
-                {step < steps.length - 1 ? "Next" : "Submit"}
-                {step < steps.length && <ArrowRight />}
+                <ArrowLeft />
+                Previous
               </Button>
             )}
-          />
-        </div>
+
+            {/* submit button */}
+            <form.Subscribe
+              children={({ isSubmitting }) => (
+                <Button
+                  size="xl"
+                  className="min-w-32 rounded-2xl"
+                  type="submit"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting && <Loader className="animate-spin" />}
+                  {step < steps.length - 1 ? "Next" : "Submit"}
+                  {step < steps.length && <ArrowRight />}
+                </Button>
+              )}
+            />
+          </CardFooter>
+        </Card>
       </form>
     </Tabs>
   );
