@@ -130,6 +130,7 @@ export const deleteCustomer = handleAction(async (id: number) => {
   const session = await getSession();
   if (!session) throw new Error("Authentication required");
 
+  if (!id) throw new Error("Id is required.");
   const existing = await db.query.customer.findFirst({
     where: eq(customer.id, id),
   });

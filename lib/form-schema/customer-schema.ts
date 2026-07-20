@@ -86,21 +86,18 @@ export const step4Schema = z.object({
 });
 
 export const step5Schema = z.object({
+  // files
+  certificate: z.string().min(2, "Resale certificate is required"),
+  dlFront: z.string().min(2, "Licence is required"),
+  dlBack: z.string().min(2, "Licence is required"),
+});
+
+export const step6Schema = z.object({
   signatureName: z.string().min(2, "Signature name is required"),
   acknowledge: z.boolean().refine((val) => val === true, {
     message: "Guarantee agreement is required",
   }),
   consent: z.boolean(),
-  // files
-  certificate: z
-    .file("Resale certificate is required")
-    .max(MAX_UPLOAD_SIZE, "Upload file less tant 5MB")
-    .mime(
-      ["image/png", "image/jpeg", "application/pdf"],
-      "File type is not allowed",
-    ),
-  dlFront: fileSchema,
-  dlBack: fileSchema,
   signature: z
     .file("Signature is required")
     .mime(["image/png"], "File type is not allowed"),
@@ -113,12 +110,15 @@ export const customerSchema = z.object({
   ...step3Schema.shape,
   ...step4Schema.shape,
   ...step5Schema.shape,
+  ...step6Schema.shape,
 });
 
 export type BusinessDetailsType = z.infer<typeof step1Schema>;
 export type BusinessContactType = z.infer<typeof step2Schema>;
 export type BusinessAdditionalContactType = z.infer<typeof step3Schema>;
 export type BusinessDeliveryType = z.infer<typeof step4Schema>;
-export type BusinessAuthorizationType = z.infer<typeof step5Schema>;
+
+export type BusinessDocumentsType = z.infer<typeof step5Schema>;
+export type BusinessAuthorizationType = z.infer<typeof step6Schema>;
 
 export type CustomerFormType = z.infer<typeof customerSchema>;

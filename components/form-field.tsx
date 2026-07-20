@@ -27,6 +27,10 @@ import {
   Upload,
   EyeOff,
   Eye,
+  Loader2,
+  CheckCircle2,
+  AlertCircle,
+  UploadCloud,
 } from "lucide-react";
 import { cn, formatPhone } from "@/lib/utils";
 import {
@@ -48,6 +52,9 @@ import {
   InputGroupInput,
 } from "./ui/input-group";
 import { Textarea } from "./ui/textarea";
+import { upload } from "@vercel/blob/client";
+import { toast } from "sonner";
+import { validateDocument } from "@/lib/validate-docoment/validate";
 
 interface FieldProps {
   label?: string;
@@ -456,6 +463,127 @@ const PhoneField = ({
     </Field>
   );
 };
+
+const UploadState = ({ status }: { status: string }) => {
+  switch (status) {
+    case "idle":
+      return (
+        <div className="space-y-2 text-center flex flex-col items-center">
+          <UploadCloud className="size-5" />
+          <p className="underline">Click to upload</p>
+        </div>
+      );
+    case "uploading":
+      return (
+        <div className="space-y-2 text-center flex flex-col items-center">
+          <Loader2 className="size-5 animate-spin" />
+          <p>Uploading...</p>
+        </div>
+      );
+    case "validating":
+      return (
+        <div className="space-y-2 text-center flex flex-col items-center">
+          <Loader2 className="size-5 animate-spin" />
+          <p>Validating...</p>
+        </div>
+      );
+    default:
+      return null;
+  }
+};
+
+const FileFieldNew = ({ label, description, className }: FieldProps) => {
+  const field = useFieldContext<string>();
+
+  const [uploadState, setUploadState] = React.useState<{
+    status: string;
+    file: null | File;
+  }>({
+    status: "idle",
+    file: null,
+  });
+
+  const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
+
+  const handleFileChange = async (file?: File) => {
+    const fileToUpload = file || uploadState.file;
+    if (!fileToUpload) return;
+
+    setUploadState((prev) => ({ ...prev, status: "uploading" }));
+    try {
+      // upload file
+      const uploaded = await upload(
+        `customer/${fileToUpload.name}`,
+        fileToUpload,
+        {
+          access: "public",
+          handleUploadUrl: "/api/upload",
+        },
+      );
+      setUploadState((prev) => ({ ...prev, status: "validating" }));
+      const result = await validateDocument({
+        fileUrl: uploaded.url,
+        type: field.name,
+      });
+
+      if (!result.data.valid) {
+        throw new Error(result.data.message);
+      } else {
+        field.setValue(uploaded.url);
+      }
+    } catch (error: any) {
+      toast.error(error.message ?? "Failed to process the file..");
+
+      field.setMeta((prev) => ({
+        ...prev,
+        isTouched: true,
+        errorMap: {
+          onSubmit: [
+            { message: error.message ?? "Failed to process the file." },
+          ],
+        },
+      }));
+    } finally {
+      setUploadState((prev) => ({ ...prev, status: "idle" }));
+    }
+  };
+
+  return (
+    <Field className={className}>
+      <FieldLegend className="m-0">{label}</FieldLegend>
+      <FieldLabel
+        htmlFor={field.name}
+        className="relative flex text-muted-foreground min-h-32 cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed border-primary bg-primary/10 p-6"
+      >
+        {field.state.value ? (
+          <div className="flex gap-3 items-center">
+            <Paperclip className="size-4" /> Uploaded successfully. Click to
+            replace.
+          </div>
+        ) : (
+          <UploadState status={uploadState.status} />
+        )}
+
+        <Input
+          type="file"
+          id={field.name}
+          className="absolute inset-0 h-full opacity-0 invisible"
+          accept="image/jpeg,image/png,application/pdf"
+          disabled={uploadState.status !== "idle"}
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (!file) return;
+            handleFileChange(file);
+            setUploadState({ ...uploadState, file });
+          }}
+        />
+      </FieldLabel>
+      {description && <FieldDescription>{description}</FieldDescription>}
+      {isInvalid && <FieldError errors={field.state.meta.errors} />}
+    </Field>
+  );
+};
+
 export {
   TextAreaField,
   TextField,
@@ -466,4 +594,5 @@ export {
   FileField,
   PhoneField,
   PasswordField,
+  FileFieldNew,
 };

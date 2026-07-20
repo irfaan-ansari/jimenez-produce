@@ -1,10 +1,17 @@
 import { handleUpload, type HandleUploadBody } from "@vercel/blob/client";
 import { NextResponse } from "next/server";
 
+const ALLOWED_ORIGINS = ["https://jimenezproduce.com/"];
 export async function POST(request: Request): Promise<NextResponse> {
   const body = (await request.json()) as HandleUploadBody;
 
   try {
+    const origin = request.headers.get("origin");
+
+    if (!origin || !ALLOWED_ORIGINS.includes(origin)) {
+      throw new Error("Forbidden");
+    }
+
     const jsonResponse = await handleUpload({
       body,
       request,
@@ -39,7 +46,7 @@ export async function POST(request: Request): Promise<NextResponse> {
   } catch (error) {
     return NextResponse.json(
       { error: (error as Error).message },
-      { status: 400 }
+      { status: 400 },
     );
   }
 }

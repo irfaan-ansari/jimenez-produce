@@ -13,6 +13,7 @@ import {
   BusinessContactType,
   BusinessDeliveryType,
   BusinessDetailsType,
+  BusinessDocumentsType,
   CustomerFormType,
 } from "../form-schema/customer-schema";
 
@@ -63,10 +64,12 @@ export const businessDelivery: BusinessDeliveryType = {
   ],
 };
 
-export const businessAuthorization: BusinessAuthorizationType = {
+export const businessDocuments: BusinessDocumentsType = {
   certificate: null as any,
   dlFront: null as any,
   dlBack: null as any,
+};
+export const businessAuthorization: BusinessAuthorizationType = {
   signature: null as any,
   signatureName: "",
   acknowledge: false,
@@ -80,6 +83,7 @@ export const defaultValues: CustomerFormType = {
   ...businessAdditionalContact,
   ...businessContacts,
   ...businessDelivery,
+  ...businessDocuments,
   ...businessAuthorization,
 };
 

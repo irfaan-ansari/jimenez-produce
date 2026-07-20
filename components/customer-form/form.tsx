@@ -17,13 +17,25 @@ import { ArrowLeft, ArrowRight, Loader } from "lucide-react";
 import translations from "@/lib/constants/translations.json";
 import { formOptions, useStore } from "@tanstack/react-form";
 import { customerSchema } from "@/lib/form-schema/customer-schema";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "../ui/tabs";
+import { Tabs, TabsContent } from "../ui/tabs";
 import { Card, CardContent, CardFooter, CardHeader } from "../ui/card";
+import React from "react";
+
+const STORAGE_KEY = "customer-form";
+
+const initialValues = (() => {
+  if (typeof window === "undefined") return defaultValues;
+
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    return saved ? JSON.parse(saved) : defaultValues;
+  } catch {
+    return defaultValues;
+  }
+})();
 
 export const formOpts = formOptions({
-  defaultValues: {
-    ...defaultValues,
-  },
+  defaultValues: initialValues || defaultValues,
   validators: {
     onSubmit: ({ value, formApi }) => {
       return formApi.parseValuesWithSchema(
@@ -49,33 +61,28 @@ export const CustomerForm = () => {
         return;
       }
 
-      const files = [
-        value.certificate,
-        value.signature,
-        value.dlFront,
-        value.dlBack,
-      ];
-
       // upload files and send the files url to
-      const [cert, sig, front, back] = await Promise.all(
-        files.map((file) =>
-          upload(`customer/${file.name}`, file, {
-            access: "public",
-            handleUploadUrl: "/api/upload",
-          }),
-        ),
+      const sign = await upload(
+        `customer/${value.signature.name}`,
+        value.signature,
+        {
+          access: "public",
+          handleUploadUrl: "/api/upload",
+        },
       );
+
       const { certificate, dlFront, dlBack, signature, ...rest } = value;
       // submit form
       const { success, error } = await createCustomer({
         ...rest,
-        certificateUrl: cert.url,
-        dlFrontUrl: front.url,
-        dlBackUrl: back.url,
-        signatureUrl: sig.url,
+        certificateUrl: value.certificate,
+        dlFrontUrl: value.dlFront,
+        dlBackUrl: value.dlBack,
+        signatureUrl: sign.url,
       });
 
       if (success) {
+        localStorage.removeItem(STORAGE_KEY);
         confirm.success({
           title: "Application Submitted Successfully",
           description: `Your application has been successfully submitted and is now under review. 
@@ -92,6 +99,13 @@ export const CustomerForm = () => {
 
   const step = useStore(form.store, (state) => state.values.step);
 
+  React.useEffect(() => {
+    return form.store.subscribe(() => {
+      const values = form.store.state.values;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(values));
+    });
+  }, [form]);
+
   return (
     <Tabs value={step.toString()} dir={dir}>
       <LanguageSelector
@@ -99,29 +113,6 @@ export const CustomerForm = () => {
         onValueChange={(v) => setLanguage(v)}
         className="mb-8 ml-auto"
       />
-      {/* <TabsList className="w-full bg-background gap-2 mb-8 p-0">
-        {steps.map((s, i) => (
-          <TabsTrigger
-            key={s.title}
-            value={step.toString()}
-            className="justify-start h-auto p-0 shadow-none! group"
-            data-completed={step >= i}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              className="size-6 group-data-[completed=true]:text-primary"
-            >
-              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-              <path d="M17 3.34a10 10 0 1 1 -14.995 8.984l-.005 -.324l.005 -.324a10 10 0 0 1 14.995 -8.336zm-1.293 5.953a1 1 0 0 0 -1.32 -.083l-.094 .083l-3.293 3.292l-1.293 -1.292l-.094 -.083a1 1 0 0 0 -1.403 1.403l.083 .094l2 2l.094 .083a1 1 0 0 0 1.226 0l.094 -.083l4 -4l.083 -.094a1 1 0 0 0 -.083 -1.32z" />
-            </svg>
-            <span className="h-1 rounded-full flex-1 bg-muted-foreground relative after:absolute after:scale-x-0 after:inset-0 group-data-[completed=true]:after:scale-x-100 after:transition after:origin-left group-data-[completed=true]:after:bg-primary after:rounded-full" />
-          </TabsTrigger>
-        ))}
-      </TabsList> */}
 
       <form
         className="@container"
@@ -130,23 +121,37 @@ export const CustomerForm = () => {
           form.handleSubmit();
         }}
       >
-        <Card className="shadow-md rounded-2xl ring ring-border/50 bg-secondary/20">
-          <CardHeader className="space-y-1">
-            <div className="flex justify-between">
-              <span>Step 1 of 6</span>
-              <span>20% Complete</span>
-            </div>
-            <div className="bg-secondary h-2.5 rounded-full">
-              <div className="bg-primary w-3/4 h-full rounded-full"></div>
-            </div>
+        <Card className="shadow-md rounded-2xl gap-8 lg:py-8 ring ring-border/50 bg-secondary/20">
+          <CardHeader className="space-y-1 lg:px-8">
+            <form.Subscribe selector={(state) => state.values.step}>
+              {(step) => {
+                const progress = Math.round((step / steps.length) * 100);
+
+                return (
+                  <>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium uppercase">
+                        Step {step + 1} of {steps.length}
+                      </span>
+                      <span className="text-sm text-muted-foreground">
+                        {progress}% Complete
+                      </span>
+                    </div>
+
+                    <div className="bg-secondary h-2.5 w-full rounded-full overflow-hidden">
+                      <div
+                        className="bg-primary h-full rounded-full transition-all duration-300 ease-in-out"
+                        style={{ width: `${progress}%` }}
+                      />
+                    </div>
+                  </>
+                );
+              }}
+            </form.Subscribe>
           </CardHeader>
           {steps.map((step, i) => (
-            <TabsContent value={i.toString()} key={step.title}>
-              {/* <h4 className="text-xl font-semibold mb-1">{t[step.title]}</h4>
-              <p className="mb-4 text-muted-foreground">
-              {t[step.description]}
-              </p> */}
-              <CardContent>
+            <TabsContent value={i.toString()} key={step.key}>
+              <CardContent className="lg:px-8">
                 <step.component
                   // @ts-ignore
                   form={form}
@@ -156,7 +161,7 @@ export const CustomerForm = () => {
           ))}
 
           {/* submit and preview */}
-          <CardFooter className="justify-end">
+          <CardFooter className="justify-end gap-6 lg:px-8">
             {/* previous button */}
             {step > 0 && step < steps.length && (
               <Button

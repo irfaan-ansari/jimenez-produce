@@ -1,9 +1,8 @@
 import Image from "next/image";
+import { Metadata } from "next";
 import { Container } from "@/components/container";
 import { CustomerForm } from "@/components/customer-form/form";
 import { LanguageProvider } from "@/components/ui/language-selector";
-
-import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Apply for an account",
@@ -44,7 +43,7 @@ const CustomerApplicationPage = async () => {
 
       {/*  */}
       <section className="mt-16">
-        <Container className="max-w-3xl mb-16">
+        <Container className="max-w-4xl mb-16">
           <CustomerForm />
         </Container>
       </section>

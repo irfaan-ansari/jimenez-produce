@@ -18,34 +18,14 @@ export const Authorization = withForm({
   render: function Render({ form }) {
     const { t } = useTranslation(translations as Translations, "en");
     return (
-      <FieldGroup className="grid @2xl:grid-cols-2">
-        <div className="@2xl:col-span-2 bg-amber-600/10 text-amber-600 font-medium p-4 border border-amber-600/10 rounded-2xl">
-          All uploaded files must be in PDF, JPG, or PNG format and must not
-          exceed 5 MB per file.
-        </div>
-
-        <form.AppField
-          name="certificate"
-          children={(field) => (
-            <field.FileField label={t[field.name]} className="" />
-          )}
-        />
-
-        <form.AppField
-          name="dlFront"
-          children={(field) => <field.FileField label={t[field.name]} />}
-        />
-        <form.AppField
-          name="dlBack"
-          children={(field) => <field.FileField label={t[field.name]} />}
-        />
-
+      <FieldGroup className="grid grid-cols-1 lg:grid-cols-2">
         <form.AppField
           name="signatureName"
           children={(field) => (
             <field.TextField
               label={t[field.name]}
-              className="col-span-2"
+              className="lg:col-span-2 **:data-[slot=input]:rounded-2xl"
+              placeholder={t[`${field.name}Placeholder`]}
               description={t[`${field.name}Desc`]}
             />
           )}
@@ -55,7 +35,7 @@ export const Authorization = withForm({
           children={(field) => (
             <field.SignatureField
               label={t[field.name]}
-              className="col-span-2"
+              className="lg:col-span-2 **:[.border-dashed]:rounded-2xl **:[canvas]:rounded-xl **:data-[slot=button]:rounded-2xl"
               description={t[`${field.name}Desc`]}
             />
           )}
@@ -67,8 +47,8 @@ export const Authorization = withForm({
               field.state.meta.isTouched && !field.state.meta.isValid;
 
             return (
-              <Field className="gap-2 @2xl:col-span-2" data-invalid={isInvalid}>
-                <FieldLabel className="col-span-2">
+              <Field className="gap-2 lg:col-span-2" data-invalid={isInvalid}>
+                <FieldLabel className="rounded-2xl!">
                   <Field orientation="horizontal">
                     <Checkbox
                       id={field.name}
@@ -98,8 +78,8 @@ export const Authorization = withForm({
               field.state.meta.isTouched && !field.state.meta.isValid;
 
             return (
-              <Field className="gap-2 @2xl:col-span-2" data-invalid={isInvalid}>
-                <FieldLabel className="col-span-2">
+              <Field className="gap-2 lg:col-span-2" data-invalid={isInvalid}>
+                <FieldLabel className="rounded-2xl!">
                   <Field orientation="horizontal">
                     <Checkbox
                       id={field.name}

@@ -45,11 +45,11 @@
       "companyZipError": "Please enter a valid ZIP Code.",
 
       "companyPhone": "Phone",
-      "companyPhonePlaceholder": "email@email.com",
+      "companyPhonePlaceholder": "(555) 123-4567",
       "companyPhoneError": "Please enter a valid phone number.",
 
       "companyEmail": "Email",
-      "companyEmailPlaceholder": "(555) 123-4567",
+      "companyEmailPlaceholder": "email@email.com",
       "companyEmailError": "Please enter a valid phone number.",
 
       "officerFirst": "First Name",
@@ -97,8 +97,8 @@
       "orderingPhoneError": "Please enter a valid phone number.",
 
       "accountPayableEmail": "Accounts Payable Email",
-      "accountPayablePlaceholder": "ap@business.com",
-      "accountPayableError": "Please enter a valid email address.",
+      "accountPayableEmailPlaceholder": "ap@business.com",
+      "accountPayableEmailError": "Please enter a valid email address.",
 
       "guarantorName": "Guarantor Full Name",
       "guarantorNamePlaceholder": "John A. Smith",
@@ -328,7 +328,7 @@
       "acknowledgeDesc": "Reconozco que he leído, entiendo y acepto el Acuerdo de Garantía Personal anterior. Acepto que esta presentación electrónica constituye mi firma legalmente vinculante.",
       "acknowledgeError": "Debe aceptar el acuerdo de garantía personal.",
 
-      "consentDesc": "☐ Acepto recibir mensajes de texto (SMS) de Jimenez Produce relacionados con mis pedidos, entregas, actualizaciones de mi cuenta, facturas y atención al cliente. La frecuencia de los mensajes puede variar. Pueden aplicarse tarifas por mensajes y datos. Responda **STOP** para dejar de recibir mensajes y **HELP** para obtener ayuda."
+      "consentDesc": "Acepto recibir mensajes de texto (SMS) de Jimenez Produce relacionados con mis pedidos, entregas, actualizaciones de mi cuenta, facturas y atención al cliente. La frecuencia de los mensajes puede variar. Pueden aplicarse tarifas por mensajes y datos. Responda **STOP** para dejar de recibir mensajes y **HELP** para obtener ayuda."
     }
   }
 }

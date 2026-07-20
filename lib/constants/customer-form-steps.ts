@@ -5,6 +5,7 @@ import {
   step3Schema,
   step4Schema,
   step5Schema,
+  step6Schema,
 } from "../form-schema/customer-schema";
 import { BusinessContact } from "@/components/customer-form/business-contact";
 import { BusinessAdditionalContact } from "@/components/customer-form/additional-contact";
@@ -19,10 +20,10 @@ import {
   Users,
   type LucideIcon,
 } from "lucide-react";
+import { Documents } from "@/components/customer-form/business-documents";
 
 type StepConfig = {
-  title: string;
-  description: string;
+  key: string;
   component: React.ComponentType<any>;
   schema: z.ZodObject<any>;
   icon: LucideIcon;
@@ -30,38 +31,39 @@ type StepConfig = {
 
 export const steps: StepConfig[] = [
   {
-    title: "title1",
-    description: "desc1",
+    key: "step-0",
     icon: Building2,
     component: BusinessDetails,
     schema: step1Schema,
   },
   {
-    title: "title2",
-    description: "desc2",
+    key: "step-1",
     component: BusinessContact,
     schema: step2Schema,
     icon: UserRound,
   },
   {
-    title: "title3",
-    description: "desc3",
+    key: "step-2",
     component: BusinessAdditionalContact,
     schema: step3Schema,
     icon: Users,
   },
   {
-    title: "title4",
-    description: "desc4",
+    key: "step-3",
     component: BusinessDelivery,
     schema: step4Schema,
     icon: Truck,
   },
   {
-    title: "title5",
-    description: "desc5",
-    component: Authorization,
+    key: "step-4",
+    component: Documents,
     schema: step5Schema,
+    icon: FileText,
+  },
+  {
+    key: "step-5",
+    component: Authorization,
+    schema: step6Schema,
     icon: FileText,
   },
 ];
