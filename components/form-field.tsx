@@ -29,8 +29,6 @@ import {
   EyeOff,
   Eye,
   Loader2,
-  CheckCircle2,
-  AlertCircle,
   UploadCloud,
 } from "lucide-react";
 import { cn, formatPhone } from "@/lib/utils";
@@ -509,10 +507,11 @@ const FileFieldNew = ({ label, description, className }: FieldProps) => {
   const handleFileChange = async (file?: File) => {
     const fileToUpload = file || uploadState.file;
     if (!fileToUpload) return;
-
-    setUploadState((prev) => ({ ...prev, status: "uploading" }));
+    const toastId = toast.loading("Uploading...");
     try {
       // upload file
+      setUploadState((prev) => ({ ...prev, status: "uploading" }));
+
       const uploaded = await upload(
         `customer/${fileToUpload.name}`,
         fileToUpload,
@@ -522,19 +521,21 @@ const FileFieldNew = ({ label, description, className }: FieldProps) => {
         },
       );
       setUploadState((prev) => ({ ...prev, status: "validating" }));
+      toast.loading("Validating...", { id: toastId });
+
       const result = await validateDocument({
         fileUrl: uploaded.url,
         type: field.name,
       });
 
       if (!result.data.valid) {
+        toast.error(result.data.message, { id: toastId });
         throw new Error(result.data.message);
       } else {
+        toast.success("File uploaded successfully.", { id: toastId });
         field.setValue(uploaded.url);
       }
     } catch (error: any) {
-      toast.error(error.message ?? "Failed to process the file..");
-
       field.setMeta((prev) => ({
         ...prev,
         isTouched: true,
@@ -575,7 +576,7 @@ const FileFieldNew = ({ label, description, className }: FieldProps) => {
             const file = e.target.files?.[0];
             if (!file) return;
             handleFileChange(file);
-            setUploadState({ ...uploadState, file });
+            setUploadState((prev) => ({ ...prev, file }));
           }}
         />
       </FieldLabel>
