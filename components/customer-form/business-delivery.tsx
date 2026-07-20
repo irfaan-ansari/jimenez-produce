@@ -88,7 +88,7 @@ export const BusinessDelivery = withForm({
                         children={(field) => (
                           <field.TextField
                             label={t["receivingName"]}
-                            placeholder={"name@business.com"}
+                            placeholder={"Enter receiving contact name"}
                             className="**:data-[slot=input]:rounded-2xl"
                           />
                         )}

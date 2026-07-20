@@ -5,12 +5,12 @@ import { BASE_PROMPT, DOCUMENTS } from "@/lib/validate-docoment/documents";
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
-const ALLOWED_ORIGINS = ["https://jimenezproduce.com/"];
+const ALLOWED_ORIGINS = ["https://jimenezproduce.com", "http://localhost:3000"];
 
 export async function POST(req: NextRequest) {
   try {
     const origin = req.headers.get("origin");
-
+    console.log(origin);
     if (!origin || !ALLOWED_ORIGINS.includes(origin)) {
       throw new Error("Forbidden");
     }
