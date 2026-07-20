@@ -87,9 +87,11 @@ export const step4Schema = z.object({
 
 export const step5Schema = z.object({
   // files
-  certificate: z.string().min(2, "Resale certificate is required"),
-  dlFront: z.string().min(2, "Licence is required"),
-  dlBack: z.string().min(2, "Licence is required"),
+  certificate: z
+    .string("Resale certificate is required.")
+    .min(2, "Resale certificate is required."),
+  dlFront: z.string("Licence is required.").min(2, "Licence is required."),
+  dlBack: z.string("Licence is required.").min(2, "Licence is required."),
 });
 
 export const step6Schema = z.object({
