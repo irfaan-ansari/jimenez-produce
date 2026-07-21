@@ -820,6 +820,20 @@
       "when": 1783968784375,
       "tag": "0116_next_baron_strucker",
       "breakpoints": true
+    },
+    {
+      "idx": 117,
+      "version": "7",
+      "when": 1784637684164,
+      "tag": "0117_curvy_meggan",
+      "breakpoints": true
+    },
+    {
+      "idx": 118,
+      "version": "7",
+      "when": 1784638735599,
+      "tag": "0118_flashy_husk",
+      "breakpoints": true
     }
   ]
 }

@@ -2,6 +2,7 @@
 
 import {
   Field,
+  FieldContent,
   FieldDescription,
   FieldError,
   FieldGroup,
@@ -45,6 +46,7 @@ import { type AdminProductType } from "@/lib/types";
 import { useQueryClient } from "@tanstack/react-query";
 import { createProduct, deleteProduct, updateProduct } from "@/server/product";
 import { Alert, AlertAction, AlertDescription, AlertTitle } from "../ui/alert";
+import { Switch } from "../ui/switch";
 
 const schema = z.object({
   identifier: z.string(),
@@ -58,6 +60,7 @@ const schema = z.object({
   type: z.string(),
   pack: z.string(),
   unit: z.string(),
+  packWeight: z.string()
 });
 
 export const ProductDialog = ({
@@ -83,6 +86,7 @@ export const ProductDialog = ({
       type: product?.type || "",
       pack: product?.pack || "",
       unit: product?.unit || "",
+      packWeight: product?.packWeight || "",
       basePrice: product?.basePrice || "",
       image: product?.image || "",
     },
@@ -193,21 +197,16 @@ export const ProductDialog = ({
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="px-0 rounded-2xl ring-ring/10 sm:max-w-2xl">
         <DialogHeader className="px-6">
-          <DialogTitle className="text-2xl font-bold">
+          <DialogTitle className="text-xl font-bold">
             {product ? "Edit Product" : "Create Product"}
           </DialogTitle>
-          <DialogDescription>
-            {product
-              ? "Update the product details."
-              : "Add a new product with all required details"}
-          </DialogDescription>
         </DialogHeader>
         <form
           onSubmit={(e) => {
             e.preventDefault();
             form.handleSubmit();
           }}
-          className="flex h-[calc(100svh-200px)] flex-col gap-6"
+          className="flex h-[max(70svh,560px)] flex-col gap-6"
         >
           <div className="flex-1 px-6 overflow-y-auto no-scrollbar">
             <FieldGroup className="grid grid-cols-1 lg:grid-cols-2">
@@ -220,7 +219,7 @@ export const ProductDialog = ({
                   return (
                     <Field aria-invalid={isInvalid} className="lg:col-span-2">
                       {field.state.value ? (
-                        <div className="relative flex justify-center w-full p-2 border border-dashed z-1 h-28 rounded-xl bg-secondary">
+                        <div className="relative flex justify-center w-full p-2 border border-dashed z-1 h-28 rounded-lg bg-secondary">
                           <Image
                             src={field.state.value}
                             width={112}
@@ -232,7 +231,7 @@ export const ProductDialog = ({
                             type="button"
                             size="icon-sm"
                             variant="outline"
-                            className="absolute top-2 right-2 rounded-xl"
+                            className="absolute top-2 right-2 rounded-lg"
                             onClick={() => handleDeleteImage(field.state.value)}
                           >
                             <Trash2 />
@@ -241,7 +240,7 @@ export const ProductDialog = ({
                       ) : (
                         <FieldLabel
                           htmlFor={field.name}
-                          className="h-28 flex-col hover:*:data-[slot=field-legend]:underline pt-6 justify-center rounded-xl border-2 border-dashed bg-secondary/40 transition"
+                          className="h-28 flex-col hover:*:data-[slot=field-legend]:underline pt-6 justify-center rounded-lg border-2 border-dashed bg-secondary/40 transition"
                         >
                           <ImageUp className="size-6 text-muted-foreground" />
                           <FieldLegend className="text-muted-foreground text-sm! ">
@@ -270,7 +269,7 @@ export const ProductDialog = ({
                 children={(field) => (
                   <field.TextField
                     label="Title"
-                    className="**:data-[slot=input]:rounded-xl lg:col-span-2"
+                    className="**:data-[slot=input]:rounded-lg lg:col-span-2"
                   />
                 )}
               />
@@ -280,7 +279,7 @@ export const ProductDialog = ({
                 children={(field) => (
                   <field.TextField
                     label="Product Code"
-                    className="**:data-[slot=input]:rounded-xl"
+                    className="**:data-[slot=input]:rounded-lg"
                   />
                 )}
               />
@@ -289,7 +288,7 @@ export const ProductDialog = ({
                 children={(field) => (
                   <field.SelectField
                     label="Status"
-                    className="**:data-[slot=select-trigger]:rounded-xl"
+                    className="**:data-[slot=select-trigger]:rounded-lg"
                     options={["Active", "Private", "Archived"]}
                   />
                 )}
@@ -299,7 +298,38 @@ export const ProductDialog = ({
                 children={(field) => (
                   <field.TextField
                     label="Price"
-                    className="**:data-[slot=input]:rounded-xl lg:col-span-2"
+                    className="**:data-[slot=input]:rounded-lg"
+                    placeholder="e.g. 4.69"
+                  />
+                )}
+              />
+              <form.AppField
+                name="unit"
+                children={(field) => (
+                  <field.TextField
+                    label="Pricing Unit"
+                    className="**:data-[slot=input]:rounded-lg"
+                    placeholder="e.g. LB"
+                  />
+                )}
+              />
+              <form.AppField
+                name="pack"
+                children={(field) => (
+                  <field.TextField
+                    label="Pack size"
+                    className="**:data-[slot=input]:rounded-lg"
+                    placeholder="e.g. 6/10"
+                  />
+                )}
+              />
+              <form.AppField
+                name="packWeight"
+                children={(field) => (
+                  <field.TextField
+                    label="Pack Weight"
+                    className="**:data-[slot=input]:rounded-lg"
+                    placeholder="e.g. 60"
                   />
                 )}
               />
@@ -309,34 +339,29 @@ export const ProductDialog = ({
                   const isInvalid =
                     field.state.meta.isTouched && !field.state.meta.isValid;
                   return (
-                    <div className="lg:col-span-2">
-                      <Field
-                        orientation="horizontal"
-                        data-invalid={isInvalid}
-                        className="items-start pt-0.5"
-                      >
-                        <Checkbox
-                          id={field.name}
-                          name={field.name}
-                          checked={field.state.value}
-                          onCheckedChange={(checked) =>
-                            field.handleChange(checked === true)
-                          }
-                        />
-                        <div className="flex flex-col gap-2 -mt-0.5">
+                    <FieldLabel htmlFor={field.name} data-invalid={isInvalid} className="lg:col-span-2 rounded-xl!">
+                      <Field orientation="horizontal">
+
+                        <FieldContent>
                           <FieldLabel htmlFor={field.name}>
                             Is this product taxable?
                           </FieldLabel>
                           <FieldDescription>
                             Enable if tax should be applied on this product.
                           </FieldDescription>
-                        </div>
+                          {isInvalid && (
+                            <FieldError errors={field.state.meta.errors} />
+                          )}
+                        </FieldContent>
+                        <Switch
+                          id={field.name}
+                          name={field.name}
+                          checked={field.state.value}
+                          onCheckedChange={field.handleChange}
+                          aria-invalid={isInvalid}
+                        />
                       </Field>
-
-                      {isInvalid && (
-                        <FieldError errors={field.state.meta.errors} />
-                      )}
-                    </div>
+                    </FieldLabel>
                   );
                 }}
               />
@@ -359,14 +384,14 @@ export const ProductDialog = ({
                             <Badge
                               key={v}
                               variant="secondary"
-                              className="pr-1 text-sm h-7 rounded-xl"
+                              className="pr-1 text-sm h-7 rounded-lg"
                             >
                               {v}
                               <Button
                                 size="icon-xs"
                                 type="button"
                                 variant="destructive"
-                                className="size-5 rounded-xl"
+                                className="size-5 rounded-lg"
                                 onClick={() => field.removeValue(i)}
                               >
                                 <X />
@@ -397,7 +422,7 @@ export const ProductDialog = ({
                         onBlur={field.handleBlur}
                         onChange={(e) => field.handleChange(e.target.value)}
                         aria-invalid={isInvalid}
-                        className="resize-none min-h-24 rounded-xl"
+                        className="resize-none min-h-24 rounded-lg"
                       />
                       {isInvalid && (
                         <FieldError errors={field.state.meta.errors} />
@@ -407,25 +432,7 @@ export const ProductDialog = ({
                 }}
               />
 
-              <form.AppField
-                name="pack"
-                children={(field) => (
-                  <field.TextField
-                    label="Pack size"
-                    className="**:data-[slot=input]:rounded-xl"
-                  />
-                )}
-              />
 
-              <form.AppField
-                name="unit"
-                children={(field) => (
-                  <field.TextField
-                    label="Pack unit"
-                    className="**:data-[slot=input]:rounded-xl"
-                  />
-                )}
-              />
 
               {product?.id && (
                 <Alert
@@ -457,7 +464,7 @@ export const ProductDialog = ({
               variant="outline"
               size="xl"
               type="button"
-              className="rounded-xl"
+              className="rounded-lg"
               onClick={() => setOpen(false)}
             >
               Cancel
@@ -472,7 +479,7 @@ export const ProductDialog = ({
                 <Button
                   type="submit"
                   size="xl"
-                  className="rounded-xl"
+                  className="rounded-lg"
                   disabled={isSubmitting || !canSubmit}
                 >
                   {isSubmitting ? <Loader className="animate-spin" /> : "Save"}
@@ -516,7 +523,7 @@ const CategorySelector = ({ field }: { field: AnyFieldApi }) => {
   return (
     <div className="relative" ref={ref}>
       <Input
-        className="rounded-xl"
+        className="rounded-lg"
         onFocus={() => setOpen(true)}
         onChange={(e) => setValue(e.target.value)}
         value={value}
@@ -529,9 +536,8 @@ const CategorySelector = ({ field }: { field: AnyFieldApi }) => {
         }}
       />
       <div
-        className={`absolute no-scrollbar overflow-auto max-h-36 z-5 **:rounded-xl shadow-xl h-auto **:justify-between no-scrolllbar p-2 flex-col gap-0.5 top-[calc(100%+2px)] inset-x-0 border rounded-2xl bg-white ${
-          open ? "flex" : "hidden"
-        }`}
+        className={`absolute no-scrollbar overflow-auto max-h-36 z-5 **:rounded-lg shadow-xl h-auto **:justify-between no-scrolllbar p-2 flex-col gap-0.5 top-[calc(100%+2px)] inset-x-0 border rounded-2xl bg-white ${open ? "flex" : "hidden"
+          }`}
       >
         {isPending ? (
           <Loader className="mx-auto size-4 animate-spin" />

@@ -1,0 +1,1 @@
+ALTER TABLE "product" RENAME COLUMN "case_weight" TO "pack_weight";

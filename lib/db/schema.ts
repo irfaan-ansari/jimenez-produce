@@ -339,7 +339,6 @@ export const product = pgTable(
     }),
     identifier: text("identifier").notNull(),
     type: text("type"),
-    pack: text("pack"),
     description: text("description"),
     categories: jsonb("categories")
       .$type<string[]>()
@@ -347,7 +346,9 @@ export const product = pgTable(
     status: text("status").default("active"),
     image: text("image"),
     basePrice: text("base_price").notNull().default("0"),
-    unit: text("unit"),
+    pack: text("pack") /** 6/10 */,
+    unit: text("unit") /** LB/KG */,
+    packWeight: text("pack_weight"),
     images: jsonb("images")
       .$type<string[]>()
       .default(sql`'[]'::jsonb`),
