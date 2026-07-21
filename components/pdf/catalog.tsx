@@ -257,7 +257,6 @@ export const CatalogPDF = (data: CatalogProps) => {
                             },
                           ]}
                         >
-                          {product.identifier}
                           {product.title}
                         </Text>
                         <Text
