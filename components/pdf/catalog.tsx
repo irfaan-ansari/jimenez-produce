@@ -3,7 +3,6 @@ import { styles } from "./styles";
 import { formatPhone, formatUSD } from "@/lib/utils";
 import { Document, Page, Text, View, Image } from "@react-pdf/renderer";
 import { format } from "date-fns";
-
 const colors = {
   background: "#13360c",
   border: "#d9f99d",
@@ -232,7 +231,7 @@ export const CatalogPDF = (data: CatalogProps) => {
                     key={rowIndex}
                     wrap={false}
                   >
-                    {col.map((product) => (
+                    {col.map((product: ProductSelectType) => (
                       <View
                         key={product.id}
                         style={{
@@ -258,6 +257,7 @@ export const CatalogPDF = (data: CatalogProps) => {
                             },
                           ]}
                         >
+                          {product.identifier}
                           {product.title}
                         </Text>
                         <Text

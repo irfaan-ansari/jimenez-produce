@@ -122,7 +122,9 @@ export const formatPriceLevelAdjustment = (
   return `${sign}${formatted}`;
 };
 
-export const sortLineItems = (lineItems: LineItemSelectType[]) => {
+export const sortLineItems = <T extends { identifier: string | null }>(
+  lineItems: T[],
+) => {
   const sortOrder = ["9", "8", "7", "2", "1", "3", "4", "5", "6"];
   const orderMap = Object.fromEntries(sortOrder.map((v, i) => [v, i]));
 

@@ -47,6 +47,7 @@ export const ItemList = withForm({
               price: product.finalPrice,
               unit: product.unit,
               pack: product.pack,
+              packWeight: product.packWeight,
               total: product.finalPrice,
               quantity: "0",
               isTaxable: product.isTaxable ?? false,

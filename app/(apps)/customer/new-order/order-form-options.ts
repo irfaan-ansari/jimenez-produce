@@ -13,6 +13,7 @@ export type OrderItem = {
   isTaxable: boolean;
   pack?: string | null;
   unit?: string | null;
+  packWeight?: string | null;
   lastPurchased?: {
     id: number | null;
     quantity: string | null;

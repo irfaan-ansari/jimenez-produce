@@ -20,6 +20,7 @@ import { CatalogPDF } from "@/components/pdf/catalog";
 import { handleAction } from "@/lib/helper/error-handler";
 import { sendEmail } from "@/lib/email";
 import CatalogTemplate from "@/components/email/catalog-template";
+import { sortLineItems } from "@/lib/utils";
 
 export const updateCatalog = async (timeZone: string = "America/Chicago") => {
   const session = await getSession();
@@ -145,7 +146,9 @@ const generatePDF = async ({
 
   const seen = new Set<number>();
 
-  const groupedProducts = allProducts.reduce<
+  const sortedProducts = sortLineItems(allProducts);
+
+  const groupedProducts = sortedProducts.reduce<
     Record<string, typeof allProducts>
   >((acc, product) => {
     if (seen.has(product.id)) return acc;
@@ -167,6 +170,7 @@ const generatePDF = async ({
       products={groupedProducts}
     />,
   );
+
   const startDate = format(effectiveFrom, "MMMM dd");
   const endDate = format(effectiveTo, "MMMM dd");
 
@@ -175,7 +179,7 @@ const generatePDF = async ({
   const blob = await put(`catalog/${fileName}.pdf`, buffer, {
     access: "public",
   });
-
+  console.log(blob.url);
   console.log("created pdf...");
 
   return blob.url;

@@ -129,6 +129,36 @@ export const LastPurchase = ({
 };
 
 /* Product Price */
+// export const Price = ({
+//   price,
+//   unit,
+//   pack,
+//   packWeight,
+//   className,
+// }: {
+//   price: number | string;
+//   className?: string;
+//   unit?: string | null;
+//   pack?: string | null;
+//   packWeight?: string | null;
+// }) => {
+//   return (
+//     <div className={cn("font-bold text-primary", className)}>
+//       {pack && (
+//         <div className="text-[10px] font-normal text-muted-foreground">
+//           {pack} {unit}
+//         </div>
+//       )}
+//       <div>
+//         {formatUSD(price)}
+//         {unit && (
+//           <span className="text-[10px] text-muted-foreground">/{unit}</span>
+//         )}
+//       </div>
+//     </div>
+//   );
+// };
+
 export const Price = ({
   price,
   unit,

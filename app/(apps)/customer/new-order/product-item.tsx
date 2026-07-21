@@ -3,7 +3,7 @@
 import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { OrderItem } from "./order-form-options";
+import type { OrderItem } from "./order-form-options";
 import { GripVertical, Star } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ProductItemQty } from "./product-item-qty";
@@ -148,6 +148,7 @@ export const ProductItem = ({
             price={product.price}
             unit={product.unit}
             pack={product.pack}
+            // packWeight={product.packWeight}
             className="group-data-[layout=grid]/card:hidden @2xl:text-right"
           />
 
@@ -164,6 +165,7 @@ export const ProductItem = ({
             price={product.price}
             pack={product.pack}
             unit={product.unit}
+            // packWeight={product.packWeight}
             className="w-auto"
           />
 

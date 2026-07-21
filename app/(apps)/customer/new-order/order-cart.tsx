@@ -52,11 +52,15 @@ export const OrderCart = withForm({
                 </SheetHeader>
                 <form.AppField name="lineItems" mode="array">
                   {(field) => (
-                    <div className="flex-1 gap-2 p-4 space-y-1 overflow-y-auto no-scrollbar">
+                    <div className="flex-1 gap-2 p-4 divide-y divide-dashed overflow-y-auto no-scrollbar">
                       {field?.state?.value?.map((subField, i) => (
-                        <div className="border p-3 rounded-xl" key={i}>
+                        <div className="" key={i}>
                           <div className="flex items-start justify-start gap-3">
-                            <Avatar className="size-8 shrink-0 rounded-lg ring-2 ring-green-600/20 ring-offset-1 **:rounded-lg after:hidden">
+                            <div className="aspect-square bg-secondary rounded-lg inline-flex items-center justify-center"></div>
+                            <Avatar
+                              size="lg"
+                              className="shrink-0 rounded-lg **:rounded-lg after:hidden"
+                            >
                               <AvatarImage src={subField?.image!} />
                               <AvatarFallback>
                                 <ImageOff className="size-4" />

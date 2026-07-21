@@ -75,6 +75,7 @@ export const GuideList = withForm({
           price: i.finalPrice,
           pack: i.pack,
           unit: i.unit,
+          packWeight: i.packWeight,
           total: i.finalPrice,
           quantity: "0",
           isTaxable: i.isTaxable ?? false,
