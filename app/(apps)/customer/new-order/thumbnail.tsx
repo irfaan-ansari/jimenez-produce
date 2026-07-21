@@ -24,7 +24,7 @@ export const Thumbnail = ({
   return (
     <HoverCard openDelay={500} closeDelay={10}>
       <HoverCardTrigger asChild>
-        <div className="relative inline-flex aspect-square w-12 shrink-0 items-center justify-center overflow-hidden rounded-t-lg bg-secondary group-data-[layout=grid]/card:aspect-video group-data-[layout=grid]/card:w-full group-data-[layout=list]/card:rounded-lg">
+        <div className="relative self-start inline-flex aspect-square w-12 shrink-0 items-center justify-center overflow-hidden rounded-t-lg bg-secondary group-data-[layout=grid]/card:aspect-video group-data-[layout=grid]/card:w-full group-data-[layout=list]/card:rounded-lg">
           {product.image ? (
             <img
               src={product.image}
@@ -129,54 +129,24 @@ export const LastPurchase = ({
 };
 
 /* Product Price */
-// export const Price = ({
-//   price,
-//   unit,
-//   pack,
-//   packWeight,
-//   className,
-// }: {
-//   price: number | string;
-//   className?: string;
-//   unit?: string | null;
-//   pack?: string | null;
-//   packWeight?: string | null;
-// }) => {
-//   return (
-//     <div className={cn("font-bold text-primary", className)}>
-//       {pack && (
-//         <div className="text-[10px] font-normal text-muted-foreground">
-//           {pack} {unit}
-//         </div>
-//       )}
-//       <div>
-//         {formatUSD(price)}
-//         {unit && (
-//           <span className="text-[10px] text-muted-foreground">/{unit}</span>
-//         )}
-//       </div>
-//     </div>
-//   );
-// };
-
 export const Price = ({
   price,
-  unit,
   pack,
+  unit,
+  unitSize,
   className,
 }: {
   price: number | string;
   className?: string;
-  unit?: string | null;
   pack?: string | null;
+  unit?: string | null;
+  unitSize?: string | null;
 }) => {
-  const displayPrice = Number(price) / Math.max(Number(pack) || 1, 1);
-
   return (
-    <div className={cn("w-24 font-bold text-primary", className)}>
-      {formatUSD(displayPrice)}
+    <div className={cn("font-bold text-primary", className)}>
+      {formatUSD(price)}
       {unit && (
-        <span className="text-muted-foreground text-[10px]">/{unit}</span>
+        <span className="text-[10px] text-muted-foreground">/{unit}</span>
       )}
     </div>
   );

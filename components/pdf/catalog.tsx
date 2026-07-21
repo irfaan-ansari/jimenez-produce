@@ -197,6 +197,7 @@ export const CatalogPDF = (data: CatalogProps) => {
           </View>
         )}
         {/* DYNAMIC CATEGORY BLOCKS LOOP */}
+
         {Object.entries(products).map(
           ([category, categoryProducts]: [string, any], i) => {
             // Split products into rows of 2

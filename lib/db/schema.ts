@@ -346,9 +346,9 @@ export const product = pgTable(
     status: text("status").default("active"),
     image: text("image"),
     basePrice: text("base_price").notNull().default("0"),
-    pack: text("pack") /** 6/10 */,
+    pack: text("pack") /** 6 */,
     unit: text("unit") /** LB/KG */,
-    packWeight: text("pack_weight"),
+    unitSize: text("unit_size") /** 10 */,
     images: jsonb("images")
       .$type<string[]>()
       .default(sql`'[]'::jsonb`),
@@ -664,9 +664,9 @@ export const lineItem = pgTable(
       .$type<string[]>()
       .default(sql`'[]'::jsonb`),
     price: text("price"),
-    pack: text("pack"),
-    unit: text("unit"),
-    packWeight: text("pack_weight"),
+    pack: text("pack") /** 6 */,
+    unit: text("unit") /** LB/KG */,
+    unitSize: text("unit_size") /** 10 */,
     quantity: text("quantity"),
     subtotal: text("subtotal").default("0"),
     isTaxable: boolean("is_taxable").default(false),

@@ -60,7 +60,7 @@ const schema = z.object({
   type: z.string(),
   pack: z.string(),
   unit: z.string(),
-  packWeight: z.string(),
+  unitSize: z.string(),
 });
 
 export const ProductDialog = ({
@@ -86,7 +86,7 @@ export const ProductDialog = ({
       type: product?.type || "",
       pack: product?.pack || "",
       unit: product?.unit || "",
-      packWeight: product?.packWeight || "",
+      unitSize: product?.unitSize || "",
       basePrice: product?.basePrice || "",
       image: product?.image || "",
     },
@@ -304,6 +304,16 @@ export const ProductDialog = ({
                 )}
               />
               <form.AppField
+                name="pack"
+                children={(field) => (
+                  <field.TextField
+                    label="Pack Count"
+                    className="**:data-[slot=input]:rounded-lg"
+                    placeholder="e.g. 6"
+                  />
+                )}
+              />
+              <form.AppField
                 name="unit"
                 children={(field) => (
                   <field.TextField
@@ -313,23 +323,14 @@ export const ProductDialog = ({
                   />
                 )}
               />
+
               <form.AppField
-                name="pack"
+                name="unitSize"
                 children={(field) => (
                   <field.TextField
-                    label="Pack of"
+                    label="Unit Size"
                     className="**:data-[slot=input]:rounded-lg"
-                    placeholder="e.g. 6/10"
-                  />
-                )}
-              />
-              <form.AppField
-                name="packWeight"
-                children={(field) => (
-                  <field.TextField
-                    label="Pack Weight"
-                    className="**:data-[slot=input]:rounded-lg"
-                    placeholder="e.g. 60"
+                    placeholder="e.g. 12"
                   />
                 )}
               />

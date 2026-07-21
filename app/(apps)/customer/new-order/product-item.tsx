@@ -108,12 +108,11 @@ export const ProductItem = ({
             <div className="min-w-0 overflow-auto text-muted-foreground uppercase text-xs font-medium">
               {product.categories?.join(" • ")}
             </div>
-
-            <LastPurchase
-              product={product}
-              className="group-data-[layout=grid]/card:hidden"
-            />
           </div>
+          <LastPurchase
+            product={product}
+            className="group-data-[layout=grid]/card:hidden"
+          />
         </div>
 
         <div className="flex w-full justify-between gap-4 @2xl:w-auto">
@@ -148,7 +147,6 @@ export const ProductItem = ({
             price={product.price}
             unit={product.unit}
             pack={product.pack}
-            // packWeight={product.packWeight}
             className="group-data-[layout=grid]/card:hidden @2xl:text-right"
           />
 
@@ -165,7 +163,6 @@ export const ProductItem = ({
             price={product.price}
             pack={product.pack}
             unit={product.unit}
-            // packWeight={product.packWeight}
             className="w-auto"
           />
 

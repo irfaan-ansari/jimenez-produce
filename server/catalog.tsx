@@ -123,7 +123,9 @@ const generatePDF = async ({
   const session = await getSession();
   if (!session) throw new Error("Authentication required.");
   const { activeOrganizationId } = session.session;
+
   console.log("creating pdf...");
+
   const [org, allProducts] = await Promise.all([
     db.query.organization.findFirst({
       where: (organization, { eq }) =>
@@ -174,11 +176,14 @@ const generatePDF = async ({
   const startDate = format(effectiveFrom, "MMMM dd");
   const endDate = format(effectiveTo, "MMMM dd");
 
-  const fileName = `Week of ${startDate} - ${endDate} • Jimenez Produce ${org?.name} Price List`;
+  const fileName = `Week of ${startDate} - ${endDate} - Jimenez Produce ${org?.name} Price List`;
 
   const blob = await put(`catalog/${fileName}.pdf`, buffer, {
     access: "public",
+    allowOverwrite: true,
+    addRandomSuffix: true,
   });
+
   console.log(blob.url);
   console.log("created pdf...");
 
