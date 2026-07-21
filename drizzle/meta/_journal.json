@@ -834,6 +834,13 @@
       "when": 1784638735599,
       "tag": "0118_flashy_husk",
       "breakpoints": true
+    },
+    {
+      "idx": 119,
+      "version": "7",
+      "when": 1784649604812,
+      "tag": "0119_third_micromax",
+      "breakpoints": true
     }
   ]
 }

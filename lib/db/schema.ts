@@ -660,11 +660,13 @@ export const lineItem = pgTable(
     image: text("image"),
     type: text("type"),
     identifier: text("identifier"),
-    pack: text("pack"),
     categories: jsonb("categories")
       .$type<string[]>()
       .default(sql`'[]'::jsonb`),
     price: text("price"),
+    pack: text("pack"),
+    unit: text("unit"),
+    packWeight: text("pack_weight"),
     quantity: text("quantity"),
     subtotal: text("subtotal").default("0"),
     isTaxable: boolean("is_taxable").default(false),

@@ -60,7 +60,7 @@ const schema = z.object({
   type: z.string(),
   pack: z.string(),
   unit: z.string(),
-  packWeight: z.string()
+  packWeight: z.string(),
 });
 
 export const ProductDialog = ({
@@ -307,7 +307,7 @@ export const ProductDialog = ({
                 name="unit"
                 children={(field) => (
                   <field.TextField
-                    label="Pricing Unit"
+                    label="Unit"
                     className="**:data-[slot=input]:rounded-lg"
                     placeholder="e.g. LB"
                   />
@@ -317,7 +317,7 @@ export const ProductDialog = ({
                 name="pack"
                 children={(field) => (
                   <field.TextField
-                    label="Pack size"
+                    label="Pack of"
                     className="**:data-[slot=input]:rounded-lg"
                     placeholder="e.g. 6/10"
                   />
@@ -339,9 +339,12 @@ export const ProductDialog = ({
                   const isInvalid =
                     field.state.meta.isTouched && !field.state.meta.isValid;
                   return (
-                    <FieldLabel htmlFor={field.name} data-invalid={isInvalid} className="lg:col-span-2 rounded-xl!">
+                    <FieldLabel
+                      htmlFor={field.name}
+                      data-invalid={isInvalid}
+                      className="lg:col-span-2 rounded-xl!"
+                    >
                       <Field orientation="horizontal">
-
                         <FieldContent>
                           <FieldLabel htmlFor={field.name}>
                             Is this product taxable?
@@ -431,8 +434,6 @@ export const ProductDialog = ({
                   );
                 }}
               />
-
-
 
               {product?.id && (
                 <Alert
@@ -536,8 +537,9 @@ const CategorySelector = ({ field }: { field: AnyFieldApi }) => {
         }}
       />
       <div
-        className={`absolute no-scrollbar overflow-auto max-h-36 z-5 **:rounded-lg shadow-xl h-auto **:justify-between no-scrolllbar p-2 flex-col gap-0.5 top-[calc(100%+2px)] inset-x-0 border rounded-2xl bg-white ${open ? "flex" : "hidden"
-          }`}
+        className={`absolute no-scrollbar overflow-auto max-h-36 z-5 **:rounded-lg shadow-xl h-auto **:justify-between no-scrolllbar p-2 flex-col gap-0.5 top-[calc(100%+2px)] inset-x-0 border rounded-2xl bg-white ${
+          open ? "flex" : "hidden"
+        }`}
       >
         {isPending ? (
           <Loader className="mx-auto size-4 animate-spin" />

@@ -241,25 +241,29 @@ export const OrderInvoice = ({ data }: OrderInvoiceProps) => {
                 ]}
               >
                 <View style={{ width: "15%" }}>
-                  <Text style={styles.tableCell}>{item.identifier}</Text>
+                  <Text style={styles.tableCellPacking}>{item.identifier}</Text>
                 </View>
                 <View style={{ width: "45%" }}>
-                  <Text style={styles.tableCell}>{item.title}</Text>
+                  <Text style={styles.tableCellPacking}>{item.title}</Text>
                 </View>
                 <View style={{ width: "10%" }}>
-                  <Text style={[styles.tableCell, { textAlign: "center" }]}>
+                  <Text
+                    style={[styles.tableCellPacking, { textAlign: "center" }]}
+                  >
                     {item.quantity}
                   </Text>
                 </View>
                 <View style={{ width: "15%" }}>
-                  <Text style={[styles.tableCell, { textAlign: "right" }]}>
+                  <Text
+                    style={[styles.tableCellPacking, { textAlign: "right" }]}
+                  >
                     {formatUSD(item.price ?? 0)}
                   </Text>
                 </View>
                 <View style={{ width: "15%" }}>
                   <Text
                     style={[
-                      styles.tableCell,
+                      styles.tableCellPacking,
                       { textAlign: "right", borderRightWidth: 0 },
                     ]}
                   >
