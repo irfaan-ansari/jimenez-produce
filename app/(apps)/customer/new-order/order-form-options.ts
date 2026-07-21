@@ -70,8 +70,11 @@ export const getTotals = (
     const isTaxable = Boolean(item?.isTaxable);
     const lineTotal = qty * price;
 
+    const a =
+      Number(item.pack || 0) * Number(item.unitSize || 0) * Number(item.price);
+    console.log(a);
     quantity += qty;
-    subtotal += qty * price;
+    subtotal += a;
     if (isTaxable) {
       taxableSubtotal += lineTotal;
     }

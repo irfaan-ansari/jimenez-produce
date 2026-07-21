@@ -145,8 +145,9 @@ export const ProductItem = ({
 
           <Price
             price={product.price}
-            unit={product.unit}
             pack={product.pack}
+            unit={product.unit}
+            unitSize={product.unitSize}
             className="group-data-[layout=grid]/card:hidden @2xl:text-right"
           />
 
@@ -161,8 +162,9 @@ export const ProductItem = ({
         <div className="flex w-full items-center justify-between gap-2 group-data-[layout=list]/card:hidden">
           <Price
             price={product.price}
-            pack={product.pack}
             unit={product.unit}
+            pack={product.pack}
+            unitSize={product.unitSize}
             className="w-auto"
           />
 

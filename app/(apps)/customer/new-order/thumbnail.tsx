@@ -72,7 +72,13 @@ export const Thumbnail = ({
               {product.title}
             </h4>
             <div className="flex w-full items-center justify-between gap-2 group-data-[layout=list]/card:hidden">
-              <Price price={product.price} className="w-auto self-start" />
+              <Price
+                price={product.price}
+                pack={product.pack}
+                unit={product.unit}
+                unitSize={product.unitSize}
+                className="w-auto self-start"
+              />
               <ProductItemQty value={qty} onChange={onChange} />
             </div>
           </div>
@@ -144,6 +150,10 @@ export const Price = ({
 }) => {
   return (
     <div className={cn("font-bold text-primary", className)}>
+      <div className="text-xs text-muted-foreground text-normal font-medium">
+        {pack}/{unitSize} {unit}
+      </div>
+
       {formatUSD(price)}
       {unit && (
         <span className="text-[10px] text-muted-foreground">/{unit}</span>
