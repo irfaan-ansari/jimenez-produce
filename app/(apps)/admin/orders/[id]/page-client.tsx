@@ -6,7 +6,6 @@ import {
   ChevronLeft,
   CircleCheck,
   ClipboardCheck,
-  Receipt,
   Package,
   ImageOff,
   Truck,
@@ -31,7 +30,6 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import { STATUS_MAP } from "@/lib/constants/status-map";
 import { OrderActions } from "@/components/admin/order-actions";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useRouter } from "next/navigation";
 import { CopyButton } from "@/components/copy-button";
@@ -253,6 +251,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
             {data.lineItems.map((line) => (
               <div className="flex items-center justify-between gap-4 py-2">
                 <div className="flex items-start flex-1 gap-3">
+
                   <div className="size-16 border relative bg-secondary rounded-lg inline-flex items-center justify-center shrink-0">
                     {line.image ? <img className="absolute mix-blend-multiply inset-0 size-full object-contain" src={line.image} width={100} height={100} /> : <ImageOff className="sise-6 text-muted-foreground" />}
                   </div>
@@ -273,6 +272,9 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
                 </div>
                 <div className="w-20 text-right text-muted-foreground">
                   {formatUSD(line.price!)}
+                  {line.unit && (
+                    <span className="text-[10px] text-muted-foreground">/{line.unit}</span>
+                  )}
                 </div>
                 <div className="w-20 text-right text-muted-foreground">
                   {line.quantity}

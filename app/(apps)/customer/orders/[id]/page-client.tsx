@@ -103,36 +103,22 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
                   {line.image ? <img className="absolute mix-blend-multiply inset-0 size-full object-contain" src={line.image} width={100} height={100} /> : <ImageOff className="sise-6 text-muted-foreground" />}
                 </div>
 
-                <div className="space-y-0.5 flex-1">
+                <div className="space-y-2 flex-1">
                   <h4 className="font-medium leading-tight whitespace-normal">
                     {line.title}
                   </h4>
-                  <div className="flex gap-2 items-center">
-                    {line.pack && line.unitSize &&
-                      <div className="text-muted-foreground text-xs">
-                        {line.pack}/{line.unitSize} {line.unit}
-                      </div>}
-                    <div>
-                      (
-                      {formatUSD(line.price!)}
-                      {line.unit && (
-                        <span className="text-[10px] text-muted-foreground">/{line.unit}</span>
-                      )}
-                      )
-                    </div>
-                  </div>
-                  <div className="flex justify-between">
-                    {line.identifier && (
-                      <Badge
-                        variant="secondary"
-                        className="border rounded-sm! font-medium border-border"
-                      >
-                        {line.identifier}
-                      </Badge>
-                    )}
-                    <div className="flex gap-2 md:gap-8">
+
+                  <div className="flex justify-start gap-4">
+                    <span className="text-muted-foreground">#{line.identifier}</span>
+
+                    {line.unit && <>
+                      <span>|</span>
+                      {formatUSD(line.price!)}/{line.unit}
+                    </>}
+                    <div className="flex gap-2 md:gap-8 ml-auto">
                       <span className="text-muted-foreground font-medium">
                         {line.quantity} x {formatUSD(line.price!)}
+                        {line.unit && <span className="text-[10px] text-muted-foreground">/{line.unit}</span>}
                       </span>
                       <span className="font-medium">
                         {formatUSD(line.total!)}
@@ -198,6 +184,7 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
             <Button
               className="w-full rounded-xl bg-sidebar hover:bg-sidebar/80"
               size="xl"
+              disabled
               onClick={handlePay}
             >
               <CreditCard />
