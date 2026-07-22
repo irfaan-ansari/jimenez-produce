@@ -194,5 +194,11 @@ const generatePDF = async ({
 const getPrimaryCategory = (product: ProductSelectType) => {
   const title = product.title.toLowerCase();
 
-  return product.categories?.[0] ?? "Other";
+  return (
+    product.categories?.find((category) =>
+      title.includes(category.toLowerCase().replace(/s$/, "")),
+    ) ??
+    product.categories?.[0] ??
+    "Other"
+  );
 };
