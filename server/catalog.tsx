@@ -22,6 +22,22 @@ import { sendEmail } from "@/lib/email";
 import CatalogTemplate from "@/components/email/catalog-template";
 import { sortLineItems } from "@/lib/utils";
 
+const GROUPS: Record<string, string> = {
+  "9": "Produce",
+  "1": "Tortilla",
+  "2": "Dairy",
+  "3": "Dry Goods",
+  "4": "Disposable",
+  // @ts-ignore
+  "4": "Smallware",
+  "5": "Janitorial",
+  "6": "Beverages",
+  "7": "Frozen",
+  "8": "Meat",
+};
+
+const GROUP_ORDER = ["9", "1", "2", "3", "4", "5", "6", "7", "8"];
+
 export const updateCatalog = async (timeZone: string = "America/Chicago") => {
   const session = await getSession();
   const { activeOrganizationId } = session?.session!;
@@ -148,20 +164,30 @@ const generatePDF = async ({
 
   const seen = new Set<number>();
 
-  const sortedProducts = sortLineItems(allProducts);
-
-  const groupedProducts = sortedProducts.reduce<
+  const groupedProducts = allProducts.reduce<
     Record<string, typeof allProducts>
   >((acc, product) => {
     if (seen.has(product.id)) return acc;
 
-    const primaryCategory = getPrimaryCategory(product);
+    const prefix = String(product.identifier ?? "").charAt(0);
 
-    (acc[primaryCategory] ??= []).push(product);
+    const groupName = GROUPS[prefix] ?? getPrimaryCategory(product);
+
+    (acc[groupName] ??= []).push(product);
     seen.add(product.id);
 
     return acc;
   }, {});
+
+  const orderedGroupedProducts = Object.fromEntries([
+    ...GROUP_ORDER.flatMap((key) => {
+      const name = GROUPS[key];
+      return groupedProducts[name] ? [[name, groupedProducts[name]]] : [];
+    }),
+    ...Object.entries(groupedProducts).filter(
+      ([name]) => !Object.values(GROUPS).includes(name),
+    ),
+  ]);
 
   const buffer = await renderToBuffer(
     <CatalogPDF
@@ -169,7 +195,7 @@ const generatePDF = async ({
       effectiveFrom={effectiveFrom}
       effectiveTo={effectiveTo}
       featured={featured}
-      products={groupedProducts}
+      products={orderedGroupedProducts}
     />,
   );
 
@@ -191,14 +217,18 @@ const generatePDF = async ({
 };
 
 // get product primary category
-const getPrimaryCategory = (product: ProductSelectType) => {
-  const title = product.title.toLowerCase();
+// const getPrimaryCategory = (product: ProductSelectType) => {
+//   const title = product.title.toLowerCase();
 
-  return (
-    product.categories?.find((category) =>
-      title.includes(category.toLowerCase().replace(/s$/, "")),
-    ) ??
-    product.categories?.[0] ??
-    "Other"
-  );
+//   return (
+//     product.categories?.find((category) =>
+//       title.includes(category.toLowerCase().replace(/s$/, "")),
+//     ) ??
+//     product.categories?.[0] ??
+//     "Other"
+//   );
+// };
+
+const getPrimaryCategory = (product: ProductSelectType) => {
+  return product.categories?.[0] ?? "Other";
 };
