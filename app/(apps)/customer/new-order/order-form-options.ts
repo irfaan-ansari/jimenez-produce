@@ -5,6 +5,7 @@ export type OrderItem = {
   productId: number;
   title: string;
   price: string;
+  subtotal: string;
   total: string;
   quantity: string;
   image: string | null;
@@ -68,13 +69,14 @@ export const getTotals = (
     const qty = Number(item?.quantity ?? 0);
     const price = Number(item?.price ?? 0);
     const isTaxable = Boolean(item?.isTaxable);
-    const lineTotal = qty * price;
 
-    const a =
-      Number(item.pack || 0) * Number(item.unitSize || 0) * Number(item.price);
-    console.log(a);
+    const casePrice =
+      Number(item?.pack ?? 1) * Number(item?.unitSize ?? 1) * Number(price);
+
+    const lineTotal = qty * casePrice;
+
     quantity += qty;
-    subtotal += a;
+    subtotal += lineTotal;
     if (isTaxable) {
       taxableSubtotal += lineTotal;
     }

@@ -54,23 +54,29 @@ export const OrderCart = withForm({
                   {(field) => (
                     <div className="flex-1 gap-2 p-4 divide-y divide-dashed overflow-y-auto no-scrollbar">
                       {field?.state?.value?.map((subField, i) => (
-                        <div className="" key={i}>
+                        <div className="not-first:pt-2 not-last:pb-2" key={i}>
                           <div className="flex items-start justify-start gap-3">
-                            <div className="aspect-square bg-secondary rounded-lg inline-flex items-center justify-center"></div>
-                            <Avatar
-                              size="lg"
-                              className="shrink-0 rounded-lg **:rounded-lg after:hidden"
-                            >
-                              <AvatarImage src={subField?.image!} />
-                              <AvatarFallback>
+                            <div className="aspect-square relative shrink-0 h-18 bg-secondary rounded-lg inline-flex items-center justify-center">
+                              {subField?.image ? (
+                                <img
+                                  src={subField.image}
+                                  width={50}
+                                  height={50}
+                                  className="absolute inset-0 mix-blend-multiply size-full object-contain"
+                                />
+                              ) : (
                                 <ImageOff className="size-4" />
-                              </AvatarFallback>
-                            </Avatar>
+                              )}
+                            </div>
 
-                            <div className="flex flex-col justify-start flex-1 gap-2">
+                            <div className="flex flex-col justify-start flex-1 gap-0.5">
                               <h4 className="font-medium leading-tight line-clamp-2">
                                 {subField.title}
                               </h4>
+                              <p className="text-sm text-muted-foreground">
+                                {subField?.pack}/{subField.unitSize}{" "}
+                                {subField.unit}
+                              </p>
                               <form.Field
                                 name={`lineItems[${i}].quantity`}
                                 children={(subField) => (
@@ -91,10 +97,7 @@ export const OrderCart = withForm({
                             </div>
                             <div className="flex flex-col items-end self-stretch justify-between">
                               <span className="font-medium">
-                                {formatUSD(
-                                  Number(subField.price) *
-                                    Number(subField.quantity),
-                                )}
+                                {formatUSD(Number(subField.subtotal))}
                               </span>
                               <Button
                                 size="icon-xs"
