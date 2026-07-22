@@ -76,6 +76,7 @@ export const GuideList = withForm({
           pack: i.pack,
           unit: i.unit,
           unitSize: i.unitSize,
+          subtotal: "0",
           total: i.finalPrice,
           quantity: "0",
           isTaxable: i.isTaxable ?? false,

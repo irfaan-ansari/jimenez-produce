@@ -106,7 +106,7 @@ export const PageClient = () => {
                 <div className="space-y-0.5">
                   {product.pack && product.unitSize && <div className="text-xs uppercase font-medium text-muted-foreground">
                     {product.pack}/{product.unitSize}
-                    <span className=" ml-1">
+                    <span className="ml-1">
                       {product.unit}</span>
                   </div>}
                   <div className="font-bold text-primary">

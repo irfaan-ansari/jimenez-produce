@@ -161,6 +161,7 @@ const PromotionCard = ({ session }: { session: Session }) => {
           price: p.finalPrice,
           total: p.finalPrice,
           quantity: "1",
+          subtotal: "0",
           isTaxable: p.isTaxable ?? false,
         })) ?? []
     );

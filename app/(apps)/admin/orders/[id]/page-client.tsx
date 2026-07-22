@@ -251,14 +251,12 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
               <div className="w-20 text-right text-muted-foreground">Total</div>
             </div>
             {data.lineItems.map((line) => (
-              <div className="flex items-center justify-between gap-4 p-2">
-                <div className="flex items-center flex-1 gap-3">
-                  <Avatar className="size-9 rounded-md ring-2 ring-ring ring-offset-1 **:rounded-md after:hidden">
-                    <AvatarImage src={line?.image!} />
-                    <AvatarFallback>
-                      <ImageOff className="size-4" />
-                    </AvatarFallback>
-                  </Avatar>
+              <div className="flex items-center justify-between gap-4 py-2">
+                <div className="flex items-start flex-1 gap-3">
+                  <div className="size-16 border relative bg-secondary rounded-lg inline-flex items-center justify-center shrink-0">
+                    {line.image ? <img className="absolute mix-blend-multiply inset-0 size-full object-contain" src={line.image} width={100} height={100} /> : <ImageOff className="sise-6 text-muted-foreground" />}
+                  </div>
+
                   <div className="space-y-1">
                     <h4 className="font-medium leading-tight whitespace-normal">
                       {line.title}
@@ -407,9 +405,8 @@ const StepItem = ({
 }) => (
   <div className="flex md:flex-col items-start md:items-center gap-3 self-start">
     <span
-      className={`size-9 rounded-lg inline-flex items-center justify-center ${
-        active ? "bg-primary text-primary-foreground" : "bg-slate-200"
-      }`}
+      className={`size-9 rounded-lg inline-flex items-center justify-center ${active ? "bg-primary text-primary-foreground" : "bg-slate-200"
+        }`}
     >
       <Icon className="size-4" />
     </span>

@@ -46,6 +46,7 @@ export const PromoProducts = withForm({
           price: p.finalPrice,
           total: p.finalPrice,
           quantity: "0",
+          subtotal: "0",
           isTaxable: p.isTaxable ?? false,
           lastPurchased: null,
         }));

@@ -50,6 +50,7 @@ export const ItemList = withForm({
               unitSize: product.unitSize,
               total: product.finalPrice,
               quantity: "0",
+              subtotal: "0",
               isTaxable: product.isTaxable ?? false,
               lastPurchased: {
                 id: product.lastPurchased.id,
