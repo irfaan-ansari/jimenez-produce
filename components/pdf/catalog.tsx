@@ -239,8 +239,7 @@ export const CatalogPDF = (data: CatalogProps) => {
                           width: "48.5%",
                           flexDirection: "row",
                           paddingHorizontal: 12,
-                          paddingTop: 4,
-                          paddingBottom: 2,
+                          paddingTop: 3,
                           justifyContent: "space-between",
                           alignItems: "flex-start",
                         }}
@@ -252,7 +251,7 @@ export const CatalogPDF = (data: CatalogProps) => {
                               fontSize: 8,
                               textTransform: "none",
                               minWidth: 0,
-                              lineHeight: 1.4,
+                              lineHeight: 1,
                               paddingRight: 4,
                               flex: 1,
                             },

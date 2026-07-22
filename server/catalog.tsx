@@ -20,16 +20,13 @@ import { CatalogPDF } from "@/components/pdf/catalog";
 import { handleAction } from "@/lib/helper/error-handler";
 import { sendEmail } from "@/lib/email";
 import CatalogTemplate from "@/components/email/catalog-template";
-import { sortLineItems } from "@/lib/utils";
 
-const GROUPS: Record<string, string> = {
+const GROUP_MAP: Record<string, string> = {
   "9": "Produce",
   "1": "Tortilla",
   "2": "Dairy",
   "3": "Dry Goods",
   "4": "Disposable",
-  // @ts-ignore
-  "4": "Smallware",
   "5": "Janitorial",
   "6": "Beverages",
   "7": "Frozen",
@@ -162,32 +159,7 @@ const generatePDF = async ({
     productIdSet.has(product.id),
   );
 
-  const seen = new Set<number>();
-
-  const groupedProducts = allProducts.reduce<
-    Record<string, typeof allProducts>
-  >((acc, product) => {
-    if (seen.has(product.id)) return acc;
-
-    const prefix = String(product.identifier ?? "").charAt(0);
-
-    const groupName = GROUPS[prefix] ?? getPrimaryCategory(product);
-
-    (acc[groupName] ??= []).push(product);
-    seen.add(product.id);
-
-    return acc;
-  }, {});
-
-  const orderedGroupedProducts = Object.fromEntries([
-    ...GROUP_ORDER.flatMap((key) => {
-      const name = GROUPS[key];
-      return groupedProducts[name] ? [[name, groupedProducts[name]]] : [];
-    }),
-    ...Object.entries(groupedProducts).filter(
-      ([name]) => !Object.values(GROUPS).includes(name),
-    ),
-  ]);
+  const groupedProducts = groupProducts(allProducts);
 
   const buffer = await renderToBuffer(
     <CatalogPDF
@@ -195,7 +167,7 @@ const generatePDF = async ({
       effectiveFrom={effectiveFrom}
       effectiveTo={effectiveTo}
       featured={featured}
-      products={orderedGroupedProducts}
+      products={groupedProducts}
     />,
   );
 
@@ -216,19 +188,43 @@ const generatePDF = async ({
   return blob.url;
 };
 
-// get product primary category
-// const getPrimaryCategory = (product: ProductSelectType) => {
-//   const title = product.title.toLowerCase();
+// group products utility
+const groupProducts = (products: ProductSelectType[]) => {
+  const seen = new Set<number>();
 
-//   return (
-//     product.categories?.find((category) =>
-//       title.includes(category.toLowerCase().replace(/s$/, "")),
-//     ) ??
-//     product.categories?.[0] ??
-//     "Other"
-//   );
-// };
+  const sortedProducts = [...products].sort((a, b) =>
+    a.title.localeCompare(b.title, undefined, {
+      sensitivity: "base",
+    }),
+  );
 
-const getPrimaryCategory = (product: ProductSelectType) => {
-  return product.categories?.[0] ?? "Other";
+  const groupedProducts: Record<string, ProductSelectType[]> = {};
+
+  for (const product of sortedProducts) {
+    if (seen.has(product.id)) continue;
+
+    const prefix = String(product.identifier ?? "").charAt(0);
+    const groupName = GROUP_MAP[prefix] ?? product.categories?.[0] ?? "Other";
+
+    (groupedProducts[groupName] ??= []).push(product);
+    seen.add(product.id);
+  }
+
+  const orderedGroupedProducts: Record<string, ProductSelectType[]> = {};
+
+  for (const key of GROUP_ORDER) {
+    const groupName = GROUP_MAP[key];
+
+    if (groupedProducts[groupName]) {
+      orderedGroupedProducts[groupName] = groupedProducts[groupName];
+    }
+  }
+
+  for (const [groupName, products] of Object.entries(groupedProducts)) {
+    if (!(groupName in orderedGroupedProducts)) {
+      orderedGroupedProducts[groupName] = products;
+    }
+  }
+
+  return orderedGroupedProducts;
 };
