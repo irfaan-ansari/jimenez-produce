@@ -219,14 +219,14 @@ export const OrderForm = ({
         }}
       >
         {({ totals, isSubmitting, canSubmit }) => {
-          if (totals.count <= 0 || selectionState.mode !== "idle") return null;
+          if (totals.lineItemCount <= 0 || selectionState.mode !== "idle") return null;
 
           return (
             <div className="sticky w-full max-w-xl mx-auto mt-auto bottom-6 z-3">
               <div className="flex items-center h-16 gap-4 px-6 py-4 shadow-lg rounded-2xl bg-secondary ring-2 ring-primary/50 ring-offset-2 backdrop-blur-2xl">
                 <div className="flex flex-col">
                   <span className="text-xs uppercase">
-                    {totals.count} items in cart
+                    {totals.lineItemCount} items in cart
                   </span>
 
                   <span className="text-base font-bold text-primary">
@@ -295,8 +295,8 @@ export const OrderForm = ({
               ...createGuideValue,
               ...(selectionState.mode === "update"
                 ? {
-                    id: selectionState.guideId!,
-                  }
+                  id: selectionState.guideId!,
+                }
                 : {}),
             }}
           >

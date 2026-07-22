@@ -15,14 +15,13 @@ import {
 import { formatUSD } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { withForm } from "@/hooks/form-context";
+import { formOpt, getTotals, } from "./order-form-options";
 import { ProductItemQty } from "./product-item-qty";
 import { Textarea } from "@/components/ui/textarea";
 import { DELIVERY_TIME } from "@/lib/constants/customer";
-import { formOpt, getTotals } from "./order-form-options";
 import { useOrderUIStore } from "@/lib/store/order-store";
 import { ChevronDown, ImageOff, Loader, Trash2 } from "lucide-react";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export const OrderCart = withForm({
   ...formOpt,
@@ -39,6 +38,7 @@ export const OrderCart = withForm({
           })}
           children={({ lineItems, taxRule }) => {
             const totals = getTotals(lineItems, taxRule);
+
             return (
               <SheetContent className="gap-0 data-[side=right]:sm:max-w-lg">
                 <SheetHeader className="gap-0 border-b">
@@ -46,8 +46,8 @@ export const OrderCart = withForm({
                     Your cart
                   </SheetTitle>
                   <SheetDescription>
-                    {Number(totals.count ?? 0)} item
-                    {Number(totals.count ?? 0) > 1 ? "s" : ""} ready to submit
+                    {Number(totals.lineItemCount ?? 0)} item
+                    {Number(totals.lineItemCount ?? 0) > 1 ? "s" : ""} ready to submit
                   </SheetDescription>
                 </SheetHeader>
                 <form.AppField name="lineItems" mode="array">
@@ -56,7 +56,7 @@ export const OrderCart = withForm({
                       {field?.state?.value?.map((subField, i) => (
                         <div className="not-first:pt-2 not-last:pb-2" key={i}>
                           <div className="flex items-start justify-start gap-3">
-                            <div className="aspect-square relative shrink-0 h-18 bg-secondary rounded-lg inline-flex items-center justify-center">
+                            <div className="aspect-square relative shrink-0 h-15 border bg-secondary rounded-lg inline-flex items-center justify-center">
                               {subField?.image ? (
                                 <img
                                   src={subField.image}
@@ -69,14 +69,10 @@ export const OrderCart = withForm({
                               )}
                             </div>
 
-                            <div className="flex flex-col justify-start flex-1 gap-0.5">
+                            <div className="flex flex-col justify-between flex-1 self-stretch gap-1">
                               <h4 className="font-medium leading-tight line-clamp-2">
                                 {subField.title}
                               </h4>
-                              <p className="text-sm text-muted-foreground">
-                                {subField?.pack}/{subField.unitSize}{" "}
-                                {subField.unit}
-                              </p>
                               <form.Field
                                 name={`lineItems[${i}].quantity`}
                                 children={(subField) => (
@@ -88,22 +84,24 @@ export const OrderCart = withForm({
                                         field.removeValue(i);
                                         return;
                                       }
+                                      subField.handleChange(String(qty))
 
-                                      subField.handleChange(String(qty));
                                     }}
                                   />
                                 )}
                               />
                             </div>
                             <div className="flex flex-col items-end self-stretch justify-between">
-                              <span className="font-medium">
-                                {formatUSD(Number(subField.subtotal))}
-                              </span>
+                              <div>{formatUSD(subField.price)}
+                                {subField.unit && (
+                                  <span className="text-[10px] text-muted-foreground">/{subField.unit}</span>
+                                )}
+                              </div>
                               <Button
                                 size="icon-xs"
                                 type="button"
                                 variant="destructive"
-                                className="h-6 text-xs"
+                                className="h-6 text-xs mt-2"
                                 onClick={() => field.removeValue(i)}
                               >
                                 <Trash2 />
@@ -191,7 +189,7 @@ export const OrderCart = withForm({
                       <span>{formatUSD(Number(totals.subtotal))}</span>
                     </div>
                     <div className="flex justify-between text-muted-foreground">
-                      <span>{totals.charges?.type}</span>
+                      <span>{totals.charges.type}</span>
                       <span>{formatUSD(Number(totals.charges?.amount))}</span>
                     </div>
                     <div className="flex justify-between text-muted-foreground">

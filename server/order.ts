@@ -48,6 +48,7 @@ export const createOrder = handleAction(
 
     //  totals
     const charges = { type: "Fuel Charge", amount: 15 };
+
     const totals = {
       lineItemCount: 0,
       lineItemQuantity: 0,
@@ -64,8 +65,11 @@ export const createOrder = handleAction(
       const qty = Number(item.quantity) || 0;
       const price = Number(item.price) || 0;
       const isTaxable = Boolean(item.isTaxable);
+      const pack = Math.max(Number(item.pack), 1);
+      const unitSize = Math.max(Number(item.unitSize), 1);
+      const casePrice = price * pack * unitSize;
 
-      const lineSubtotal = qty * price;
+      const lineSubtotal = qty * casePrice;
 
       //  line tax
       const lineTax = isTaxable ? (lineSubtotal * taxRate) / 100 : 0;

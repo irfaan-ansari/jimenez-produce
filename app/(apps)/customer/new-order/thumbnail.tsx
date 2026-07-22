@@ -148,12 +148,14 @@ export const Price = ({
   unit?: string | null;
   unitSize?: string | null;
 }) => {
+
   return (
     <div className={cn("font-bold text-primary", className)}>
-      <div className="text-xs text-muted-foreground text-normal font-medium">
-        {pack}/{unitSize} {unit}
-      </div>
-
+      {pack && unitSize && (
+        <div className="text-xs text-muted-foreground text-normal font-medium">
+          {pack}/{unitSize} {unit}
+        </div>
+      )}
       {formatUSD(price)}
       {unit && (
         <span className="text-[10px] text-muted-foreground">/{unit}</span>

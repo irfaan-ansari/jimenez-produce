@@ -1,6 +1,6 @@
 "use client";
 
-import { Copy, Home, Download, ChevronLeft, CreditCard } from "lucide-react";
+import { Copy, Home, Download, ChevronLeft, CreditCard, ImageOff } from "lucide-react";
 import Link from "next/link";
 import { format } from "date-fns";
 import React, { use } from "react";
@@ -88,28 +88,6 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
           </div>
         </div>
 
-        {/* progress */}
-        {/* <Card className="relative gap-0 py-0 rounded-2xl">
-          <LiveTracking />
-
-          <CardContent className="absolute h-20 p-3 rounded-lg shadow-sm inset-x-3 bottom-3 bg-background/70 backdrop-blur-lg z-2 ring-2 ring-border ring-offset-2">
-            <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <p className="font-medium">Order #24647</p>
-                <div className="flex items-center gap-2">
-                  <span className="font-medium text-muted-foreground">
-                    Estimated delivery in
-                  </span>
-                  <span className="text-2xl font-bold">30 mins</span>
-                </div>
-              </div>
-              <Badge className="px-4 text-green-600 bg-green-100 border border-green-300 h-7">
-                Arriving
-              </Badge>
-            </div>
-          </CardContent>
-        </Card> */}
-
         {/* purchased items */}
         <Card className="rounded-2xl">
           <CardHeader>
@@ -121,15 +99,28 @@ export const PageClient = ({ params }: { params: Promise<{ id: string }> }) => {
                 className="flex items-start gap-3 not-first:pt-2 not-last:pb-2"
                 key={line.id}
               >
-                <Avatar className="size-9 rounded-lg ring-2 ring-green-600/20 ring-offset-1 **:rounded-lg after:hidden">
-                  <AvatarImage src={line?.image!} />
-                  <AvatarFallback>{line.title?.charAt(0)}</AvatarFallback>
-                </Avatar>
+                <div className="size-16 border relative bg-secondary rounded-lg inline-flex items-center justify-center shrink-0">
+                  {line.image ? <img className="absolute mix-blend-multiply inset-0 size-full object-contain" src={line.image} width={100} height={100} /> : <ImageOff className="sise-6 text-muted-foreground" />}
+                </div>
 
-                <div className="space-y-1.5 flex-1">
+                <div className="space-y-0.5 flex-1">
                   <h4 className="font-medium leading-tight whitespace-normal">
                     {line.title}
                   </h4>
+                  <div className="flex gap-2 items-center">
+                    {line.pack && line.unitSize &&
+                      <div className="text-muted-foreground text-xs">
+                        {line.pack}/{line.unitSize} {line.unit}
+                      </div>}
+                    <div>
+                      (
+                      {formatUSD(line.price!)}
+                      {line.unit && (
+                        <span className="text-[10px] text-muted-foreground">/{line.unit}</span>
+                      )}
+                      )
+                    </div>
+                  </div>
                   <div className="flex justify-between">
                     {line.identifier && (
                       <Badge
@@ -261,9 +252,8 @@ const StepItem = ({
 }) => (
   <div className="flex flex-col items-center self-center">
     <span
-      className={`size-10 mb-2 rounded-lg inline-flex items-center justify-center ${
-        active ? "bg-primary text-primary-foreground" : "bg-secondary"
-      }`}
+      className={`size-10 mb-2 rounded-lg inline-flex items-center justify-center ${active ? "bg-primary text-primary-foreground" : "bg-secondary"
+        }`}
     >
       <Icon className="size-4" />
     </span>

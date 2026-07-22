@@ -258,6 +258,7 @@ export const OrderInvoice = ({ data }: OrderInvoiceProps) => {
                     style={[styles.tableCellPacking, { textAlign: "right" }]}
                   >
                     {formatUSD(item.price ?? 0)}
+                    {item.unit && '/' + item.unit}
                   </Text>
                 </View>
                 <View style={{ width: "15%" }}>

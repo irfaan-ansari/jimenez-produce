@@ -67,11 +67,13 @@ export const getTotals = (
 
   for (const item of lineItems ?? []) {
     const qty = Number(item?.quantity ?? 0);
-    const price = Number(item?.price ?? 0);
     const isTaxable = Boolean(item?.isTaxable);
 
-    const casePrice =
-      Number(item?.pack ?? 1) * Number(item?.unitSize ?? 1) * Number(price);
+    const unitPrice = Number(item.price ?? 0);
+    const pack = Math.max(Number(item.pack), 1);
+    const unitSize = Math.max(Number(item.unitSize), 1);
+
+    const casePrice = unitPrice * pack * unitSize;
 
     const lineTotal = qty * casePrice;
 
@@ -87,7 +89,7 @@ export const getTotals = (
   const total = subtotal + Number(charges?.amount ?? 0) + Number(tax);
 
   return {
-    count: lineItems?.length ?? 0,
+    lineItemCount: lineItems?.length ?? 0,
     quantity,
     subtotal,
     total,

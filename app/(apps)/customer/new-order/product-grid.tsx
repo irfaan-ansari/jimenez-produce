@@ -50,21 +50,21 @@ export const ProductGrid = withForm({
     const updateQty = React.useCallback(
       (product: OrderItem, qty: number) => {
         const index = lineItemMap.get(product.productId)?.index ?? -1;
-
+        console.log(qty)
         if (qty <= 0) {
           if (index >= 0) {
             form.removeFieldValue("lineItems", index);
           }
-
           return;
         }
+
 
         if (index >= 0) {
           form.setFieldValue(`lineItems[${index}].quantity`, String(qty));
         } else {
           form.pushFieldValue("lineItems", {
             ...product,
-            quantity: String(qty),
+            quantity: String(qty)
           });
           if (promoTriggers.includes(product.productId)) {
             setShowPromo(true);

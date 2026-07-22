@@ -46,6 +46,7 @@ export const ProductItem = ({
     });
   };
 
+
   return (
     <div
       className={cn(
@@ -160,6 +161,7 @@ export const ProductItem = ({
 
         {/* card layout */}
         <div className="flex w-full items-center justify-between gap-2 group-data-[layout=list]/card:hidden">
+          {product.isTaxable}
           <Price
             price={product.price}
             unit={product.unit}

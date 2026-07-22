@@ -273,6 +273,7 @@ export const CatalogPDF = (data: CatalogProps) => {
                           ]}
                         >
                           {formatUSD(product.basePrice)}
+                          {product.unit && <>/{product.unit}</>}
                         </Text>
                       </View>
                     ))}
