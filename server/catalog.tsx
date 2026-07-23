@@ -72,13 +72,14 @@ export const updateCatalog = async (timeZone: string = "America/Chicago") => {
         productIds: cat.featuredProductIds ?? [],
         effectiveFrom: validFrom,
         effectiveTo: validUntil,
-      }).then((pdfUrl) =>
-        db
-          .update(catalog)
-          .set({ pdfUrl, effectiveFrom: validFrom, effectiveTo: validUntil })
-          .where(eq(catalog.id, cat.id)),
-      ),
-      del(cat.pdfUrl),
+      })
+        .then((pdfUrl) =>
+          db
+            .update(catalog)
+            .set({ pdfUrl, effectiveFrom: validFrom, effectiveTo: validUntil })
+            .where(eq(catalog.id, cat.id)),
+        ),
+      // del(cat.pdfUrl),
     ]),
   );
   return true;
@@ -193,9 +194,7 @@ const groupProducts = (products: ProductSelectType[]) => {
   const seen = new Set<number>();
 
   const sortedProducts = [...products].sort((a, b) =>
-    a.title.localeCompare(b.title, undefined, {
-      sensitivity: "base",
-    }),
+    naturalCompare(a.title, b.title),
   );
 
   const groupedProducts: Record<string, ProductSelectType[]> = {};
@@ -208,6 +207,29 @@ const groupProducts = (products: ProductSelectType[]) => {
 
     (groupedProducts[groupName] ??= []).push(product);
     seen.add(product.id);
+  }
+
+  // Sort each group's products by sub-category (products without one go last),
+  // then by title using natural (dimension-aware) comparison.
+  for (const groupName of Object.keys(groupedProducts)) {
+    groupedProducts[groupName].sort((a, b) => {
+      const subCategoryA = a.categories?.[1];
+      const subCategoryB = b.categories?.[1];
+
+      const hasA = Boolean(subCategoryA);
+      const hasB = Boolean(subCategoryB);
+
+      if (hasA && !hasB) return -1;
+      if (!hasA && hasB) return 1;
+
+      if (hasA && hasB) {
+        const subCategoryCompare = naturalCompare(subCategoryA!, subCategoryB!);
+        if (subCategoryCompare !== 0) return subCategoryCompare;
+      }
+
+      // fall back to natural title comparison (handles dimensions correctly)
+      return naturalCompare(a.title, b.title);
+    });
   }
 
   const orderedGroupedProducts: Record<string, ProductSelectType[]> = {};
@@ -227,4 +249,34 @@ const groupProducts = (products: ProductSelectType[]) => {
   }
 
   return orderedGroupedProducts;
+};
+
+
+
+const naturalCompare = (a: string, b: string): number => {
+  const chunkPattern = /(\d+\.\d+|\d+|\D+)/g;
+  const chunksA = a.match(chunkPattern) ?? [];
+  const chunksB = b.match(chunkPattern) ?? [];
+  const maxLength = Math.max(chunksA.length, chunksB.length);
+
+  for (let i = 0; i < maxLength; i++) {
+    const chunkA = chunksA[i] ?? "";
+    const chunkB = chunksB[i] ?? "";
+
+    const numA = parseFloat(chunkA);
+    const numB = parseFloat(chunkB);
+
+    if (!Number.isNaN(numA) && !Number.isNaN(numB)) {
+      if (numA !== numB) return numA - numB;
+      continue;
+    }
+
+    const stringCompare = chunkA.localeCompare(chunkB, undefined, {
+      sensitivity: "base",
+    });
+
+    if (stringCompare !== 0) return stringCompare;
+  }
+
+  return 0;
 };
