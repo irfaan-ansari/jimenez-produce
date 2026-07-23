@@ -72,13 +72,12 @@ export const updateCatalog = async (timeZone: string = "America/Chicago") => {
         productIds: cat.featuredProductIds ?? [],
         effectiveFrom: validFrom,
         effectiveTo: validUntil,
-      })
-        .then((pdfUrl) =>
-          db
-            .update(catalog)
-            .set({ pdfUrl, effectiveFrom: validFrom, effectiveTo: validUntil })
-            .where(eq(catalog.id, cat.id)),
-        ),
+      }).then((pdfUrl) =>
+        db
+          .update(catalog)
+          .set({ pdfUrl, effectiveFrom: validFrom, effectiveTo: validUntil })
+          .where(eq(catalog.id, cat.id)),
+      ),
       // del(cat.pdfUrl),
     ]),
   );
@@ -250,8 +249,6 @@ const groupProducts = (products: ProductSelectType[]) => {
 
   return orderedGroupedProducts;
 };
-
-
 
 const naturalCompare = (a: string, b: string): number => {
   const chunkPattern = /(\d+\.\d+|\d+|\D+)/g;

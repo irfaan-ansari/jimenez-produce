@@ -26,8 +26,8 @@ export const CatalogPDF = (data: CatalogProps) => {
           styles.page,
           {
             backgroundColor: "#fff",
-            paddingHorizontal: 0,
-            paddingVertical: 0,
+            paddingHorizontal: 16,
+            paddingVertical: 16,
           },
         ]}
       >
@@ -197,7 +197,6 @@ export const CatalogPDF = (data: CatalogProps) => {
           </View>
         )}
         {/* DYNAMIC CATEGORY BLOCKS LOOP */}
-
         {Object.entries(products).map(
           ([category, categoryProducts]: [string, any], i) => {
             // Split products into rows of 2
@@ -236,7 +235,7 @@ export const CatalogPDF = (data: CatalogProps) => {
                       <View
                         key={product.id}
                         style={{
-                          width: "48.5%",
+                          width: "50%",
                           flexDirection: "row",
                           paddingHorizontal: 12,
                           paddingTop: 3,
@@ -257,7 +256,6 @@ export const CatalogPDF = (data: CatalogProps) => {
                             },
                           ]}
                         >
-
                           {product.title}
                         </Text>
                         <Text
