@@ -3,11 +3,13 @@ import { styles } from "./styles";
 import { formatPhone, formatUSD } from "@/lib/utils";
 import { Document, Page, Text, View, Image } from "@react-pdf/renderer";
 import { format } from "date-fns";
+
 const colors = {
   background: "#13360c",
   border: "#d9f99d",
   text: "#ffffff",
 };
+
 interface CatalogProps {
   org: OrganizationSelectType;
   products: Record<string, ProductSelectType[]>;
@@ -21,7 +23,7 @@ export const CatalogPDF = (data: CatalogProps) => {
   return (
     <Document>
       <Page
-        size="A4"
+        size="LETTER"
         style={[
           styles.page,
           {
@@ -233,7 +235,7 @@ export const CatalogPDF = (data: CatalogProps) => {
                           fontSize: 8,
                           textTransform: "none",
                           minWidth: 0,
-                          lineHeight: 1.2,
+                          lineHeight: 1.5,
                           paddingRight: 4,
                           flex: 1,
                         },
@@ -249,7 +251,7 @@ export const CatalogPDF = (data: CatalogProps) => {
                           fontWeight: "bold",
                           fontSize: 8,
                           flexShrink: 0,
-                          lineHeight: 1.2,
+                          lineHeight: 1.5,
                         },
                       ]}
                     >
