@@ -35,7 +35,7 @@ export const OrderForm = ({
   const router = useRouter();
   const confirm = useConfirm();
 
-  const CART_KEY = `order-items-${session.session.activeTeamId}`;
+  const CART_KEY = `customer-cart-${session.session.activeTeamId}`;
   const [mounted, setMounted] = React.useState(false);
 
   const setShowCart = useOrderUIStore((s) => s.setShowCart);

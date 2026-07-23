@@ -139,7 +139,7 @@ export function AppSidebar({ session }: { session: Session }) {
 }
 
 const PromotionCard = ({ session }: { session: Session }) => {
-  const CART_KEY = `order-items-${session.session.activeTeamId}`;
+  const CART_KEY = `customer-cart-${session.session.activeTeamId}`;
   const { router, pathname } = useRouterStuff();
 
   const addItemsToCart = useOrderUIStore((s) => s.setPromoCart);
