@@ -205,78 +205,84 @@ export const CatalogPDF = (data: CatalogProps) => {
               rows.push(categoryProducts.slice(j, j + 2));
             }
 
-            return (
-              <View style={{ backgroundColor: "#fff" }} key={category}>
-                {/* Category Header */}
-                <View
-                  style={{
-                    backgroundColor: colors.border,
-                    paddingHorizontal: 12,
-                    paddingVertical: 6,
-                    minHeight: 24,
-                  }}
-                  wrap={false}
-                >
-                  <Text style={[styles.label, { color: colors.background }]}>
-                    {category}
-                  </Text>
-                </View>
-                {rows.map((col: any[], rowIndex: number) => (
+            const renderRow = (col: any[], rowIndex: number) => (
+              <View
+                style={{
+                  flexDirection: "row",
+                  borderTopWidth: rowIndex > 0 ? 1 : 0,
+                  borderTopColor: "#f2f5f3",
+                }}
+                key={rowIndex}
+              >
+                {col.map((product: ProductSelectType) => (
                   <View
+                    key={product.id}
                     style={{
+                      width: "50%",
                       flexDirection: "row",
-                      borderTopWidth: rowIndex > 0 ? 1 : 0,
-                      borderTopColor: "#f2f5f3",
+                      paddingHorizontal: 12,
+                      paddingTop: 3,
+                      justifyContent: "space-between",
+                      alignItems: "flex-start",
                     }}
-                    key={rowIndex}
-                    wrap={false}
                   >
-                    {col.map((product: ProductSelectType) => (
-                      <View
-                        key={product.id}
-                        style={{
-                          width: "50%",
-                          flexDirection: "row",
-                          paddingHorizontal: 12,
-                          paddingTop: 3,
-                          justifyContent: "space-between",
-                          alignItems: "flex-start",
-                        }}
-                      >
-                        <Text
-                          style={[
-                            styles.label,
-                            {
-                              fontSize: 8,
-                              textTransform: "none",
-                              minWidth: 0,
-                              lineHeight: 1,
-                              paddingRight: 4,
-                              flex: 1,
-                            },
-                          ]}
-                        >
-                          {product.title}
-                        </Text>
-                        <Text
-                          style={[
-                            styles.tagline,
-                            {
-                              color: colors.background,
-                              fontWeight: "bold",
-                              fontSize: 8,
-                              flexShrink: 0,
-                              lineHeight: 1.4,
-                            },
-                          ]}
-                        >
-                          {formatUSD(product.basePrice)}
-                          {product.unit && <>/{product.unit}</>}
-                        </Text>
-                      </View>
-                    ))}
+                    <Text
+                      style={[
+                        styles.label,
+                        {
+                          fontSize: 8,
+                          textTransform: "none",
+                          minWidth: 0,
+                          lineHeight: 1.2,
+                          paddingRight: 4,
+                          flex: 1,
+                        },
+                      ]}
+                    >
+                      {product.title}
+                    </Text>
+                    <Text
+                      style={[
+                        styles.tagline,
+                        {
+                          color: colors.background,
+                          fontWeight: "bold",
+                          fontSize: 8,
+                          flexShrink: 0,
+                          lineHeight: 1.2,
+                        },
+                      ]}
+                    >
+                      {formatUSD(product.basePrice)}
+                      {product.unit && <>/{product.unit}</>}
+                    </Text>
                   </View>
                 ))}
+              </View>
+            );
+
+            return (
+              <View style={{ backgroundColor: "#fff" }} key={category}>
+                {/* Header + first row locked together so the header
+            can never be orphaned at the bottom of a page */}
+                <View wrap={false}>
+                  <View
+                    style={{
+                      backgroundColor: colors.border,
+                      paddingHorizontal: 12,
+                      paddingVertical: 6,
+                      minHeight: 24,
+                    }}
+                  >
+                    <Text style={[styles.label, { color: colors.background }]}>
+                      {category}
+                    </Text>
+                  </View>
+                  {rows[0] && renderRow(rows[0], 0)}
+                </View>
+
+                {/* Remaining rows can still break normally across pages */}
+                {rows.slice(1).map((col, idx) => renderRow(col, idx + 1))}
               </View>
             );
           },
